@@ -1,0 +1,31 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto br0
+iface br0 inet dhcp
+	bridge_ports eth1 wlan0
+
+# The primary network interface
+#allow-hotplug eth0
+auto eth0
+#iface eth0 inet manual
+#	address 192.168.12.106
+#	netmask 255.255.255.0
+#	gateway 192.168.12.1
+
+auto wlan0
+#iface wlan0 inet manual
+#	pre-up wlanconfig ath0 destroy || true
+#	pre-up wlanconfig ath0 create wlandev wifi0 wlanmode ap
+#	post-down wlanconfig ath0 destroy
+	wireless-mode master
+	wireless-channel 1
+#	address 192.168.11.1
+#	netmask 255.255.255.0
+#	gateway 192.168.12.1
+
+
