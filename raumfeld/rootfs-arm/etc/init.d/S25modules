@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# Load modules ...
+#
+
+case "$1" in
+  start)
+ 	echo "Loading modules..."
+        modprobe wire delay_coef=3
+        modprobe w1-gpio
+        modprobe w1_ds2760
+        modprobe ds2760_battery pmod_enabled=1
+        modprobe pxamci
+        modprobe libertas_sdio
+        modprobe eeti_ts flip_y=1
+	;;
+  *)
+        ;;
+esac
+
+exit $?
+
