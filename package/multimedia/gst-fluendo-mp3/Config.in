@@ -1,0 +1,9 @@
+config BR2_PACKAGE_GST_FLUENDO_MP3
+	bool "gst-fluendo.mp3"
+	depends on BR2_PACKAGE_GSTREAMER 
+	select BR2_PACKAGE_LIBOIL
+	help
+	  an alternative non GPL version of MP3 decoding using liboil
+
+          http://www.fluendo.com/shop/product/fluendo-mp3-decoder/
+
