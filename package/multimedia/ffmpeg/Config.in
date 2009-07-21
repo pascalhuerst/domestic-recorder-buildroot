@@ -1,0 +1,32 @@
+config BR2_PACKAGE_FFMPEG
+	bool "ffmpeg"
+	help
+         FFmpeg is a complete, cross-platform solution to record, convert
+         and stream audio and video. So far the buildroot ffmpeg package
+         only builds libavcodec and libavformat. Support for other libraries
+         contained in FFmpeg as well as support for the ffmpeg, ffplay and
+         ffserver binaries could be added.
+
+	 http://ffmpeg.org
+
+config BR2_PACKAGE_FFMPEG_GPL
+	bool "ffmpeg GPL code"
+	default n
+	help
+         allow use of GPL code, the resulting libs and binaries will be
+         under GPL
+
+config BR2_PACKAGE_FFMPEG_NONFREE
+	bool "ffmpeg nonfree code"
+	default n
+	help
+         allow use of nonfree code, the resulting libs and binaries will
+         be unredistributable
+
+config BR2_PACKAGE_FFMPEG_POSTPROC
+	bool "build ffmpeg libpostproc"
+	default n
+	help
+         build libpostproc
+         under GPL
+
