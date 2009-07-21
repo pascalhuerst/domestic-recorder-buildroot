@@ -28,13 +28,19 @@ FFMPEG_CONF_OPT = \
 	--disable-avfilter	\
 	--disable-swscale	\
 	--disable-vhook		\
+	--disable-mmx		\
+	--disable-mmx2		\
+	--disable-sse		\
+	--disable-ssse3		\
+	--disable-amd3dnow	\
+	--disable-amd3dnowext
 
 ifeq ($(BR2_PACKAGE_FFMPEG_GPL),y)
 FFMPEG_CONF_OPT += --enable-gpl
 else
 FFMPEG_CONF_OPT += --disable-gpl
 endif
-		
+
 ifeq ($(BR2_PACKAGE_FFMPEG_NONFREE),y)
 FFMPEG_CONF_OPT += --enable-nonfree
 else
