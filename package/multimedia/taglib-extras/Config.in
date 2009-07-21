@@ -1,0 +1,6 @@
+config BR2_PACKAGE_TAGLIB_EXTRAS
+	bool "taglib-extras"
+	depends on BR2_PACKAGE_TAGLIB
+	help
+	  TagLib-Extras extends the taglib with support for wma, m4a, m4p, asf files.
+

@@ -26,5 +26,6 @@ source "package/multimedia/mplayer/Config.in"
 source "package/multimedia/speex/Config.in"
 source "package/multimedia/festival/Config.in"
 source "package/multimedia/taglib/Config.in"
+source "package/multimedia/taglib-extras/Config.in"
 source "package/multimedia/vlc/Config.in"
 endmenu
