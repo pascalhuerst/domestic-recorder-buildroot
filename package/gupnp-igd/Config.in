@@ -1,0 +1,9 @@
+config BR2_PACKAGE_GUPNP_IGD
+	bool "gupnp-igd"
+	default n
+	depends on BR2_PACKAGE_GUPNP
+	help
+          GUPnP-IDG is a library to handle Internet Gateway Device
+          port mappings.
+
+          http://www.gupnp.org/
