@@ -4,9 +4,9 @@
 #
 #############################################################
 
-LIBNL_VERSION = 1.1
+LIBNL_VERSION = 2.0
 LIBNL_SOURCE = libnl-$(LIBNL_VERSION).tar.gz
-LIBNL_SITE = http://distfiles.gentoo.org/distfiles
+LIBNL_SITE = http://people.suug.ch/~tgr/libnl/files
 LIBNL_INSTALL_STAGING = YES
 LIBNL_INSTALL_TARGET_OPT = DESTDIR=$(TARGET_DIR) install
 
