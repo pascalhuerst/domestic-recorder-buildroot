@@ -2,19 +2,21 @@
 
 case $1 in
 	# those two are pretty straight-forward
-	arm-devel)
+	devel-arm)
 		cp raumfeld/br2-devel-arm.config .config
-		make oldconfig
-		make
 		;;
-	geode-devel)
+	devel-geode)
 		cp raumfeld/br2-devel-geode.config .config
-		make oldconfig
-		make
+		;;
+	imgrootfs-arm)
+		cp raumfeld/br2-imgrootfs-arm.config .config
 		;;
 
 	default)
 		echo "unknown target '$1'. bummer."
 		exit -1
 esac
+
+make oldconfig
+make
 
