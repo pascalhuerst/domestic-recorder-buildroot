@@ -1,0 +1,7 @@
+IMAGE FORMAT
+
+	@byte 0		uImage
+	@byte 5120000	SHA256 checksum of bytes 5120100 - end
+	@byte 5120100	description
+	@byte 5124096	ext2 Image
+
