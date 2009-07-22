@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -e
+
+UBIDEV=0
+UBIMTD=3
+ROOT_SIZE=115MiB
+
+# first, detach the volume attached by the kernel
+ubidetach /dev/ubi_ctrl -d $UBIDEV
+
+# erase the whole thing
+ubiformat /dev/mtd3     
+
+# re-attach the partition
+ubiattach /dev/ubi_ctrl -d $UBIDEV -m $UBIMTD
+
+# create the volume
+ubimkvol /dev/ubi$UBIDEV -N RootFS -s $ROOT_SIZE
+
+# mount it
+mount -t ubifs ubi:RootFS /mnt
+
+# unpack ...
+cd /mnt
+zcat /rootfs.tgz | tar -xf -
+
+cd /
+umount /mnt
+

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+source ../tests.inc
+TITLE="ROTARY"
+DIALOGOPTS="--title $TITLE"
+
+$INPUT_TEST rotary | dialog_progress "Turn the rotary encoder. First clockwise, then counter clockwise." $DIALOGOPTS
+
+
+
+

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+UBIDEV=0
+UBIMTD=3
+ROOT_SIZE=115MiB
+
+source ../tests.inc
+TITLE="NANDFLASH"
+DIALOGOPTS="--title $TITLE"
+
+dialog_info "Flashing NAND. Please wait." $DIALOGOPTS
+
+./do_flash || (dialog_err "ERROR!" $DIALOGOPTS; exit 1)
+

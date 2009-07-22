@@ -1,0 +1,11 @@
+#!/bin/sh
+
+source ../tests.inc
+TITLE="ACCELEROMETER"
+DIALOGOPTS="--title $TITLE"
+
+dialog_info "Hit the table!." $DIALOGOPTS
+$INPUT_TEST accel_simple
+dialog_success "OK" $DIALOGOPTS
+sleep 2
+
