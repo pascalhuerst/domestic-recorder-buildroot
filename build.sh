@@ -23,7 +23,7 @@ case $1 in
 esac
 
 # is that really needed?
-rm -fr build_arm
+rm -fr build_arm project_build_arm
 
 make oldconfig
 make
