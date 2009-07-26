@@ -12,15 +12,16 @@ case "$1" in
 	brctl addif br0 eth1
 	ifconfig eth0 up
 	ifconfig eth1 up
+	ifconfig br0 up
 	;;
   stop)
-	echo -n "Stopping network..."
+	echo -n "stopping bridge..."
 	brctl delif br0 eth0
 	brctl delif br0 wlan0
 	brctl delif br0 eth1
 	ifconfig br0 down
-	brctl delbr br0
-	/sbin/ifdown -a
+	ifconfig eth0 down
+	ifconfig eth1 down
 	;;
   restart|reload)
 	"$0" stop
