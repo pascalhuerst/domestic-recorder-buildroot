@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Start wpa-supplicant to bring up the wireless interface....
+#
+
+case "$1" in
+  start)
+ 	echo "Starting wpa-supplicant..."
+        wpa_supplicant -B -u
+	;;
+  stop)
+	echo -n "Stopping wpa-supplicant..."
+        killall wpa_supplicant
+	;;
+  restart|reload)
+	"$0" stop
+	"$0" start
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+
