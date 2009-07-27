@@ -10,6 +10,9 @@ case $1 in
 	devel-geode)
 		cp raumfeld/br2-devel-geode.config .config
 		;;
+	initramfs-arm)
+		cp raumfeld/br2-initramfs-arm.config .config
+		;;
 	imgrootfs-arm)
 		cp raumfeld/br2-imgrootfs-arm.config .config
 		;;

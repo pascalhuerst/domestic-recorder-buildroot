@@ -1,0 +1,24 @@
+#!/bin/sh
+
+mkdir -p /proc
+mount proc /proc -t proc
+export PATH="/sbin:/usr/sbin:$PATH"
+
+echo "waiting for USB device to appear ..."
+
+while [ -z "$(grep sda1 /proc/partitions)" ]; do
+	sleep 1
+done
+
+mkdir /usb
+mount /dev/sda1 /usb
+losetup -o 5128192 /dev/loop0 /usb/uImage
+
+mkdir /rootfs
+mount -t ext2 /dev/loop0 /rootfs
+
+echo "Jumping to the newly mounted rootfs"
+chroot /rootfs /init.sh
+
+exec /bin/sh
+
