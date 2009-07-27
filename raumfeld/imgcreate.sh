@@ -33,7 +33,7 @@ base_rootfs_img=$3
 target_rootfs_tgz=$4
 
 tmpdir=$(tempfile)-$PPID
-uimage=binaries/uImage-initramfs
+uimage=binaries/uImage-initramfs-$platform
 testdir=raumfeld/testsuite/
 #inputtest_bin=$testdir/input_test/input_test
 imgcreate=raumfeld/imgtool/imgcreate
