@@ -256,7 +256,7 @@ else
 include toolchain/*/*.mk
 endif
 
-ifeq ($(BR2_PACKAGE_LINUX),y)
+ifeq ($(BR2_PACKAGE_LINUX_MODULES_INSTALL),y)
 TARGETS+=linux26-modules
 endif
 

@@ -345,6 +345,11 @@ config BR2_LINUX26_VERSION
 	default "$(BR2_KERNEL_CURRENT_VERSION)"if				BR2_LINUX_2_6_STABLE
 	default "$(BR2_CUSTOM_LINUX26_VERSION)" if				BR2_LINUX26_CUSTOM
 
+config BR2_PACKAGE_LINUX_MODULES_INSTALL
+	bool "Install Linux kernel modules to target"
+	depends on BR2_PACKAGE_LINUX
+	default y
+
 menu "Linux Kernel Configuration"
 
 choice
