@@ -3,27 +3,37 @@
 set -e
 
 case $1 in
-	# those two are pretty straight-forward
 	devel-arm)
-		cp raumfeld/br2-devel-arm.config .config
 		;;
 	devel-geode)
-		cp raumfeld/br2-devel-geode.config .config
 		;;
 	initramfs-arm)
-		cp raumfeld/br2-initramfs-arm.config .config
 		;;
 	imgrootfs-arm)
-		cp raumfeld/br2-imgrootfs-arm.config .config
 		;;
 	remotecontrol-arm)
-		cp raumfeld/br2-remotecontrol-arm.config .config
 		;;
 
-	default)
+	configs)
+		for x in \
+			devel-arm devel-geode \
+			initramfs-arm imgrootfs-arm \
+			remotecontrol-arm; do
+
+			cp raumfeld/br2-$x.config .config
+			/usr/bin/make oldconfig
+			cp .config raumfeld/br2-$x.config
+		done
+
+		exit 0;
+		;;
+
+	*)
 		echo "unknown target '$1'. bummer."
 		exit -1
 esac
+
+cp raumfeld/br2-$1.config .config
 
 # is that really needed?
 rm -fr build_arm project_build_arm
