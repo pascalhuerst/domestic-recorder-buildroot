@@ -12,7 +12,7 @@
 #
 
 if test -z "$3"; then
-	echo "Usage: $0 <target> <platform> <base-rootfs-tgz> <target-rootfs-tgz>"
+	echo "Usage: $0 <target> <platform> <base-rootfs-img> <target-rootfs-tgz>"
 	echo "target can be one of the following:"
 	echo "	remote-flash"
 	echo "	remote-init"
@@ -23,14 +23,17 @@ if test -z "$3"; then
 	exit
 fi
 
-echo "building prerequisites ..."
-
-make -C raumfeld/imgtool
-
 target=$1
 platform=$2
 base_rootfs_img=$3
 target_rootfs_tgz=$4
+
+
+###### BUILD BINARIES #######
+echo "building prerequisites ..."
+make -C raumfeld/imgtool
+
+###### CHECK PARMS #######
 
 tmpdir=$(tempfile)-$PPID
 uimage=binaries/initramfs-$platform/uImage
@@ -53,14 +56,14 @@ test -f $rootfstgz	|| (echo "$rootfstgz not found."; exit -1)
 mkdir $tmpdir
 echo "Operating in $tmpdir"
 
-cp $target_rootfs_tgz $tmpdir/
+cp $target_rootfs_tgz $tmpdir/rootfs.tgz
 cp -av raumfeld/testsuite/rootfs/* $tmpdir/
 
 # ext2_img has to be created in binaries/ temporarily. will be removed later.
 echo "exec /$target.sh" > $tmpdir/start-test.sh
 
 # count entries in rootfs.tar
-tar -f $target_rootfs_tgz -t | wc -l > $tmpdir/$(basename $target_rootfs_tgz).numfiles
+tar -zf $tmpdir/rootfs.tgz -t | wc -l > $tmpdir/rootfs.tgz.numfiles
 
 rm -f $ext2_img
 genext2fs -b 1024 -x $base_rootfs_img -d $tmpdir $ext2_img

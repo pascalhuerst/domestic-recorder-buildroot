@@ -36,7 +36,7 @@ esac
 cp raumfeld/br2-$1.config .config
 
 # is that really needed?
-rm -fr build_arm project_build_arm
+#rm -fr build_arm project_build_arm
 
 make oldconfig
 make
@@ -59,7 +59,7 @@ case $1 in
 		for t in flash init final; do
 			raumfeld/imgcreate.sh $1-$t arm \
 				binaries/uclibc/imgrootfs.arm.ext2 \
-				binaries/uclibc/rootfs-remotecontrol.arm.ext2
+				binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
 		done
 		;;
 esac
