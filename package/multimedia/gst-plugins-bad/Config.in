@@ -15,6 +15,9 @@ comment "dependency-less plugins"
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_AACPARSE
 	bool "aacparse"
 
+config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FAAD2
+	bool "faad2"
+
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_AIFFPARSE
 	bool "aiffparse"
 

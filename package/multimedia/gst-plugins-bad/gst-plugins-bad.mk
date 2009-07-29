@@ -21,6 +21,13 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-aacparse
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FAAD2),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-faad
+GST_PLUGINS_BAD_DEPENDENCIES += libfaad2
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-faad
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_AIFFPARSE),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-aiffparse
 else
