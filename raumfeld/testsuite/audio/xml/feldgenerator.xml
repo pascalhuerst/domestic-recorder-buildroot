@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scpd xmlns="urn:schemas-upnp-org:service-1-0">
+  <specVersion>
+    <major>1</major>
+    <minor>0</minor>
+  </specVersion>
+
+  <actionList>
+    <action>
+      <name>SubscribeToFeedback</name>
+      <argumentList>
+	<argument>
+	  <name>InstanceID</name>
+	  <direction>in</direction>
+	  <relatedStateVariable>A_ARG_TYPE_InstanceID</relatedStateVariable>
+	</argument>
+	<argument>
+	  <name>IP</name>
+	  <direction>in</direction>
+	  <relatedStateVariable>A_ARG_TYPE_IP</relatedStateVariable>
+	</argument>
+	<argument>
+	  <name>Port</name>
+	  <direction>in</direction>
+	  <relatedStateVariable>A_ARG_TYPE_PORT</relatedStateVariable>
+	</argument>
+	<argument>
+	  <name>Timeout</name>
+	  <direction>in</direction>
+	  <relatedStateVariable>A_ARG_TYPE_TIMEOUT</relatedStateVariable>
+	</argument>
+      </argumentList>
+    </action>
+    <action>
+      <name>UnsubscribeFromFeedback</name>
+      <argumentList>
+	<argument>
+	  <name>InstanceID</name>
+	  <direction>in</direction>
+	  <relatedStateVariable>A_ARG_TYPE_InstanceID</relatedStateVariable>
+	</argument>
+	<argument>
+	  <name>IP</name>
+	  <direction>in</direction>
+	  <relatedStateVariable>A_ARG_TYPE_IP</relatedStateVariable>
+	</argument>
+	<argument>
+	  <name>Port</name>
+	  <direction>in</direction>
+	  <relatedStateVariable>A_ARG_TYPE_PORT</relatedStateVariable>
+	</argument>
+      </argumentList>
+    </action>
+  </actionList>
+
+  <serviceStateTable>
+    <stateVariable sendEvents="no">
+      <name>A_ARG_TYPE_InstanceID</name>
+      <dataType>ui4</dataType>
+    </stateVariable>
+    <stateVariable sendEvents="no">
+      <name>A_ARG_TYPE_IP</name>
+      <dataType>string</dataType>
+    </stateVariable>
+    <stateVariable sendEvents="no">
+      <name>A_ARG_TYPE_PORT</name>
+      <dataType>ui4</dataType>
+    </stateVariable>
+    <stateVariable sendEvents="no">
+      <name>A_ARG_TYPE_TIMEOUT</name>
+      <dataType>ui4</dataType>
+    </stateVariable>
+  </serviceStateTable>
+</scpd>
