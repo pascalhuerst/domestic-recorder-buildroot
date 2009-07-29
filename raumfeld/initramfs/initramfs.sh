@@ -1,10 +1,9 @@
 #!/bin/sh
 
-mkdir -p /proc
-mount proc /proc -t proc
 export PATH="/sbin:/usr/sbin:$PATH"
 
-echo "waiting for USB device to appear ..."
+echo "Booted to initramfs. Now switching over to imgrootfs."
+echo "Waiting for USB device to appear ..."
 
 while [ -z "$(grep sda1 /proc/partitions)" ]; do
 	sleep 1
