@@ -20,10 +20,23 @@ $(TAGLIB_EXTRAS_DIR)/.unpacked: $(DL_DIR)/$(TAGLIB_EXTRAS_SOURCE)
 
 $(TAGLIB_EXTRAS_DIR)/.configured: $(TAGLIB_EXTRAS_DIR)/.unpacked
 	(cd $(TAGLIB_EXTRAS_DIR); rm -rf CMakeCache.txt; \
-	 cmake -DCMAKE_FIND_ROOT_PATH=$(STAGING_DIR) \
-              -DCMAKE_INSTALL_PREFIX=$(STAGING_DIR)/usr \
-              -DCMAKE_C_COMPILER=$(TARGET_CC) \
-              -DCMAKE_CXX_COMPILER=$(TARGET_CXX) .)
+	echo "SET(CMAKE_SYSTEM_VERSION 1)" > Toolchain.cmake;\
+	echo "SET(CMAKE_C_COMPILER   $(TARGET_CC))" >> Toolchain.cmake;\
+	echo "SET(CMAKE_CXX_COMPILER $(TARGET_CXX))" >> Toolchain.cmake;\
+        echo "SET(CMAKE_INSTALL_PREFIX $(STAGING_DIR)/usr)">> Toolchain.cmake; \
+	echo "SET(CMAKE_LIBRARY_PATH $(STAGING_DIR)/usr/lib)">> Toolchain.cmake; \
+	echo "SET(CMAKE_FIND_ROOT_PATH $(STAGING_DIR))" >> Toolchain.cmake;\
+	echo "SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)" >> Toolchain.cmake;\
+	echo "SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)" >> Toolchain.cmake;\
+	echo "SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)" >> Toolchain.cmake;\
+	cmake -DCMAKE_TOOLCHAIN_FILE=Toolchain.cmake \
+	       -DCMAKE_VERBOSE_MAKEFILE=TRUE \
+	       -DCMAKE_FIND_ROOT_PATH=$(STAGING_DIR) \
+	       -DCMAKE_INSTALL_PREFIX=$(STAGING_DIR)/usr \
+               -DCMAKE_LINKER_FLAGS=-L$(STAGING_DIR)/usr/lib \
+               -DCMAKE_SHARED_LINKER_FLAGS=-L$(STAGING_DIR)/usr/lib \
+               -DCMAKE_C_COMPILER=$(TARGET_CC) \
+               -DCMAKE_CXX_COMPILER=$(TARGET_CXX))
 	touch $@
 
 $(TAGLIB_EXTRAS_DIR)/taglib-extras/libtag-extras.so.$(TAGLIB_EXTRAS_SOVER): $(TAGLIB_EXTRAS_DIR)/.configured
