@@ -2298,7 +2298,7 @@ index 09b7b1a..f5ead6a 100644
  
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..a6557c4
+index 0000000..bac2534
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
 @@ -0,0 +1,988 @@
@@ -3022,7 +3022,7 @@ index 0000000..a6557c4
 +	pxa_set_mci_info(&raumfeld_mci_platform_data);
 +}
 +
-+static struct gpio_keys_button gpio_keys_button[] __initdata = {
++static struct gpio_keys_button gpio_keys_button[] = {
 +	{
 +		.code			= KEY_F1,
 +		.type			= EV_KEY,
@@ -3061,13 +3061,13 @@ index 0000000..a6557c4
 +	},
 +};
 +
-+static struct gpio_keys_platform_data gpio_keys_platform_data __initdata = {
++static struct gpio_keys_platform_data gpio_keys_platform_data = {
 +	.buttons	= gpio_keys_button,
 +	.nbuttons	= ARRAY_SIZE(gpio_keys_button),
 +	.rep		= 0,
 +};
 +
-+static struct platform_device raumfeld_gpio_keys_device __initdata = {
++static struct platform_device raumfeld_gpio_keys_device = {
 +	.name	= "gpio-keys",
 +	.id	= -1,
 +	.dev 	= {
@@ -3124,11 +3124,11 @@ index 0000000..a6557c4
 +	},
 +};
 +
-+static struct platform_device *raumfeld_common_devices[] __initdata = {
++static struct platform_device *raumfeld_common_devices[] = {
 +	&raumfeld_spi_device,
 +};
 +
-+static mfp_cfg_t raumfeld_ssp1_pin_config[] __initdata = {
++static mfp_cfg_t raumfeld_ssp1_pin_config[] = {
 +	/* SSP for I2S */
 +	GPIO85_SSP1_SCLK,
 +	GPIO89_SSP1_EXTCLK,
