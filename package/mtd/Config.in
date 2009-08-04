@@ -1,6 +1,7 @@
 menuconfig BR2_PACKAGE_MTD
 	bool "mtd/jffs2 utilities"
 	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_LIBUUID
 	help
 	  Build mtd/jffs utilities
 
@@ -127,11 +128,6 @@ config BR2_PACKAGE_MTD_UBIDETACH
 	default y
 	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
-config BR2_PACKAGE_MTD_UBIMIRROR
-	bool "ubimirror"
-	default y
-	depends on BR2_PACKAGE_MTD_UTILS_GIT
-
 config BR2_PACKAGE_MTD_UBIMKVOL
 	bool "ubimkvol"
 	default y
@@ -149,6 +145,11 @@ config BR2_PACKAGE_MTD_UBIRMVOL
 
 config BR2_PACKAGE_MTD_UBIUPDATEVOL
 	bool "ubiupdatevol"
+	default y
+	depends on BR2_PACKAGE_MTD_UTILS_GIT
+
+config BR2_PACKAGE_MTD_UBIFORMAT
+	bool "ubiformat"
 	default y
 	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
