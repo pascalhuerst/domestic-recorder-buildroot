@@ -9,6 +9,7 @@ LIBNL_SOURCE = libnl-$(LIBNL_VERSION).tar.gz
 LIBNL_SITE = http://people.suug.ch/~tgr/libnl/files
 LIBNL_INSTALL_STAGING = YES
 LIBNL_INSTALL_TARGET_OPT = DESTDIR=$(TARGET_DIR) install
+LIBNL_AUTORECONF = YES
 
 $(eval $(call AUTOTARGETS,package,libnl))
 
