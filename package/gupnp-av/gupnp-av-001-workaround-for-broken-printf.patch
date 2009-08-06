@@ -1,0 +1,39 @@
+From aa1eeafe11456501db9c0e1cd4e59641d1eb6555 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Thu, 6 Aug 2009 13:58:41 +0200
+Subject: [PATCH] Workaround for broken printf() implementations.
+
+Explicitly add 24 zeros for the 24 reserved hex-digits in DLNA.ORG_FLAGS.
+The previous implementation used the format string "%.8x%.24x". This
+causes a crash in the gnulib vasprintf() implementation shipped with GLib.
+The new code is less demanding on the printf implementation and hopefully
+also easier to read.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ libgupnp-av/gupnp-didl-lite-writer.c |    9 ++++++---
+ 1 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/libgupnp-av/gupnp-didl-lite-writer.c b/libgupnp-av/gupnp-didl-lite-writer.c
+index c5a37f2..f51d597 100644
+--- a/libgupnp-av/gupnp-didl-lite-writer.c
++++ b/libgupnp-av/gupnp-didl-lite-writer.c
+@@ -395,9 +395,12 @@ gupnp_didl_lite_writer_add_res (GUPnPDIDLLiteWriter   *writer,
+                                                 res->dlna_conversion);
+ 
+                 g_string_append_printf (writer->priv->str,
+-                                        ";DLNA.ORG_FLAGS=%.8x%.24x\"",
+-                                        res->dlna_flags,
+-                                        0);
++                                        ";DLNA.ORG_FLAGS=%.8x",
++                                        res->dlna_flags);
++                /*  append 24 reserved hex-digits  */
++                g_string_append (writer->priv->str,
++                                 "0000" "0000" "0000" "0000" "0000" "0000");
++                g_string_append (writer->priv->str, "\"");
+         }
+ 
+         if (res->import_uri) {
+-- 
+1.6.0.4
+
