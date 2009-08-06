@@ -25,7 +25,7 @@ RAUMFELD_DEPENDENCIES = uclibc host-pkgconfig dbus-glib gupnp-av
 $(eval $(call AUTOTARGETS,package,raumfeld))
 
 $(RAUMFELD_DIR)/.bzr:
-	if ![ -a $(RAUMFELD_DIR)/.bzr ]; then \
+	if [ ! -a $(RAUMFELD_DIR)/.bzr ]; then \
 	  	(cd $(BUILD_DIR); \
 	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld/$(RAUMFELD_VERSION) raumfeld-$(RAUMFELD_VERSION)) \
 	fi
