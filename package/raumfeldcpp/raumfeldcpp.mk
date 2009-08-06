@@ -21,7 +21,7 @@ RAUMFELDCPP_DEPENDENCIES = uclibc libsoup
 $(eval $(call AUTOTARGETS,package,raumfeldcpp))
 
 $(RAUMFELDCPP_DIR)/.bzr:
-	if [ ! -a $(RAUMFELDCPP_DIR)/.bzr ]; then \
+	if ! test -d $(RAUMFELDCPP_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeldcpp/$(RAUMFELDCPP_VERSION) raumfeldcpp-$(RAUMFELDCPP_VERSION)) \
 	fi

@@ -25,7 +25,7 @@ SLY_TOOLKIT_DEPENDENCIES = uclibc host-pkgconfig libglib2 directfb
 $(eval $(call AUTOTARGETS,package,sly-toolkit))
 
 $(SLY_TOOLKIT_DIR)/.bzr:
-	if [ ! -a $(SLY_TOOLKIT_DIR)/.bzr ]; then \
+	if ! test -d $(SLY_TOOLKIT_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/sly-toolkit/$(SLY_TOOLKIT_VERSION) sly-toolkit-$(SLY_TOOLKIT_VERSION)) \
 	fi
