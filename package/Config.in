@@ -426,4 +426,8 @@ source "package/java/Config.in"
 # various games packages
 source "package/games/Config.in"
 
+menu "Raumfeld"
+source "package/raumfeld/Config.in"
+endmenu
+
 endmenu
