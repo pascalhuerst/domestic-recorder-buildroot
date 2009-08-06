@@ -1,0 +1,15 @@
+config BR2_PACKAGE_REMOTE_CONTROL
+	bool "remote-control"
+	default n
+        select BR2_PACKAGE_RAUMFELD
+        select BR2_PACKAGE_SLY_TOOLKIT
+	help
+          The remote control software
+
+          http://www.raumfeld.com/
+
+config BR2_PACKAGE_REMOTE_CONTROL_BRANCH
+        string
+        default "trunk"
+	help
+          branch to checkout from the bazaar repository

@@ -430,6 +430,7 @@ menu "Raumfeld software"
 source "package/raumfeld/Config.in"
 source "package/raumfeldcpp/Config.in"
 source "package/sly-toolkit/Config.in"
+source "package/remote-control/Config.in"
 endmenu
 
 endmenu
