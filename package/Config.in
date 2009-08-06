@@ -428,6 +428,7 @@ source "package/games/Config.in"
 
 menu "Raumfeld"
 source "package/raumfeld/Config.in"
+source "package/raumfeldcpp/Config.in"
 endmenu
 
 endmenu

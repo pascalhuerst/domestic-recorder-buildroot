@@ -1,0 +1,15 @@
+config BR2_PACKAGE_RAUMFELDCPP
+	bool "raumfeldcpp"
+	default n
+	select BR2_INSTALL_LIBSTDCPP
+        select BR2_PACKAGE_LIBSOUP
+	help
+          raumfeldcpp is a C++ utility library for the Raumfeld software stack
+
+          http://www.raumfeld.com/
+
+config BR2_PACKAGE_RAUMFELDCPP_BRANCH
+        string
+        default "trunk"
+	help
+          branch to checkout from the bazaar repository
