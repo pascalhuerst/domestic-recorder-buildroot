@@ -45,23 +45,4 @@ make
 
 # do post-processing for some targets ...
 
-case $1 in
-	# resize the root fs ext2 image so that genext2fs will find
-	# free inodes when building the deployment targets.
-	# this should probably be made part of br2 some day.
-	imgrootfs-arm)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.arm.ext2 500M
-		;;
-	imgrootfs-geode)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.geode.ext2 500M
-		;;
-
-	remotecontrol-arm)
-		for t in flash init final; do
-			raumfeld/imgcreate.sh $1-$t arm \
-				binaries/uclibc/imgrootfs.arm.ext2 \
-				binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
-		done
-		;;
-esac
-
+./build-finish.sh $*
