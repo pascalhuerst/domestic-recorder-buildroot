@@ -91,6 +91,11 @@
 /dev/mtd	c	640	0	0	90	0	0	2	4
 /dev/mtdblock	b	640	0	0	31	0	0	1	4
 
+# UBI devices
+/dev/ubi_ctrl	c	660	0	0	10	62	0	0	-
+/dev/ubi0	c	660	0	0	253	0	0	0	-
+/dev/ubi0_	c	660	0	0	253	1	0	1	15
+
 #Tun/tap driver
 /dev/net	d	755	0	0	-	-	-	-	-
 /dev/net/tun	c	660	0	0	10	200	-	-	-
