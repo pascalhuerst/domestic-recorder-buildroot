@@ -5,6 +5,7 @@
 #include <poll.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <linux/input.h>
@@ -35,10 +36,10 @@ static int test_touch(int fd)
 
 		if (ev.code == ABS_X)
 			last_x = ev.value;
-		
+
 		if (ev.code == ABS_Y)
 			last_y = ev.value;
-			
+
 		if (last_x == -1 || last_y == -1)
 			continue;
 
@@ -135,29 +136,55 @@ static struct test_func {
 	{
 		.name	= "touch",
 		.desc	= "\tmulti-point touch screen test",
-		.dev	= "/dev/input/event3",
+		.dev	= "eeti_ts",
 		.proc	= test_touch
 	},
 	{
 		.name	= "rotary",
 		.desc	= "\trotary left/right 360° test",
-		.dev	= "/dev/input/event1",
+		.dev	= "rotary-encoder",
 		.proc	= test_rotary
 	},
 	{
 		.name	= "accel_simple",
 		.desc	= "the knock-on-table test",
-		.dev	= "/dev/input/event2",
+		.dev	= "ST LIS3LV02DL Accelerometer",
 		.proc	= test_accel_simple
 	},
 	{
 		.name	= "accel_full",
 		.desc	= "accel rotation test",
-		.dev	= "/dev/input/event2",
+		.dev	= "ST LIS3LV02DL Accelerometer",
 		.proc	= test_accel_full
 	},
 	{ .name = NULL }
 };
+
+static int open_input_dev(const char *name)
+{
+	int i, fd;
+	char buf[128], tmp[128];
+
+	for (;;) {
+		snprintf(tmp, sizeof(tmp), "/dev/input/event%d", i);
+		fd = open(tmp, O_RDONLY);
+		if (fd == -ENOENT)
+			break;
+
+		if (fd < 0)
+			continue;
+
+		if (ioctl(fd, EVIOCGNAME(sizeof(buf) - 1), buf) < 0) {
+			close(fd);
+			continue;
+		}
+
+		if (strcmp(buf, name) == 0)
+			break;
+	}
+
+	return fd;
+}
 
 int main(int argc, char **argv)
 {
@@ -166,7 +193,7 @@ int main(int argc, char **argv)
 
 	for (t = test_func; t->name; t++)
 		if (argv[1] && strcmp(t->name, argv[1]) == 0) {
-			int fd = open(t->dev, O_RDONLY);
+			int fd = open_input_dev(t->dev);
 
 			if (fd < 0) {
 				perror("open");
@@ -177,13 +204,13 @@ int main(int argc, char **argv)
 			close(fd);
 			return ret;
 		}
-	
+
 	printf("Usage: %s <testname>\n", argv[0]);
 	printf("Available tests:\n");
 
 	for (t = test_func; t->name; t++)
 		printf("\t%s\t%s\n", t->name, t->desc);
-	
+
 	return 3;
 }
 
