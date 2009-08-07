@@ -1,6 +1,7 @@
 config BR2_PACKAGE_RAUMFELDCPP
 	bool "raumfeldcpp"
 	default n
+        depends on BR2_PACKAGE_RAUMFELD
 	select BR2_INSTALL_LIBSTDCPP
         select BR2_PACKAGE_LIBSOUP
 	help
@@ -11,5 +12,6 @@ config BR2_PACKAGE_RAUMFELDCPP
 config BR2_PACKAGE_RAUMFELDCPP_BRANCH
         string
         default "trunk"
+        depends on BR2_PACKAGE_RAUMFELDCPP
 	help
           branch to checkout from the bazaar repository

@@ -18,5 +18,6 @@ config BR2_PACKAGE_RAUMFELD_REPOSITORY
 config BR2_PACKAGE_RAUMFELD_BRANCH
         string
         default "trunk"
+        depends on BR2_PACKAGE_RAUMFELD
 	help
           branch to checkout from the bazaar repository
