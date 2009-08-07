@@ -2,8 +2,6 @@
 
 set -e
 
-dmesg -n 1
-
 UBIDEV=0
 UBIMTD=3
 ROOT_SIZE=115MiB
@@ -19,5 +17,3 @@ ubiattach /dev/ubi_ctrl -d $UBIDEV -m $UBIMTD
 
 # create the volume
 ubimkvol /dev/ubi$UBIDEV -N RootFS -s $ROOT_SIZE
-
-dmesg -n 8
