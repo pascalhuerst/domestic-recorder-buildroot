@@ -2,6 +2,8 @@
 
 set -e
 
+dmesg -n 1
+
 UBIDEV=0
 UBIMTD=3
 ROOT_SIZE=115MiB
@@ -18,13 +20,4 @@ ubiattach /dev/ubi_ctrl -d $UBIDEV -m $UBIMTD
 # create the volume
 ubimkvol /dev/ubi$UBIDEV -N RootFS -s $ROOT_SIZE
 
-# mount it
-mount -t ubifs ubi:RootFS /mnt
-
-# unpack ...
-cd /mnt
-zcat /rootfs.tgz | tar -xf -
-
-cd /
-umount /mnt
-
+dmesg -n 8

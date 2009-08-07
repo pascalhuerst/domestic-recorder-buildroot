@@ -1,14 +1,13 @@
 #!/bin/sh
 
-UBIDEV=0
-UBIMTD=3
-ROOT_SIZE=115MiB
-
 source ../tests.inc
 TITLE="NANDFLASH"
 DIALOGOPTS="--title $TITLE"
 
-dialog_info "Flashing NAND. Please wait." $DIALOGOPTS
+(./init_flash || dialog_err "ERROR!" $DIALOGOPTS; exit 1) | \
+    /percent 2023 | \
+    dialog_progress "Initializing NAND flash. Please wait." $DIALOGOPTS
 
-./do_flash || (dialog_err "ERROR!" $DIALOGOPTS; exit 1)
-
+(./copy_rootfs || dialog_err "ERROR!" $DIALOGOPTS; exit 1) | \
+    /percent `cat /rootfs.tgz.numfiles` | \
+    dialog_progress "Copying files to NAND flash. Please wait." $DIALOGOPTS
