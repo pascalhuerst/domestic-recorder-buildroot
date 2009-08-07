@@ -13,13 +13,6 @@
 
 if test -z "$3"; then
 	echo "Usage: $0 <target> <platform> <base-rootfs-img> <target-rootfs-tgz>"
-	echo "target can be one of the following:"
-	echo "	remote-flash"
-	echo "	remote-init"
-	echo "	remote-final"
-	echo "	audioadapter-flash"
-	echo "	audioadapter-init"
-	echo "	audioadapter-final"
 	exit
 fi
 
