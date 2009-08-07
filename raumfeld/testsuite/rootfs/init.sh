@@ -30,6 +30,6 @@ chmod 755 /var/empty
 /etc/init.d/S50sshd start
 
 export TERM=xterm-color
-exec /bin/sh
 /start-test.sh
+exec /bin/sh
 
