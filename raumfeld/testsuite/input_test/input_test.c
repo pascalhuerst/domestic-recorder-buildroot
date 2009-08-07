@@ -165,14 +165,16 @@ static int open_input_dev(const char *name)
 	int i, fd;
 	char buf[128], tmp[128];
 
-	for (;;) {
+	for (i = 0; i < 128; i++) {
 		snprintf(tmp, sizeof(tmp), "/dev/input/event%d", i);
 		fd = open(tmp, O_RDONLY);
-		if (fd == -ENOENT)
-			break;
 
-		if (fd < 0)
-			continue;
+		if (fd < 0) {
+                        if (errno == -ENOENT)
+                                break;
+                        else
+                                continue;
+                }
 
 		if (ioctl(fd, EVIOCGNAME(sizeof(buf) - 1), buf) < 0) {
 			close(fd);
