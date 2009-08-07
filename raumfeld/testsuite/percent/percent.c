@@ -7,8 +7,8 @@
 
 int main(int argc, char **argv)
 {
-	int expected, r, count = 0, last_percent = -1;
-	char buf[8192];
+	int expected, count = 0, last_percent = -1;
+	char buf;
 
 	if (argc < 2) {
 		printf("Usage: %s <expected-lines>\n", argv[0]);
@@ -17,7 +17,10 @@ int main(int argc, char **argv)
 
 	expected = strtol(argv[1], NULL, 10);
 
-	while ((r = read(0, buf, sizeof(buf))) > 0) {
+	while (read(0, &buf, 1) == 1) {
+		if (buf != '\n' && buf != '\r')
+			continue;
+
 		count++;
 
 		if (expected) {
