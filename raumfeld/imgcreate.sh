@@ -61,6 +61,7 @@ cp -av raumfeld/testsuite/rootfs/* $tmpdir/
 
 # ext2_img has to be created in binaries/ temporarily. will be removed later.
 echo "exec /$target.sh" > $tmpdir/start-test.sh
+chmod a+x $tmpdir/start-test.sh
 
 # count entries in rootfs.tar
 tar -zf $tmpdir/rootfs.tgz -t | wc -l > $tmpdir/rootfs.tgz.numfiles
