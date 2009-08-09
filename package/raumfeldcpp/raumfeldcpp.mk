@@ -16,7 +16,7 @@ RAUMFELDCPP_CONF_OPT = \
 	--disable-explicit-deps \
 	--disable-glibtest
 
-RAUMFELDCPP_DEPENDENCIES = uclibc libsoup
+RAUMFELDCPP_DEPENDENCIES = uclibc libsoup raumfeld
 
 $(eval $(call AUTOTARGETS,package,raumfeldcpp))
 
