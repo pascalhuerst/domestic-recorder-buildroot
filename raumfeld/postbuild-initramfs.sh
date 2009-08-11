@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+# post-build.sh for the initramfs-arm target
 
 cp raumfeld/initramfs/initramfs.sh $1
 
