@@ -17,7 +17,7 @@ modprobe w1_ds2760.ko
 
 
 ############################################################
-WIRELESS_DEV=eth0
+WIRELESS_DEV=wlan0
 iwconfig $WIRELESS_DEV essid bugwerft
 iwconfig $WIRELESS_DEV rate 54M
 wpa_supplicant -Dwext -i$WIRELESS_DEV -c/etc/wpa_supplicant.conf -B
