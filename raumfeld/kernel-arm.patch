@@ -11426,7 +11426,7 @@ index 924e8ed..ae04d8a 100644
  		.ident = "ASUS P65UP5",
  		.matches = {
 diff --git a/drivers/input/touchscreen/eeti_ts.c b/drivers/input/touchscreen/eeti_ts.c
-index 3ab9222..c2d467d 100644
+index 3ab9222..9029bd3 100644
 --- a/drivers/input/touchscreen/eeti_ts.c
 +++ b/drivers/input/touchscreen/eeti_ts.c
 @@ -32,6 +32,7 @@
@@ -11502,15 +11502,6 @@ index 3ab9222..c2d467d 100644
  			  client->name, priv);
  	if (err) {
  		dev_err(&client->dev, "Unable to request touchscreen IRQ.\n");
-@@ -243,6 +259,8 @@ static int eeti_ts_resume(struct i2c_client *client)
- 	if (device_may_wakeup(&client->dev))
- 		disable_irq_wake(priv->irq);
- 
-+	schedule_work(&priv->work);
-+
- 	return 0;
- }
- #else
 diff --git a/drivers/isdn/mISDN/l1oip_core.c b/drivers/isdn/mISDN/l1oip_core.c
 index c3b661a..7e5f30d 100644
 --- a/drivers/isdn/mISDN/l1oip_core.c
@@ -20004,6 +19995,21 @@ index acef2a7..ad27c7d 100644
  #define IN_DEV_SOURCE_ROUTE(in_dev)	IN_DEV_ANDCONF((in_dev), \
  						       ACCEPT_SOURCE_ROUTE)
  #define IN_DEV_BOOTP_RELAY(in_dev)	IN_DEV_ANDCONF((in_dev), BOOTP_RELAY)
+diff --git a/include/linux/input/eeti_ts.h b/include/linux/input/eeti_ts.h
+new file mode 100644
+index 0000000..f875b31
+--- /dev/null
++++ b/include/linux/input/eeti_ts.h
+@@ -0,0 +1,9 @@
++#ifndef LINUX_INPUT_EETI_TS_H
++#define LINUX_INPUT_EETI_TS_H
++
++struct eeti_ts_platform_data {
++	unsigned int irq_active_high;
++};
++
++#endif /* LINUX_INPUT_EETI_TS_H */
++
 diff --git a/include/linux/input/matrix_keypad.h b/include/linux/input/matrix_keypad.h
 index 7964516..15d5903 100644
 --- a/include/linux/input/matrix_keypad.h
