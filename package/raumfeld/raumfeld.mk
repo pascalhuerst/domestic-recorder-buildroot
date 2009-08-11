@@ -14,6 +14,7 @@ RAUMFELD_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_GLIB)/bin/glib-genmarshal
 
 RAUMFELD_CONF_OPT = \
+	--localstatedir=/var	\
 	--enable-shared		\
 	--enable-static		\
 	--disable-explicit-deps \

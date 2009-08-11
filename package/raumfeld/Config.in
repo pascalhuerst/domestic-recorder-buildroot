@@ -1,23 +1,22 @@
 config BR2_PACKAGE_RAUMFELD
 	bool "raumfeld"
-	default n
-        select BR2_PACKAGE_GUPNP_AV
-        select BR2_PACKAGE_DBUS_LIB
+	select BR2_PACKAGE_GUPNP_AV
+	select BR2_PACKAGE_DBUS_LIB
 	help
-          raumfeld is a utility library for the Raumfeld software stack
+	  raumfeld is a utility library for the Raumfeld software stack
 
-          http://www.raumfeld.com/
+	  http://www.raumfeld.com/
 
 config BR2_PACKAGE_RAUMFELD_REPOSITORY
-        string
-        default "sftp://bzr.internal/bzr"
-        depends on BR2_PACKAGE_RAUMFELD
+	string "raumfeld bazaar repository"
+	default "sftp://bzr.internal/bzr"
+	depends on BR2_PACKAGE_RAUMFELD
 	help
-          location of the raumfeld bazaar repository 
+	  location of the raumfeld bazaar repository 
 
 config BR2_PACKAGE_RAUMFELD_BRANCH
-        string
-        default "trunk"
-        depends on BR2_PACKAGE_RAUMFELD
+	string "raumfeld branch"
+	default "trunk"
+	depends on BR2_PACKAGE_RAUMFELD
 	help
-          branch to checkout from the bazaar repository
+	  branch to checkout from the bazaar repository

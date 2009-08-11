@@ -1,17 +1,16 @@
 config BR2_PACKAGE_RAUMFELDCPP
 	bool "raumfeldcpp"
-	default n
-        depends on BR2_PACKAGE_RAUMFELD
+	depends on BR2_PACKAGE_RAUMFELD
 	select BR2_INSTALL_LIBSTDCPP
-        select BR2_PACKAGE_LIBSOUP
+	select BR2_PACKAGE_LIBSOUP
 	help
-          raumfeldcpp is a C++ utility library for the Raumfeld software stack
+	  raumfeldcpp is a C++ utility library for the Raumfeld software stack
 
-          http://www.raumfeld.com/
+	  http://www.raumfeld.com/
 
 config BR2_PACKAGE_RAUMFELDCPP_BRANCH
-        string
-        default "trunk"
-        depends on BR2_PACKAGE_RAUMFELDCPP
+	string "raumfeldcpp branch"
+	default "trunk"
+	depends on BR2_PACKAGE_RAUMFELDCPP
 	help
-          branch to checkout from the bazaar repository
+	  branch to checkout from the bazaar repository
