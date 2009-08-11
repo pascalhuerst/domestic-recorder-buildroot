@@ -1,6 +1,5 @@
 config BR2_PACKAGE_SLY_TOOLKIT
 	bool "sly-toolkit"
-	default n
         depends on BR2_PACKAGE_RAUMFELD
         select BR2_PACKAGE_DIRECTFB
         select BR2_PACKAGE_LIBGLIB2

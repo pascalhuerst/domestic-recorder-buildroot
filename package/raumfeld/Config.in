@@ -1,6 +1,5 @@
 config BR2_PACKAGE_RAUMFELD
 	bool "raumfeld"
-	default n
         select BR2_PACKAGE_GUPNP_AV
         select BR2_PACKAGE_DBUS_LIB
 	help

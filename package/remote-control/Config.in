@@ -1,6 +1,5 @@
 config BR2_PACKAGE_REMOTE_CONTROL
 	bool "remote-control"
-	default n
         depends on BR2_PACKAGE_RAUMFELD
         select BR2_PACKAGE_SLY_TOOLKIT
 	help
