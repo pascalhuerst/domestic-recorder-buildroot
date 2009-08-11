@@ -1,15 +1,15 @@
 config BR2_PACKAGE_REMOTE_CONTROL
 	bool "remote-control"
-        depends on BR2_PACKAGE_RAUMFELD
-        select BR2_PACKAGE_SLY_TOOLKIT
+	depends on BR2_PACKAGE_RAUMFELD
+	select BR2_PACKAGE_SLY_TOOLKIT
 	help
-          The remote control software
+	  The remote control software
 
-          http://www.raumfeld.com/
+	  http://www.raumfeld.com/
 
 config BR2_PACKAGE_REMOTE_CONTROL_BRANCH
-        string
-        default "trunk"
-        depends on BR2_PACKAGE_REMOTE_CONTROL
+	string "remote-control branch"
+	default "trunk"
+	depends on BR2_PACKAGE_REMOTE_CONTROL
 	help
-          branch to checkout from the bazaar repository
+	  branch to checkout from the bazaar repository
