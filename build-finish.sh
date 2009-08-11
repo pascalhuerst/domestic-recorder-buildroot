@@ -11,6 +11,8 @@ case $1 in
 		;;
 	imgrootfs-arm)
 		;;
+	audioadapter-arm)
+		;;
 	remotecontrol-arm)
 		;;
 	*)
@@ -32,6 +34,13 @@ case $1 in
 		/sbin/resize2fs binaries/uclibc/imgrootfs.geode.ext2 500M
 		;;
 
+	audioadapter-arm)
+		for t in flash init final; do
+			raumfeld/imgcreate.sh $1-$t arm \
+				binaries/uclibc/imgrootfs.arm.ext2 \
+				binaries/uclibc/rootfs-audioadapter.arm.tar.gz
+		done
+		;;
 	remotecontrol-arm)
 		for t in flash init final; do
 			raumfeld/imgcreate.sh $1-$t arm \
