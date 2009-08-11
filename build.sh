@@ -11,6 +11,8 @@ case $1 in
 		;;
 	imgrootfs-arm)
 		;;
+	audioadapter-arm)
+		;;
 	remotecontrol-arm)
 		;;
 
@@ -18,7 +20,7 @@ case $1 in
 		for x in \
 			devel-arm devel-geode \
 			initramfs-arm imgrootfs-arm \
-			remotecontrol-arm; do
+			audioadapter-arm remotecontrol-arm; do
 
 			cp raumfeld/br2-$x.config .config
 			/usr/bin/make oldconfig
