@@ -36,8 +36,7 @@ esac
 cp raumfeld/br2-$1.config .config
 
 # is that really needed?
-find . -name config.cache -exec rm {} \;
-rm -fr build_arm project_build_arm
+rm -fr build_arm project_build_arm toolchain_build_arm
 
 make oldconfig
 make
