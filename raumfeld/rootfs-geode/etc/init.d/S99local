@@ -3,3 +3,7 @@
 
 # Lower the display brightness
 # echo 10 > /sys/devices/platform/pxa27x-pwm.0/pwm-backlight.0/backlight/pwm-backlight.0/brightness
+mkir -p /Music
+mount /dev/hda3 /Music
+cd /raumfeld/master-process
+./raumfeld-master-sh.sh&
