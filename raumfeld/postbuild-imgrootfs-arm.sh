@@ -10,8 +10,10 @@ cp -av raumfeld/rootfs-arm/lib $1
 
 echo "Creating SSH host keys..."
 
-ssh-keygen -q -t dsa -N "" -C "Raumfeld factory tests" -f $1/etc/ssh_host_dsa
-ssh-keygen -q -t rsa -N "" -C "Raumfeld factory tests" -f $1/etc/ssh_host_rsa
+SSH_KEYGEN="ssh-keygen -q -N \"\" -C \"Raumfeld factory tests\"" 
+
+$SSH_KEYGEN -t dsa -f $1/etc/ssh_host_dsa_key
+$SSH_KEYGEN -t rsa -f $1/etc/ssh_host_rsa_key
 
 
 echo "Building and installing test binaries..."
