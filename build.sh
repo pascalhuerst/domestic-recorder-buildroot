@@ -32,7 +32,7 @@ case $1 in
 
 	*)
 		echo "unknown target '$1'. bummer."
-		exit -1
+		exit 1
 esac
 
 cp raumfeld/br2-$1.config .config
