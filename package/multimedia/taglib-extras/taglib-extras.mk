@@ -3,7 +3,7 @@
 # taglib-extras
 #
 #############################################################
-TAGLIB_EXTRAS_VERSION = 0.1.4
+TAGLIB_EXTRAS_VERSION = 0.1.6
 TAGLIB_EXTRAS_SOURCE = taglib-extras-$(TAGLIB_EXTRAS_VERSION).tar.gz
 TAGLIB_EXTRAS_SITE = http://kollide.net/~jefferai
 
