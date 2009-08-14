@@ -4212,10 +4212,10 @@ index 01a819f..ffe382c 100644
  obj-$(CONFIG_FB_AU1100)		  += au1100fb.o
 diff --git a/drivers/video/pxa3xx-gcu.c b/drivers/video/pxa3xx-gcu.c
 new file mode 100644
-index 0000000..224faf7
+index 0000000..be3049b
 --- /dev/null
 +++ b/drivers/video/pxa3xx-gcu.c
-@@ -0,0 +1,591 @@
+@@ -0,0 +1,586 @@
 +/*
 + *  pxa3xx-gc.c - Linux kernel module for PXA3xx graphics controllers
 + *
@@ -4334,18 +4334,13 @@ index 0000000..224faf7
 +
 +#define QPRINT(priv, level, msg)					\
 +	do {								\
-+		struct timeval tv;					\
 +		struct pxa3xx_gcu_shared *shared = priv->shared;	\
 +		u32 base = gc_readl(priv, REG_GCRBBR);			\
 +									\
-+		do_gettimeofday(&tv);					\
-+									\
-+		printk(level "%ld.%03ld.%03ld - %-17s: %-21s (%s, "	\
++		printk(level "%-17s: %-21s (%s, "			\
 +			"hw %5d-%5d, next %5d-%5d, %svalid, STATUS "	\
 +			"0x%02lx, B 0x%08lx [%ld], E %5ld, H %5ld, "	\
 +			"T %5ld)\n",					\
-+			tv.tv_sec - priv->base_time.tv_sec,		\
-+			tv.tv_usec / 1000, tv.tv_usec % 1000,		\
 +			__func__, msg,					\
 +			shared->hw_running ? "running" : "   idle",	\
 +			shared->hw_start,				\
