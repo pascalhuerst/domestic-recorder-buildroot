@@ -8,21 +8,74 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/uio.h>
+#include <sys/mman.h>
 #include <linux/input.h>
 
-#define TOUCH_XFIELDS	8
-#define TOUCH_YFIELDS	3
+#define FB_W		(480)
+#define FB_H		(272)
+#define FB_DEPTH	(sizeof(short))
+#define FB_SIZE		(FB_W * FB_H * FB_DEPTH)
+
+#define TOUCH_XFIELDS	12
+#define TOUCH_YFIELDS	5
+#define TOUCH_FIELDS	(TOUCH_XFIELDS * TOUCH_YFIELDS)
 #define TOUCH_MAX	4095
+
+static void *fb_mem;
+
+static int fb_init(void)
+{
+	int fd = open("/dev/fb0", O_RDWR);
+	if (fd < 0)
+		return fd;
+
+	fb_mem = mmap(NULL, FB_SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
+	if (fb_mem == (void *) -1)
+		return -1;
+
+	memset(fb_mem, 0, FB_SIZE);
+	return 0;
+}
+
+static inline void fb_set_pixel(int x, int y, int v)
+{
+	unsigned short *m = fb_mem;
+
+	if (x >= FB_W || y >= FB_H || x < 0 || y < 0)
+		return;
+
+	m[((y * FB_W) + x)] = v;
+}
+
+static void fb_check_field(int fx, int fy, int v)
+{
+	int rw = (FB_W / TOUCH_XFIELDS);
+	int rh = (FB_H / TOUCH_YFIELDS);
+	int rx = rw * fx;
+	int ry = rh * fy;
+	int x, y;
+
+	for (x = rx; x < rx + rw; x++)
+		for (y = ry; y < ry + rh; y++)
+			fb_set_pixel(x, y, v ? 0xff00 : 0x00ff);
+}
 
 static int test_touch(int fd)
 {
-	int ret, x, y, i, last_x = -1, last_y = -1;
+	int ret, x, y, last_x = -1, last_y = -1;
 	struct input_event ev;
 	int cnt[TOUCH_XFIELDS][TOUCH_YFIELDS];
 
-	/* require to see at least one event in each 10x4 fields */
+	ret = fb_init();
+	if (ret < 0)
+		return ret;
+
+	/* require to see at least one event in each TOUCH_XFIELDS x TOUCH_YFIELDS fields */
 
 	memset(cnt, 0, sizeof(cnt));
+	for (x = 0; x < TOUCH_XFIELDS; x++)
+		for (y = 0; y < TOUCH_YFIELDS; y++)
+			fb_check_field(x, y, 0);
 
 	for (;;) {
 		int total = 0;
@@ -50,18 +103,18 @@ static int test_touch(int fd)
 		if (x >= TOUCH_XFIELDS || y >= TOUCH_YFIELDS)
 			continue;
 
-		cnt[x][y]++;
+		fb_check_field(x, y, 1);
+		cnt[x][y] = 1;
 		last_x = last_y = -1;
 
+		for (x = 0; x < TOUCH_XFIELDS; x++)
+			for (y = 0; y < TOUCH_YFIELDS; y++)
+				total += cnt[x][y];
 
-		for (i = 0; i < sizeof(cnt) / sizeof(cnt[0]); i++)
-			if (cnt[i][0])
-				total++;
-
-		printf("%d\n", (total * 100) / i);
+		printf("%d\n", (total * 100) / TOUCH_FIELDS);
 		fflush(stdout);
 
-		if (total == i)
+		if (total == TOUCH_FIELDS)
 			break;
 	}
 
@@ -114,6 +167,30 @@ static int test_accel(int fd, int thresh)
 	return 0;
 }
 
+static int test_key(int fd, int code)
+{
+	struct input_event ev;
+	int ret, wanted_state = 1;
+
+	for (;;) {
+		ret = read(fd, &ev, sizeof(ev));
+		if (ret < 0)
+			return ret;
+
+		if (ev.type != EV_KEY || ev.code != code)
+			continue;
+
+		if (ev.value == wanted_state) {
+			if (wanted_state)
+				wanted_state = 0;
+			else
+				break;
+		}
+	}
+
+	return 0;
+}
+
 #define ACCEL_SIMPLE_THRESH	20
 #define ACCEL_FULL_THRESH	1000
 
@@ -125,6 +202,36 @@ static int test_accel_simple(int fd)
 static int test_accel_full(int fd)
 {
 	return test_accel(fd, ACCEL_FULL_THRESH);
+}
+
+static int test_key_1(int fd)
+{
+	return test_key(fd, KEY_F1);
+}
+
+static int test_key_2(int fd)
+{
+	return test_key(fd, KEY_F2);
+}
+
+static int test_key_3(int fd)
+{
+	return test_key(fd, KEY_F3);
+}
+
+static int test_key_rescue(int fd)
+{
+	return test_key(fd, KEY_F4);
+}
+
+static int test_dock_detect(int fd)
+{
+	return test_key(fd, KEY_F5);
+}
+
+static int test_key_power(int fd)
+{
+	return test_key(fd, KEY_F6);
 }
 
 static struct test_func {
@@ -157,6 +264,42 @@ static struct test_func {
 		.dev	= "ST LIS3LV02DL Accelerometer",
 		.proc	= test_accel_full
 	},
+	{
+		.name	= "key_1",
+		.desc	= "\tkey_1 test",
+		.dev	= "gpio-keys",
+		.proc	= test_key_1
+	},
+	{
+		.name	= "key_2",
+		.desc	= "\tkey_2 test",
+		.dev	= "gpio-keys",
+		.proc	= test_key_2
+	},
+	{
+		.name	= "key_3",
+		.desc	= "\tkey_3 test",
+		.dev	= "gpio-keys",
+		.proc	= test_key_3
+	},
+	{
+		.name	= "key_rescue",
+		.desc	= "rescue_key test",
+		.dev	= "gpio-keys",
+		.proc	= test_key_rescue
+	},
+	{
+		.name	= "key_power",
+		.desc	= "key_power test",
+		.dev	= "gpio-keys",
+		.proc	= test_key_power
+	},
+	{
+		.name	= "dock_detect",
+		.desc	= "dock detect test",
+		.dev	= "gpio-keys",
+		.proc	= test_dock_detect
+	},
 	{ .name = NULL }
 };
 
@@ -170,11 +313,11 @@ static int open_input_dev(const char *name)
 		fd = open(tmp, O_RDONLY);
 
 		if (fd < 0) {
-                        if (errno == -ENOENT)
-                                break;
-                        else
-                                continue;
-                }
+			if (errno == -ENOENT)
+				break;
+			else
+				continue;
+		}
 
 		if (ioctl(fd, EVIOCGNAME(sizeof(buf) - 1), buf) < 0) {
 			close(fd);
