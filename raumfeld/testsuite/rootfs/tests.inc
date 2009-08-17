@@ -1,7 +1,7 @@
 RELPATH=../
 INPUT_TEST=/input_test
 TEST_HOST_ETHERNET=10.0.0.1
-TEST_HOST_WIRELESS=192.168.1.51
+TEST_HOST_WIRELESS=192.168.23.1
 
 function dialog_msg() {
 	text=$1; shift
