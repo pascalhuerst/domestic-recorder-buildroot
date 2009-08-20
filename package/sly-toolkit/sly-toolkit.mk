@@ -20,7 +20,7 @@ SLY_TOOLKIT_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-SLY_TOOLKIT_DEPENDENCIES = uclibc host-pkgconfig libglib2 directfb
+SLY_TOOLKIT_DEPENDENCIES = host-pkgconfig libglib2 directfb
 
 $(eval $(call AUTOTARGETS,package,sly-toolkit))
 

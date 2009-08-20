@@ -19,7 +19,7 @@ REMOTE_CONTROL_CONF_OPT = \
 	--disable-explicit-deps \
 	--disable-glibtest
 
-REMOTE_CONTROL_DEPENDENCIES = uclibc host-pkgconfig raumfeld sly-toolkit
+REMOTE_CONTROL_DEPENDENCIES = host-pkgconfig raumfeld sly-toolkit
 
 $(eval $(call AUTOTARGETS,package,remote-control))
 

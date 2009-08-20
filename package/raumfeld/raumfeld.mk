@@ -21,7 +21,7 @@ RAUMFELD_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-RAUMFELD_DEPENDENCIES = uclibc host-pkgconfig dbus-glib gupnp-av
+RAUMFELD_DEPENDENCIES = host-pkgconfig dbus-glib gupnp-av
 
 $(eval $(call AUTOTARGETS,package,raumfeld))
 
