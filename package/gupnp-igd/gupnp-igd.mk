@@ -22,7 +22,7 @@ GUPNP_IGD_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-GUPNP_IGD_DEPENDENCIES = uclibc host-pkgconfig gupnp
+GUPNP_IGD_DEPENDENCIES = host-pkgconfig gupnp
 
 $(eval $(call AUTOTARGETS,package,gupnp-igd))
 

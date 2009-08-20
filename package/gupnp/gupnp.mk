@@ -22,6 +22,6 @@ GUPNP_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-GUPNP_DEPENDENCIES = uclibc host-pkgconfig libuuid libglib2 libxml2 gssdp
+GUPNP_DEPENDENCIES = host-pkgconfig libuuid libglib2 libxml2 gssdp
 
 $(eval $(call AUTOTARGETS,package,gupnp))

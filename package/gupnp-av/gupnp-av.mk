@@ -22,6 +22,6 @@ GUPNP_AV_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-GUPNP_AV_DEPENDENCIES = uclibc host-pkgconfig gupnp
+GUPNP_AV_DEPENDENCIES = host-pkgconfig gupnp
 
 $(eval $(call AUTOTARGETS,package,gupnp-av))
