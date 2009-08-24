@@ -43,6 +43,18 @@ static inline void fb_set_pixel(int x, int y, int v)
 	m[((y * FB_W) + x)] = v;
 }
 
+static void draw_bar(int percent, int x, int y, int w, int h, int color)
+{
+	int cx, cy;
+
+	if (percent == 0)
+		return;
+
+	for (cx = x; cx < x + ((w * percent) / 100); cx++)
+		for (cy = y; cy < y + h; cy++)
+			fb_set_pixel(cx, cy, color);
+}
+
 int main(int argc, char **argv)
 {
 	int x, y, w, h, color, base_fd, fb_fd, ret;
@@ -80,14 +92,8 @@ int main(int argc, char **argv)
 	close(base_fd);
 
 	while (fgets(buf, sizeof(buf), stdin)) {
-		int cx, cy, percent = strtol(buf, NULL, 10);
-
-		if (percent == 0)
-			continue;
-
-		for (cx = x; cx < x + ((w * percent) / 100); cx++)
-			for (cy = y; cy < y + h; cy++)
-				fb_set_pixel(cx, cy, color);
+		int percent = strtol(buf, NULL, 10);
+		draw_bar(percent, x, y, w, h, color);
 	}
 
 	return 0;
