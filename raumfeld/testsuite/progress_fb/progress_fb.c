@@ -63,8 +63,8 @@ int main(int argc, char **argv)
 	if (argc < 7) {
 		printf("Usage: %s <base-img> <x> <y> <w> <h> <color>\n", argv[0]);
 		printf("\t<base-img>		A raw file to be sent to the framebuffer as background image\n");
-		printf("\t<x>, <y>, <w>, <h>	The coordinated for the percent bar\n");
-		printf("\t<color>		\tThe color to use, in hex, %dbit\n", FB_DEPTH * 8);
+		printf("\t<x>, <y>, <w>, <h>	The coordinates for the percent bar\n");
+		printf("\t<color>		\tThe color to paint with, in hex, %dbit\n", FB_DEPTH * 8);
 		return 1;
 	}
 
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
 	base_fd = open(base_img, O_RDONLY);
 	if (base_fd < 0) {
-		printf("Unable to open %s: ", argv[1]);
+		printf("Unable to open %s: ", base_img);
 		perror("open");
 		return 3;
 	}
