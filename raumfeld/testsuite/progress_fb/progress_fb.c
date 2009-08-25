@@ -3,12 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include <poll.h>
 #include <unistd.h>
 #include <string.h>
-#include <errno.h>
 #include <sys/types.h>
-#include <sys/uio.h>
 #include <sys/mman.h>
 
 #define FB_W		(480)
@@ -50,8 +47,8 @@ static void draw_bar(int percent, int x, int y, int w, int h, int color)
 	if (percent == 0)
 		return;
 
-	for (cx = x; cx < x + ((w * percent) / 100); cx++)
-		for (cy = y; cy < y + h; cy++)
+	for (cx = x; cx < x + w; cx++)
+		for (cy = y; cy < y + ((h * percent + 50) / 100); cy++)
 			fb_set_pixel(cx, cy, color);
 }
 
