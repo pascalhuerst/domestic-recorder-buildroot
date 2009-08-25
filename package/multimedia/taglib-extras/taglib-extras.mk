@@ -16,6 +16,7 @@ $(DL_DIR)/$(TAGLIB_EXTRAS_SOURCE):
 
 $(TAGLIB_EXTRAS_DIR)/.unpacked: $(DL_DIR)/$(TAGLIB_EXTRAS_SOURCE)
 	$(ZCAT) $(DL_DIR)/$(TAGLIB_EXTRAS_SOURCE) | tar -C $(BUILD_DIR) $(TAR_OPTIONS) -
+	toolchain/patch-kernel.sh $(TAGLIB_EXTRAS_DIR) package/multimedia/taglib-extras taglib-extras-\*patch; \
 	touch $@
 
 $(TAGLIB_EXTRAS_DIR)/.configured: $(TAGLIB_EXTRAS_DIR)/.unpacked
