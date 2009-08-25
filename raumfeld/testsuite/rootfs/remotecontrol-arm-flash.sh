@@ -6,7 +6,7 @@ TITLE="NANDFLASH"
 DIALOGOPTS="--title $TITLE"
 
 BASE="/raumfeld-logo.raw"
-COLOR="0"
+COLOR="ffff"
 
 (tests/init_flash || dialog_err "ERROR!" $DIALOGOPTS; exit 1) | \
     /percent 2023 | \
