@@ -1,0 +1,9 @@
+config BR2_PACKAGE_RAUMFELD_RENDERER
+	bool "renderer"
+	select BR2_PACKAGE_RAUMFELD
+	select BR2_PACKAGE_GSTREAMER
+	help
+	  raumfeld renderer
+
+	  http://www.raumfeld.com/
+

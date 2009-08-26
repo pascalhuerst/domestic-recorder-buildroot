@@ -1,0 +1,9 @@
+config BR2_PACKAGE_RAUMFELD_STREAM_RELAY
+	bool "stream-relay"
+	select BR2_PACKAGE_RAUMFELD
+	select BR2_PACKAGE_RAUMFELDCPP
+	help
+	  raumfeld stream relay
+
+	  http://www.raumfeld.com/
+

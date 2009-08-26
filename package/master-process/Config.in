@@ -1,0 +1,8 @@
+config BR2_PACKAGE_RAUMFELD_MASTER_PROCESS
+	bool "master-process"
+	select BR2_PACKAGE_RAUMFELD
+	help
+	  raumfeld master-process
+
+	  http://www.raumfeld.com/
+
