@@ -21,7 +21,7 @@ REMOTE_CONTROL_CONF_OPT = \
 
 REMOTE_CONTROL_DEPENDENCIES = host-pkgconfig libraumfeld sly-toolkit
 
-$(eval $(call AUTOTARGETS,package,remote-control))
+$(eval $(call AUTOTARGETS,package/raumfeld,remote-control))
 
 $(REMOTE_CONTROL_DIR)/.bzr:
 	if ! test -d $(REMOTE_CONTROL_DIR)/.bzr; then \

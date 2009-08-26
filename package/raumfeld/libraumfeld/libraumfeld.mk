@@ -23,7 +23,7 @@ LIBRAUMFELD_CONF_OPT = \
 
 LIBRAUMFELD_DEPENDENCIES = host-pkgconfig dbus-glib gupnp-av
 
-$(eval $(call AUTOTARGETS,package,libraumfeld))
+$(eval $(call AUTOTARGETS,package/raumfeld,libraumfeld))
 
 $(LIBRAUMFELD_DIR)/.bzr:
 	if ! test -d $(LIBRAUMFELD_DIR)/.bzr; then \

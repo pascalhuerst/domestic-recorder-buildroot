@@ -18,7 +18,7 @@ LIBRAUMFELDCPP_CONF_OPT = \
 
 LIBRAUMFELDCPP_DEPENDENCIES = libsoup libraumfeld
 
-$(eval $(call AUTOTARGETS,package,libraumfeldcpp))
+$(eval $(call AUTOTARGETS,package/raumfeld,libraumfeldcpp))
 
 $(LIBRAUMFELDCPP_DIR)/.bzr:
 	if ! test -d $(LIBRAUMFELDCPP_DIR)/.bzr; then \
