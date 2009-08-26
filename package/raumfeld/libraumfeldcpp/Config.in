@@ -8,10 +8,3 @@ config BR2_PACKAGE_LIBRAUMFELDCPP
           stack
 
 	  http://www.raumfeld.com/
-
-config BR2_PACKAGE_LIBRAUMFELDCPP_BRANCH
-	string "libraumfeldcpp branch"
-	default "trunk"
-	depends on BR2_PACKAGE_LIBRAUMFELDCPP
-	help
-	  branch to checkout from the bazaar repository

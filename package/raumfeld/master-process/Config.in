@@ -5,10 +5,3 @@ config BR2_PACKAGE_RAUMFELD_MASTER_PROCESS
 	  raumfeld master-process
 
 	  http://www.raumfeld.com/
-
-config BR2_PACKAGE_RAUMFELD_MASTER_PROCESS_BRANCH
-	string "master-process branch"
-	default "trunk"
-	depends on BR2_PACKAGE_RAUMFELD_MASTER_PROCESS
-	help
-	  branch to checkout from the bazaar repository

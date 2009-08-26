@@ -6,10 +6,3 @@ config BR2_PACKAGE_REMOTE_CONTROL
 	  The remote control software
 
 	  http://www.raumfeld.com/
-
-config BR2_PACKAGE_REMOTE_CONTROL_BRANCH
-	string "remote-control branch"
-	default "trunk"
-	depends on BR2_PACKAGE_REMOTE_CONTROL
-	help
-	  branch to checkout from the bazaar repository

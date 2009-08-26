@@ -6,6 +6,12 @@ config BR2_PACKAGE_RAUMFELD_REPOSITORY
 	help
 	  location of the raumfeld bazaar repository 
 
+config BR2_PACKAGE_RAUMFELD_BRANCH
+	string "raumfeld bazaar branch"
+	default "trunk"
+	help
+	  branch to checkout from the bazaar repository
+
 source "package/raumfeld/libraumfeld/Config.in"
 source "package/raumfeld/libraumfeldcpp/Config.in"
 source "package/raumfeld/sly-toolkit/Config.in"

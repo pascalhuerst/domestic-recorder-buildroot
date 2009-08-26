@@ -8,4 +8,3 @@ config BR2_PACKAGE_RAUMFELD_META_SERVER
 	  raumfeld meta-server
 
 	  http://www.raumfeld.com/
-
