@@ -1,22 +1,19 @@
-config BR2_PACKAGE_RAUMFELD
-	bool "raumfeld"
-	select BR2_PACKAGE_GUPNP_AV
-	select BR2_PACKAGE_DBUS_LIB
-	help
-	  raumfeld is a utility library for the Raumfeld software stack
-
-	  http://www.raumfeld.com/
+menu "Raumfeld software"
 
 config BR2_PACKAGE_RAUMFELD_REPOSITORY
 	string "raumfeld bazaar repository"
 	default "sftp://bzr.internal/bzr"
-	depends on BR2_PACKAGE_RAUMFELD
 	help
 	  location of the raumfeld bazaar repository 
 
-config BR2_PACKAGE_RAUMFELD_BRANCH
-	string "raumfeld branch"
-	default "trunk"
-	depends on BR2_PACKAGE_RAUMFELD
-	help
-	  branch to checkout from the bazaar repository
+source "package/raumfeld/libraumfeld/Config.in"
+source "package/raumfeld/libraumfeldcpp/Config.in"
+source "package/raumfeld/sly-toolkit/Config.in"
+source "package/raumfeld/remote-control/Config.in"
+source "package/raumfeld/master-process/Config.in"
+source "package/raumfeld/p0-renderer/Config.in"
+source "package/raumfeld/p0-timeserver/Config.in"
+source "package/raumfeld/stream-relay/Config.in"
+source "package/raumfeld/meta-server/Config.in"
+endmenu
+

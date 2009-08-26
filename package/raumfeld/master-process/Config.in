@@ -1,6 +1,6 @@
 config BR2_PACKAGE_RAUMFELD_MASTER_PROCESS
 	bool "master-process"
-	select BR2_PACKAGE_RAUMFELD
+	select BR2_PACKAGE_LIBRAUMFELD
 	help
 	  raumfeld master-process
 

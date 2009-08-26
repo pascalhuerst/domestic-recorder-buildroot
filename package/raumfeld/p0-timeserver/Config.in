@@ -1,6 +1,6 @@
 config BR2_PACKAGE_RAUMFELD_TIMESERVER
 	bool "timeserver"
-	select BR2_PACKAGE_RAUMFELD
+	select BR2_PACKAGE_LIBRAUMFELD
 	help
 	  raumfeld timeserver
 

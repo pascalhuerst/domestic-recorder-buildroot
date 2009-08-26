@@ -426,11 +426,7 @@ source "package/java/Config.in"
 # various games packages
 source "package/games/Config.in"
 
-menu "Raumfeld software"
+# Raumfeld software
 source "package/raumfeld/Config.in"
-source "package/raumfeldcpp/Config.in"
-source "package/sly-toolkit/Config.in"
-source "package/remote-control/Config.in"
-endmenu
 
 endmenu

@@ -22,6 +22,7 @@ case $1 in
 			initramfs-arm imgrootfs-arm \
 			audioadapter-arm remotecontrol-arm; do
 
+                        echo "updating config for $x ..."
 			cp raumfeld/br2-$x.config .config
 			/usr/bin/make oldconfig
 			cp .config raumfeld/br2-$x.config
