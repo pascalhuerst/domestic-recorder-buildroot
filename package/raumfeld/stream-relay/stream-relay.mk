@@ -39,7 +39,7 @@ $(TARGET_DIR)/$(STREAM_RELAY_BINARY): $(STAGING_DIR)/$(STREAM_RELAY_BINARY)
 	$(MAKE) -C $(STREAM_RELAY_DIR) CROSS=$(STREAM_RELAY_CROSS) DEST=$(TARGET_DIR)/raumfeld
 	$(STRIPCMD) $(STRIP_STRIP_UNNEEDED) $(TARGET_DIR)/$(STREAM_RELAY_BINARY)
 
-stream-relay: uclibc host-pkgconfig raumfeld raumfeldcpp flac libvorbis ffmpeg libmms $(TARGET_DIR)/$(STREAM_RELAY_BINARY)
+stream-relay: $(STREAM_RELAY_DEPENDENCIES) $(TARGET_DIR)/$(STREAM_RELAY_BINARY)
 
 stream-relay-clean:
 	rm -f $(STAGING_DIR)/$(STREAM_RELAY_TARGET_DIR)
