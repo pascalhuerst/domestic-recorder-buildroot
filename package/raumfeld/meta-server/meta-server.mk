@@ -8,7 +8,7 @@ META_SERVER_DIR:=$(BUILD_DIR)/meta-server-$(META_SERVER_VERSION)
 META_SERVER_TARGET_DIR:=raumfeld/meta-server
 META_SERVER_BINARY:=$(META_SERVER_TARGET_DIR)/meta-server
 
-META_SERVER_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp sqlite3 taglib taglib-extras
+META_SERVER_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp sqlite taglib taglib-extras
 
 ifeq ($(ARCH),arm)
 META_SERVER_CROSS=ARM
