@@ -1,4 +1,4 @@
 #!/bin/sh
-#
 
-remote-control --use-zones > /var/log/remote-control.log 2>&1 &
+remote-control.sh &
+
