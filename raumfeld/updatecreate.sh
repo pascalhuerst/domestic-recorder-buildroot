@@ -42,7 +42,7 @@ cat > $update_dir/$hardwareid.updates << __EOF__
 [$shasum]
 	description=Software update for $target
 	num_files=$numfiles
-	hardware=$hardwarenum
+	hardware=$hardwareid
 	version=$version
 
 __EOF__
