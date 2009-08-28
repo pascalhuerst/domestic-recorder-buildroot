@@ -9,7 +9,8 @@ if [ -z "$targz" ]; then
 fi
 
 numfiles=$(tar -f $targz -zt | wc -l)
-version=$(git describe --tags)
+git_version=$(git describe --tags)
+version=${git_version#raumfeld-}
 shasum=$(sha256sum $targz | cut -f1 -d' ')
 privatekey=raumfeld/rsa-private.key
 update_dir=raumfeld/updates/$target/
