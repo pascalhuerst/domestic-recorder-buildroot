@@ -15,6 +15,8 @@ privatekey=raumfeld/rsa-private.key
 update_dir=raumfeld/updates/$target/
 
 # map target name to hardware ID
+# keep this in sync with the enum in libraumfeld!
+
 case $target in
 	remotecontrol-arm)
 		hardwareid=1
@@ -28,14 +30,15 @@ case $target in
 		;;
 esac
 
-# only one update per target for the time being, so purge everything
+# only one update per target for the time being.
+
 rm -fr $update_dir
 mkdir -p $update_dir
 
 cp $targz $update_dir/$shasum
 openssl dgst -sha256 -sign $privatekey -out $update_dir/$shasum.sign $update_dir/$shasum
 
-cat > $update_dir/$shasum.description << __EOF__
+cat > $update_dir/$hardwareid.updates << __EOF__
 [$shasum]
 	description=Software update for $target
 	num_files=$numfiles
