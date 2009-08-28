@@ -11,6 +11,7 @@ fi
 numfiles=$(tar -f $targz -zt | wc -l)
 git_version=$(git describe --tags)
 version=${git_version#raumfeld-}
+buildnumber=$(cat build_number)
 shasum=$(sha256sum $targz | cut -f1 -d' ')
 privatekey=raumfeld/rsa-private.key
 update_dir=raumfeld/updates/$target/
@@ -41,10 +42,10 @@ openssl dgst -sha256 -sign $privatekey -out $update_dir/$shasum.sign $update_dir
 
 cat > $update_dir/$hardwareid.updates << __EOF__
 [$shasum]
-	description=Software update for $target
+	description=Software update ($version) for $target
 	num_files=$numfiles
 	hardware=$hardwareid
-	version=$version
+	version=$buildnumber
 
 __EOF__
 

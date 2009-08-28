@@ -2,6 +2,19 @@
 
 set -e
 
+# obtain new build number
+PROJECT_NAME=raumfeld-build-all
+USER=$(id)
+wget -q -O- "http://buildcontrol.caiaq.de/new.php?mode=dump&project=$PROJECT_NAME&username=$USER" > build_number
+
+git_version=$(git describe --tags)
+version=${git_version#raumfeld-}
+buildnumber=$(cat build_number)
+versionstr="$buildnumber ($version)"
+
+echo $versionstr > raumfeld/rootfs-audioadapter-arm/etc/raumfeld-version
+echo $versionstr > raumfeld/rootfs-remotecontrol-arm/etc/raumfeld-version
+
 # initramfs and imgrootfs is needed to build before the other targets,
 # so build them first
 ./build.sh initramfs-arm
