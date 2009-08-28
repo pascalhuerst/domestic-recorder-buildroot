@@ -11,3 +11,7 @@ set -e
 ./build.sh remotecontrol-arm
 # add others here ...
 
+
+# this puts together all created updates and copies them to the update server
+raumfeld/consolidate-updates.sh
+

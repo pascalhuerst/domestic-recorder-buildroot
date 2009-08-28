@@ -40,6 +40,9 @@ case $1 in
 				binaries/uclibc/imgrootfs.arm.ext2 \
 				binaries/uclibc/rootfs-audioadapter.arm.tar.gz
 		done
+
+		raumfeld/updatecreate.sh $1 \
+			binaries/uclibc/rootfs-audioadapter.arm.tar.gz
 		;;
 	remotecontrol-arm)
 		for t in flash init final; do
@@ -47,6 +50,9 @@ case $1 in
 				binaries/uclibc/imgrootfs.arm.ext2 \
 				binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
 		done
+
+		raumfeld/updatecreate.sh $1 \
+			binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
 		;;
 esac
 
