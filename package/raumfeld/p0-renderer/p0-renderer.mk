@@ -7,6 +7,7 @@ P0_RENDERER_VERSION:=$(BR2_PACKAGE_RAUMFELD_BRANCH)
 P0_RENDERER_DIR:=$(BUILD_DIR)/p0-renderer-$(P0_RENDERER_VERSION)
 P0_RENDERER_TARGET_DIR:=raumfeld/p0-renderer
 P0_RENDERER_BINARY:=$(P0_RENDERER_TARGET_DIR)/p0-renderer
+P0_RENDERER_CROSS_PREFIX:=$(BUILD_DIR)/..
 
 P0_RENDERER_DEPENDENCIES = host-pkgconfig alsa-lib dbus-glib flac gstreamer liboil libraumfeld
 
@@ -32,17 +33,17 @@ $(P0_RENDERER_DIR)/.bzr:
 p0-renderer-source: $(P0_RENDERER_DIR)/.bzr 
 
 $(STAGING_DIR)/$(P0_RENDERER_BINARY): p0-renderer-source
-	$(MAKE) -C $(P0_RENDERER_DIR) CROSS=$(P0_RENDERER_CROSS) DEST=$(STAGING_DIR)/raumfeld
+	$(MAKE) -C $(P0_RENDERER_DIR) CROSS=$(P0_RENDERER_CROSS) DEST=$(STAGING_DIR)/raumfeld CROSS_PREFIX=$(P0_RENDERER_CROSS_PREFIX)
 
 $(TARGET_DIR)/$(P0_RENDERER_BINARY): $(STAGING_DIR)/$(P0_RENDERER_BINARY)
-	$(MAKE) -C $(P0_RENDERER_DIR) CROSS=$(P0_RENDERER_CROSS) DEST=$(TARGET_DIR)/raumfeld
+	$(MAKE) -C $(P0_RENDERER_DIR) CROSS=$(P0_RENDERER_CROSS) DEST=$(TARGET_DIR)/raumfeld CROSS_PREFIX=$(P0_RENDERER_CROSS_PREFIX)
 	$(STRIPCMD) $(STRIP_STRIP_UNNEEDED) $(TARGET_DIR)/$(P0_RENDERER_BINARY)
 
 p0-renderer: $(P0_RENDERER_DEPENDENCIES) $(TARGET_DIR)/$(P0_RENDERER_BINARY)
 
 p0-renderer-clean:
-	rm -f $(STAGING_DIR)/$(P0_RENDERER_TARGET_DIR)
-	rm -f $(STAGING_DIR)/$(TARGET_DIR)
+	rm -rf $(STAGING_DIR)/$(P0_RENDERER_TARGET_DIR)
+	rm -rf $(STAGING_DIR)/$(TARGET_DIR)
 	-$(MAKE) -C $(P0_RENDERER_DIR) clean CROSS=$(P0_RENDERER_CROSS)
 
 p0-renderer-dirclean:
@@ -52,7 +53,7 @@ p0-renderer-dirclean:
 #
 # Toplevel Makefile options
 #
-#############################################################
+#############################################################	
 ifeq ($(BR2_PACKAGE_RAUMFELD_RENDERER),y)
 TARGETS+=p0-renderer
 endif
