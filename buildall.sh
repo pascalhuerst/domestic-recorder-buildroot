@@ -13,5 +13,5 @@ set -e
 
 
 # this puts together all created updates and copies them to the update server
-raumfeld/consolidate-updates.sh
+# raumfeld/consolidate-updates.sh
 

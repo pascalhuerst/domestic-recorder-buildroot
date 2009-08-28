@@ -1,6 +1,6 @@
 #!/bin/sh
 
-update_ssh="user@server.name:/path/to/update/folder"
+update_ssh="devel.internal:/var/www/devel/updates"
 
 cd raumfeld/updates
 
@@ -16,8 +16,7 @@ done
 
 rm -fr www/*.description
 
-# TODO
-#rsync -ravv -e ssh www/* $update_ssh
+rsync -ravv -e ssh www/* $update_ssh
 
 count=$(grep version www/updates.list | wc -l)
 echo "Consolidation done - $count updates ready"
