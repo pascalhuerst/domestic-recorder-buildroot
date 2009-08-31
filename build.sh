@@ -39,7 +39,8 @@ esac
 cp raumfeld/br2-$1.config .config
 
 # is that really needed?
-rm -fr build_arm project_build_arm toolchain_build_arm
+eval `grep BR2_ARCH .config`
+rm -fr build_$BR2_ARCH project_build_$BR2_ARCH toolchain_build_$BR2_ARCH
 
 make oldconfig
 make
