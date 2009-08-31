@@ -9,7 +9,7 @@
   ***************************************************************************/
  
  /***************************************************************************
-@@ -49,44 +49,159 @@
+@@ -49,44 +49,167 @@
  # define W_OK 2
  #endif
  
@@ -54,7 +54,9 @@
 +      tCache::iterator it = cache.begin();
 +      for (; it != cache.end(); ++it)
 +      {
++        g_static_mutex_lock (&s_pool_cs);
 +        s_pool.push_back(it->second);
++	 g_static_mutex_unlock (&s_pool_cs);
 +      }
 +    }
 +
@@ -80,6 +82,8 @@
 +
 +          tCacheLinePtr line;
 +
++	   g_static_mutex_lock (&s_pool_cs);
++
 +          if (s_pool.empty())
 +          {
 +            line = tCacheLinePtr(new CacheLine);
@@ -89,6 +93,8 @@
 +            line = s_pool.back();
 +            s_pool.pop_back();
 +          }
++
++	   g_static_mutex_unlock (&s_pool_cs);
 +
 +          gsize numBytes = 0;
 +          g_input_stream_read_all((GInputStream*) stream, line->buffer, CACHE_LINE_SIZE, &numBytes, NULL, NULL);
@@ -133,9 +139,11 @@
 +    int seekPos;
 +
 +    static tCacheLinePool s_pool;
++    static GStaticMutex s_pool_cs;
    };
  
 +  GIOFile::tCacheLinePool GIOFile::s_pool;
++  GStaticMutex GIOFile::s_pool_cs = G_STATIC_MUTEX_INIT;
 +
    typedef GIOFile tFile;
  
