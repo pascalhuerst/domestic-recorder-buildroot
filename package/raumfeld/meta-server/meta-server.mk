@@ -16,6 +16,7 @@ ifeq ($(ARCH),arm)
 META_SERVER_CROSS=ARM
 else
 ifeq ($(ARCH),i586)
+META_SERVER_CROSS=GEODE
 else
 echo "renderer can only be build for ARM or GEODE"
 exit 1
