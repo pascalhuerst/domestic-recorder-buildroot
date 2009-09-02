@@ -12,7 +12,6 @@ LIBRAUMFELDCPP_INSTALL_TARGET = YES
 
 LIBRAUMFELDCPP_CONF_OPT = \
 	--enable-shared		\
-	--enable-static		\
 	--disable-explicit-deps \
 	--disable-glibtest
 

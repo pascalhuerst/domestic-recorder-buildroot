@@ -15,7 +15,6 @@ SLY_TOOLKIT_CONF_ENV = \
 
 SLY_TOOLKIT_CONF_OPT = \
 	--enable-shared		\
-	--enable-static		\
 	--disable-explicit-deps \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir

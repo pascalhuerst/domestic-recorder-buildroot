@@ -16,7 +16,6 @@ LIBRAUMFELD_CONF_ENV = \
 LIBRAUMFELD_CONF_OPT = \
 	--localstatedir=/var	\
 	--enable-shared		\
-	--enable-static		\
 	--disable-explicit-deps \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
