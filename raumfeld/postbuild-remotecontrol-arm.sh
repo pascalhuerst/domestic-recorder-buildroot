@@ -9,7 +9,3 @@ if [ -d raumfeld/rootfs-remotecontrol-arm ]; then
     cp -r raumfeld/rootfs-remotecontrol-arm/* $1
 fi
 
-# fixme
-modules=""
-
-raumfeld/raumfeld-install.sh $1 arm $modules
