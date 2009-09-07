@@ -1976,7 +1976,7 @@ index f2236f0..e4ef015 100644
  
  		/* AT91SAM9263_ID_PIOCDE groups PIOC, PIOD, PIOE */
 diff --git a/arch/arm/mach-pxa/Kconfig b/arch/arm/mach-pxa/Kconfig
-index 89c992b..1ea8bb3 100644
+index 89c992b..5bb325e 100644
 --- a/arch/arm/mach-pxa/Kconfig
 +++ b/arch/arm/mach-pxa/Kconfig
 @@ -292,6 +292,31 @@ config MACH_ZYLONITE
@@ -1996,7 +1996,7 @@ index 89c992b..1ea8bb3 100644
 +	select CPU_PXA300
 +	select HAVE_PWM
 +
-+config MACH_RAUMFELD_Connector
++config MACH_RAUMFELD_CONNECTOR
 +	bool "Raumfeld Connector"
 +	select PXA3xx
 +	select CPU_PXA300
