@@ -4,7 +4,7 @@ set -e
 
 # obtain new build number
 PROJECT_NAME=raumfeld-build-all
-USER=$(id)
+USER=$(whoami)
 wget -q -O- "http://buildcontrol.caiaq.de/new.php?mode=dump&project=$PROJECT_NAME&username=$USER" > build_number
 
 git_version=$(git describe --tags)
