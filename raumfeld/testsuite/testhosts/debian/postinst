@@ -4,3 +4,8 @@ echo "Generating test image ..."
 dd if=/dev/urandom of=/var/www/testimg bs=1024 count=20000
 md5sum /var/www/testimg > /var/www/testimg.md5sum
 
+mkdir /var/raumfeld-test/
+chmod 777 /var/raumfeld-test/
+touch /var/raumfeld-test/macaddr.list
+chmod 666 /var/raumfeld-test/macaddr.list
+
