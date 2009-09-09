@@ -8,7 +8,7 @@ hw=`cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' '`
 
 case "$hw" in
 	# FIXME!!!
-	proto)
+	Controller)
 		img="uImage"
 		;;
 
