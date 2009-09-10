@@ -1976,7 +1976,7 @@ index f2236f0..e4ef015 100644
  
  		/* AT91SAM9263_ID_PIOCDE groups PIOC, PIOD, PIOE */
 diff --git a/arch/arm/mach-pxa/Kconfig b/arch/arm/mach-pxa/Kconfig
-index 89c992b..5bb325e 100644
+index 89c992b..17f03bb 100644
 --- a/arch/arm/mach-pxa/Kconfig
 +++ b/arch/arm/mach-pxa/Kconfig
 @@ -292,6 +292,31 @@ config MACH_ZYLONITE
@@ -1990,7 +1990,7 @@ index 89c992b..5bb325e 100644
 +	select HAVE_PWM
 +	select PXA_SSP
 +
-+config MACH_RAUMFELD_CONTROLLER
++config MACH_RAUMFELD_RC
 +	bool "Raumfeld Controller"
 +	select PXA3xx
 +	select CPU_PXA300
@@ -2240,10 +2240,10 @@ index 09b7b1a..f5ead6a 100644
  
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..9fd98e4
+index 0000000..e74010f
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
-@@ -0,0 +1,1027 @@
+@@ -0,0 +1,1025 @@
 +/*
 + *  arch/arm/mach-pxa/raumfeld-proto.c
 + *
@@ -2795,18 +2795,14 @@ index 0000000..9fd98e4
 +
 +	gpio_charge_ind = GPIO_CHARGE_IND;
 +
-+	/*
-+	if (machine_is_raumfeld_proto()) {
-+		gpio_charge_dc_ok = mfp_to_gpio(GPIO_CHARGE_DC_OK_PROTO);
-+		gpio_charge_usb_ok = mfp_to_gpio(GPIO_CHARGE_USB_OK_PROTO);
-+		gpio_charge_usb_susp = mfp_to_gpio(GPIO_CHARGE_USB_SUSP_PROTO);
-+	}
-+	*/
-+
 +	if (machine_is_raumfeld_rc()) {
 +		gpio_charge_dc_ok = mfp_to_gpio(GPIO_CHARGE_DC_OK_REMOTE);
 +		gpio_charge_usb_ok = mfp_to_gpio(GPIO_CHARGE_USB_OK_REMOTE);
 +		gpio_charge_usb_susp = mfp_to_gpio(GPIO_CHARGE_USB_SUSP_REMOTE);
++	} else if (machine_is_raumfeld_proto()) {
++		gpio_charge_dc_ok = mfp_to_gpio(GPIO_CHARGE_DC_OK_PROTO);
++		gpio_charge_usb_ok = mfp_to_gpio(GPIO_CHARGE_USB_OK_PROTO);
++		gpio_charge_usb_susp = mfp_to_gpio(GPIO_CHARGE_USB_SUSP_PROTO);
 +	}
 +
 +	gpio_request(gpio_charge_ind, "CHARGE_IND");
@@ -2912,7 +2908,7 @@ index 0000000..9fd98e4
 +	else if (machine_is_raumfeld_connector() ||
 +		 machine_is_raumfeld_speaker())
 +		spi_register_board_info(ARRAY_AND_SIZE(connector_spi_devices));
-+	else /* assuming prototype */
++	else if (machine_is_raumfeld_proto())
 +		spi_register_board_info(ARRAY_AND_SIZE(proto_spi_devices));
 +}
 +
@@ -3039,7 +3035,9 @@ index 0000000..9fd98e4
 +
 +void raumfeld_enable_audio(bool en)
 +{
-+	if (machine_is_raumfeld_rc())
++	if (!machine_is_raumfeld_proto() &&
++	    !machine_is_raumfeld_speaker() &&
++	    !machine_is_raumfeld_connector())
 +		return;
 +
 +	if (en) {
@@ -3236,7 +3234,7 @@ index 0000000..9fd98e4
 +MACHINE_END
 +#endif
 +
-+#ifdef CONFIG_MACH_RAUMFELD_CONTROLLER
++#ifdef CONFIG_MACH_RAUMFELD_RC
 +MACHINE_START(RAUMFELD_RC, "Raumfeld Controller")
 +	.phys_io	= 0x40000000,
 +	.io_pg_offst	= (io_p2v(0x40000000) >> 18) & 0xfffc,
@@ -421001,10 +420999,10 @@ index 6b8f655..dc8929c 100644
  #include "pxa2xx-pcm.h"
 diff --git a/sound/soc/pxa/raumfeld.c b/sound/soc/pxa/raumfeld.c
 new file mode 100644
-index 0000000..d8bc8b1
+index 0000000..0e7ccc5
 --- /dev/null
 +++ b/sound/soc/pxa/raumfeld.c
-@@ -0,0 +1,353 @@
+@@ -0,0 +1,355 @@
 +/*
 + * raumfeld_audio.c  --  SoC audio for raumfeld audio adapter
 + *
@@ -421308,7 +421306,9 @@ index 0000000..d8bc8b1
 +{
 +	int ret;
 +
-+	if (machine_is_raumfeld_rc())
++	if (!machine_is_raumfeld_proto() &&
++	    !machine_is_raumfeld_speaker() &&
++	    !machine_is_raumfeld_connector())
 +		return 0;
 +
 +	set_max9485_clk(1);
