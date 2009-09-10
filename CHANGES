@@ -1,3 +1,52 @@
+2009.11, Not yet released:
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#527: misc fixes for dnsmasq package
+
+2009.08, Released August 31th, 2009:
+
+	Additional fixes and cleanups.
+
+	Updated/fixed packages: ctorrent, saveconfig/getconfig,
+	sdl_net, util-linux.
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#529: util-linux doesn't find headers and include libs correctly
+	#557: Build ctorrent with SSL support if available
+
+2009.08-rc3, Released August 26th, 2009:
+
+	Additional fixes and cleanups.
+
+	Updated/fixed packages: alsa-utils, berkeleydb, busybox, dbus,
+	directfb, enchant, kernel headers.
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#471: Allow directfb compilation with debug
+	#541: Removal of CVS directories in target filesystem broken
+	#547: berkeleydb: Update config.{sub, guess}
+	#549: enchant: Fix dependencies.
+	#569: Fix alsa-utils build for x86 on x86-64
+
+2009.08-rc2, Released August 6th, 2009:
+
+	Additional fixes and new features.
+
+	New packages: libuuid, gcc 4.3.4.
+
+	Updated/fixed packages: busybox, classpath, gzip, ipsec-tools,
+	jamvm, libusb, microperl, neon, popt, sed, webkit.
+
+	Fixed issue with 'make oldconfig'
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#525: sed broken with external toolchain
+	#537: Fix gzip build with recent glibc
+
 2009.08-rc1, Released August 2nd, 2009:
 
 	Fixes all over the tree and new features.
