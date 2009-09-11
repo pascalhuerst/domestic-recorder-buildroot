@@ -2117,6 +2117,20 @@ index 7d1a059..e91d63c 100644
 +#define CKEN_PXA320_GCU		7	/* Graphics controller clock enable */
  
  #endif /* __ASM_ARCH_PXA3XX_REGS_H */
+diff --git a/arch/arm/mach-pxa/include/mach/pxafb.h b/arch/arm/mach-pxa/include/mach/pxafb.h
+index 6932720..f73061c 100644
+--- a/arch/arm/mach-pxa/include/mach/pxafb.h
++++ b/arch/arm/mach-pxa/include/mach/pxafb.h
+@@ -118,7 +118,8 @@ struct pxafb_mach_info {
+ 	u_int		fixed_modes:1,
+ 			cmap_inverse:1,
+ 			cmap_static:1,
+-			unused:29;
++			acceleration_enabled:1,
++			unused:28;
+ 
+ 	/* The following should be defined in LCCR0
+ 	 *      LCCR0_Act or LCCR0_Pas          Active or Passive
 diff --git a/arch/arm/mach-pxa/pxa300.c b/arch/arm/mach-pxa/pxa300.c
 index 4ba6d21..0a97d05 100644
 --- a/arch/arm/mach-pxa/pxa300.c
@@ -2240,10 +2254,10 @@ index 09b7b1a..f5ead6a 100644
  
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..e74010f
+index 0000000..330975e
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
-@@ -0,0 +1,1025 @@
+@@ -0,0 +1,1028 @@
 +/*
 + *  arch/arm/mach-pxa/raumfeld-proto.c
 + *
@@ -2603,6 +2617,9 @@ index 0000000..e74010f
 +	.num_modes	= 1,
 +	.video_mem_size = 0x400000,
 +	.lcd_conn	= LCD_COLOR_TFT_16BPP | LCD_PCLK_EDGE_FALL,
++#ifdef CONFIG_PXA3XX_GCU
++	.acceleration_enabled = 1,
++#endif
 +};
 +
 +static int gpio_display_enable;
@@ -3569,6 +3586,19 @@ index 3ab9222..9029bd3 100644
  			  client->name, priv);
  	if (err) {
  		dev_err(&client->dev, "Unable to request touchscreen IRQ.\n");
+diff --git a/drivers/md/dm-log-userspace-base.c b/drivers/md/dm-log-userspace-base.c
+index 6e186b1..652bd33 100644
+--- a/drivers/md/dm-log-userspace-base.c
++++ b/drivers/md/dm-log-userspace-base.c
+@@ -582,7 +582,7 @@ static int userspace_status(struct dm_dirty_log *log, status_type_t status_type,
+ 		break;
+ 	case STATUSTYPE_TABLE:
+ 		sz = 0;
+-		table_args = strstr(lc->usr_argv_str, " ");
++		table_args = strchr(lc->usr_argv_str, ' ');
+ 		BUG_ON(!table_args); /* There will always be a ' ' */
+ 		table_args++;
+ 
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
 index 68ab39d..caf3f66 100644
 --- a/drivers/misc/Kconfig
@@ -396735,7 +396765,7 @@ index 0000000..18d8e43
 +#endif /* __PXA3XX_GCU_H__ */
 +
 diff --git a/drivers/video/pxafb.c b/drivers/video/pxafb.c
-index 6506117..922ed8a 100644
+index 6506117..b65cc2d 100644
 --- a/drivers/video/pxafb.c
 +++ b/drivers/video/pxafb.c
 @@ -80,7 +80,8 @@
@@ -396779,19 +396809,17 @@ index 6506117..922ed8a 100644
  
  	fbi->reg_lccr0 = fbi->lccr0 |
  		(LCCR0_LDM | LCCR0_SFM | LCCR0_IUM | LCCR0_EFM |
-@@ -2081,6 +2083,11 @@ static int __devinit pxafb_probe(struct platform_device *dev)
+@@ -2081,6 +2083,9 @@ static int __devinit pxafb_probe(struct platform_device *dev)
  		goto failed;
  	}
  
-+#ifdef CONFIG_PXA3XX_GCU
-+	if (cpu_is_pxa3xx())
++	if (cpu_is_pxa3xx() && inf->acceleration_enabled)
 +		fbi->fb.fix.accel = FB_ACCEL_PXA3XX;
-+#endif
 +
  	fbi->backlight_power = inf->pxafb_backlight_power;
  	fbi->lcd_power = inf->pxafb_lcd_power;
  
-@@ -2091,14 +2098,14 @@ static int __devinit pxafb_probe(struct platform_device *dev)
+@@ -2091,14 +2096,14 @@ static int __devinit pxafb_probe(struct platform_device *dev)
  		goto failed_fbi;
  	}
  
@@ -396808,7 +396836,7 @@ index 6506117..922ed8a 100644
  	if (fbi->mmio_base == NULL) {
  		dev_err(&dev->dev, "failed to map I/O memory\n");
  		ret = -EBUSY;
-@@ -2197,7 +2204,7 @@ failed_free_dma:
+@@ -2197,7 +2202,7 @@ failed_free_dma:
  failed_free_io:
  	iounmap(fbi->mmio_base);
  failed_free_res:
@@ -396817,7 +396845,7 @@ index 6506117..922ed8a 100644
  failed_fbi:
  	clk_put(fbi->clk);
  	platform_set_drvdata(dev, NULL);
-@@ -2237,7 +2244,7 @@ static int __devexit pxafb_remove(struct platform_device *dev)
+@@ -2237,7 +2242,7 @@ static int __devexit pxafb_remove(struct platform_device *dev)
  	iounmap(fbi->mmio_base);
  
  	r = platform_get_resource(dev, IORESOURCE_MEM, 0);
@@ -396826,6 +396854,623 @@ index 6506117..922ed8a 100644
  
  	clk_put(fbi->clk);
  	kfree(fbi);
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index b7c1603..7c1e65d 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -501,22 +501,22 @@ static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
+ 		}
+ 	}
+ 
+-	/*
+-	 * Now fill out the bss section.  First pad the last page up
+-	 * to the page boundary, and then perform a mmap to make sure
+-	 * that there are zero-mapped pages up to and including the 
+-	 * last bss page.
+-	 */
+-	if (padzero(elf_bss)) {
+-		error = -EFAULT;
+-		goto out_close;
+-	}
++	if (last_bss > elf_bss) {
++		/*
++		 * Now fill out the bss section.  First pad the last page up
++		 * to the page boundary, and then perform a mmap to make sure
++		 * that there are zero-mapped pages up to and including the
++		 * last bss page.
++		 */
++		if (padzero(elf_bss)) {
++			error = -EFAULT;
++			goto out_close;
++		}
+ 
+-	/* What we have mapped so far */
+-	elf_bss = ELF_PAGESTART(elf_bss + ELF_MIN_ALIGN - 1);
++		/* What we have mapped so far */
++		elf_bss = ELF_PAGESTART(elf_bss + ELF_MIN_ALIGN - 1);
+ 
+-	/* Map the last of the bss segment */
+-	if (last_bss > elf_bss) {
++		/* Map the last of the bss segment */
+ 		down_write(&current->mm->mmap_sem);
+ 		error = do_brk(elf_bss, last_bss - elf_bss);
+ 		up_write(&current->mm->mmap_sem);
+diff --git a/fs/ext2/acl.c b/fs/ext2/acl.c
+index d636e12..a63d442 100644
+--- a/fs/ext2/acl.c
++++ b/fs/ext2/acl.c
+@@ -230,7 +230,7 @@ ext2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
+ 	return error;
+ }
+ 
+-static int
++int
+ ext2_check_acl(struct inode *inode, int mask)
+ {
+ 	struct posix_acl *acl = ext2_get_acl(inode, ACL_TYPE_ACCESS);
+@@ -246,12 +246,6 @@ ext2_check_acl(struct inode *inode, int mask)
+ 	return -EAGAIN;
+ }
+ 
+-int
+-ext2_permission(struct inode *inode, int mask)
+-{
+-	return generic_permission(inode, mask, ext2_check_acl);
+-}
+-
+ /*
+  * Initialize the ACLs of a new inode. Called from ext2_new_inode.
+  *
+diff --git a/fs/ext2/acl.h b/fs/ext2/acl.h
+index ecefe47..3ff6cbb 100644
+--- a/fs/ext2/acl.h
++++ b/fs/ext2/acl.h
+@@ -54,13 +54,13 @@ static inline int ext2_acl_count(size_t size)
+ #ifdef CONFIG_EXT2_FS_POSIX_ACL
+ 
+ /* acl.c */
+-extern int ext2_permission (struct inode *, int);
++extern int ext2_check_acl (struct inode *, int);
+ extern int ext2_acl_chmod (struct inode *);
+ extern int ext2_init_acl (struct inode *, struct inode *);
+ 
+ #else
+ #include <linux/sched.h>
+-#define ext2_permission NULL
++#define ext2_check_acl	NULL
+ #define ext2_get_acl	NULL
+ #define ext2_set_acl	NULL
+ 
+diff --git a/fs/ext2/file.c b/fs/ext2/file.c
+index 2b9e47d..a2f3afd 100644
+--- a/fs/ext2/file.c
++++ b/fs/ext2/file.c
+@@ -85,6 +85,6 @@ const struct inode_operations ext2_file_inode_operations = {
+ 	.removexattr	= generic_removexattr,
+ #endif
+ 	.setattr	= ext2_setattr,
+-	.permission	= ext2_permission,
++	.check_acl	= ext2_check_acl,
+ 	.fiemap		= ext2_fiemap,
+ };
+diff --git a/fs/ext2/namei.c b/fs/ext2/namei.c
+index 78d9b92..23701f2 100644
+--- a/fs/ext2/namei.c
++++ b/fs/ext2/namei.c
+@@ -400,7 +400,7 @@ const struct inode_operations ext2_dir_inode_operations = {
+ 	.removexattr	= generic_removexattr,
+ #endif
+ 	.setattr	= ext2_setattr,
+-	.permission	= ext2_permission,
++	.check_acl	= ext2_check_acl,
+ };
+ 
+ const struct inode_operations ext2_special_inode_operations = {
+@@ -411,5 +411,5 @@ const struct inode_operations ext2_special_inode_operations = {
+ 	.removexattr	= generic_removexattr,
+ #endif
+ 	.setattr	= ext2_setattr,
+-	.permission	= ext2_permission,
++	.check_acl	= ext2_check_acl,
+ };
+diff --git a/fs/ext3/acl.c b/fs/ext3/acl.c
+index e167bae..c9b0df3 100644
+--- a/fs/ext3/acl.c
++++ b/fs/ext3/acl.c
+@@ -238,7 +238,7 @@ ext3_set_acl(handle_t *handle, struct inode *inode, int type,
+ 	return error;
+ }
+ 
+-static int
++int
+ ext3_check_acl(struct inode *inode, int mask)
+ {
+ 	struct posix_acl *acl = ext3_get_acl(inode, ACL_TYPE_ACCESS);
+@@ -254,12 +254,6 @@ ext3_check_acl(struct inode *inode, int mask)
+ 	return -EAGAIN;
+ }
+ 
+-int
+-ext3_permission(struct inode *inode, int mask)
+-{
+-	return generic_permission(inode, mask, ext3_check_acl);
+-}
+-
+ /*
+  * Initialize the ACLs of a new inode. Called from ext3_new_inode.
+  *
+diff --git a/fs/ext3/acl.h b/fs/ext3/acl.h
+index 07d15a3..5973346 100644
+--- a/fs/ext3/acl.h
++++ b/fs/ext3/acl.h
+@@ -54,13 +54,13 @@ static inline int ext3_acl_count(size_t size)
+ #ifdef CONFIG_EXT3_FS_POSIX_ACL
+ 
+ /* acl.c */
+-extern int ext3_permission (struct inode *, int);
++extern int ext3_check_acl (struct inode *, int);
+ extern int ext3_acl_chmod (struct inode *);
+ extern int ext3_init_acl (handle_t *, struct inode *, struct inode *);
+ 
+ #else  /* CONFIG_EXT3_FS_POSIX_ACL */
+ #include <linux/sched.h>
+-#define ext3_permission NULL
++#define ext3_check_acl NULL
+ 
+ static inline int
+ ext3_acl_chmod(struct inode *inode)
+diff --git a/fs/ext3/file.c b/fs/ext3/file.c
+index 5b49704..2992532 100644
+--- a/fs/ext3/file.c
++++ b/fs/ext3/file.c
+@@ -137,7 +137,7 @@ const struct inode_operations ext3_file_inode_operations = {
+ 	.listxattr	= ext3_listxattr,
+ 	.removexattr	= generic_removexattr,
+ #endif
+-	.permission	= ext3_permission,
++	.check_acl	= ext3_check_acl,
+ 	.fiemap		= ext3_fiemap,
+ };
+ 
+diff --git a/fs/ext3/namei.c b/fs/ext3/namei.c
+index 6ff7b97..aad6400 100644
+--- a/fs/ext3/namei.c
++++ b/fs/ext3/namei.c
+@@ -2445,7 +2445,7 @@ const struct inode_operations ext3_dir_inode_operations = {
+ 	.listxattr	= ext3_listxattr,
+ 	.removexattr	= generic_removexattr,
+ #endif
+-	.permission	= ext3_permission,
++	.check_acl	= ext3_check_acl,
+ };
+ 
+ const struct inode_operations ext3_special_inode_operations = {
+@@ -2456,5 +2456,5 @@ const struct inode_operations ext3_special_inode_operations = {
+ 	.listxattr	= ext3_listxattr,
+ 	.removexattr	= generic_removexattr,
+ #endif
+-	.permission	= ext3_permission,
++	.check_acl	= ext3_check_acl,
+ };
+diff --git a/fs/ext4/acl.c b/fs/ext4/acl.c
+index f6d8967..0df88b2 100644
+--- a/fs/ext4/acl.c
++++ b/fs/ext4/acl.c
+@@ -236,7 +236,7 @@ ext4_set_acl(handle_t *handle, struct inode *inode, int type,
+ 	return error;
+ }
+ 
+-static int
++int
+ ext4_check_acl(struct inode *inode, int mask)
+ {
+ 	struct posix_acl *acl = ext4_get_acl(inode, ACL_TYPE_ACCESS);
+@@ -252,12 +252,6 @@ ext4_check_acl(struct inode *inode, int mask)
+ 	return -EAGAIN;
+ }
+ 
+-int
+-ext4_permission(struct inode *inode, int mask)
+-{
+-	return generic_permission(inode, mask, ext4_check_acl);
+-}
+-
+ /*
+  * Initialize the ACLs of a new inode. Called from ext4_new_inode.
+  *
+diff --git a/fs/ext4/acl.h b/fs/ext4/acl.h
+index 949789d..9d843d5 100644
+--- a/fs/ext4/acl.h
++++ b/fs/ext4/acl.h
+@@ -54,13 +54,13 @@ static inline int ext4_acl_count(size_t size)
+ #ifdef CONFIG_EXT4_FS_POSIX_ACL
+ 
+ /* acl.c */
+-extern int ext4_permission(struct inode *, int);
++extern int ext4_check_acl(struct inode *, int);
+ extern int ext4_acl_chmod(struct inode *);
+ extern int ext4_init_acl(handle_t *, struct inode *, struct inode *);
+ 
+ #else  /* CONFIG_EXT4_FS_POSIX_ACL */
+ #include <linux/sched.h>
+-#define ext4_permission NULL
++#define ext4_check_acl NULL
+ 
+ static inline int
+ ext4_acl_chmod(struct inode *inode)
+diff --git a/fs/ext4/file.c b/fs/ext4/file.c
+index 3f1873f..27f3c53 100644
+--- a/fs/ext4/file.c
++++ b/fs/ext4/file.c
+@@ -207,7 +207,7 @@ const struct inode_operations ext4_file_inode_operations = {
+ 	.listxattr	= ext4_listxattr,
+ 	.removexattr	= generic_removexattr,
+ #endif
+-	.permission	= ext4_permission,
++	.check_acl	= ext4_check_acl,
+ 	.fallocate	= ext4_fallocate,
+ 	.fiemap		= ext4_fiemap,
+ };
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index de04013..114abe5 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -2536,7 +2536,7 @@ const struct inode_operations ext4_dir_inode_operations = {
+ 	.listxattr	= ext4_listxattr,
+ 	.removexattr	= generic_removexattr,
+ #endif
+-	.permission	= ext4_permission,
++	.check_acl	= ext4_check_acl,
+ 	.fiemap         = ext4_fiemap,
+ };
+ 
+@@ -2548,5 +2548,5 @@ const struct inode_operations ext4_special_inode_operations = {
+ 	.listxattr	= ext4_listxattr,
+ 	.removexattr	= generic_removexattr,
+ #endif
+-	.permission	= ext4_permission,
++	.check_acl	= ext4_check_acl,
+ };
+diff --git a/fs/jffs2/acl.c b/fs/jffs2/acl.c
+index 8fcb623..7edb62e 100644
+--- a/fs/jffs2/acl.c
++++ b/fs/jffs2/acl.c
+@@ -258,7 +258,7 @@ static int jffs2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
+ 	return rc;
+ }
+ 
+-static int jffs2_check_acl(struct inode *inode, int mask)
++int jffs2_check_acl(struct inode *inode, int mask)
+ {
+ 	struct posix_acl *acl;
+ 	int rc;
+@@ -274,11 +274,6 @@ static int jffs2_check_acl(struct inode *inode, int mask)
+ 	return -EAGAIN;
+ }
+ 
+-int jffs2_permission(struct inode *inode, int mask)
+-{
+-	return generic_permission(inode, mask, jffs2_check_acl);
+-}
+-
+ int jffs2_init_acl_pre(struct inode *dir_i, struct inode *inode, int *i_mode)
+ {
+ 	struct posix_acl *acl, *clone;
+diff --git a/fs/jffs2/acl.h b/fs/jffs2/acl.h
+index fc929f2..f0ba63e 100644
+--- a/fs/jffs2/acl.h
++++ b/fs/jffs2/acl.h
+@@ -26,7 +26,7 @@ struct jffs2_acl_header {
+ 
+ #ifdef CONFIG_JFFS2_FS_POSIX_ACL
+ 
+-extern int jffs2_permission(struct inode *, int);
++extern int jffs2_check_acl(struct inode *, int);
+ extern int jffs2_acl_chmod(struct inode *);
+ extern int jffs2_init_acl_pre(struct inode *, struct inode *, int *);
+ extern int jffs2_init_acl_post(struct inode *);
+@@ -36,7 +36,7 @@ extern struct xattr_handler jffs2_acl_default_xattr_handler;
+ 
+ #else
+ 
+-#define jffs2_permission			(NULL)
++#define jffs2_check_acl				(NULL)
+ #define jffs2_acl_chmod(inode)			(0)
+ #define jffs2_init_acl_pre(dir_i,inode,mode)	(0)
+ #define jffs2_init_acl_post(inode)		(0)
+diff --git a/fs/jffs2/dir.c b/fs/jffs2/dir.c
+index 6f60cc9..7aa4417 100644
+--- a/fs/jffs2/dir.c
++++ b/fs/jffs2/dir.c
+@@ -55,7 +55,7 @@ const struct inode_operations jffs2_dir_inode_operations =
+ 	.rmdir =	jffs2_rmdir,
+ 	.mknod =	jffs2_mknod,
+ 	.rename =	jffs2_rename,
+-	.permission =	jffs2_permission,
++	.check_acl =	jffs2_check_acl,
+ 	.setattr =	jffs2_setattr,
+ 	.setxattr =	jffs2_setxattr,
+ 	.getxattr =	jffs2_getxattr,
+diff --git a/fs/jffs2/file.c b/fs/jffs2/file.c
+index 23c9475..b7b74e2 100644
+--- a/fs/jffs2/file.c
++++ b/fs/jffs2/file.c
+@@ -56,7 +56,7 @@ const struct file_operations jffs2_file_operations =
+ 
+ const struct inode_operations jffs2_file_inode_operations =
+ {
+-	.permission =	jffs2_permission,
++	.check_acl =	jffs2_check_acl,
+ 	.setattr =	jffs2_setattr,
+ 	.setxattr =	jffs2_setxattr,
+ 	.getxattr =	jffs2_getxattr,
+diff --git a/fs/jffs2/symlink.c b/fs/jffs2/symlink.c
+index b7339c3..4ec11e8 100644
+--- a/fs/jffs2/symlink.c
++++ b/fs/jffs2/symlink.c
+@@ -21,7 +21,7 @@ const struct inode_operations jffs2_symlink_inode_operations =
+ {
+ 	.readlink =	generic_readlink,
+ 	.follow_link =	jffs2_follow_link,
+-	.permission =	jffs2_permission,
++	.check_acl =	jffs2_check_acl,
+ 	.setattr =	jffs2_setattr,
+ 	.setxattr =	jffs2_setxattr,
+ 	.getxattr =	jffs2_getxattr,
+diff --git a/fs/jfs/acl.c b/fs/jfs/acl.c
+index a29c7c3..d66477c 100644
+--- a/fs/jfs/acl.c
++++ b/fs/jfs/acl.c
+@@ -114,7 +114,7 @@ out:
+ 	return rc;
+ }
+ 
+-static int jfs_check_acl(struct inode *inode, int mask)
++int jfs_check_acl(struct inode *inode, int mask)
+ {
+ 	struct posix_acl *acl = jfs_get_acl(inode, ACL_TYPE_ACCESS);
+ 
+@@ -129,11 +129,6 @@ static int jfs_check_acl(struct inode *inode, int mask)
+ 	return -EAGAIN;
+ }
+ 
+-int jfs_permission(struct inode *inode, int mask)
+-{
+-	return generic_permission(inode, mask, jfs_check_acl);
+-}
+-
+ int jfs_init_acl(tid_t tid, struct inode *inode, struct inode *dir)
+ {
+ 	struct posix_acl *acl = NULL;
+diff --git a/fs/jfs/file.c b/fs/jfs/file.c
+index 7f6063a..2b70fa7 100644
+--- a/fs/jfs/file.c
++++ b/fs/jfs/file.c
+@@ -96,7 +96,7 @@ const struct inode_operations jfs_file_inode_operations = {
+ 	.removexattr	= jfs_removexattr,
+ #ifdef CONFIG_JFS_POSIX_ACL
+ 	.setattr	= jfs_setattr,
+-	.permission	= jfs_permission,
++	.check_acl	= jfs_check_acl,
+ #endif
+ };
+ 
+diff --git a/fs/jfs/jfs_acl.h b/fs/jfs/jfs_acl.h
+index 88475f1..b07bd41 100644
+--- a/fs/jfs/jfs_acl.h
++++ b/fs/jfs/jfs_acl.h
+@@ -20,7 +20,7 @@
+ 
+ #ifdef CONFIG_JFS_POSIX_ACL
+ 
+-int jfs_permission(struct inode *, int);
++int jfs_check_acl(struct inode *, int);
+ int jfs_init_acl(tid_t, struct inode *, struct inode *);
+ int jfs_setattr(struct dentry *, struct iattr *);
+ 
+diff --git a/fs/jfs/namei.c b/fs/jfs/namei.c
+index 514ee2e..c79a427 100644
+--- a/fs/jfs/namei.c
++++ b/fs/jfs/namei.c
+@@ -1543,7 +1543,7 @@ const struct inode_operations jfs_dir_inode_operations = {
+ 	.removexattr	= jfs_removexattr,
+ #ifdef CONFIG_JFS_POSIX_ACL
+ 	.setattr	= jfs_setattr,
+-	.permission	= jfs_permission,
++	.check_acl	= jfs_check_acl,
+ #endif
+ };
+ 
+diff --git a/fs/namei.c b/fs/namei.c
+index 1f13751..ed27bb2 100644
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -169,19 +169,10 @@ void putname(const char *name)
+ EXPORT_SYMBOL(putname);
+ #endif
+ 
+-
+-/**
+- * generic_permission  -  check for access rights on a Posix-like filesystem
+- * @inode:	inode to check access rights for
+- * @mask:	right to check for (%MAY_READ, %MAY_WRITE, %MAY_EXEC)
+- * @check_acl:	optional callback to check for Posix ACLs
+- *
+- * Used to check for read/write/execute permissions on a file.
+- * We use "fsuid" for this, letting us set arbitrary permissions
+- * for filesystem access without changing the "normal" uids which
+- * are used for other things..
++/*
++ * This does basic POSIX ACL permission checking
+  */
+-int generic_permission(struct inode *inode, int mask,
++static int acl_permission_check(struct inode *inode, int mask,
+ 		int (*check_acl)(struct inode *inode, int mask))
+ {
+ 	umode_t			mode = inode->i_mode;
+@@ -193,9 +184,7 @@ int generic_permission(struct inode *inode, int mask,
+ 	else {
+ 		if (IS_POSIXACL(inode) && (mode & S_IRWXG) && check_acl) {
+ 			int error = check_acl(inode, mask);
+-			if (error == -EACCES)
+-				goto check_capabilities;
+-			else if (error != -EAGAIN)
++			if (error != -EAGAIN)
+ 				return error;
+ 		}
+ 
+@@ -208,8 +197,32 @@ int generic_permission(struct inode *inode, int mask,
+ 	 */
+ 	if ((mask & ~mode) == 0)
+ 		return 0;
++	return -EACCES;
++}
++
++/**
++ * generic_permission  -  check for access rights on a Posix-like filesystem
++ * @inode:	inode to check access rights for
++ * @mask:	right to check for (%MAY_READ, %MAY_WRITE, %MAY_EXEC)
++ * @check_acl:	optional callback to check for Posix ACLs
++ *
++ * Used to check for read/write/execute permissions on a file.
++ * We use "fsuid" for this, letting us set arbitrary permissions
++ * for filesystem access without changing the "normal" uids which
++ * are used for other things..
++ */
++int generic_permission(struct inode *inode, int mask,
++		int (*check_acl)(struct inode *inode, int mask))
++{
++	int ret;
++
++	/*
++	 * Do the basic POSIX ACL permission checks.
++	 */
++	ret = acl_permission_check(inode, mask, check_acl);
++	if (ret != -EACCES)
++		return ret;
+ 
+- check_capabilities:
+ 	/*
+ 	 * Read/write DACs are always overridable.
+ 	 * Executable DACs are overridable if at least one exec bit is set.
+@@ -262,7 +275,7 @@ int inode_permission(struct inode *inode, int mask)
+ 	if (inode->i_op->permission)
+ 		retval = inode->i_op->permission(inode, mask);
+ 	else
+-		retval = generic_permission(inode, mask, NULL);
++		retval = generic_permission(inode, mask, inode->i_op->check_acl);
+ 
+ 	if (retval)
+ 		return retval;
+@@ -432,29 +445,22 @@ static struct dentry * cached_lookup(struct dentry * parent, struct qstr * name,
+  */
+ static int exec_permission_lite(struct inode *inode)
+ {
+-	umode_t	mode = inode->i_mode;
+-
+-	if (inode->i_op->permission)
+-		return -EAGAIN;
+-
+-	if (current_fsuid() == inode->i_uid)
+-		mode >>= 6;
+-	else if (in_group_p(inode->i_gid))
+-		mode >>= 3;
+-
+-	if (mode & MAY_EXEC)
+-		goto ok;
++	int ret;
+ 
+-	if ((inode->i_mode & S_IXUGO) && capable(CAP_DAC_OVERRIDE))
+-		goto ok;
+-
+-	if (S_ISDIR(inode->i_mode) && capable(CAP_DAC_OVERRIDE))
++	if (inode->i_op->permission) {
++		ret = inode->i_op->permission(inode, MAY_EXEC);
++		if (!ret)
++			goto ok;
++		return ret;
++	}
++	ret = acl_permission_check(inode, MAY_EXEC, inode->i_op->check_acl);
++	if (!ret)
+ 		goto ok;
+ 
+-	if (S_ISDIR(inode->i_mode) && capable(CAP_DAC_READ_SEARCH))
++	if (capable(CAP_DAC_OVERRIDE) || capable(CAP_DAC_READ_SEARCH))
+ 		goto ok;
+ 
+-	return -EACCES;
++	return ret;
+ ok:
+ 	return security_inode_permission(inode, MAY_EXEC);
+ }
+@@ -853,12 +859,6 @@ static int __link_path_walk(const char *name, struct nameidata *nd)
+ 
+ 		nd->flags |= LOOKUP_CONTINUE;
+ 		err = exec_permission_lite(inode);
+-		if (err == -EAGAIN)
+-			err = inode_permission(nd->path.dentry->d_inode,
+-					       MAY_EXEC);
+-		if (!err)
+-			err = ima_path_check(&nd->path, MAY_EXEC,
+-				             IMA_COUNT_UPDATE);
+  		if (err)
+ 			break;
+ 
+diff --git a/fs/xfs/linux-2.6/xfs_iops.c b/fs/xfs/linux-2.6/xfs_iops.c
+index 8070b34..6c32f1d 100644
+--- a/fs/xfs/linux-2.6/xfs_iops.c
++++ b/fs/xfs/linux-2.6/xfs_iops.c
+@@ -485,14 +485,6 @@ xfs_vn_put_link(
+ }
+ 
+ STATIC int
+-xfs_vn_permission(
+-	struct inode		*inode,
+-	int			mask)
+-{
+-	return generic_permission(inode, mask, xfs_check_acl);
+-}
+-
+-STATIC int
+ xfs_vn_getattr(
+ 	struct vfsmount		*mnt,
+ 	struct dentry		*dentry,
+@@ -696,7 +688,7 @@ xfs_vn_fiemap(
+ }
+ 
+ static const struct inode_operations xfs_inode_operations = {
+-	.permission		= xfs_vn_permission,
++	.check_acl		= xfs_check_acl,
+ 	.truncate		= xfs_vn_truncate,
+ 	.getattr		= xfs_vn_getattr,
+ 	.setattr		= xfs_vn_setattr,
+@@ -724,7 +716,7 @@ static const struct inode_operations xfs_dir_inode_operations = {
+ 	.rmdir			= xfs_vn_unlink,
+ 	.mknod			= xfs_vn_mknod,
+ 	.rename			= xfs_vn_rename,
+-	.permission		= xfs_vn_permission,
++	.check_acl		= xfs_check_acl,
+ 	.getattr		= xfs_vn_getattr,
+ 	.setattr		= xfs_vn_setattr,
+ 	.setxattr		= generic_setxattr,
+@@ -749,7 +741,7 @@ static const struct inode_operations xfs_dir_ci_inode_operations = {
+ 	.rmdir			= xfs_vn_unlink,
+ 	.mknod			= xfs_vn_mknod,
+ 	.rename			= xfs_vn_rename,
+-	.permission		= xfs_vn_permission,
++	.check_acl		= xfs_check_acl,
+ 	.getattr		= xfs_vn_getattr,
+ 	.setattr		= xfs_vn_setattr,
+ 	.setxattr		= generic_setxattr,
+@@ -762,7 +754,7 @@ static const struct inode_operations xfs_symlink_inode_operations = {
+ 	.readlink		= generic_readlink,
+ 	.follow_link		= xfs_vn_follow_link,
+ 	.put_link		= xfs_vn_put_link,
+-	.permission		= xfs_vn_permission,
++	.check_acl		= xfs_check_acl,
+ 	.getattr		= xfs_vn_getattr,
+ 	.setattr		= xfs_vn_setattr,
+ 	.setxattr		= generic_setxattr,
 diff --git a/include/linux/fb.h b/include/linux/fb.h
 index f847df9..a34bdf5 100644
 --- a/include/linux/fb.h
@@ -396838,6 +397483,18 @@ index f847df9..a34bdf5 100644
  
  #define FB_ACCEL_SAVAGE4        0x80	/* S3 Savage4                   */
  #define FB_ACCEL_SAVAGE3D       0x81	/* S3 Savage3D                  */
+diff --git a/include/linux/fs.h b/include/linux/fs.h
+index 73e9b64..c1f9935 100644
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -1528,6 +1528,7 @@ struct inode_operations {
+ 	void (*put_link) (struct dentry *, struct nameidata *, void *);
+ 	void (*truncate) (struct inode *);
+ 	int (*permission) (struct inode *, int);
++	int (*check_acl)(struct inode *, int);
+ 	int (*setattr) (struct dentry *, struct iattr *);
+ 	int (*getattr) (struct vfsmount *mnt, struct dentry *, struct kstat *);
+ 	int (*setxattr) (struct dentry *, const char *,const void *,size_t,int);
 diff --git a/include/linux/input/eeti_ts.h b/include/linux/input/eeti_ts.h
 new file mode 100644
 index 0000000..f875b31
@@ -396892,6 +397549,19 @@ index 594c494..67128b8 100644
  
  #if defined(CONFIG_POWER_SUPPLY) || defined(CONFIG_POWER_SUPPLY_MODULE)
  extern int power_supply_is_system_supplied(void);
+diff --git a/include/linux/shmem_fs.h b/include/linux/shmem_fs.h
+index abff6c9..6d3f2f4 100644
+--- a/include/linux/shmem_fs.h
++++ b/include/linux/shmem_fs.h
+@@ -39,7 +39,7 @@ static inline struct shmem_inode_info *SHMEM_I(struct inode *inode)
+ }
+ 
+ #ifdef CONFIG_TMPFS_POSIX_ACL
+-int shmem_permission(struct inode *, int);
++int shmem_check_acl(struct inode *, int);
+ int shmem_acl_init(struct inode *, struct inode *);
+ 
+ extern struct xattr_handler shmem_xattr_acl_access_handler;
 diff --git a/include/linux/tty.h b/include/linux/tty.h
 index e8c6c91..89be0d6 100644
 --- a/include/linux/tty.h
@@ -397277,6 +397947,63 @@ index 0000000..9c661f2
 +};
 +
 +#endif
+diff --git a/mm/shmem.c b/mm/shmem.c
+index d713239..5a0b3d4 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -2446,7 +2446,7 @@ static const struct inode_operations shmem_inode_operations = {
+ 	.getxattr	= generic_getxattr,
+ 	.listxattr	= generic_listxattr,
+ 	.removexattr	= generic_removexattr,
+-	.permission	= shmem_permission,
++	.check_acl	= shmem_check_acl,
+ #endif
+ 
+ };
+@@ -2469,7 +2469,7 @@ static const struct inode_operations shmem_dir_inode_operations = {
+ 	.getxattr	= generic_getxattr,
+ 	.listxattr	= generic_listxattr,
+ 	.removexattr	= generic_removexattr,
+-	.permission	= shmem_permission,
++	.check_acl	= shmem_check_acl,
+ #endif
+ };
+ 
+@@ -2480,7 +2480,7 @@ static const struct inode_operations shmem_special_inode_operations = {
+ 	.getxattr	= generic_getxattr,
+ 	.listxattr	= generic_listxattr,
+ 	.removexattr	= generic_removexattr,
+-	.permission	= shmem_permission,
++	.check_acl	= shmem_check_acl,
+ #endif
+ };
+ 
+diff --git a/mm/shmem_acl.c b/mm/shmem_acl.c
+index 606a8e7..df2c87f 100644
+--- a/mm/shmem_acl.c
++++ b/mm/shmem_acl.c
+@@ -157,7 +157,7 @@ shmem_acl_init(struct inode *inode, struct inode *dir)
+ /**
+  * shmem_check_acl  -  check_acl() callback for generic_permission()
+  */
+-static int
++int
+ shmem_check_acl(struct inode *inode, int mask)
+ {
+ 	struct posix_acl *acl = shmem_get_acl(inode, ACL_TYPE_ACCESS);
+@@ -169,12 +169,3 @@ shmem_check_acl(struct inode *inode, int mask)
+ 	}
+ 	return -EAGAIN;
+ }
+-
+-/**
+- * shmem_permission  -  permission() inode operation
+- */
+-int
+-shmem_permission(struct inode *inode, int mask)
+-{
+-	return generic_permission(inode, mask, shmem_check_acl);
+-}
 diff --git a/sound/core/Kconfig b/sound/core/Kconfig
 index 6061fb5..c15682a 100644
 --- a/sound/core/Kconfig
