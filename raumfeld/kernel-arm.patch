@@ -396087,7 +396087,7 @@ index 0000000..70a040a
 +0
 diff --git a/drivers/video/pxa3xx-gcu.c b/drivers/video/pxa3xx-gcu.c
 new file mode 100644
-index 0000000..4d73d99
+index 0000000..76b878c
 --- /dev/null
 +++ b/drivers/video/pxa3xx-gcu.c
 @@ -0,0 +1,618 @@
@@ -396300,7 +396300,7 @@ index 0000000..4d73d99
 +		(gc_readl(priv, REG_GCRBHR) - base) / 4,
 +		(gc_readl(priv, REG_GCRBTR) - base) / 4);
 +
-+	for (i = 0; i < PXA3XX_GCU_BUFFER_WORDS; i++)
++	for (i=sh->hw_start; i<sh->hw_end; i++)
 +		printk(KERN_DEBUG "  [%6d]  0x%08x\n", i, sh->buffer[i]);
 +
 +	printk(KERN_DEBUG "=================================================\n");
