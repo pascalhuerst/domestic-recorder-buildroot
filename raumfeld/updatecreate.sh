@@ -21,10 +21,10 @@ update_dir=raumfeld/updates/$target/
 
 case $target in
 	remotecontrol-arm)
-		hardwareid=1
+		hardwareid=2
 		;;
 	audioadapter-arm)
-		hardwareid=2
+		hardwareid=3
 		;;
 	*)
 		echo "unable to map $target to hardware ID. bummer."
