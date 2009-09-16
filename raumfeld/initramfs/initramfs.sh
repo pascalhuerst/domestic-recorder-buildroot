@@ -7,11 +7,18 @@ echo "Booted to initramfs. Now switching over to imgrootfs."
 hw=`cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' '`
 
 case "$hw" in
-	# FIXME!!!
 	Controller)
-		img="uImage"
+		img="controller.img"
 		;;
-
+	Connector)
+		img="connector.img"
+		;;
+	Speaker)
+		img="speaker.img"
+		;;
+	Proto)
+		img="proto.img"
+		;;
 	*)
 		img="uImage"
 		echo "unknown hardware type '$hw'"
