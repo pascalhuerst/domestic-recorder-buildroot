@@ -8,10 +8,10 @@ hw=`cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' '`
 
 case "$hw" in
 	Controller)
-		img="controller.img"
+		img="control.img"
 		;;
 	Connector)
-		img="connector.img"
+		img="connect.img"
 		;;
 	Speaker)
 		img="speaker.img"
