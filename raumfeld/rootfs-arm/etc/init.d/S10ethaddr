@@ -1,0 +1,5 @@
+#!/bin/sh
+
+eval $(fw_printenv ethaddr)
+test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
+
