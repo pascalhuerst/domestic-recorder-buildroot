@@ -1,0 +1,18 @@
+#!/bin/sh
+
+source ../tests.inc
+TITLE="ETHADDR"
+DIALOGOPTS="--title $TITLE"
+
+dialog_info "Obtaining Ethernet MAC address. Please wait." $DIALOGOPTS
+
+eval $(fw_printenv ethaddr)
+test -z "$ethaddr" || exit 0
+
+ethaddr=$(wget -q -O - http://$TEST_HOST_WIRELESS/cgi-bin/getmac)
+test -z "$ethaddr" || exit -1
+
+fw_setenv ethaddr $ethaddr
+
+exit 0
+

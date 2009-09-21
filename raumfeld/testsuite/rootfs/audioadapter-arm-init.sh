@@ -4,6 +4,7 @@ source tests.inc
 
 cd tests
 
-./ethernet && \
 ./wifi     && \
+./ethaddr  && \
+./ethernet && \
 dialog_msg "ALL TESTS PASSED."
