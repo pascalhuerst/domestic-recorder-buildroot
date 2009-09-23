@@ -12,7 +12,7 @@ REMOTE_CONTROL_INSTALL_TARGET = YES
 
 REMOTE_CONTROL_CONF_ENV = \
 	gt_cv_func_gnugettext1_libintl=yes \
-	ac_cv_path_GLIB_GENMARSHAL=$(HOST_GLIB)/bin/glib-genmarshal
+	ac_cv_path_GLIB_GENMARSHAL=$(LIBGLIB2_HOST_BINARY)
 
 REMOTE_CONTROL_CONF_OPT = \
 	--disable-glibtest
