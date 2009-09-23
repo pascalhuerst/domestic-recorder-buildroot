@@ -4,7 +4,7 @@
 #
 #############################################################
 
-REMOTE_CONTROL_VERSION = $(BR2_PACKAGE_RAUMFELD_BRANCH)
+REMOTE_CONTROL_VERSION = $(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 REMOTE_CONTROL_AUTORECONF = YES
 REMOTE_CONTROL_LIBTOOL_PATCH = NO
 REMOTE_CONTROL_INSTALL_STAGING = YES
@@ -19,7 +19,7 @@ REMOTE_CONTROL_CONF_OPT = \
 	--disable-explicit-deps \
 	--disable-glibtest
 
-REMOTE_CONTROL_DEPENDENCIES = host-pkgconfig libraumfeld sly-toolkit
+REMOTE_CONTROL_DEPENDENCIES = host-pkgconfig gettext libintl libraumfeld sly-toolkit
 
 $(eval $(call AUTOTARGETS,package/raumfeld,remote-control))
 

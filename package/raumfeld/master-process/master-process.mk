@@ -3,7 +3,7 @@
 # master-process
 #
 #############################################################
-MASTER_PROCESS_VERSION:=$(BR2_PACKAGE_RAUMFELD_BRANCH)
+MASTER_PROCESS_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 MASTER_PROCESS_DIR:=$(BUILD_DIR)/master-process-$(MASTER_PROCESS_VERSION)
 MASTER_PROCESS_TARGET_DIR:=raumfeld/master-process
 MASTER_PROCESS_BINARY:=$(MASTER_PROCESS_TARGET_DIR)/raumfeld-master-process

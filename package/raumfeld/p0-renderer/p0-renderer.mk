@@ -3,7 +3,7 @@
 # p0-renderer
 #
 #############################################################
-P0_RENDERER_VERSION:=$(BR2_PACKAGE_RAUMFELD_BRANCH)
+P0_RENDERER_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 P0_RENDERER_DIR:=$(BUILD_DIR)/p0-renderer-$(P0_RENDERER_VERSION)
 P0_RENDERER_TARGET_DIR:=raumfeld/p0-renderer
 P0_RENDERER_BINARY:=$(P0_RENDERER_TARGET_DIR)/p0-renderer
