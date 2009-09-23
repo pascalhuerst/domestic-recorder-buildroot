@@ -19,7 +19,7 @@ REMOTE_CONTROL_CONF_OPT = \
 	--disable-explicit-deps \
 	--disable-glibtest
 
-REMOTE_CONTROL_DEPENDENCIES = host-pkgconfig libraumfeld sly-toolkit
+REMOTE_CONTROL_DEPENDENCIES = host-pkgconfig gettext libintl libraumfeld sly-toolkit
 
 $(eval $(call AUTOTARGETS,package/raumfeld,remote-control))
 
