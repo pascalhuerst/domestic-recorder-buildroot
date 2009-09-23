@@ -11,12 +11,10 @@ REMOTE_CONTROL_INSTALL_STAGING = YES
 REMOTE_CONTROL_INSTALL_TARGET = YES
 
 REMOTE_CONTROL_CONF_ENV = \
+	gt_func_gnugettext_libintl=yes \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_GLIB)/bin/glib-genmarshal
 
 REMOTE_CONTROL_CONF_OPT = \
-	--enable-shared		\
-	--enable-static		\
-	--disable-explicit-deps \
 	--disable-glibtest
 
 REMOTE_CONTROL_DEPENDENCIES = host-pkgconfig gettext libintl libraumfeld sly-toolkit
