@@ -3,7 +3,7 @@
 # meta-server
 #
 #############################################################
-META_SERVER_VERSION:=$(BR2_PACKAGE_RAUMFELD_BRANCH)
+META_SERVER_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 META_SERVER_DIR:=$(BUILD_DIR)/meta-server-$(META_SERVER_VERSION)
 META_SERVER_TARGET_DIR:=raumfeld/meta-server
 META_SERVER_BINARY:=$(META_SERVER_TARGET_DIR)/meta-server

@@ -3,7 +3,7 @@
 # p0-timeserver
 #
 #############################################################
-P0_TIMESERVER_VERSION:=$(BR2_PACKAGE_RAUMFELD_BRANCH)
+P0_TIMESERVER_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 P0_TIMESERVER_DIR:=$(BUILD_DIR)/p0-timeserver-$(P0_TIMESERVER_VERSION)
 P0_TIMESERVER_TARGET_DIR:=raumfeld/p0-timeserver
 P0_TIMESERVER_BINARY:=$(P0_TIMESERVER_TARGET_DIR)/p0-timeserver

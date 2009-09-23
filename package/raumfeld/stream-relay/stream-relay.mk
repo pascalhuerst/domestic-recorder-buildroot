@@ -3,7 +3,7 @@
 # stream-relay
 #
 #############################################################
-STREAM_RELAY_VERSION:=$(BR2_PACKAGE_RAUMFELD_BRANCH)
+STREAM_RELAY_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 STREAM_RELAY_DIR:=$(BUILD_DIR)/stream-relay-$(STREAM_RELAY_VERSION)
 STREAM_RELAY_TARGET_DIR:=raumfeld/stream-relay
 STREAM_RELAY_BINARY:=$(STREAM_RELAY_TARGET_DIR)/stream-relay
