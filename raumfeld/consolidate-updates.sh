@@ -5,7 +5,7 @@ update_ssh="devel.internal:/var/www/devel/updates"
 cd raumfeld/updates
 
 rm -fr www
-updates=$(find . -type d | tail -1)
+updates=$(find . -type d | tail --lines=+2)
 
 mkdir www
 
