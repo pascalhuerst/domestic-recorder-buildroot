@@ -12,7 +12,7 @@ GSSDP_INSTALL_STAGING = YES
 GSSDP_INSTALL_TARGET = YES
 
 GSSDP_CONF_ENV = \
-	ac_cv_path_GLIB_GENMARSHAL=$(HOST_GLIB)/bin/glib-genmarshal
+	ac_cv_path_GLIB_GENMARSHAL=$(LIBGLIB2_HOST_BINARY)
 
 GSSDP_CONF_OPT = \
 	--enable-shared		\

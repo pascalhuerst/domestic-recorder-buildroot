@@ -11,7 +11,8 @@ LIBRAUMFELD_INSTALL_STAGING = YES
 LIBRAUMFELD_INSTALL_TARGET = YES
 
 LIBRAUMFELD_CONF_ENV = \
-	ac_cv_path_GLIB_GENMARSHAL=$(HOST_GLIB)/bin/glib-genmarshal
+	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
+	ac_cv_path_GLIB_MkENUMS=$(HOST_DIR)/usr/bin/glib-mkenums
 
 LIBRAUMFELD_CONF_OPT = \
 	--localstatedir=/var	\
