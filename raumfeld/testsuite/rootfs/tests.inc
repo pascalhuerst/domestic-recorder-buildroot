@@ -1,7 +1,11 @@
 RELPATH=../
 INPUT_TEST=/input_test
+TEST_HOST_ESSID="RaumfeldTest"
 TEST_HOST_ETHERNET=10.0.0.1
 TEST_HOST_WIRELESS=192.168.23.1
+
+IP_WIRELESS=192.168.23.2
+IP_ETHERNET=10.0.0.2
 
 function dialog_msg() {
 	text=$1; shift
