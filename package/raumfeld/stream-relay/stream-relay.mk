@@ -17,7 +17,7 @@ else
 ifeq ($(ARCH),i586)
 STREAM_RELAY_CROSS=GEODE
 else
-echo "renderer can only be build for ARM or GEODE"
+echo "stream-relay can only be built for ARM or GEODE"
 exit 1
 endif
 endif
