@@ -14,8 +14,8 @@ SQLITE_DEPENDENCIES = uclibc
 
 SQLITE_CONF_OPT =	--enable-shared \
 			--enable-static \
+			--enable-threadsafe=no \
 			--enable-tempstore=yes \
-			--enable-threadsafe \
 			--enable-releasemode \
 			--disable-tcl \
 			--localstatedir=/var
