@@ -4,6 +4,27 @@ source ../tests.inc
 TITLE="WIRELESS"
 DIALOGOPTS="--title $TITLE"
 
+# finding strongest network around
+
+WIRELESS_IFNAME=wlan0
+TMP=$(/sbin/iwlist ${WIRELESS_IFNAME} scan | \
+	awk '/ESSID/ { id=$1 } /Mode:/ { mode=$1 } /Signal level/ { print $3 " " id " " mode }' | \
+	grep Ad-Hoc: | sort | head -n 1)
+
+ESSID=$(echo ${TMP} | cut -f2 -d\")
+QUALITY=$(echo ${TMP} | cut -f2 -d= | cut -f1 -d' ')
+MIN_QUALITY=-25
+
+if [ ${MIN_QUALITY} -gt ${QUALITY} ]; then
+	dialog_err "SIGNAL LEVEL TOO WEAK"
+	exit 1
+fi
+
+/sbin/iwconfig ${WIRELESS_IFNAME} essid ${ESSID}
+/sbin/iwconfig ${WIRELESS_IFNAME} mode Ad-Hoc
+/sbin/ifconfig ${WIRELESS_IFNAME} ${IP_WIRELESS}
+sleep 5s
+
 dialog_info "Testing WIRELESS. Please wait." $DIALOGOPTS
 
 CRC1=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg.md5sum | cut -f1 -d' ')
