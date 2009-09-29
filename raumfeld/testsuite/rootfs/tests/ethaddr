@@ -6,17 +6,23 @@ DIALOGOPTS="--title $TITLE"
 
 dialog_info "Obtaining Ethernet MAC address. Please wait." $DIALOGOPTS
 
-eval $(fw_printenv ethaddr)
+eval $(fw_printenv | grep ^ethaddr)
 if [ ! -z "$ethaddr" ]; then
 	/sbin/ifconfig eth0 hw ether $ethaddr
 	exit 0
 fi
 
 ethaddr=$(wget -q -O - http://$TEST_HOST_WIRELESS/cgi-bin/getmac)
-test -z "$ethaddr" || exit -1
+if [ -z "$ethaddr" ]; then
+	dialog_err "UNABLE TO GET MAC ADDRESS! PLEASE SYNC TEST MACHINE."
+	sleep 2
+	exit -1
+fi
 
 fw_setenv ethaddr $ethaddr
 /sbin/ifconfig eth0 hw ether $ethaddr
 
+dialog_success "MAC ADDR: $ethaddr" $DIALOGOPTS
+sleep 2
 exit 0
 

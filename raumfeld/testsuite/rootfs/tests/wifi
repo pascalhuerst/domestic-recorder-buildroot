@@ -4,28 +4,20 @@ source ../tests.inc
 TITLE="WIRELESS"
 DIALOGOPTS="--title $TITLE"
 
-# finding strongest network around
-
-WIRELESS_IFNAME=wlan0
-TMP=$(/sbin/iwlist ${WIRELESS_IFNAME} scan | \
-	awk '/ESSID/ { id=$1 } /Mode:/ { mode=$1 } /Signal level/ { print $3 " " id " " mode }' | \
-	grep Ad-Hoc: | sort | head -n 1)
-
-ESSID=$(echo ${TMP} | cut -f2 -d\")
-QUALITY=$(echo ${TMP} | cut -f2 -d= | cut -f1 -d' ')
-MIN_QUALITY=-25
+source "wifi.inc"
 
 if [ ${MIN_QUALITY} -gt ${QUALITY} ]; then
 	dialog_err "SIGNAL LEVEL TOO WEAK"
 	exit 1
 fi
 
-/sbin/iwconfig ${WIRELESS_IFNAME} essid ${ESSID}
+/sbin/ifconfig ${WIRELESS_IFNAME} up
 /sbin/iwconfig ${WIRELESS_IFNAME} mode Ad-Hoc
+/sbin/iwconfig ${WIRELESS_IFNAME} essid ${ESSID}
 /sbin/ifconfig ${WIRELESS_IFNAME} ${IP_WIRELESS}
-sleep 5s
+sleep 2
 
-dialog_info "Testing WIRELESS. Please wait." $DIALOGOPTS
+dialog_info "Testing WIRELESS. Please wait. ---------------------------------- ESSID=$ESSID QUALITY=$QUALITY" $DIALOGOPTS
 
 CRC1=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg.md5sum | cut -f1 -d' ')
 CRC2=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg | md5sum | cut -f1 -d' ')
@@ -35,6 +27,7 @@ if [ "$CRC1" = "$CRC2" ]; then
 	sleep 2
 else
 	dialog_err "TEST FAILED!" $DIALOGOPTS
+	sleep 2
 	exit 1
 fi
 

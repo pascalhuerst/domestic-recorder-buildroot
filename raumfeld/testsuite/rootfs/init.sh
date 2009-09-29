@@ -5,6 +5,11 @@ mkdir -p /sys
 mount proc /proc -t proc
 mount sys /sys -t sysfs
 mount devpts /dev/pts -t devpts
+mount -t tmpfs tmpfs /tmp
+mount -t tmpfs tmpfs /var
+
+mkdir /var/lock
+
 export PATH="/sbin:/usr/sbin:$PATH"
 udevd --daemon
 
