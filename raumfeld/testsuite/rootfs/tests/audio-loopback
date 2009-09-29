@@ -4,6 +4,8 @@ source ../tests.inc
 TITLE="AUDIOLOOPBACK"
 DIALOGOPTS="--title $TITLE"
 
+/snddevices
+
 /raumfeld/p0-audiotest/p0-audiotest
 
 if [ "$?" = "0" ]; then
