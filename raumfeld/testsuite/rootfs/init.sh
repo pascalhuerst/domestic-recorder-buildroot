@@ -2,9 +2,12 @@
 
 mkdir -p /proc
 mkdir -p /sys
-mount proc /proc -t proc
-mount sys /sys -t sysfs
-mount devpts /dev/pts -t devpts
+mount -n proc /proc -t proc
+mount -n sys /sys -t sysfs
+mount -n devpts /dev/pts -t devpts
+mount -n -t tmpfs tmpfs /tmp
+mount -n -t tmpfs tmpfs /var
+
 export PATH="/sbin:/usr/sbin:$PATH"
 udevd --daemon
 
@@ -28,6 +31,7 @@ ifconfig $WIRELESS_DEV 192.168.23.23 netmask 255.255.255.0
 rm -fr /var/empty
 mkdir -p /var/empty
 chmod 755 /var/empty
+mkdir /var/lock
 /etc/init.d/S50sshd start
 
 export TERM=xterm-color

@@ -4,6 +4,8 @@ source ../tests.inc
 TITLE="ETHERNET"
 DIALOGOPTS="--title $TITLE"
 
+/sbin/ifconfig eth0 ${IP_ETHERNET}
+
 dialog_info "Testing ETHERNET. Please wait." $DIALOGOPTS
 
 CRC1=$(wget -q -O - http://$TEST_HOST_ETHERNET/testimg.md5sum | cut -f1 -d' ')
