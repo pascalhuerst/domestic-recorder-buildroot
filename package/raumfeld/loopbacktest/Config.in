@@ -1,0 +1,10 @@
+config BR2_PACKAGE_RAUMFELD_LOOPBACKTEST
+	bool "factory audiotest software"
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_LIBOIL
+	select BR2_PACKAGE_LIBGLIB2
+	help
+	  raumfeld audiotest
+
+	  http://www.raumfeld.com/
+
