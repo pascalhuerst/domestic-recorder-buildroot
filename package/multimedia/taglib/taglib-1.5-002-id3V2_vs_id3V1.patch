@@ -18,7 +18,7 @@
 -  Header lastHeader(d->file->readBlock(4));
 -
    long first = d->file->firstFrameOffset();
-+  long last = 0;
++  long last = d->file->lastFrameOffset();
  
    if(first < 0) {
      debug("MPEG::Properties::read() -- Could not find a valid first MPEG frame in the stream.");
