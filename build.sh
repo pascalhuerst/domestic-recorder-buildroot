@@ -36,6 +36,8 @@ case $1 in
 		exit 1
 esac
 
+./buildlog.sh $0 $*
+
 cp raumfeld/br2-$1.config .config
 
 # is that really needed?

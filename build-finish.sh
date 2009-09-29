@@ -20,6 +20,7 @@ case $1 in
 		exit 1
 esac
 
+./buildlog.sh $0 $*
 
 # do post-processing for some targets ...
 
