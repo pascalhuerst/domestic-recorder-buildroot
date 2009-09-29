@@ -8,7 +8,6 @@ mount devpts /dev/pts -t devpts
 mount -t tmpfs tmpfs /tmp
 mount -t tmpfs tmpfs /var
 
-mkdir /var/lock
 
 export PATH="/sbin:/usr/sbin:$PATH"
 udevd --daemon
@@ -33,6 +32,7 @@ ifconfig $WIRELESS_DEV 192.168.23.23 netmask 255.255.255.0
 rm -fr /var/empty
 mkdir -p /var/empty
 chmod 755 /var/empty
+mkdir /var/lock
 /etc/init.d/S50sshd start
 
 export TERM=xterm-color
