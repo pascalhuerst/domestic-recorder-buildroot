@@ -1246,7 +1246,7 @@
  {
 +
    long first = d->file->firstFrameOffset();
-   long last = 0;
+   long last = d->file->lastFrameOffset();
  
 -  if(first < 0) {
 +  if (first < 0)

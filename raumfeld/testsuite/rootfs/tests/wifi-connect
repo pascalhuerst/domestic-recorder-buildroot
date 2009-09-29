@@ -1,0 +1,8 @@
+#!/bin/sh
+
+source ../tests.inc
+source "wifi.inc"
+
+echo "ESSID: $ESSID"
+echo "QUALITY: $QUALITY"
+

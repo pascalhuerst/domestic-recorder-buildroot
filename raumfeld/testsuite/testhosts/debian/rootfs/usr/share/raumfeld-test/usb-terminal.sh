@@ -5,5 +5,7 @@ if [ x`grep : /var/raumfeld-test/macaddr.list | wc -l` = x0 ]; then
 	exit 1
 fi
 
+gksudo /usr/share/raumfeld-test/setup.sh test
+
 gnome-terminal -e /usr/share/raumfeld-test/usb.sh
 
