@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Generating test image ..."
-dd if=/dev/urandom of=/var/www/testimg bs=1024 count=20000
+dd if=/dev/urandom of=/var/www/testimg bs=1024 count=5000
 md5sum /var/www/testimg > /var/www/testimg.md5sum
 
 mkdir /var/raumfeld-test/

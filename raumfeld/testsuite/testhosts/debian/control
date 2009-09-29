@@ -6,7 +6,7 @@ Architecture: i386
 Version: 0.0.5
 Depends: libc6 (>= 2.1), cu (>= 1.07-19.3), apache2 (>= 2.2.11),
  libasound2 (>= 1.0.18), coreutils (>= 6.10), wget (>= 1.11.4),
- gmessage (>= 2.6.2), gksu (>= 2.0.9)
+ gmessage (>= 2.6.2), gksu (>= 2.0.2)
 Description: raumfeld test host suite
  A suite of tools needed for raumfeld device testing
  and bootstrapping. Not intended to be given to the public, even

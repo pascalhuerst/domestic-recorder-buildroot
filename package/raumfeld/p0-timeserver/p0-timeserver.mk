@@ -18,7 +18,7 @@ else
 ifeq ($(ARCH),i586)
 P0_TIMESERVER_CROSS=GEODE
 else
-echo "timeserver can only be build for ARM or GEODE"
+echo "timeserver can only be built for ARM or GEODE"
 exit 1
 endif
 endif
