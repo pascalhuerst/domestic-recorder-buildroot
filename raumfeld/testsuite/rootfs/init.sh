@@ -2,12 +2,11 @@
 
 mkdir -p /proc
 mkdir -p /sys
-mount proc /proc -t proc
-mount sys /sys -t sysfs
-mount devpts /dev/pts -t devpts
-mount -t tmpfs tmpfs /tmp
-mount -t tmpfs tmpfs /var
-
+mount -n proc /proc -t proc
+mount -n sys /sys -t sysfs
+mount -n devpts /dev/pts -t devpts
+mount -n -t tmpfs tmpfs /tmp
+mount -n -t tmpfs tmpfs /var
 
 export PATH="/sbin:/usr/sbin:$PATH"
 udevd --daemon
