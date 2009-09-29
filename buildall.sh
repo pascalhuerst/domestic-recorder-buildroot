@@ -22,6 +22,7 @@ echo $versionstr > raumfeld/rootfs-remotecontrol-arm/etc/raumfeld-version
 
 ./build.sh audioadapter-arm
 ./build.sh remotecontrol-arm
+./build.sh devel-geode
 # add others here ...
 
 
