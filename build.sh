@@ -36,15 +36,29 @@ case $1 in
 		exit 1
 esac
 
+
+# cleanup from previous builds
+
+eval `grep BR2_ARCH .config`
+rm -fr build_$BR2_ARCH project_build_$BR2_ARCH
+
+# uncomment the following line if you also want to rebuild the toolchain
+# rm -fr toolchain_build_$BR2_ARCH
+
+
+# create a timestamp
+
 ./buildlog.sh $0 $*
 
+
+# put the .config file in place
+
 cp raumfeld/br2-$1.config .config
-
-# is that really needed?
-eval `grep BR2_ARCH .config`
-rm -fr build_$BR2_ARCH project_build_$BR2_ARCH toolchain_build_$BR2_ARCH
-
 make oldconfig
+
+
+# run the actual build process
+
 make
 
 
