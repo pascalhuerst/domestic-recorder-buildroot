@@ -1,4 +1,5 @@
 /build_*
+/build.log
 /project_*
 /toolchain_*
 /binaries
