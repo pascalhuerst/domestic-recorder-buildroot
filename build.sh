@@ -40,10 +40,7 @@ esac
 # cleanup from previous builds
 
 eval `grep BR2_ARCH .config`
-rm -fr build_$BR2_ARCH project_build_$BR2_ARCH
-
-# uncomment the following line if you also want to rebuild the toolchain
-# rm -fr toolchain_build_$BR2_ARCH
+rm -fr build_$BR2_ARCH project_build_$BR2_ARCH toolchain_build_$BR2_ARCH
 
 
 # create a timestamp
