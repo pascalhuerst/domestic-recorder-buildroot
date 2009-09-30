@@ -108,12 +108,12 @@
 #/dev/sndstat	c	666	0	29	14	6	-	-	-
 
 # ALSA
-/dev/controlC0	c	666	0	0	116	0	-	-	-
-/dev/controlC1	c	666	0	0	116	32	-	-	-
-/dev/pcmC0D0c	c	666	0	0	116	14	-	-	-
-/dev/pcmC0D0p	c	666	0	0	116	16	-	-	-
-/dev/pcmC1D0p	c	666	0	0	116	48	-	-	-
-/dev/mixer	c	666	0	0	116	33	-	-	-
+/dev/snd/controlC0	c	666	0	0	116	0	-	-	-
+/dev/snd/controlC1	c	666	0	0	116	32	-	-	-
+/dev/snd/pcmC0D0c	c	666	0	0	116	24	-	-	-
+/dev/snd/pcmC0D0p	c	666	0	0	116	16	-	-	-
+/dev/snd/pcmC1D0p	c	666	0	0	116	48	-	-	-
+/dev/snd/mixer		c	666	0	0	116	33	-	-	-
 
 # User-mode Linux stuff
 #/dev/ubda	b	640	0	0	98	0	0	0	-
