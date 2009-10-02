@@ -9,7 +9,11 @@ TAGLIB_SITE = http://developer.kde.org/~wheeler/files/src
 TAGLIB_LIBTOOL_PATCH = NO
 TAGLIB_INSTALL_STAGING = YES
 
-TAGLIB_DEPENDENCIES = uclibc zlib
+TAGLIB_DEPENDENCIES = uclibc
+
+ifeq ($(BR2_PACKAGE_ZLIB),y)
+TAGLIB_DEPENDENCIES += zlib
+endif
 
 TAGLIB_CONF_ENV = \
 	DO_NOT_COMPILE='bindings tests examples' \
