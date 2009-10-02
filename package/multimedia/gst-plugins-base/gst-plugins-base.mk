@@ -123,6 +123,12 @@ else
 GST_PLUGINS_BASE_CONF_OPT += --disable-volume
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_GIO),y)
+GST_PLUGINS_BASE_CONF_OPT += --enable-gio
+else
+GST_PLUGINS_BASE_CONF_OPT += --disable-gio
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_OGG),y)
 GST_PLUGINS_BASE_CONF_OPT += --enable-ogg
 GST_PLUGINS_BASE_DEPENDENCIES += libogg
