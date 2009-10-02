@@ -80,5 +80,8 @@ config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_VORBIS
 	bool "vorbis (*.ogg audio)"
 	select BR2_PACKAGE_LIBVORBIS
 
-endif
+config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_V4L
+	bool "video4linux"
 
+
+endif

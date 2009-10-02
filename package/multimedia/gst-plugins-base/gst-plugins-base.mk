@@ -144,4 +144,10 @@ else
 GST_PLUGINS_BASE_CONF_OPT += --disable-vorbis
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_V4L),y)
+GST_PLUGINS_BASE_CONF_OPT += --enable-gst_v4l
+else
+GST_PLUGINS_BASE_CONF_OPT += --disable-gst_v4l
+endif
+
 $(eval $(call AUTOTARGETS,package/multimedia,gst-plugins-base))
