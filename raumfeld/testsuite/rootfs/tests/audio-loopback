@@ -1,0 +1,19 @@
+#!/bin/sh
+
+source ../tests.inc
+TITLE="AUDIOLOOPBACK"
+DIALOGOPTS="--title $TITLE"
+
+/snddevices
+
+/raumfeld/p0-audiotest/p0-audiotest
+
+if [ "$?" = "0" ]; then
+	dialog_success "OK!" $DIALOGOPTS
+	sleep 2
+else
+	dialog_err "TEST FAILED!" $DIALOGOPTS
+	sleep 2
+	exit 1
+fi
+

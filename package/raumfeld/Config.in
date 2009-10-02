@@ -22,5 +22,6 @@ source "package/raumfeld/p0-timeserver/Config.in"
 source "package/raumfeld/config-service/Config.in"
 source "package/raumfeld/stream-relay/Config.in"
 source "package/raumfeld/meta-server/Config.in"
+source "package/raumfeld/loopbacktest/Config.in"
 endmenu
 

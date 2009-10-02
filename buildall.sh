@@ -12,6 +12,8 @@ version=${git_version#raumfeld-}
 buildnumber=$(cat build_number)
 versionstr="$buildnumber ($version)"
 
+./buildlog.sh $0: versionstr=$versionstr
+
 echo $versionstr > raumfeld/rootfs-audioadapter-arm/etc/raumfeld-version
 echo $versionstr > raumfeld/rootfs-remotecontrol-arm/etc/raumfeld-version
 
@@ -22,6 +24,7 @@ echo $versionstr > raumfeld/rootfs-remotecontrol-arm/etc/raumfeld-version
 
 ./build.sh audioadapter-arm
 ./build.sh remotecontrol-arm
+./build.sh devel-geode
 # add others here ...
 
 

@@ -36,13 +36,26 @@ case $1 in
 		exit 1
 esac
 
-cp raumfeld/br2-$1.config .config
 
-# is that really needed?
+# cleanup from previous builds
+
 eval `grep BR2_ARCH .config`
 rm -fr build_$BR2_ARCH project_build_$BR2_ARCH toolchain_build_$BR2_ARCH
 
+
+# create a timestamp
+
+./buildlog.sh $0 $*
+
+
+# put the .config file in place
+
+cp raumfeld/br2-$1.config .config
 make oldconfig
+
+
+# run the actual build process
+
 make
 
 

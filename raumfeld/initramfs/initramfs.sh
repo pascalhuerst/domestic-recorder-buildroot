@@ -44,7 +44,7 @@ mount $part /usb
 losetup -o 5128192 /dev/loop0 /usb/$img
 
 mkdir /rootfs
-mount -t ext2 /dev/loop0 /rootfs
+mount -t ext2 -o ro /dev/loop0 /rootfs
 
 echo "Jumping to the newly mounted rootfs"
 chroot /rootfs /init.sh

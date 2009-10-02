@@ -7,7 +7,6 @@ echo "Populating the root filesystem ..."
 cp -av raumfeld/testsuite/rootfs/* $1/
 cp -av raumfeld/rootfs-arm/lib $1
 
-
 echo "Building and installing test binaries..."
 
 GCC=build_arm/staging_dir/usr/bin/arm-linux-gcc
