@@ -21,7 +21,7 @@ TAGLIB_CONF_ENV = \
 	ac_cv_header_cppunit_extensions_HelperMacros_h=no \
 	ac_cv_header_zlib_h=$(if $(BR2_PACKAGE_ZLIB),yes,no)
 
-TAGLIB_CONF_OPT = --disable-libsuffix --program-prefix=''
+TAGLIB_CONF_OPT = --disable-fast-install --disable-libsuffix --program-prefix=''
 
 $(eval $(call AUTOTARGETS,package/multimedia,taglib))
 
