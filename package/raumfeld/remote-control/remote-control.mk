@@ -12,13 +12,13 @@ REMOTE_CONTROL_INSTALL_TARGET = YES
 
 REMOTE_CONTROL_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
-	ac_cv_path_GLIB_MkENUMS=$(HOST_DIR)/usr/bin/glib-mkenums \
+	ac_cv_path_GLIB_MKENUMS=$(HOST_DIR)/usr/bin/glib-mkenums \
 	gt_cv_func_gnugettext1_libintl=yes
 
 REMOTE_CONTROL_CONF_OPT = \
 	--disable-glibtest
 
-REMOTE_CONTROL_DEPENDENCIES = host-pkgconfig gettext libintl libraumfeld sly-toolkit
+REMOTE_CONTROL_DEPENDENCIES = host-pkgconfig host-libglib2 gettext libintl libraumfeld sly-toolkit
 
 $(eval $(call AUTOTARGETS,package/raumfeld,remote-control))
 

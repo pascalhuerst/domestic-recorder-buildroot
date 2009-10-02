@@ -12,7 +12,7 @@ LIBRAUMFELD_INSTALL_TARGET = YES
 
 LIBRAUMFELD_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
-	ac_cv_path_GLIB_MkENUMS=$(HOST_DIR)/usr/bin/glib-mkenums
+	ac_cv_path_GLIB_MKENUMS=$(HOST_DIR)/usr/bin/glib-mkenums
 
 LIBRAUMFELD_CONF_OPT = \
 	--localstatedir=/var	\
@@ -21,7 +21,7 @@ LIBRAUMFELD_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-LIBRAUMFELD_DEPENDENCIES = host-pkgconfig dbus-glib gupnp-av openssl
+LIBRAUMFELD_DEPENDENCIES = host-pkgconfig host-libglib2 dbus-glib gupnp-av openssl
 
 $(eval $(call AUTOTARGETS,package/raumfeld,libraumfeld))
 
