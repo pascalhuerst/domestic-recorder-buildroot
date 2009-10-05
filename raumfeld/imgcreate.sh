@@ -10,9 +10,12 @@
 #   the system to run upon start ($rootfsdir)
 # - the testsuite which is copied together with the rootfs (testdir)
 #
+# Optionally this script takes a revision identifier as the fifth
+# parameter. If this is unspecified a revision is created from the
+# current date and time.
 
-if test -z "$3"; then
-	echo "Usage: $0 <target> <platform> <base-rootfs-img> <target-rootfs-tgz>"
+if test -z "$4"; then
+	echo "Usage: $0 <target> <platform> <base-rootfs-img> <target-rootfs-tgz> [revision]"
 	exit
 fi
 
@@ -21,6 +24,11 @@ platform=$2
 base_rootfs_img=$3
 target_rootfs_tgz=$4
 
+if test -z "$5"; then
+    revision=(date +%F-%T)
+else
+    revision=$5
+fi
 
 ###### BUILD BINARIES #######
 echo "building prerequisites ..."
@@ -35,9 +43,11 @@ testdir=raumfeld/testsuite/
 imgcreate=raumfeld/imgtool/imgcreate
 imginfo=raumfeld/imgtool/imginfo
 resize2fs=/sbin/resize2fs
+
 # ext2_img has to be created in binaries/ temporarily. will be removed later.
 ext2_img=binaries/$target.ext2
-target_img=binaries/$target-$(date +%F-%T).img
+
+target_img=binaries/$target-$revision.img
 
 test -f $uimage		|| (echo "$uimage not found."; exit -1)
 test -f $rootfstgz	|| (echo "$rootfstgz not found."; exit -1)
