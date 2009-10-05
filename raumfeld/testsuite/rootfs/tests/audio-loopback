@@ -1,10 +1,12 @@
 #!/bin/sh
 
-source ../tests.inc
+. ../tests.inc
 TITLE="AUDIOLOOPBACK"
 DIALOGOPTS="--title $TITLE"
 
-/raumfeld/p0-audiotest/p0-audiotest
+/raumfeld/p0-audiotest/p0-audiotest | \
+	/percent 216 | \
+	dialog_progress "Testing audio loopback. Please wait." $DIALOGOPTS
 
 if [ "$?" = "0" ]; then
 	dialog_success "OK!" $DIALOGOPTS

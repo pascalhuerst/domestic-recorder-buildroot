@@ -1,10 +1,10 @@
 #!/bin/sh
 
-source ../tests.inc
+. ../tests.inc
 TITLE="WIRELESS"
 DIALOGOPTS="--title $TITLE"
 
-source "wifi.inc"
+source ./wifi.inc
 
 if [ ${MIN_QUALITY} -gt ${QUALITY} ]; then
 	dialog_err "SIGNAL LEVEL TOO WEAK"
