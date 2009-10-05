@@ -6,7 +6,8 @@
 TAGLIB_VERSION = 1.5
 TAGLIB_SOURCE = taglib-$(TAGLIB_VERSION).tar.gz
 TAGLIB_SITE = http://developer.kde.org/~wheeler/files/src
-TAGLIB_LIBTOOL_PATCH = NO
+TAGLIB_AUTORECONF = YES
+TAGLIB_LIBTOOL_PATCH = YES
 TAGLIB_INSTALL_STAGING = YES
 
 TAGLIB_DEPENDENCIES = uclibc
@@ -26,6 +27,9 @@ $(eval $(call AUTOTARGETS,package/multimedia,taglib))
 
 ifneq ($(BR2_HAVE_DEVFILES),y)
 $(TAGLIB_HOOK_POST_INSTALL):
+	sed -i -e 's|/usr|$(STAGING_DIR)/usr|' $(STAGING_DIR)/usr/bin/taglib-config
 	rm -f $(TARGET_DIR)/usr/bin/taglib-config
+	ln -sf libtag $(STAGING_DIR)/usr/lib/libtag.so
+	ln -sf libtag $(TARGET_DIR)/usr/lib/libtag.so
 	touch $@
 endif
