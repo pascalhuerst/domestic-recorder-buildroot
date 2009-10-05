@@ -7,29 +7,28 @@ TEST_HOST_WIRELESS=192.168.23.1
 IP_WIRELESS=192.168.23.2
 IP_ETHERNET=10.0.0.2
 
-function dialog_msg() {
+function dialog_msg {
 	text=$1; shift
 	DIALOGRC=$RELPATH/dialogrc.msg dialog $* --msgbox "$text" 20 40
 }
 
-function dialog_err() {
+function dialog_err {
 	text=$1; shift
 	DIALOGRC=$RELPATH/dialogrc.err dialog $* --msgbox "$text" 20 40
 	sleep 3
 }
 
-function dialog_success() {
+function dialog_success {
 	text=$1; shift
 	DIALOGRC=$RELPATH/dialogrc.success dialog $* --infobox "$text" 20 40
 	sleep 3
 }
 
-function dialog_info() {
+function dialog_info {
 	text=$1; shift
 	DIALOGRC=$RELPATH/dialogrc.msg dialog $* --infobox "$text" 20 40
 	sleep 3
 }
-
 
 function dialog_progress {
 	text=$1; shift
