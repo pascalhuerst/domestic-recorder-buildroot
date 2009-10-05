@@ -27,6 +27,9 @@ $(eval $(call AUTOTARGETS,package/multimedia,taglib))
 
 ifneq ($(BR2_HAVE_DEVFILES),y)
 $(TAGLIB_HOOK_POST_INSTALL):
+	sed -i -e 's|/usr|$(STAGING_DIR)/usr|' $(STAGING_DIR)/usr/bin/taglib-config
 	rm -f $(TARGET_DIR)/usr/bin/taglib-config
+	ln -sf libtag $(STAGING_DIR)/usr/lib/libtag.so
+	ln -sf libtag $(TARGET_DIR)/usr/lib/libtag.so
 	touch $@
 endif
