@@ -16,7 +16,7 @@ LOOPBACKTEST_CROSS=ARM
 endif
 
 $(LOOPBACKTEST_DIR)/.bzr:
-	test -z $(LOOPBACKTEST_CROSS) && \
+	test ! -z $(LOOPBACKTEST_CROSS) || \
 		(echo "loopbacktest can only be build for ARM"; exit 1)
 	if ! test -d $(LOOPBACKTEST_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
