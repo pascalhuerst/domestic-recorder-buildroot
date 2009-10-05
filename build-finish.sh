@@ -57,3 +57,7 @@ case $1 in
 		;;
 esac
 
+
+# write a stamp file
+
+touch build_arm/stamps/build-$i
