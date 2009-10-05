@@ -8,5 +8,6 @@ cd tests
 ./rotary &&		\
 ./accel-simple &&	\
 ./touch &&		\
+./wifi &&		\
 dialog_msg "ALL TESTS PASSED."
 
