@@ -1,0 +1,68 @@
+#!/bin/sh
+
+OUT=/tmp/dialog.out
+
+while [ 0 ]; do
+
+dialog --menu "Select test to run" 20 60 18 \
+	1	wifi		\
+	2	nand		\
+	3	ethernet	\
+	4	macaddr		\
+	5	audioloopback	\
+	6	spdif		\
+	7	display		\
+	8	touch		\
+	9	rotary		\
+	10	accel-simple	\
+	11	accel-full	\
+	12	zerosetup-button \
+	XX	shell exit	\
+	2> $OUT
+
+n=$(cat $OUT)
+rm -f $OUT
+
+case $n in
+	1)
+		./wifi
+		;;
+	2)
+		./nand
+		;;
+	3)
+		./ethernet
+		;;
+	4)
+		./athaddr
+		;;
+	5)
+		./audio-loopback
+		;;
+	6)
+		./spdif
+		;;
+	7)
+		./display
+		;;
+	8)
+		./touch
+		;;
+	9)
+		./rotary
+		;;
+	10)
+		./accel-simple
+		;;
+	11)
+		./accel-full
+		;;
+	12)
+		./zerosetup-button
+		;;
+	XX)
+		exit 0
+esac
+
+done
+
