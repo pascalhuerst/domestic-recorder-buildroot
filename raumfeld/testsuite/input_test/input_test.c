@@ -191,7 +191,7 @@ static int test_key(int fd, int code)
 	return 0;
 }
 
-#define ACCEL_SIMPLE_THRESH	20
+#define ACCEL_SIMPLE_THRESH	30
 #define ACCEL_FULL_THRESH	1000
 
 static int test_accel_simple(int fd)
