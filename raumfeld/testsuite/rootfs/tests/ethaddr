@@ -15,7 +15,6 @@ fi
 ethaddr=$(wget -q -O - http://$TEST_HOST_WIRELESS/cgi-bin/getmac)
 if [ -z "$ethaddr" ]; then
 	dialog_err "UNABLE TO GET MAC ADDRESS! PLEASE SYNC TEST MACHINE."
-	sleep 2
 	exit -1
 fi
 
@@ -23,6 +22,5 @@ fw_setenv ethaddr $ethaddr
 /sbin/ifconfig eth0 hw ether $ethaddr
 
 dialog_success "MAC ADDR: $ethaddr" $DIALOGOPTS
-sleep 2
 exit 0
 

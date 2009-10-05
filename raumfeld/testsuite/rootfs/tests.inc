@@ -15,16 +15,19 @@ function dialog_msg() {
 function dialog_err() {
 	text=$1; shift
 	DIALOGRC=$RELPATH/dialogrc.err dialog $* --msgbox "$text" 20 40
+	sleep 3
 }
 
 function dialog_success() {
 	text=$1; shift
 	DIALOGRC=$RELPATH/dialogrc.success dialog $* --infobox "$text" 20 40
+	sleep 3
 }
 
 function dialog_info() {
 	text=$1; shift
 	DIALOGRC=$RELPATH/dialogrc.msg dialog $* --infobox "$text" 20 40
+	sleep 3
 }
 
 
