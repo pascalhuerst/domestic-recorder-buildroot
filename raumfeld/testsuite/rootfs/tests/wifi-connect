@@ -1,7 +1,7 @@
 #!/bin/sh
 
-source ../tests.inc
-source "wifi.inc"
+. ../tests.inc
+. ./wifi.inc
 
 echo "ESSID: $ESSID"
 echo "QUALITY: $QUALITY"

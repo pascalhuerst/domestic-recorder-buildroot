@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source ../tests.inc
+. ../tests.inc
 TITLE="ROTARY"
 DIALOGOPTS="--title $TITLE"
 
