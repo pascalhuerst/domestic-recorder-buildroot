@@ -108,6 +108,7 @@
 #/dev/sndstat	c	666	0	29	14	6	-	-	-
 
 # ALSA
+/dev/snd	d	755	0	0	-	-	-	-	-
 /dev/snd/controlC0	c	666	0	0	116	0	-	-	-
 /dev/snd/controlC1	c	666	0	0	116	32	-	-	-
 /dev/snd/pcmC0D0c	c	666	0	0	116	24	-	-	-
