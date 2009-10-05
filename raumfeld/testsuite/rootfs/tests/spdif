@@ -1,0 +1,10 @@
+#!/bin/sh
+
+source ../tests.inc
+TITLE="DIGITALOUT"
+DIALOGOPTS="--title $TITLE"
+
+aplay -D hw:1 /simpsons.wav
+
+dialog_success "OK!" $DIALOGOPTS
+
