@@ -23,6 +23,10 @@ case $1 in
 		;;
 	imgrootfs-arm)
 		;;
+	initramfs-geode)
+		;;
+	imgrootfs-geode)
+		;;
 	audioadapter-arm)
 		;;
 	remotecontrol-arm)

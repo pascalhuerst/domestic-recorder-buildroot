@@ -6,6 +6,10 @@ echo "Booted to initramfs. Now switching over to imgrootfs."
 
 hw=`cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' '`
 
+if [ -z "$hw" ]; then
+	hw=`cat /proc/cpuinfo | grep ^model\ name | cut -f 3 -d' '`
+fi
+
 case "$hw" in
 	Controller)
 		img="control.img"
@@ -18,6 +22,9 @@ case "$hw" in
 		;;
 	Proto)
 		img="proto.img"
+		;;
+	Geode*)
+		img="base.img"
 		;;
 	*)
 		img="uImage"

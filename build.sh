@@ -18,6 +18,10 @@ case $1 in
 		;;
 	imgrootfs-arm)
 		;;
+	initramfs-geode)
+		;;
+	imgrootfs-geode)
+		;;
 	audioadapter-arm)
 		;;
 	remotecontrol-arm)
@@ -27,6 +31,7 @@ case $1 in
 		for x in \
 			devel-arm devel-geode \
 			initramfs-arm imgrootfs-arm \
+			initramfs-geode imgrootfs-geode \
 			audioadapter-arm remotecontrol-arm; do
 
                         echo "updating config for $x ..."
