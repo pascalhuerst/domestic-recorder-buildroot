@@ -26,7 +26,7 @@ target_rootfs_tgz=$4
 revision=$5
 
 if test -z "$revision"; then
-    revision=(date +%F-%T)
+    revision=$(date +%F-%T)
 fi
 
 ###### BUILD BINARIES #######
