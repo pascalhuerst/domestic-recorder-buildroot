@@ -12,17 +12,20 @@ CONFIG_SERVICE_CROSS_PREFIX:=$(BUILD_DIR)/..
 CONFIG_SERVICE_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp
 
 ifeq ($(ARCH),arm)
-CONFIG_SERVICE_CROSS=ARM
-else
-ifeq ($(ARCH),i586)
-CONFIG_SERVICE_CROSS=GEODE
-else
-echo "config-service can only be build for ARM or GEODE"
-exit 1
+CONFIG_SERVICE_CROSS = ARM
 endif
+
+ifeq ($(ARCH),i586)
+CONFIG_SERVICE_CROSS = GEODE
+endif
+
+ifeq ($(ARCH),i386)
+CONFIG_SERVICE_CROSS = GEODE
 endif
 
 $(CONFIG_SERVICE_DIR)/.bzr:
+	test ! -z "$(CONFIG_SERVICE_CROSS)" || \
+		(echo config-service can only be build for ARM or GEODE"; exit -1)
 	if ! test -d $(CONFIG_SERVICE_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p config-service-$(CONFIG_SERVICE_VERSION); \

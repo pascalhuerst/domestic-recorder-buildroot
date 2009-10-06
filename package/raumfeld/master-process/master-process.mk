@@ -12,17 +12,16 @@ MASTER_PROCESS_CROSS_PREFIX:=$(BUILD_DIR)/..
 MASTER_PROCESS_DEPENDENCIES = host-pkgconfig host-libglib2 libraumfeld
 
 ifeq ($(ARCH),arm)
-MASTER_PROCESS_CROSS=ARM
-else
-ifeq ($(ARCH),i586)
-MASTER_PROCESS_CROSS=GEODE
-else
-echo "master-process can only be built for ARM or GEODE"
-exit 1
+MASTER_PROCESS_CROSS = ARM
 endif
+
+ifeq ($(ARCH),i586)
+MASTER_PROCESS_CROSS = GEODE
 endif
 
 $(MASTER_PROCESS_DIR)/.bzr:
+	test ! -z "$(MASTER_PROCESS_CROSS)" || \
+		(echo "master-process can only be built for ARM or GEODE"; exit -1)
 	if ! test -d $(MASTER_PROCESS_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p master-process-$(MASTER_PROCESS_VERSION); \

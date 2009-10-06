@@ -12,17 +12,16 @@ P0_RENDERER_CROSS_PREFIX:=$(BUILD_DIR)/..
 P0_RENDERER_DEPENDENCIES = host-pkgconfig host-libglib2 host-dbus-glib alsa-lib dbus-glib flac gstreamer liboil libraumfeld
 
 ifeq ($(ARCH),arm)
-P0_RENDERER_CROSS=ARM
-else
-ifeq ($(ARCH),i586)
-P0_RENDERER_CROSS=GEODE
-else
-echo "renderer can only be build for ARM or GEODE"
-exit 1
+P0_RENDERER_CROSS = ARM
 endif
+
+ifeq ($(ARCH),i586)
+P0_RENDERER_CROSS = GEODE
 endif
 
 $(P0_RENDERER_DIR)/.bzr:
+	test ! -z "$(P0_RENDERER_CROSS)" || \
+		(echo "renderer can only be build for ARM or GEODE"; exit -1)
 	if ! test -d $(P0_RENDERER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p p0-renderer-$(P0_RENDERER_VERSION); \

@@ -13,17 +13,16 @@ P0_TIMESERVER_CROSS_PREFIX:=$(BUILD_DIR)/..
 P0_TIMESERVER_DEPENDENCIES = host-pkgconfig libraumfeld
 
 ifeq ($(ARCH),arm)
-P0_TIMESERVER_CROSS=ARM
-else
-ifeq ($(ARCH),i586)
-P0_TIMESERVER_CROSS=GEODE
-else
-echo "timeserver can only be built for ARM or GEODE"
-exit 1
+P0_TIMESERVER_CROSS = ARM
 endif
+
+ifeq ($(ARCH),i586)
+P0_TIMESERVER_CROSS = GEODE
 endif
 
 $(P0_TIMESERVER_DIR)/.bzr:
+	test ! -z "$(P0_TIMESERVER_CROSS)" || \
+		(echo "timeserver can only be built for ARM or GEODE"; exit -1)
 	if ! test -d $(P0_TIMESERVER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p p0-timeserver-$(P0_TIMESERVER_VERSION); \
