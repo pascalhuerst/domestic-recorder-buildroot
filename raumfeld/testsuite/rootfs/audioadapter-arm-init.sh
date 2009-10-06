@@ -7,7 +7,7 @@ cd tests
 ./wifi     		&& \
 ./ethaddr  		&& \
 ./ethernet 		&& \
-./audio-loopback 	&& \
+./audio		 	&& \
 ./nand     		&& \
 ./zerosetup-button 	&& \
 dialog_msg "ALL TESTS PASSED."

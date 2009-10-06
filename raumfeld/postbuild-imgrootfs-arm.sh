@@ -14,3 +14,7 @@ GCC=build_arm/staging_dir/usr/bin/arm-linux-gcc
 $GCC -o $1/progress_fb -Wall raumfeld/testsuite/progress_fb/progress_fb.c
 $GCC -o $1/input_test -Wall raumfeld/testsuite/input_test/input_test.c
 $GCC -o $1/percent -Wall raumfeld/testsuite/percent/percent.c
+
+# TODO: put that file somewhere else
+wget http://caiaq.de/download/raumfeld/audiotest.wav -O $1/audiotest.wav
+

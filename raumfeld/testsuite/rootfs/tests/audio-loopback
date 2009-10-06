@@ -4,6 +4,8 @@
 TITLE="AUDIOLOOPBACK"
 DIALOGOPTS="--title $TITLE"
 
+rm -f /tmp/out
+
 /raumfeld/p0-audiotest/p0-audiotest 2>&1 | \
 	tee /tmp/out | \
 	/percent 216 | \
