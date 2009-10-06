@@ -23,11 +23,10 @@ target=$1
 platform=$2
 base_rootfs_img=$3
 target_rootfs_tgz=$4
+revision=$5
 
-if test -z "$5"; then
+if test -z "$revision"; then
     revision=(date +%F-%T)
-else
-    revision=$5
 fi
 
 ###### BUILD BINARIES #######
