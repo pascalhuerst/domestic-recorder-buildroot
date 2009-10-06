@@ -25,7 +25,7 @@ endif
 
 $(CONFIG_SERVICE_DIR)/.bzr:
 	test ! -z "$(CONFIG_SERVICE_CROSS)" || \
-		(echo "config-service can only be build for ARM or GEODE"; exit -1)
+		(echo "config-service can only be built for ARM or GEODE"; exit -1)
 	if ! test -d $(CONFIG_SERVICE_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p config-service-$(CONFIG_SERVICE_VERSION); \
