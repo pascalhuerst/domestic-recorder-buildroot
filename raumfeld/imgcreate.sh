@@ -15,14 +15,14 @@
 # the current date and time.
 
 echo_usage() {
-echo << __EOF__ >&2
+cat << __EOF__ >&2
 Usage: $0 --target=<target>
 	--platform=<platform>
 	--base-rootfs-img=<base-rootfs-img>
 	--target-rootfs-tgz=<target-rootfs-tgz>
 	[--revision=<revision>]
-__EOF__
 
+__EOF__
 	exit 1
 }
 

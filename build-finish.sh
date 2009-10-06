@@ -1,25 +1,23 @@
 #!/bin/sh
 
-# build-finish.sh --target=<target> [--image=<image> --revision=<revision>]
-#
-#   target     is one of devel-arm, devel-geode,
-#                        initramfs-arm, imgrootfs-arm,
-#                        audioadapter-arm, remotecontrol-arm
-#   image      is optional and can be one of 'init flash final'
-#   revision   is optional and serves as an identifier for this build
-#
-# build-finish.sh is usually called from build.sh at the end of a
-# successful build. The reason it exists as a separate script is so
-# that you can fix a broken build, finish it and run build-finish.sh
-# manually.
-
 set -e
 
 ./buildlog.sh $0 $*
 
 echo_usage() {
-	echo "Usage: $0 --target=<target> [--image=<image> --revision=<revision>]" >&2
-	exit 1
+cat << __EOF__ >&2
+Usage: $0 --target=<target> [--image=<image> --revision=<revision>]
+
+   target     is one of devel-arm, devel-geode,
+                        initramfs-arm, imgrootfs-arm,
+                        initramfs-geode, imgroofs-geode,
+                        audioadapter-arm, remotecontrol-arm
+                        base-geode
+   image      is optional and can be one of 'init flash final'
+   revision   is optional and serves as an identifier for this build
+
+__EOF__
+        exit 1
 }
 
 while [ "$1" ]; do
