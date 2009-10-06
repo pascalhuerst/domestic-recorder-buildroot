@@ -1,10 +1,11 @@
 #!/bin/sh
 
-# build.sh <target> [revision]
+# build.sh --target=<target> [--image=<image> --revision=<revision>]
 #
 #   target     is one of devel-arm, devel-geode,
 #                        initramfs-arm, imgrootfs-arm,
 #                        audioadapter-arm, remotecontrol-arm
+#   image      is optional and can be one of 'init flash final'
 #   revision   is optional and serves as an identifier for this build
 
 set -e
