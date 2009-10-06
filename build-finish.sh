@@ -60,8 +60,7 @@ case $1 in
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh $1-$t arm \
 				binaries/uclibc/imgrootfs.arm.ext2 \
-				binaries/uclibc/rootfs-audioadapter.arm.tar.gz \
-			        $2
+				binaries/uclibc/rootfs-audioadapter.arm.tar.gz
 		done
 
 		raumfeld/updatecreate.sh $1 \
@@ -71,8 +70,7 @@ case $1 in
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh $1-$t arm \
 				binaries/uclibc/imgrootfs.arm.ext2 \
-				binaries/uclibc/rootfs-remotecontrol.arm.tar.gz \
-			        $2
+				binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
 		done
 
 		raumfeld/updatecreate.sh $1 \
@@ -82,8 +80,7 @@ case $1 in
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh $1-$t geode \
 				binaries/uclibc/imgrootfs.i586.ext2 \
-				binaries/uclibc/rootfs-base.geode.tar.gz \
-				$2
+				binaries/uclibc/rootfs-base.geode.tar.gz
 		done
 esac
 
