@@ -4,11 +4,12 @@
 TITLE="AUDIOLOOPBACK"
 DIALOGOPTS="--title $TITLE"
 
-/raumfeld/p0-audiotest/p0-audiotest | \
+/raumfeld/p0-audiotest/p0-audiotest 2>&1 | \
+	tee /tmp/out | \
 	/percent 216 | \
 	dialog_progress "Testing audio loopback. Please wait." $DIALOGOPTS
 
-if [ "$?" = "0" ]; then
+if [ -z "$(grep ERROR /tmp/out)" ]; then
 	dialog_success "OK!" $DIALOGOPTS
 else
 	dialog_err "TEST FAILED!" $DIALOGOPTS
