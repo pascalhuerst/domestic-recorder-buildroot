@@ -1,22 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 echo_usage() {
 	echo "Usage: $0 --target=<target> --targz=<tar.gz>"
         exit 1
 }
 
-while [ "$1" ]; do
-        case $1 in
-                --target)	target=$2; shift ;;
-                --target=*)	target=${1#--target=} ;;
-
-                --targz)	targz=$2; shift ;;
-                --targz=*)	targz=${1#--targz=} ;;
-
-                *)                      echo_usage ;;
-        esac
-        shift
-done
+. ./getopt.inc
+getopt $*
 
 if [ -z "$target" ] || [ -z "$targz" ];
 then echo_usage; fi

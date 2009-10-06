@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 targets="devel-arm devel-geode			\
          initramfs-arm imgrootfs-arm		\
          initramfs-geode imgrootfs-geode	\
@@ -28,38 +26,27 @@ cat << __EOF__ >&2
    revision   is optional and serves as an identifier for this build
 
    If --update-configs is specified, the target configs are all ran
-   thru 'make oldconfig'. Not further action is taken.
+   thru 'make oldconfig'. No further action is taken.
 
 __EOF__
 	exit 1
 }
 
-while [ "$1" ]; do
-	case $1 in
-		--target)	target=$2; shift ;;
-		--target=*)	target=${1#--target=} ;;
+. ./getopt.inc
+getopt $*
 
-		--image)	image=$2; shift ;;
-		--image=*)	image=${1#--image=} ;;
+set -e
 
-		--revision)	revision=$2; shift ;;
-		--revision=*)	revision=${1#--revision=} ;;
+if [ ! -z "$update_configs" ]; then
+	for x in $targets; do
+		echo "updating config for $x ..."
+		cp raumfeld/br2-$x.config .config
+		/usr/bin/make oldconfig
+		cp .config raumfeld/br2-$x.config
+	done
 
-		--update-configs)
-			for x in $targets; do
-				echo "updating config for $x ..."
-				cp raumfeld/br2-$x.config .config
-				/usr/bin/make oldconfig
-				cp .config raumfeld/br2-$x.config
-			done
-
-			exit 0;
-			;;
-
-		*)		echo_usage ;;
-	esac
-	shift
-done
+	exit 0
+fi
 
 test -z "$target" && echo_usage
 

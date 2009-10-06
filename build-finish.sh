@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -20,48 +20,21 @@ __EOF__
         exit 1
 }
 
-while [ "$1" ]; do
-	case $1 in
-		--target)       target=$2; shift ;;
-		--target=*)     target=${1#--target=} ;;
-
-		--image)	image=$2; shift ;;
-		--image=*)      image=${1#--image=} ;;
-
-		--revision)     revision=$2; shift ;;
-		--revision=*)   revision=${1#--revision=} ;;
-
-		*)	      echo_usage ;;
-	esac
-	shift
-done
+. ./getopt.inc
+getopt $*
 
 test -z "$target" && echo_usage
 
+found=0
 
-case $target in
-	devel-arm)
-		;;
-	devel-geode)
-		;;
-	initramfs-arm)
-		;;
-	imgrootfs-arm)
-		;;
-	initramfs-geode)
-		;;
-	imgrootfs-geode)
-		;;
-	audioadapter-arm)
-		;;
-	remotecontrol-arm)
-		;;
-	base-geode)
-		;;
-	*)
-		echo "unknown target '$target'. bummer."
-		exit 1
-esac
+for x in $targets; do
+	[ "$x" = "$target" ] && found=1
+done
+
+if [ "$found" != "1" ]; then
+	echo "unknown target '$target'. bummer."
+	exit 1
+fi
 
 # do post-processing for some targets ...
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # This is what the user of this script has to provide:
@@ -31,30 +31,8 @@ __EOF__
 
 ./buildlog.sh $*
 
-while [ "$1" ]; do
-        case $1 in
-                --target)		target=$2; shift ;;
-                --target=*)		target=${1#--target=} ;;
-
-                --platform)		platform=$2; shift ;;
-                --platform=*)		platform=${1#--platform=} ;;
-
-                --base-rootfs-img)	base_rootfs_img=$2; shift ;;
-                --base-rootfs-img=*)	base_rootfs_img=${1#--base-rootfs-img=} ;;
-
-                --target-rootfs-tgz)	target_rootfs_tgz=$2; shift ;;
-                --target-rootfs-tgz=*)	target_rootfs_tgz=${1#--target-rootfs-tgz=} ;;
-
-                --revision)		revision=$2; shift ;;
-                --revision=*)		revision=${1#--revision=} ;;
-
-                --kernel)		kernel=$2; shift ;;
-                --kernel=*)		kernel=${1#--kernel=} ;;
-
-		*)			echo_usage ;;
-        esac
-        shift
-done
+. ./getopt.inc
+getopt $*
 
 if [ -z "$target" ]		|| \
    [ -z "$platform" ]		|| \
