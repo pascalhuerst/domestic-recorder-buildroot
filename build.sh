@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# build.sh <target> [revision]
+#
+#   target     is one of devel-arm, devel-geode,
+#                        initramfs-arm, imgrootfs-arm,
+#                        audioadapter-arm, remotecontrol-arm
+#   revision   is optional and serves as an identifier for this build
+
 set -e
 
 case $1 in

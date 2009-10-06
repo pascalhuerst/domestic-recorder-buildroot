@@ -1,5 +1,17 @@
 #!/bin/sh
 
+# build-finish.sh <target> [revision]
+#
+#   target     is one of devel-arm, devel-geode,
+#                        initramfs-arm, imgrootfs-arm,
+#                        audioadapter-arm, remotecontrol-arm
+#   revision   is optional and serves as an identifier for this build
+#
+# build-finish.sh is usually called from build.sh at the end of a
+# successful build. The reason it exists as a separate script is so
+# that you can fix a broken build, finish it and run build-finish.sh
+# manually.
+
 set -e
 
 case $1 in
@@ -42,7 +54,8 @@ case $1 in
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh $1-$t arm \
 				binaries/uclibc/imgrootfs.arm.ext2 \
-				binaries/uclibc/rootfs-audioadapter.arm.tar.gz
+				binaries/uclibc/rootfs-audioadapter.arm.tar.gz \
+			        $2
 		done
 
 		raumfeld/updatecreate.sh $1 \
@@ -52,7 +65,8 @@ case $1 in
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh $1-$t arm \
 				binaries/uclibc/imgrootfs.arm.ext2 \
-				binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
+				binaries/uclibc/rootfs-remotecontrol.arm.tar.gz \
+			        $2
 		done
 
 		raumfeld/updatecreate.sh $1 \
@@ -60,3 +74,7 @@ case $1 in
 		;;
 esac
 
+
+# write a stamp file
+
+touch build_arm/stamps/build-$1

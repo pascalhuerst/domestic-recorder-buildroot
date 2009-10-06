@@ -9,7 +9,7 @@ MASTER_PROCESS_TARGET_DIR:=raumfeld/master-process
 MASTER_PROCESS_BINARY:=$(MASTER_PROCESS_TARGET_DIR)/raumfeld-master-process
 MASTER_PROCESS_CROSS_PREFIX:=$(BUILD_DIR)/..
 
-MASTER_PROCESS_DEPENDENCIES = host-pkgconfig libraumfeld
+MASTER_PROCESS_DEPENDENCIES = host-pkgconfig host-libglib2 libraumfeld
 
 ifeq ($(ARCH),arm)
 MASTER_PROCESS_CROSS=ARM
