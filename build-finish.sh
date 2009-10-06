@@ -31,6 +31,8 @@ case $1 in
 		;;
 	remotecontrol-arm)
 		;;
+	base-geode)
+		;;
 	*)
 		echo "unknown target '$1'. bummer."
 		exit 1
@@ -51,7 +53,7 @@ case $1 in
 		/sbin/resize2fs binaries/uclibc/imgrootfs.arm.ext2 500M
 		;;
 	imgrootfs-geode)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.geode.ext2 500M
+		/sbin/resize2fs binaries/uclibc/imgrootfs.i586.ext2 500M
 		;;
 
 	audioadapter-arm)
@@ -76,6 +78,13 @@ case $1 in
 		raumfeld/updatecreate.sh $1 \
 			binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
 		;;
+	base-geode)
+		for t in $IMAGES; do
+			raumfeld/imgcreate.sh $1-$t geode \
+				binaries/uclibc/imgrootfs.i586.ext2 \
+				binaries/uclibc/rootfs-base.geode.tar.gz \
+				$2
+		done
 esac
 
 

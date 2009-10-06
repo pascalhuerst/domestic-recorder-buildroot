@@ -26,10 +26,12 @@ case $1 in
 		;;
 	remotecontrol-arm)
 		;;
+	base-geode)
+		;;
 
 	configs)
 		for x in \
-			devel-arm devel-geode \
+			devel-arm devel-geode base-geode \
 			initramfs-arm imgrootfs-arm \
 			initramfs-geode imgrootfs-geode \
 			audioadapter-arm remotecontrol-arm; do
