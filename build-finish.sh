@@ -39,7 +39,7 @@ done
 test -z "$target" && echo_usage
 
 
-case $1 in
+case $target in
 	devel-arm)
 		;;
 	devel-geode)
@@ -59,7 +59,7 @@ case $1 in
 	base-geode)
 		;;
 	*)
-		echo "unknown target '$1'. bummer."
+		echo "unknown target '$target'. bummer."
 		exit 1
 esac
 
