@@ -21,7 +21,7 @@ endif
 
 $(STREAM_RELAY_DIR)/.bzr:
 	test ! -z "$(STREAM_RELAY_CROSS)" || \
-		echo "stream-relay can only be built for ARM or GEODE"; exit -1)
+		(echo "stream-relay can only be built for ARM or GEODE"; exit -1)
 	if ! test -d $(STREAM_RELAY_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p stream-relay-$(STREAM_RELAY_VERSION); \
