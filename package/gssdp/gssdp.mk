@@ -4,7 +4,7 @@
 #
 #############################################################
 
-GSSDP_VERSION:=0.7.0
+GSSDP_VERSION:=0.6.4
 GSSDP_SOURCE:=gssdp-$(GSSDP_VERSION).tar.gz
 GSSDP_SITE:=http://www.gupnp.org/sources/gssdp
 GSSDP_AUTORECONF = NO
@@ -22,7 +22,7 @@ GSSDP_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-GSSDP_DEPENDENCIES = host-pkgconfig libsoup
+GSSDP_DEPENDENCIES = host-pkgconfig host-libglib2 libsoup
 
 $(eval $(call AUTOTARGETS,package,gssdp))
 
