@@ -68,7 +68,7 @@ esac
 IMAGES="init flash final"
 test ! -z "$image" && IMAGES=$image
 
-case $1 in
+case $target in
 	# resize the root fs ext2 image so that genext2fs will find
 	# free inodes when building the deployment targets.
 	# this should probably be made part of br2 some day.
