@@ -17,6 +17,7 @@ dialog --menu "Select test to run" 20 60 15 \
 	10	accel-simple	\
 	11	accel-full	\
 	12	zerosetup-button \
+	13	battery		\
 	XX	shell		\
 	2> $OUT
 
@@ -59,6 +60,9 @@ case $n in
 		;;
 	12)
 		./zerosetup-button
+		;;
+	13)
+		./battery
 		;;
 	XX)
 		exit 0
