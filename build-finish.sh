@@ -24,6 +24,9 @@ esac
 
 # do post-processing for some targets ...
 
+IMAGES="init flash final"
+test ! -z "$2" && IMAGES=$2
+
 case $1 in
 	# resize the root fs ext2 image so that genext2fs will find
 	# free inodes when building the deployment targets.
@@ -36,7 +39,7 @@ case $1 in
 		;;
 
 	audioadapter-arm)
-		for t in flash init final; do
+		for t in $IMAGES; do
 			raumfeld/imgcreate.sh $1-$t arm \
 				binaries/uclibc/imgrootfs.arm.ext2 \
 				binaries/uclibc/rootfs-audioadapter.arm.tar.gz
@@ -46,7 +49,7 @@ case $1 in
 			binaries/uclibc/rootfs-audioadapter.arm.tar.gz
 		;;
 	remotecontrol-arm)
-		for t in flash init final; do
+		for t in $IMAGES; do
 			raumfeld/imgcreate.sh $1-$t arm \
 				binaries/uclibc/imgrootfs.arm.ext2 \
 				binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
