@@ -7,7 +7,7 @@ DIALOGOPTS="--title $TITLE"
 source ./wifi.inc
 
 if [ ${MIN_QUALITY} -gt ${QUALITY} ]; then
-	dialog_err "SIGNAL LEVEL TOO WEAK"
+	dialog_err "SIGNAL LEVEL $QUALITY TOO WEAK ($MIN_QUALITY required)"
 	exit 1
 fi
 

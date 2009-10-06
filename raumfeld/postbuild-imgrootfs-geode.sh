@@ -2,10 +2,6 @@
 #
 # post-build.sh for the imgrootfs-arm target
 
-echo "Populating the root filesystem ..."
-
-cp -av raumfeld/testsuite/rootfs/* $1/
-
 echo "Building and installing test binaries..."
 
 GCC=build_i586/staging_dir/usr/bin/i586-linux-uclibcgnueabi-gcc

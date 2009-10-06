@@ -68,15 +68,15 @@ esac
 IMAGES="init flash final"
 test ! -z "$image" && IMAGES=$image
 
-case $1 in
+case $target in
 	# resize the root fs ext2 image so that genext2fs will find
 	# free inodes when building the deployment targets.
 	# this should probably be made part of br2 some day.
 	imgrootfs-arm)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.arm.ext2 500M
+		/sbin/resize2fs binaries/uclibc/imgrootfs.arm.ext2 100M
 		;;
 	imgrootfs-geode)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.i586.ext2 500M
+		/sbin/resize2fs binaries/uclibc/imgrootfs.i586.ext2 100M
 		;;
 
 	audioadapter-arm)
@@ -86,6 +86,7 @@ case $1 in
 				--platform=arm \
 				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
 				--target-rootfs-tgz=binaries/uclibc/rootfs-audioadapter.arm.tar.gz \
+				--kernel=binaries/initramfs-arm/uImage \
 			        --revision=$revision
 		done
 
@@ -100,6 +101,7 @@ case $1 in
 				--platform=arm \
 				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
 				--target-rootfs-tgz=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz \
+				--kernel=binaries/initramfs-arm/uImage \
 			        --revision=$revision
 		done
 
@@ -114,12 +116,13 @@ case $1 in
 				--platform=geode \
 				--base-rootfs-img=binaries/uclibc/imgrootfs.i586.ext2 \
 				--target-rootfs-tgz=binaries/uclibc/rootfs-base.geode.tar.gz \
+				--kernel=binaries/initramfs-geode/bzImage \
 				--revision=$revision
 		done
 esac
 
 
 # write a stamp file
-
-touch build_arm/stamps/build-$target
+eval `grep BR2_ARCH .config`
+touch build_$BR2_ARCH/stamps/build-$target
 

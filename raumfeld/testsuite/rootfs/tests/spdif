@@ -6,5 +6,5 @@ DIALOGOPTS="--title $TITLE"
 
 aplay -D hw:1 /audiotest.wav
 
-dialog_success "OK!" $DIALOGOPTS
+dialog_msg "Testing digital audio output. Press hit enter if the test succeeded." $DIALOGOPTS
 
