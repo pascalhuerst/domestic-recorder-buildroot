@@ -10,24 +10,51 @@
 #   the system to run upon start ($rootfsdir)
 # - the testsuite which is copied together with the rootfs (testdir)
 #
-# Optionally this script takes a revision identifier as the fifth
-# parameter. If this is unspecified a revision is created from the
-# current date and time.
+# Optionally this script takes a revision identifier as extra
+# parameter. If this is unspecified a revision is created from
+# the current date and time.
 
-if test -z "$4"; then
-	echo "Usage: $0 <target> <platform> <base-rootfs-img> <target-rootfs-tgz> [revision]"
-	exit
-fi
+echo_usage() {
+echo << __EOF__ >&2
+Usage: $0 --target=<target>
+	--platform=<platform>
+	--base-rootfs-img=<base-rootfs-img>
+	--target-rootfs-tgz=<target-rootfs-tgz>
+	[--revision=<revision>]
+__EOF__
 
-target=$1
-platform=$2
-base_rootfs_img=$3
-target_rootfs_tgz=$4
-revision=$5
+	exit 1
+}
 
-if test -z "$revision"; then
-    revision=$(date +%F-%T)
-fi
+while [ "$1" ]; do
+        case $1 in
+                --target)		target=$2; shift ;;
+                --target=*)		target=${1#--target=} ;;
+
+                --platform)		platform=$2; shift ;;
+                --platform=*)		platform=${1#--platform=} ;;
+
+                --base-rootfs-img)	base_rootfs_img=$2; shift ;;
+                --base-rootfs-img=*)	base_rootfs_img=${1#--base-rootfs-img=} ;;
+
+                --target-rootfs-tgz)	target_rootfs_tgz=$2; shift ;;
+                --target-rootfs-tgz=*)	target_rootfs_tgz=${1#--target-rootfs-tgz=} ;;
+
+                --revision)		revision=$2; shift ;;
+                --revision=*)		revision=${1#--revision=} ;;
+
+		*)			echo_usage ;;
+        esac
+        shift
+done
+
+if [ -z "$target" ]		|| \
+   [ -z "$platform" ]		|| \
+   [ -z "$base_rootfs_img" ]	|| \
+   [ -z "$target_rootfs_tgz" ];
+then echo_usage; fi
+
+test -z "$revision" && revision=$(date +%F-%T)
 
 ###### BUILD BINARIES #######
 echo "building prerequisites ..."

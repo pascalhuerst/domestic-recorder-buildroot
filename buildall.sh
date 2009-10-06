@@ -19,16 +19,16 @@ echo $versionstr > raumfeld/rootfs-remotecontrol-arm/etc/raumfeld-version
 
 # initramfs and imgrootfs is needed to build before the other targets,
 # so build them first
-./build.sh initramfs-arm
-./build.sh imgrootfs-arm
+./build.sh --target=initramfs-arm
+./build.sh --target=imgrootfs-arm
 
-./build.sh initramfs-geode
-./build.sh imgrootfs-geode
+./build.sh --target=initramfs-geode
+./build.sh --target=imgrootfs-geode
 
-./build.sh audioadapter-arm
-./build.sh remotecontrol-arm
+./build.sh --target=audioadapter-arm
+./build.sh --target=remotecontrol-arm
 
-./build.sh base-geode
+./build.sh --target=base-geode
 # add others here ...
 
 

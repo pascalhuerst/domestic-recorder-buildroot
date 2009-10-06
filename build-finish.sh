@@ -14,6 +14,32 @@
 
 set -e
 
+./buildlog.sh $0 $*
+
+echo_usage() {
+	echo "Usage: $0 --target=<target> [--image=<image> --revision=<revision>]" >&2
+	exit 1
+}
+
+while [ "$1" ]; do
+	case $1 in
+		--target)       target=$2; shift ;;
+		--target=*)     target=${1#--target=} ;;
+
+		--image)	image=$2; shift ;;
+		--image=*)      image=${1#--image=} ;;
+
+		--revision)     revision=$2; shift ;;
+		--revision=*)   revision=${1#--revision=} ;;
+
+		*)	      echo_usage ;;
+	esac
+	shift
+done
+
+test -z "$target" && echo_usage
+
+
 case $1 in
 	devel-arm)
 		;;
@@ -38,12 +64,10 @@ case $1 in
 		exit 1
 esac
 
-./buildlog.sh $0 $*
-
 # do post-processing for some targets ...
 
 IMAGES="init flash final"
-test ! -z "$2" && IMAGES=$2
+test ! -z "$image" && IMAGES=$image
 
 case $1 in
 	# resize the root fs ext2 image so that genext2fs will find
@@ -58,36 +82,45 @@ case $1 in
 
 	audioadapter-arm)
 		for t in $IMAGES; do
-			raumfeld/imgcreate.sh $1-$t arm \
-				binaries/uclibc/imgrootfs.arm.ext2 \
-				binaries/uclibc/rootfs-audioadapter.arm.tar.gz \
-			        $2
+			raumfeld/imgcreate.sh \
+				--target=$target-$t \
+				--platform=arm \
+				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
+				--target-rootfs-tgz=binaries/uclibc/rootfs-audioadapter.arm.tar.gz \
+			        --revision=$revision
 		done
 
-		raumfeld/updatecreate.sh $1 \
-			binaries/uclibc/rootfs-audioadapter.arm.tar.gz
+		raumfeld/updatecreate.sh \
+			--target=$target \
+			--targz=binaries/uclibc/rootfs-audioadapter.arm.tar.gz
 		;;
 	remotecontrol-arm)
 		for t in $IMAGES; do
-			raumfeld/imgcreate.sh $1-$t arm \
-				binaries/uclibc/imgrootfs.arm.ext2 \
-				binaries/uclibc/rootfs-remotecontrol.arm.tar.gz \
-			        $2
+			raumfeld/imgcreate.sh \
+				--target=$target-$t \
+				--platform=arm \
+				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
+				--target-rootfs-tgz=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz \
+			        --revision=$revision
 		done
 
-		raumfeld/updatecreate.sh $1 \
-			binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
+		raumfeld/updatecreate.sh \
+			--target=$target \
+			--targz=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
 		;;
 	base-geode)
 		for t in $IMAGES; do
-			raumfeld/imgcreate.sh $1-$t geode \
-				binaries/uclibc/imgrootfs.i586.ext2 \
-				binaries/uclibc/rootfs-base.geode.tar.gz \
-				$2
+			raumfeld/imgcreate.sh \
+				--target=$target-$t \
+				--platform=geode \
+				--base-rootfs-img=binaries/uclibc/imgrootfs.i586.ext2 \
+				--target-rootfs-tgz=binaries/uclibc/rootfs-base.geode.tar.gz \
+				--revision=$revision
 		done
 esac
 
 
 # write a stamp file
 
-touch build_arm/stamps/build-$1
+touch build_arm/stamps/build-$target
+

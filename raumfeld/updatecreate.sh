@@ -1,12 +1,25 @@
 #!/bin/sh
 
-target=$1
-targz=$2
+echo_usage() {
+	echo "Usage: $0 --target=<target> --targz=<tar.gz>"
+        exit 1
+}
 
-if [ -z "$targz" ]; then
-	echo "Usage: $0 <target> <tar.gz>"
-	exit 1
-fi
+while [ "$1" ]; do
+        case $1 in
+                --target)	target=$2; shift ;;
+                --target=*)	target=${1#--target=} ;;
+
+                --targz)	targz=$2; shift ;;
+                --targz=*)	targz=${1#--targz=} ;;
+
+                *)                      echo_usage ;;
+        esac
+        shift
+done
+
+if [ -z "$target" ] || [ -z "$targz" ];
+then echo_usage; fi
 
 numfiles=$(tar -f $targz -zt | wc -l)
 git_version=$(git describe --tags)

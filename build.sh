@@ -9,7 +9,34 @@
 
 set -e
 
-case $1 in
+# create a timestamp
+
+./buildlog.sh $0 $*
+
+echo_usage() {
+	echo "Usage: $0 --target=<target> [--image=<image> --revision=<revision>]" >&2
+	exit 1
+}
+
+while [ "$1" ]; do
+	case $1 in
+		--target)	target=$2; shift ;;
+		--target=*)	target=${1#--target=} ;;
+
+		--image)	image=$2; shift ;;
+		--image=*)	image=${1#--image=} ;;
+
+		--revision)	revision=$2; shift ;;
+		--revision=*)	revision=${1#--revision=} ;;
+
+		*)		echo_usage ;;
+	esac
+	shift
+done
+
+test -z "$target" && echo_usage
+
+case $target in
 	devel-arm)
 		;;
 	devel-geode)
@@ -46,7 +73,7 @@ case $1 in
 		;;
 
 	*)
-		echo "unknown target '$1'. bummer."
+		echo "unknown target '$target'. bummer."
 		exit 1
 esac
 
@@ -57,14 +84,9 @@ eval `grep BR2_ARCH .config`
 rm -fr build_$BR2_ARCH project_build_$BR2_ARCH toolchain_build_$BR2_ARCH
 
 
-# create a timestamp
-
-./buildlog.sh $0 $*
-
-
 # put the .config file in place
 
-cp raumfeld/br2-$1.config .config
+cp raumfeld/br2-$target.config .config
 make oldconfig
 
 
@@ -72,7 +94,7 @@ make oldconfig
 
 make
 
-
 # do post-processing for some targets ...
 
-./build-finish.sh $*
+./build-finish.sh --target=$target --image=$image --revision=$revision
+
