@@ -14,6 +14,8 @@
 # parameter. If this is unspecified a revision is created from
 # the current date and time.
 
+set -e
+
 echo_usage() {
 cat << __EOF__ >&2
 Usage: $0 --target=<target>
@@ -25,6 +27,8 @@ Usage: $0 --target=<target>
 __EOF__
 	exit 1
 }
+
+./buildlog.sh $*
 
 while [ "$1" ]; do
         case $1 in
@@ -87,6 +91,13 @@ echo "Operating in $tmpdir"
 
 cp $target_rootfs_tgz $tmpdir/rootfs.tgz
 cp -av raumfeld/testsuite/rootfs/* $tmpdir/
+
+# FIXME! put this file somewhere else
+test -f raumfeld/audiotest.wav || \
+	wget http://caiaq.de/download/raumfeld/audiotest.wav \
+	-O raumfeld/audiotest.wav
+
+cp raumfeld/audiotest.wav $tmpdir/
 
 # ext2_img has to be created in binaries/ temporarily. will be removed later.
 echo "exec /$target.sh" > $tmpdir/start-test.sh

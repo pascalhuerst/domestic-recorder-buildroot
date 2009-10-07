@@ -73,10 +73,10 @@ case $target in
 	# free inodes when building the deployment targets.
 	# this should probably be made part of br2 some day.
 	imgrootfs-arm)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.arm.ext2 500M
+		/sbin/resize2fs binaries/uclibc/imgrootfs.arm.ext2 100M
 		;;
 	imgrootfs-geode)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.i586.ext2 500M
+		/sbin/resize2fs binaries/uclibc/imgrootfs.i586.ext2 100M
 		;;
 
 	audioadapter-arm)
