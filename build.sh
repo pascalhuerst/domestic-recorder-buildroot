@@ -69,7 +69,7 @@ for x in $targets; do
 	[ "$x" = "$target" ] && found=1
 done
 
-if [ "$found" = "1" ]; then
+if [ "$found" != "1" ]; then
 	echo "unknown target '$target'. bummer."
 	exit 1
 fi
