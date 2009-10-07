@@ -86,6 +86,7 @@ case $target in
 				--platform=arm \
 				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
 				--target-rootfs-tgz=binaries/uclibc/rootfs-audioadapter.arm.tar.gz \
+				--kernel=binaries/initramfs-arm/uImage \
 			        --revision=$revision
 		done
 
@@ -100,6 +101,7 @@ case $target in
 				--platform=arm \
 				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
 				--target-rootfs-tgz=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz \
+				--kernel=binaries/initramfs-arm/uImage \
 			        --revision=$revision
 		done
 
@@ -114,6 +116,7 @@ case $target in
 				--platform=geode \
 				--base-rootfs-img=binaries/uclibc/imgrootfs.i586.ext2 \
 				--target-rootfs-tgz=binaries/uclibc/rootfs-base.geode.tar.gz \
+				--kernel=binaries/initramfs-geode/bzImage \
 				--revision=$revision
 		done
 esac

@@ -3,8 +3,8 @@
 #
 # This is what the user of this script has to provide:
 #
-# - an uImage that contains a iniramfs which mounts the ext2
-#   part of the resulting image and executes /init.sh ($uimage)
+# - a kernel image that contains a iniramfs which mounts the ext2
+#   part of the resulting image and executes /init.sh ($kernel)
 # - the imgcreate utility and a path to it ($imgcreate)
 # - a minimal file system that contains everything you want
 #   the system to run upon start ($rootfsdir)
@@ -22,6 +22,7 @@ Usage: $0 --target=<target>
 	--platform=<platform>
 	--base-rootfs-img=<base-rootfs-img>
 	--target-rootfs-tgz=<target-rootfs-tgz>
+	--kernel=<kernel>
 	[--revision=<revision>]
 
 __EOF__
@@ -47,6 +48,9 @@ while [ "$1" ]; do
                 --revision)		revision=$2; shift ;;
                 --revision=*)		revision=${1#--revision=} ;;
 
+                --kernel)		kernel=$2; shift ;;
+                --kernel=*)		kernel=${1#--kernel=} ;;
+
 		*)			echo_usage ;;
         esac
         shift
@@ -55,6 +59,7 @@ done
 if [ -z "$target" ]		|| \
    [ -z "$platform" ]		|| \
    [ -z "$base_rootfs_img" ]	|| \
+   [ -z "$kernel" ]		|| \
    [ -z "$target_rootfs_tgz" ];
 then echo_usage; fi
 
@@ -67,7 +72,6 @@ make -C raumfeld/imgtool
 ###### CHECK PARMS #######
 
 tmpdir=$(tempfile)-$PPID
-uimage=binaries/initramfs-$platform/uImage
 testdir=raumfeld/testsuite/
 #inputtest_bin=$testdir/input_test/input_test
 imgcreate=raumfeld/imgtool/imgcreate
@@ -79,10 +83,11 @@ ext2_img=binaries/$target.ext2
 
 target_img=binaries/$target-$revision.img
 
-test -f $uimage		|| (echo "$uimage not found."; exit -1)
-test -f $rootfstgz	|| (echo "$rootfstgz not found."; exit -1)
-#test -f $inputtest_bin	|| (echo "$inputtest_bin not found."; exit -1)
+test -f $kernel		|| echo "ERROR: $kernel not found"
+test -f $kernel		|| exit 1
 
+test -f $rootfstgz	|| echo "ERROR: $rootfstgz not found."
+test -f $rootfstgz	|| exit 1
 
 ###### CREATE THE CONTENT #######
 
@@ -119,7 +124,7 @@ echo "Bootstrap image for target $target" > $tmpdir/desc
 date >> $tmpdir/desc
 echo "Host $(hostname)" >> $tmpdir/desc
 
-$imgcreate $uimage $tmpdir/desc $ext2_img $target_img
+$imgcreate $kernel $tmpdir/desc $ext2_img $target_img
 
 
 ####### CLEANUP ########
