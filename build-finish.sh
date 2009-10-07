@@ -123,6 +123,6 @@ esac
 
 
 # write a stamp file
-
-touch build_arm/stamps/build-$target
+eval `grep BR2_ARCH .config`
+touch build_$BR2_ARCH/stamps/build-$target
 
