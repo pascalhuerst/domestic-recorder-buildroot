@@ -18,8 +18,11 @@ FFMPEG_DEPENDENCIES = uclibc
 FFMPEG_TARGET_LIBRARIES = \
 	$(TARGET_DIR)/usr/lib/libavcodec.so	\
 	$(TARGET_DIR)/usr/lib/libavformat.so	\
-	$(TARGET_DIR)/usr/lib/libavutil.so	\
-	$(TARGET_DIR)/usr/lib/libpostproc.so
+	$(TARGET_DIR)/usr/lib/libavutil.so
+
+ifeq ($(BR2_PACKAGE_FFMPEG_POSTPROC),y)
+FFMPEG_TARGET_LIBRARIES += $(TARGET_DIR)/usr/lib/libpostproc.so
+endif
 
 FFMPEG_CONF_OPT = \
 	--disable-ffmpeg	\
