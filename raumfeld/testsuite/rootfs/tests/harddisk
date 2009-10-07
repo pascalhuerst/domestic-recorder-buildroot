@@ -1,0 +1,17 @@
+#!/bin/sh
+
+. ../tests.inc
+
+# purge partition table, if any. This script does it the hard way.
+dd if=/dev/zero of=/dev/hda bs=512 count=1
+
+# create a new one
+sfdisk /dev/hda << __EOF__
+0,8
+,900
+;
+;
+__EOF__
+
+
+

@@ -1,0 +1,17 @@
+!#/bin/sh
+
+. ../tests.inc
+TITLE="ANALOGIN"
+DIALOGOPTS="--title $TITLE"
+
+# set volume
+amixer cset numid=1 220
+
+# set code loopthru
+amixer cset numid=8 1
+
+dialog_msg "Testing analog audio input. Press hit enter if the test succeeded." $DIALOGOPTS
+
+amixer cset numid=8 0
+aplay -D hw:0 /audiotest.wav
+

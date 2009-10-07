@@ -13,7 +13,7 @@ case "$hw" in
 		;;
 
         Speaker)
-		./spdif
+		./audio-speaker
 		;;
 
 	*)
