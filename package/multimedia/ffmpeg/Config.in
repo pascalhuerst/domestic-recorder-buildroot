@@ -26,6 +26,7 @@ config BR2_PACKAGE_FFMPEG_NONFREE
 config BR2_PACKAGE_FFMPEG_POSTPROC
 	bool "build ffmpeg libpostproc"
 	default n
+        depends on BR2_PACKAGE_FFMPEG_GPL
 	help
          build libpostproc
          under GPL
