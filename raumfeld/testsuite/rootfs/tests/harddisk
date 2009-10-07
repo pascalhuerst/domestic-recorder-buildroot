@@ -1,17 +1,41 @@
 #!/bin/sh
 
 . ../tests.inc
+TITLE="HARDDISK"
+DIALOGOPTS="--title $TITLE"
+
+DEV=/dev/hda
+TMPROOT=/tmp/root
 
 # purge partition table, if any. This script does it the hard way.
-dd if=/dev/zero of=/dev/hda bs=512 count=1
+dd if=/dev/zero of=$DEV bs=512 count=1
 
 # create a new one
-sfdisk /dev/hda << __EOF__
+sfdisk $DEV << __EOF__
 0,8
 ,900
 ;
 ;
 __EOF__
 
+for x in 1 2 3; do
+	mkfs.ext2 ${DEV}${x} 2>&1 | \
+		/percent 20 | \
+		dialog_progress "Creating filesystem $x/3" $DIALOGOPTS
+done
 
+mkdir $TMPROOT
+mount -t ext2 ${DEV}2 $TMPROOT
+
+mkdir $TMPROOT/boot
+mount -t ext2 ${DEV}1 $TMPROOT/boot
+
+zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
+	/percent `cat /rootfs.tgz.numfiles` | \
+	dialog_progress "Copying files to harddisk. Please wait." $DIALOGOPTS
+
+umount $TMPROOT/boot
+umount $TMPROOT
+
+/bin/sh
 
