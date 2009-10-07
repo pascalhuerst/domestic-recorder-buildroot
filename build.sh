@@ -1,6 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
+
+targets="devel-arm devel-geode			\
+         initramfs-arm imgrootfs-arm		\
+         initramfs-geode imgrootfs-geode	\
+         audioadapter-arm remotecontrol-arm	\
+         base-geode"
 
 # create a timestamp
 
@@ -9,14 +15,20 @@ set -e
 echo_usage() {
 cat << __EOF__ >&2
 Usage: $0 --target=<target> [--image=<image> --revision=<revision>]
+       $0 --update-configs
 
-   target     is one of devel-arm, devel-geode,
-                        initramfs-arm, imgrootfs-arm,
-                        initramfs-geode, imgroofs-geode,
-                        audioadapter-arm, remotecontrol-arm
-                        base-geode
+   target is one of
+__EOF__
+
+for t in $targets; do echo "		$t"; done
+
+cat << __EOF__ >&2
+
    image      is optional and can be one of 'init flash final'
    revision   is optional and serves as an identifier for this build
+
+   If --update-configs is specified, the target configs are all ran
+   thru 'make oldconfig'. Not further action is taken.
 
 __EOF__
 	exit 1
@@ -33,6 +45,17 @@ while [ "$1" ]; do
 		--revision)	revision=$2; shift ;;
 		--revision=*)	revision=${1#--revision=} ;;
 
+		--update-configs)
+			for x in $targets; do
+				echo "updating config for $x ..."
+				cp raumfeld/br2-$x.config .config
+				/usr/bin/make oldconfig
+				cp .config raumfeld/br2-$x.config
+			done
+
+			exit 0;
+			;;
+
 		*)		echo_usage ;;
 	esac
 	shift
@@ -40,47 +63,16 @@ done
 
 test -z "$target" && echo_usage
 
-case $target in
-	devel-arm)
-		;;
-	devel-geode)
-		;;
-	initramfs-arm)
-		;;
-	imgrootfs-arm)
-		;;
-	initramfs-geode)
-		;;
-	imgrootfs-geode)
-		;;
-	audioadapter-arm)
-		;;
-	remotecontrol-arm)
-		;;
-	base-geode)
-		;;
+found=0
 
-	configs)
-		for x in \
-			devel-arm devel-geode base-geode \
-			initramfs-arm imgrootfs-arm \
-			initramfs-geode imgrootfs-geode \
-			audioadapter-arm remotecontrol-arm; do
+for x in $targets; do
+	[ "$x" = "$target" ] && found=1
+done
 
-                        echo "updating config for $x ..."
-			cp raumfeld/br2-$x.config .config
-			/usr/bin/make oldconfig
-			cp .config raumfeld/br2-$x.config
-		done
-
-		exit 0;
-		;;
-
-	*)
-		echo "unknown target '$target'. bummer."
-		exit 1
-esac
-
+if [ "$found" = "1" ]; then
+	echo "unknown target '$target'. bummer."
+	exit 1
+fi
 
 # cleanup from previous builds
 
