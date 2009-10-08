@@ -9,8 +9,14 @@ SYSDIR=/sys/class/power_supply/ds2760-battery.0
 CURRENT_IN_MIN=-400000
 CURRENT_IN_MAX=-700000
 
-CURRENT_OUT_MIN=
-CURRENT_OUT_MAX=
+check_charge() {
+	current=$1
+	voltage=$2
+
+#
+	charge_ok=1
+}
+
 
 if [ ! -d $SYSDIR ]; then
 	dialog_err "BATTERY NOT CONNECTED" $DIALOGOPTS
@@ -28,8 +34,13 @@ if [ ! "$status" = "Charging" ]; then
 fi
 
 current=$(cat $SYSDIR/current_now)
-if [ $current -gt $CURRENT_OUT_MIN ] || [ $current -lt $CURRENT_OUT_MAX ]; then
-	dialog_err "Reported current level for discharge ($current) is out of bounds"
+voltage=$(cat $SYSDIR/voltage_now)
+
+charge_ok=0
+check_charge($current, $voltage)
+
+if [ "$charge_ok" != "1" ]; then
+	dialog_err "Reported values for charge (voltage: $voltage current: $current) is out of bounds"
 	exit 1
 fi
 
@@ -48,6 +59,11 @@ if [ $current -gt $CURRENT_IN_MIN ] || [ $current -lt $CURRENT_IN_MAX ]; then
 	dialog_err "Reported current level for discharge ($current) is out of bounds"
 	exit 1
 fi
+
+dialog_info "Please CONNECT power adapter again."
+
+# use the power adapter wakeup logic to get back to life
+suspend
 
 dialog_success "OK!" $DIALOGOPTS
 

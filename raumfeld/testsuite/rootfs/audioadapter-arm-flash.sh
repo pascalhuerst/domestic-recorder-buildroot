@@ -4,6 +4,15 @@ source tests.inc
 
 cd tests
 
-./nand &&		\
-dialog_msg "ALL TESTS PASSED."
+./leds-blink 1 &
+pid=$!
+
+./nand || touch /tmp/test-failed
+
+if [ -f /tmp/test-failed ]; then
+	kill $pid
+	./leds-blink 2
+fi
+
+reboot
 

@@ -4,7 +4,11 @@
 TITLE="ACCELEROMETER"
 DIALOGOPTS="--title $TITLE"
 
-dialog_info "Hit the table!." $DIALOGOPTS
+dialog_info "Hit the table!" $DIALOGOPTS
 $INPUT_TEST accel_simple
+dialog_success "OK" $DIALOGOPTS
+
+dialog_info "Hit the table again!" $DIALOGOPTS
+suspend
 dialog_success "OK" $DIALOGOPTS
 

@@ -4,13 +4,16 @@ source tests.inc
 
 cd tests
 
+exit
+
 ./wifi     		&& \
 ./ethaddr  		&& \
 ./ethernet 		&& \
 ./audio		 	&& \
 ./nand     		&& \
-./zerosetup-button 	&& \
-dialog_msg "ALL TESTS PASSED."
+./zerosetup-button
+
+test_result
 
 ./test-menu
 

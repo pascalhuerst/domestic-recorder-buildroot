@@ -10,6 +10,9 @@ cd tests
 ./touch &&		\
 ./wifi &&		\
 ./battery &&		\
-./nand &&		\
-dialog_msg "ALL TESTS PASSED."
+./nand
+
+test_result
+
+./test-menu
 

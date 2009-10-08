@@ -4,7 +4,16 @@
 TITLE="ZEROSETUPBUTTTON"
 DIALOGOPTS="--title $TITLE"
 
+./leds-blink 1 &
+pid=$!
+
 dialog_info "Press the zero setup button." $DIALOGOPTS
 $INPUT_TEST key_3
 dialog_success "OK" $DIALOGOPTS
+
+kill $pid
+
+led_on(0)
+led_on(1)
+led_on(2)
 
