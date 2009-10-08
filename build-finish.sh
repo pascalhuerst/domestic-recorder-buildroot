@@ -88,7 +88,7 @@ case $target in
 				--target=$target-$t \
 				--platform=geode \
 				--base-rootfs-img=binaries/uclibc/imgrootfs.i586.ext2 \
-				--target-rootfs-tgz=binaries/uclibc/rootfs-base.geode.tar.gz \
+				--target-rootfs-tgz=binaries/uclibc/rootfs-base.i586.tar.gz \
 				--kernel=binaries/initramfs-geode/bzImage \
 				--revision=$revision
 		done
