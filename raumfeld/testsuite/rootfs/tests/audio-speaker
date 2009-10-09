@@ -5,17 +5,17 @@ TITLE="ANALOGIN"
 DIALOGOPTS="--title $TITLE"
 
 # set volume
-amixer cset numid=1 234
+amixer cset numid=1 234 >/dev/null 2>&1
 
 # set code loopthru
 
 dialog_info "Testing analog audio output." $DIALOGOPTS
-amixer cset numid=2 0
-aplay -D hw:0 /audiotest.wav
+amixer cset numid=2 0 >/dev/null 2>&1
+aplay -D hw:0 /audiotest.wav >/dev/null 2>&1
 
 dialog_info "Testing analog audio input for 5 seconds." $DIALOGOPTS
-amixer cset numid=2 1
-dd if=/dev/zero of=- bs=44100 count=10 | aplay -f cd -
+amixer cset numid=2 1 >/dev/null 2>&1
+dd if=/dev/zero of=- bs=$((44100*2*2)) count=5 | aplay -f cd - >/dev/null 2>&1
 
 dialog_msg "OK?" $DIALOGOPTS
 

@@ -82,8 +82,7 @@ test -f raumfeld/audiotest.wav || \
 
 cp raumfeld/audiotest.wav $tmpdir/
 
-# ext2_img has to be created in binaries/ temporarily. will be removed later.
-echo "exec /$target.sh" > $tmpdir/start-test.sh
+echo "exec /$target.sh \$*" > $tmpdir/start-test.sh
 chmod a+x $tmpdir/start-test.sh
 
 # count entries in rootfs.tar
