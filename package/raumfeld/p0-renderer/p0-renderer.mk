@@ -25,7 +25,7 @@ $(P0_RENDERER_DIR)/.bzr:
 	if ! test -d $(P0_RENDERER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p p0-renderer-$(P0_RENDERER_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer p0-renderer-$(P0_RENDERER_VERSION)) \
+	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer/$(P0_RENDERER_VERSION) p0-renderer-$(P0_RENDERER_VERSION)) \
 	fi
 	touch -c $@
 
