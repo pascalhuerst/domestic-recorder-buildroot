@@ -21,7 +21,7 @@ $(LOOPBACKTEST_DIR)/.bzr:
 	if ! test -d $(LOOPBACKTEST_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p loopbacktest-$(LOOPBACKTEST_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer loopbacktest-$(LOOPBACKTEST_VERSION)) \
+	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer/$(LOOPBACKTEST_VERSION) loopbacktest-$(LOOPBACKTEST_VERSION)) \
 	fi
 	touch -c $@
 
