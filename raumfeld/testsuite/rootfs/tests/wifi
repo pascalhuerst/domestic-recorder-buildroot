@@ -6,11 +6,6 @@ DIALOGOPTS="--title $TITLE"
 
 source ./wifi.inc
 
-if [ ${MIN_QUALITY} -gt ${QUALITY} ]; then
-	dialog_err "SIGNAL LEVEL $QUALITY TOO WEAK ($MIN_QUALITY required)"
-	exit 1
-fi
-
 /sbin/ifconfig ${WIRELESS_IFNAME} up
 /sbin/iwconfig ${WIRELESS_IFNAME} mode Ad-Hoc
 /sbin/iwconfig ${WIRELESS_IFNAME} essid ${ESSID}

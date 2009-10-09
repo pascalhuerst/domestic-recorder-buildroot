@@ -4,7 +4,9 @@
 TITLE="ACCELEROMETER"
 DIALOGOPTS="--title $TITLE"
 
-dialog_info "turn the device" $DIALOGOPTS
+dialog_info "Play GOLF with the device" $DIALOGOPTS
 $INPUT_TEST accel_full
 dialog_success "OK" $DIALOGOPTS
+
+exit 0
 

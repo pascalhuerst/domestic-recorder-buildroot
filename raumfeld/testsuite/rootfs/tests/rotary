@@ -11,6 +11,5 @@ suspend
 
 $INPUT_TEST rotary | dialog_progress "$STR" $DIALOGOPTS
 
-
-
+exit 0
 

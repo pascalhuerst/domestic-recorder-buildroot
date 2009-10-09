@@ -50,7 +50,7 @@ test_result() {
 }
 
 suspend() {
-	echo mem > /sys/class/power
+	echo mem > /sys/power/state
 }
 
 led_on() {
