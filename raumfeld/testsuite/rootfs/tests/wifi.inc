@@ -24,7 +24,7 @@ while [ ! "$ok" = "1" ] && [ ! "$retry" = "0" ]; do
 	MIN_QUALITY=-35
 
 	if [ ${MIN_QUALITY} -gt ${QUALITY} ]; then
-		err="SIGNAL LEVEL $QUALITY TOO WEAK ($MIN_QUALITY required)"
+		err="SIGNAL LEVEL $QUALITY TOO WEAK ($MIN_QUALITY required) -- ESSID $ESSID"
 		ok=0
 	fi
 

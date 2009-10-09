@@ -24,7 +24,7 @@ fi
 
 status=$(cat $SYSDIR/status)
 if [ ! "$status" = "Charging" ]; then
-	if [ "$1" = "dock" ]; then
+	if [ "$1" = "final" ]; then
 		dialog_info "Please put the device to the docking station"
 	else
 		dialog_info "Power adapter is currently not connected. Please CONNECT power adapter now."
@@ -49,7 +49,7 @@ fi
 
 status=$(cat $SYSDIR/status)
 if [ ! "$status" = "Discharging" ]; then
-	if [ "$1" = "dock" ]; then
+	if [ "$1" = "final" ]; then
 		dialog_info "Please put the device OUT OF the docking station"
 	else
 		dialog_info "Power adapter found. Please DISCONNECT power adapter now."
@@ -67,10 +67,12 @@ if [ $current -gt $CURRENT_IN_MIN ] || [ $current -lt $CURRENT_IN_MAX ]; then
 	exit 1
 fi
 
-dialog_info "Please CONNECT power adapter again."
+if [ ! "$1" = "final" ]; then
+	dialog_info "Please CONNECT power adapter again."
 
-# use the power adapter wakeup logic to get back to life
-suspend
+	# use the power adapter wakeup logic to get back to life
+	suspend
+fi
 
 dialog_success "OK!" $DIALOGOPTS
 
