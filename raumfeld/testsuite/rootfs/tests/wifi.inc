@@ -4,7 +4,7 @@ WIRELESS_IFNAME=wlan0
 
 ifconfig $WIRELESS_IFNAME up
 
-retry=4
+retry=10
 ok=0
 
 while [ ! "$ok" = "1" ] && [ ! "$retry" = "0" ]; do

@@ -5,9 +5,8 @@ TITLE="ROTARY"
 DIALOGOPTS="--title $TITLE"
 STR="Turn the rotary encoder. First clockwise, then counter clockwise."
 
-dialog_info "$STR" $DIALOGOPTS
-
-suspend
+#dialog_info "$STR" $DIALOGOPTS
+#suspend
 
 $INPUT_TEST rotary | dialog_progress "$STR" $DIALOGOPTS
 

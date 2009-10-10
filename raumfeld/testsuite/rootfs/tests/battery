@@ -67,12 +67,12 @@ if [ $current -gt $CURRENT_IN_MIN ] || [ $current -lt $CURRENT_IN_MAX ]; then
 	exit 1
 fi
 
-if [ ! "$1" = "final" ]; then
-	dialog_info "Please CONNECT power adapter again."
-
-	# use the power adapter wakeup logic to get back to life
-	suspend
-fi
+#if [ ! "$1" = "final" ]; then
+#	dialog_info "Please CONNECT power adapter again."
+#
+#	# use the power adapter wakeup logic to get back to life
+#	suspend
+#fi
 
 dialog_success "OK!" $DIALOGOPTS
-
+#
