@@ -7,6 +7,9 @@ DIALOGOPTS="--title $TITLE"
 DEV=/dev/hda
 TMPROOT=/tmp/root
 
+# enable 32bit access
+hdparm -c1 -d1 -p4 ${DEV}
+
 # purge partition table, if any. This script does it the hard way.
 dd if=/dev/zero of=$DEV bs=512 count=1
 
@@ -19,16 +22,15 @@ sfdisk $DEV << __EOF__
 __EOF__
 
 for x in 1 2 3; do
-	mkfs.ext2 ${DEV}${x} 2>&1 | \
-		/percent 20 | \
-		dialog_progress "Creating filesystem $x/3" $DIALOGOPTS
+	echo "****** Creating filesystem $x/3. ******"
+	mkfs.ext3 ${DEV}${x}
 done
 
 mkdir $TMPROOT
-mount -t ext2 ${DEV}2 $TMPROOT
+mount -t ext3 ${DEV}2 $TMPROOT
 
 mkdir $TMPROOT/boot
-mount -t ext2 ${DEV}1 $TMPROOT/boot
+mount -t ext3 ${DEV}1 $TMPROOT/boot
 
 zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
 	/percent `cat /rootfs.tgz.numfiles` | \
