@@ -29,8 +29,8 @@ if [ ! "$status" = "Charging" ]; then
 fi
 
 voltage=$(cat $SYSDIR/voltage_now)
-max=3400000
-min=4000000
+max=4000000
+min=3400000
 
 if [ "$voltage" -lt "$min" ]; then
 	dialog_err "Battery voltage too low ($voltage < $min). Please replace battery"
@@ -84,5 +84,5 @@ fi
 #	suspend
 #fi
 
-dialog_success "OK!" $DIALOGOPTS
+dialog_success "OK! (voltage $voltage uV, current $current uA)" $DIALOGOPTS
 
