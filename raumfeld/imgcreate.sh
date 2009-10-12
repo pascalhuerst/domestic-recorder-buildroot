@@ -73,7 +73,7 @@ mkdir $tmpdir
 echo "Operating in $tmpdir"
 
 cp $target_rootfs_tgz $tmpdir/rootfs.tgz
-cp -av raumfeld/testsuite/rootfs/* $tmpdir/
+cp -a raumfeld/testsuite/rootfs/* $tmpdir/
 
 # FIXME! put this file somewhere else
 test -f raumfeld/audiotest.wav || \
@@ -81,6 +81,12 @@ test -f raumfeld/audiotest.wav || \
 	-O raumfeld/audiotest.wav
 
 cp raumfeld/audiotest.wav $tmpdir/
+
+# sanity check to not create unbootable images
+if [ ! -f $tmpdir/$target.sh ]; then
+	echo "Eeeek. $tmpdir/$target.sh does not exist. Wrong '--image' parameter!?"
+	exit 1
+fi
 
 echo "exec /$target.sh \$*" > $tmpdir/start-test.sh
 chmod a+x $tmpdir/start-test.sh

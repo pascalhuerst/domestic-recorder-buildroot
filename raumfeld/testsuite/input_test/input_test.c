@@ -123,12 +123,12 @@ static int test_touch(int fd)
 
 #define ROTARY_STEPS 24
 
-static int test_rotary(int fd)
+static int _test_rotary(int fd, int expected, int scale, int offset)
 {
-	int cnt, ret, expected = 1;
+	int cnt, ret;
 	struct input_event ev;
 
-	for (cnt = 0; cnt < ROTARY_STEPS * 2;) {
+	for (cnt = 0; cnt < ROTARY_STEPS;) {
 		ret = read(fd, &ev, sizeof(ev));
 		if (ret < 0)
 			return ret;
@@ -139,13 +139,30 @@ static int test_rotary(int fd)
 		cnt++;
 
 		/* output percentage for dialog */
-		printf("%d\n", (cnt * 100) / ROTARY_STEPS/2);
+		printf("%d\n", offset + 
+				((cnt * 100) / (ROTARY_STEPS * scale)));
 		fflush(stdout);
-
-		if (cnt == ROTARY_STEPS)
-			expected *= -1;
 	}
 
+	return 0;
+}
+
+static int test_rotary(int fd)
+{
+	_test_rotary(fd, 1, 2, 0);
+	_test_rotary(fd, -1, 2, 50);
+	return 0;
+}
+
+static int test_rotary_cw(int fd)
+{
+	_test_rotary(fd, 1, 1, 0);
+	return 0;
+}
+
+static int test_rotary_ccw(int fd)
+{
+	_test_rotary(fd, -1, 1, 0);
 	return 0;
 }
 
@@ -265,6 +282,18 @@ static struct test_func {
 		.desc	= "\trotary left/right 360° test",
 		.dev	= "rotary-encoder",
 		.proc	= test_rotary
+	},
+	{
+		.name	= "rotary-cw",
+		.desc	= "\trotary clockwise test",
+		.dev	= "rotary-encoder",
+		.proc	= test_rotary_cw
+	},
+	{
+		.name	= "rotary-ccw",
+		.desc	= "\trotary clockwise test",
+		.dev	= "rotary-encoder",
+		.proc	= test_rotary_ccw
 	},
 	{
 		.name	= "accel_simple",
