@@ -41,13 +41,7 @@ done
 
 mkdir /usb
 
-if [ -z "$(grep sda1 /proc/partitions)" ]; then
-	part=/dev/sda
-else
-	part=/dev/sda1
-fi
-
-mount $part /usb
+mount /dev/sda /usb || mount /dev/sda1 /usb
 losetup -o 5128192 /dev/loop0 /usb/$img
 
 mkdir /rootfs
