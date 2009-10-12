@@ -57,11 +57,15 @@ led_on() {
 	num=$1
 	test -d /sys/class/leds/raumfeld:$num && echo 1 > \
 		/sys/class/leds/raumfeld:$num/brightness
+	test -d /sys/class/leds/alix:$num && echo 1 > \
+		/sys/class/leds/alix:$num/brightness
 }
 
 led_off() {
 	num=$1
 	test -d /sys/class/leds/raumfeld:$num && echo 0 > \
 		/sys/class/leds/raumfeld:$num/brightness
+	test -d /sys/class/leds/alix:$num && echo 0 > \
+		/sys/class/leds/alix:$num/brightness
 }
 
