@@ -1,0 +1,12 @@
+config BR2_PACKAGE_STREAM_DECODER
+	bool "stream-decoder"
+	select BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_GSTREAMER
+	select BR2_PACKAGE_GST_PLUGINS_GOOD
+	select BR2_PACKAGE_GST_PLUGINS_BAD
+	select BR2_PACKAGE_GST_PLUGINS_UGLY
+	select BR2_PACKAGE_LIBSOUP
+	help
+	  The stream decoder software
+
+	  http://www.raumfeld.com/

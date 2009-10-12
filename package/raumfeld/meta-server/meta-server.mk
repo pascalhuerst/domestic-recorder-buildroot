@@ -22,7 +22,7 @@ endif
 
 $(META_SERVER_DIR)/.bzr:
 	test ! -z "$(META_SERVER_CROSS)" || \
-		(echo "renderer can only be build for ARM or GEODE"; exit -1)
+		(echo "meta-server can only be built for ARM or GEODE"; exit -1)
 	if ! test -d $(META_SERVER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p meta-server-$(META_SERVER_VERSION); \
