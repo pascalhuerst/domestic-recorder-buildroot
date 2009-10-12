@@ -8,13 +8,19 @@ echo_usage() {
 . ./getopt.inc
 getopt $*
 
-if [ -z "$target" ] || [ -z "$targz" ];
-then echo_usage; fi
+if [ -z "$target" ] || [ -z "$targz" ]; then
+    echo_usage
+fi
+
+buildnumber=$(cat build_number)
+if [ -z "$buildnumber" ]; then
+    echo "buildnumber is missing -- not creating an update image"
+    exit 0
+fi
 
 numfiles=$(tar -f $targz -zt | wc -l)
 git_version=$(git describe --tags)
 version=${git_version#raumfeld-}
-buildnumber=$(cat build_number)
 shasum=$(sha256sum $targz | cut -f1 -d' ')
 privatekey=raumfeld/rsa-private.key
 update_dir=raumfeld/updates/$target/
