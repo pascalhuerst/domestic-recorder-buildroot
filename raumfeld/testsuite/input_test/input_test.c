@@ -284,13 +284,13 @@ static struct test_func {
 		.proc	= test_rotary
 	},
 	{
-		.name	= "rotary-cw",
+		.name	= "rotary_cw",
 		.desc	= "\trotary clockwise test",
 		.dev	= "rotary-encoder",
 		.proc	= test_rotary_cw
 	},
 	{
-		.name	= "rotary-ccw",
+		.name	= "rotary_ccw",
 		.desc	= "\trotary clockwise test",
 		.dev	= "rotary-encoder",
 		.proc	= test_rotary_ccw
