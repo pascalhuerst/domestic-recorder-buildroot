@@ -9,10 +9,11 @@ pid=$!
 
 ./harddisk || touch /tmp/test-failed
 
+kill $pid
+
 if [ -f /tmp/test-failed ]; then
-        kill $pid
         ./leds-blink 2
 fi
 
-reboot
+./leds-blink 3
 

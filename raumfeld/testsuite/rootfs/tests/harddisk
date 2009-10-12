@@ -39,5 +39,3 @@ zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
 umount $TMPROOT/boot
 umount $TMPROOT
 
-/bin/sh
-
