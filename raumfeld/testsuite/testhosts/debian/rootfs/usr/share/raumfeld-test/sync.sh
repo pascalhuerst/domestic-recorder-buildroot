@@ -2,11 +2,11 @@
 
 gksudo /usr/share/raumfeld-test/setup.sh normal
 
-/usr/share/raumfeld-test/do_sync.sh
+/usr/share/raumfeld-test/getmacs.sh
 
-echo $?
+ret=$?
 
-if [ $? = 0 ]; then
+if [ $ret = "0" ]; then
 	gmessage -nearmouse "sync ok."
 else
 	ip=$(ifconfig eth0 | grep addr: | grep Mask | cut -f2 -d: | cut -f1 -d' ')
