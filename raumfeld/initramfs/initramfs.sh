@@ -41,7 +41,7 @@ done
 
 mkdir /usb
 
-mount /dev/sda /usb || mount /dev/sda1 /usb
+mount /dev/sda1 /usb || mount /dev/sda /usb
 losetup -o 5128192 /dev/loop0 /usb/$img
 
 mkdir /rootfs

@@ -1,12 +1,34 @@
+diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
+index 7c8e712..9f59b7f 100644
+--- a/drivers/leds/Kconfig
++++ b/drivers/leds/Kconfig
+@@ -77,6 +77,16 @@ config LEDS_ALIX2
+ 	  This option enables support for the PCEngines ALIX.2 and ALIX.3 LEDs.
+ 	  You have to set leds-alix2.force=1 for boards with Award BIOS.
+ 
++config LEDS_ALIX2_BUTTON
++	bool "Input device support for button on ALIX boards"
++	depends on LEDS_ALIX2 && INPUT
++	select INPUT_POLLDEV
++	help
++	  This option enables support for a button connected to J15 of ALIX
++	  boards. No external pullup is required.
++	
++	  Only select that option if you modified your ALIX board like this.
++
+ config LEDS_H1940
+ 	tristate "LED Support for iPAQ H1940 device"
+ 	depends on LEDS_CLASS && ARCH_H1940
 diff --git a/drivers/leds/leds-alix2.c b/drivers/leds/leds-alix2.c
-index 731d4ee..f59ffad 100644
+index 731d4ee..e41b252 100644
 --- a/drivers/leds/leds-alix2.c
 +++ b/drivers/leds/leds-alix2.c
-@@ -11,11 +11,24 @@
+@@ -11,11 +11,31 @@
  #include <linux/module.h>
  #include <linux/platform_device.h>
  #include <linux/string.h>
 +#include <linux/pci.h>
++#include <linux/input-polldev.h>
  
  static int force = 0;
  module_param(force, bool, 0444);
@@ -24,10 +46,16 @@ index 731d4ee..f59ffad 100644
 +};
 +MODULE_DEVICE_TABLE(pci, divil_pci);
 +
++#ifdef CONFIG_LEDS_ALIX2_BUTTON
++static struct input_polled_dev *ipdev;
++static int alix_button_last;
++#define POLL_INTERVAL_DEFAULT 250
++#endif
++
  struct alix_led {
  	struct led_classdev cdev;
  	unsigned short port;
-@@ -30,9 +43,9 @@ static void alix_led_set(struct led_classdev *led_cdev,
+@@ -30,9 +50,9 @@ static void alix_led_set(struct led_classdev *led_cdev,
  		container_of(led_cdev, struct alix_led, cdev);
  
  	if (brightness)
@@ -39,7 +67,7 @@ index 731d4ee..f59ffad 100644
  }
  
  static struct alix_led alix_leds[] = {
-@@ -41,7 +54,7 @@ static struct alix_led alix_leds[] = {
+@@ -41,7 +61,7 @@ static struct alix_led alix_leds[] = {
  			.name = "alix:1",
  			.brightness_set = alix_led_set,
  		},
@@ -48,7 +76,7 @@ index 731d4ee..f59ffad 100644
  		.on_value = 1 << 22,
  		.off_value = 1 << 6,
  	},
-@@ -50,7 +63,7 @@ static struct alix_led alix_leds[] = {
+@@ -50,7 +70,7 @@ static struct alix_led alix_leds[] = {
  			.name = "alix:2",
  			.brightness_set = alix_led_set,
  		},
@@ -57,7 +85,7 @@ index 731d4ee..f59ffad 100644
  		.on_value = 1 << 25,
  		.off_value = 1 << 9,
  	},
-@@ -59,7 +72,7 @@ static struct alix_led alix_leds[] = {
+@@ -59,12 +79,26 @@ static struct alix_led alix_leds[] = {
  			.name = "alix:3",
  			.brightness_set = alix_led_set,
  		},
@@ -66,7 +94,62 @@ index 731d4ee..f59ffad 100644
  		.on_value = 1 << 27,
  		.off_value = 1 << 11,
  	},
-@@ -101,64 +114,104 @@ static struct platform_driver alix_led_driver = {
+ };
+ 
++#ifdef CONFIG_LEDS_ALIX2_BUTTON
++static void alix_button_poll(struct input_polled_dev *ipdev)
++{
++	unsigned int val = !(inl(gpio_base + 0x30) & (1 << 1));
++
++	if (val == alix_button_last)
++		return;
++
++	input_report_key(ipdev->input, BTN_MISC, val);
++	input_sync(ipdev->input);
++	alix_button_last = val;
++}
++#endif
++
+ static int __init alix_led_probe(struct platform_device *pdev)
+ {
+ 	int i;
+@@ -76,6 +110,35 @@ static int __init alix_led_probe(struct platform_device *pdev)
+ 		if (ret < 0)
+ 			goto fail;
+ 	}
++
++#ifdef CONFIG_LEDS_ALIX2_BUTTON
++	/* enable button input */
++	outl(1 << 1, gpio_base + 0x20);
++
++	/* enable pullup on input pin */
++	outl(1 << 1, gpio_base + 0x18);
++
++	alix_button_last = 0;
++	ipdev = input_allocate_polled_device();
++	if (!ipdev)
++		goto fail;
++
++	ipdev->poll = alix_button_poll;
++	ipdev->poll_interval = POLL_INTERVAL_DEFAULT;
++	ipdev->input->name = "ALIX2 button";
++	ipdev->input->phys = "alix2/input0";
++	ipdev->input->id.bustype = BUS_HOST;
++
++	set_bit(EV_KEY, ipdev->input->evbit);
++        ipdev->input->keybit[BIT_WORD(BTN_MISC)] = BIT_MASK(BTN_MISC);
++
++	ret = input_register_polled_device(ipdev);
++	if (ret) {
++		input_free_polled_device(ipdev);
++		goto fail;
++	}
++#endif
++
+ 	return 0;
+ 
+ fail:
+@@ -101,64 +164,104 @@ static struct platform_driver alix_led_driver = {
  	},
  };
  
@@ -143,19 +226,12 @@ index 731d4ee..f59ffad 100644
  {
 -	int ret;
 +	u32 low, hi;
- 
--	if (!alix_present()) {
--		ret = -ENODEV;
--		goto out;
++
 +	if (pci_dev_present(divil_pci) == 0) {
 +		printk(KERN_WARNING KBUILD_MODNAME": DIVIL not found\n");
 +		return -ENODEV;
- 	}
- 
--	/* enable output on GPIO for LED 1,2,3 */
--	outl(1 << 6, 0x6104);
--	outl(1 << 9, 0x6184);
--	outl(1 << 11, 0x6184);
++	}
++
 +	/* Grab the GPIO I/O range */
 +	rdmsr(MSR_LBAR_GPIO, low, hi);
 +
@@ -167,12 +243,19 @@ index 731d4ee..f59ffad 100644
 +
 +	/* Mask off the IO base address */
 +	gpio_base = low & 0x0000ff00;
-+
+ 
+-	if (!alix_present()) {
+-		ret = -ENODEV;
+-		goto out;
 +	if (!request_region(gpio_base, CS5535_GPIO_SIZE, KBUILD_MODNAME)) {
 +		printk(KERN_ERR KBUILD_MODNAME": can't allocate I/O for GPIO\n");
 +		return -ENODEV;
-+	}
-+
+ 	}
+ 
+-	/* enable output on GPIO for LED 1,2,3 */
+-	outl(1 << 6, 0x6104);
+-	outl(1 << 9, 0x6184);
+-	outl(1 << 11, 0x6184);
 +	/* Set GPIO function to output */
 +	outl(1 << 6, gpio_base + 0x04);
 +	outl(1 << 9, gpio_base + 0x84);
@@ -196,7 +279,7 @@ index 731d4ee..f59ffad 100644
  
  	pdev = platform_device_register_simple(KBUILD_MODNAME, -1, NULL, 0);
  	if (!IS_ERR(pdev)) {
-@@ -168,7 +221,6 @@ static int __init alix_led_init(void)
+@@ -168,7 +271,6 @@ static int __init alix_led_init(void)
  	} else
  		ret = PTR_ERR(pdev);
  
@@ -204,7 +287,7 @@ index 731d4ee..f59ffad 100644
  	return ret;
  }
  
-@@ -176,6 +228,7 @@ static void __exit alix_led_exit(void)
+@@ -176,6 +278,7 @@ static void __exit alix_led_exit(void)
  {
  	platform_device_unregister(pdev);
  	platform_driver_unregister(&alix_led_driver);
