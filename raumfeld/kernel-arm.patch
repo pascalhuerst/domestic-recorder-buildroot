@@ -2254,7 +2254,7 @@ index 09b7b1a..f5ead6a 100644
  
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..dbf759f
+index 0000000..35e0c71
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
 @@ -0,0 +1,1054 @@
@@ -2342,8 +2342,8 @@ index 0000000..dbf759f
 +#define GPIO_CHRG_PEN2		MFP_PIN_GPIO31
 +#define	GPIO_TFT_VA_EN		MFP_PIN_GPIO33
 +#define	GPIO_SPDIF_CS		MFP_PIN_GPIO34
-+#define GPIO_LED1		MFP_PIN_GPIO35
-+#define GPIO_LED2		MFP_PIN_GPIO36
++#define GPIO_LED2		MFP_PIN_GPIO35
++#define GPIO_LED1		MFP_PIN_GPIO36
 +#define	GPIO_SPDIF_RESET	MFP_PIN_GPIO38
 +#define	GPIO_SPI_CLK		MFP_PIN_GPIO95
 +#define	GPIO_MCLK_DAC_CS	MFP_PIN_GPIO96
