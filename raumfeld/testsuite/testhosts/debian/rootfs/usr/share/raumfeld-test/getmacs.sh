@@ -10,8 +10,11 @@ server=http://buildcontrol.caiaq.de/macaddr.php
 curr=$(cat $list | wc -l)
 get=$(($nmacs - $curr))
 
-wget "$server?machine=$host&pool=$pool&num=$get" -O $tmp
+wget --timeout=30 "$server?machine=$host&pool=$pool&num=$get" -O $tmp
 cat $tmp >> $list
 rm -f $tmp
 
+count=$(wc -l $list)
+
+test "$count" -lt "$nmacs" && exit 1
 
