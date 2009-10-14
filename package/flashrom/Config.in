@@ -1,0 +1,8 @@
+config BR2_PACKAGE_FLASHROM
+	bool "flashrom"
+	help
+	  flashrom is a utility for identifying, reading, writing, verifying
+	  and erasing flash chips. It's often used to flash
+	  BIOS/EFI/coreboot/firmware images.
+
+	  http://www.coreboot.org/Flashrom
