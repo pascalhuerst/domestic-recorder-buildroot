@@ -4,10 +4,17 @@ source tests.inc
 
 cd tests
 
-./wifi     		&& \
-./ethernet 		&& \
-./hda1     		&& \
-dialog_msg "ALL TESTS PASSED."
+./leds-blink 1 &
+pid=$!
 
-./test-menu
+./wifi || touch /tmp/test-failed
+./harddisk || touch /tmp/test-failed
+
+kill $pid
+
+if [ -f /tmp/test-failed ]; then
+        ./leds-blink 2
+fi
+
+./leds-blink 3
 
