@@ -8,7 +8,7 @@ cp -r raumfeld/rootfs-geode/* $1
 
 mkdir -p $1/Music/Music
 
-cat << __EOF__ >> $1/etc/fstab
+cat << __EOF__ > $1/etc/fstab
 # /etc/fstab: static file system information.
 #
 # <file system>	<mount pt>	<type>	<options>	<dump>	<pass>
@@ -18,8 +18,8 @@ devpts		/dev/pts	devpts	defaults,gid=5,mode=620	0	0
 tmpfs		/tmp		tmpfs	defaults	0	0
 sysfs		/sys		sysfs	defaults	0	0
 
-/dev/hda1	/boot		ext3	rw,auto		0	0
-/dev/hda3	/Music/Music	ext3	rw,auto		0	0
+/dev/hda1	/boot		ext3	rw		0	0
+/dev/hda3	/Music/Music	ext3	rw		0	0
 
 __EOF__
 
