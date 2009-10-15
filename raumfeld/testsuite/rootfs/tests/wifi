@@ -14,6 +14,8 @@ sleep 2
 
 dialog_info "Testing WIRELESS. Please wait. ---------------------------------- ESSID=$ESSID QUALITY=$QUALITY" $DIALOGOPTS
 
+#TODO: decrease timeout
+
 CRC1=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg.md5sum | cut -f1 -d' ')
 CRC2=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg | md5sum | cut -f1 -d' ')
 
