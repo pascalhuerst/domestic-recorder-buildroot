@@ -157,14 +157,6 @@ SAMBA_TXTTARGETS_$(BR2_PACKAGE_SAMBA_FINDSMB) += usr/bin/findsmb
 SAMBA_TXTTARGETS_$(BR2_PACKAGE_SAMBA_SMBTAR) += usr/bin/smbtar
 
 
-$(SAMBA_HOOK_POST_EXTRACT):
-	(	cd $(SAMBA_DIR)/$(SAMBA_SUBDIR); \
-		rm -rf config.cache; \
-		./autogen.sh \
-	)
-	$(Q)touch $@
-
-
 $(SAMBA_HOOK_POST_INSTALL):
 	$(call MESSAGE,"Post installing")
 	# remove unneeded
