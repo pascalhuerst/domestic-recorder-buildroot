@@ -16,7 +16,6 @@ SAMBA_INSTALL_TARGET = YES
 
 
 SAMBA_DEPENDENCIES = \
-	uclibc \
 	libiconv \
 	$(if $(BR2_PACKAGE_SAMBA_RPCCLIENT),readline,) \
 	$(if $(BR2_PACKAGE_SAMBA_SMBCLIENT),readline,) \
