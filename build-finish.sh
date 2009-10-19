@@ -113,6 +113,6 @@ esac
 
 
 # create a list of all files in the rootfs
-if [ -z "$ROOTFS" ]; then
+if [ -n "$ROOTFS" ]; then
     tar ztvf $ROOTFS > $target.contents
 fi
