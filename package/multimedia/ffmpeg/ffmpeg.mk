@@ -36,7 +36,17 @@ FFMPEG_CONF_OPT = \
 	--disable-sse		\
 	--disable-ssse3		\
 	--disable-amd3dnow	\
-	--disable-amd3dnowext
+	--disable-amd3dnowext	\
+	--disable-encoders	\
+	--disable-decoders	\
+	--disable-muxers	\
+	--disable-demuxers	\
+	--disable-bsfs		\
+	--disable-filters 	\
+	--disable-protocols 	\
+	--disable-devices 	\
+	--disable-parsers 	\
+	--enable-parser=aac
 
 ifeq ($(BR2_PACKAGE_FFMPEG_GPL),y)
 FFMPEG_CONF_OPT += --enable-gpl
