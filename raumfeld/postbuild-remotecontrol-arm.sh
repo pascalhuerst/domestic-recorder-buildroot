@@ -9,3 +9,4 @@ if [ -d raumfeld/rootfs-remotecontrol-arm ]; then
     cp -r raumfeld/rootfs-remotecontrol-arm/* $1
 fi
 
+raumfeld/postbuild-cleanup.sh $1

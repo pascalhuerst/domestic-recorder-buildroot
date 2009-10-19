@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# post-build.sh for the devel-geode target
+# post-build.sh for the base-geode target
 
 echo "Populating the root filesystem ..."
 rm -f $1/etc/resolv.conf
@@ -23,3 +23,5 @@ sysfs		/sys		sysfs	defaults	0	0
 
 __EOF__
 
+
+raumfeld/postbuild-cleanup.sh $1
