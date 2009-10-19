@@ -67,49 +67,46 @@ case $target in
 		;;
 
 	audioadapter-arm)
+                ROOTFS=binaries/uclibc/rootfs-audioadapter.arm.tar.gz
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=arm \
 				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
-				--target-rootfs-tgz=binaries/uclibc/rootfs-audioadapter.arm.tar.gz \
+				--target-rootfs-tgz=$ROOTFS \
 				--kernel=binaries/initramfs-arm/uImage \
 			        --revision=$revision
 		done
 
 		raumfeld/updatecreate.sh \
 			--target=$target \
-			--targz=binaries/uclibc/rootfs-audioadapter.arm.tar.gz
+			--targz=$ROOTFS
 		;;
 	remotecontrol-arm)
+                ROOTFS=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=arm \
 				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
-				--target-rootfs-tgz=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz \
+				--target-rootfs-tgz=$ROOTFS \
 				--kernel=binaries/initramfs-arm/uImage \
 			        --revision=$revision
 		done
 
 		raumfeld/updatecreate.sh \
 			--target=$target \
-			--targz=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
+			--targz=$ROOTFS
 		;;
 	base-geode)
+                ROOTFS=binaries/uclibc/rootfs-base.i586.tar.gz
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=geode \
 				--base-rootfs-img=binaries/uclibc/imgrootfs.i586.ext2 \
-				--target-rootfs-tgz=binaries/uclibc/rootfs-base.i586.tar.gz \
+				--target-rootfs-tgz=$ROOTFS \
 				--kernel=binaries/initramfs-geode/bzImage \
 				--revision=$revision
 		done
 esac
-
-
-# write a stamp file
-eval `grep BR2_ARCH .config`
-touch build_$BR2_ARCH/stamps/build-$target
-
