@@ -1,9 +1,10 @@
 menuconfig BR2_PACKAGE_GST_FFMPEG
 	bool "gst-plugins-ffmpeg"
 	depends on BR2_PACKAGE_GSTREAMER
+	select BR2_PACKAGE_GST_PLUGINS_BASE
 
 	help
-	  The ffmpec gst plugin.
+	  The ffmpeg gstreamer plugin.
 
 	  http://gstreamer.freedesktop.org/
 
