@@ -110,3 +110,9 @@ case $target in
 				--revision=$revision
 		done
 esac
+
+
+# create a list of all files in the rootfs
+if [ -z "$ROOTFS" ]; then
+    tar ztvf $ROOTFS > $target.contents
+fi
