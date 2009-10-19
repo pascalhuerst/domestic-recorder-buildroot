@@ -75,10 +75,12 @@ echo "Operating in $tmpdir"
 cp $target_rootfs_tgz $tmpdir/rootfs.tgz
 cp -a raumfeld/testsuite/rootfs/* $tmpdir/
 
-# FIXME! put this file somewhere else
+IMG_PRIMARY_SITE=http://devel.internal/buildroot/dl
+IMG_BACKUP_SITE=http://caiaq.de/download/raumfeld
+
 test -f raumfeld/audiotest.wav || \
-	wget http://caiaq.de/download/raumfeld/audiotest.wav \
-	-O raumfeld/audiotest.wav
+    for site in $IMG_PRIMARY_SITE $IMG_BACKUP_SITE; \
+        do wget -P raumfeld $site/audiotest.wav && exit; done
 
 cp raumfeld/audiotest.wav $tmpdir/
 
