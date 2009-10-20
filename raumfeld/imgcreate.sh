@@ -80,7 +80,7 @@ IMG_BACKUP_SITE=http://caiaq.de/download/raumfeld
 
 test -f raumfeld/audiotest.wav || \
     for site in $IMG_PRIMARY_SITE $IMG_BACKUP_SITE; \
-        do wget -P raumfeld $site/audiotest.wav && exit; done
+        do wget -P raumfeld $site/audiotest.wav && break; done
 
 cp raumfeld/audiotest.wav $tmpdir/
 
