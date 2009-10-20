@@ -285,7 +285,7 @@ else
 GST_PLUGINS_GOOD_CONF_OPT += --disable-wavparse
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_Y4m),y)
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_Y4M),y)
 GST_PLUGINS_GOOD_CONF_OPT += --enable-y4m
 else
 GST_PLUGINS_GOOD_CONF_OPT += --disable-y4m
