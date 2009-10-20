@@ -3,6 +3,7 @@
 # post-build cleanup for the target rootfs
 
 rm -fr $1/usr/include
+rm -f  $1/usr/bin/faad
 rm -f  $1/usr/bin/flac
 rm -f  $1/usr/bin/glib-genmarshal
 rm -f  $1/usr/bin/glib-gettextize
