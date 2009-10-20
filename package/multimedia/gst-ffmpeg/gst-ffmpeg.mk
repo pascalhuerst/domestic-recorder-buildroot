@@ -91,3 +91,12 @@ gst-ffmpeg-dirclean:
 	rm -rf $(GST_FFMPEG_DIR)
 
 GST_FFMPEG_DEPENDENCIES = gstreamer gst-plugins-base
+
+#############################################################
+#
+# Toplevel Makefile options
+#
+#############################################################
+ifeq ($(BR2_PACKAGE_GST_FFMPEG),y)
+TARGETS+=gst-ffmpeg
+endif
