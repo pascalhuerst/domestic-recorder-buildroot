@@ -14,6 +14,8 @@ GST_FFMPEG_DESTDIR:=usr/lib/gstreamer-0.10
 GST_FFMPEG_TARGET_LIBRARY = $(TARGET_DIR)/$(GST_FFMPEG_DESTDIR)/$(GST_FFMPEG_LIBRARY)
 GST_FFMPEG_STAGING_LIBRARY = $(STAGING_DIR)/$(GST_FFMPEG_DESTDIR)/$(GST_FFMPEG_LIBRARY)
 
+GST_FFMPEG_DEPENDENCIES = gstreamer gst-plugins-base
+
 GST_FFMPEG_CONF_OPT = \
 		$(DISABLE_NLS) \
 		$(DISABLE_LARGEFILE) \
@@ -89,8 +91,6 @@ gst-ffmpeg-unpacked: $(GST_FFMPEG_DIR)/.unpacked
 
 gst-ffmpeg-dirclean:
 	rm -rf $(GST_FFMPEG_DIR)
-
-GST_FFMPEG_DEPENDENCIES = gstreamer gst-plugins-base
 
 #############################################################
 #
