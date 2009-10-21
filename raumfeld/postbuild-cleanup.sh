@@ -10,6 +10,7 @@ rm -f  $1/usr/bin/glib-genmarshal
 rm -f  $1/usr/bin/glib-gettextize
 rm -f  $1/usr/bin/glib-mkenums
 rm -f  $1/usr/bin/gobject-query
+rm -f  $1/usr/bin/gst-visualise-0.10
 rm -f  $1/usr/bin/gtester
 rm -f  $1/usr/bin/gtester-report
 rm -f  $1/usr/bin/gupnp-binding-tool
