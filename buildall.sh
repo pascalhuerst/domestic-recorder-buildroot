@@ -7,10 +7,10 @@ PROJECT_NAME=raumfeld-build-all
 USER=$(whoami)
 wget -q -O- "http://buildcontrol.caiaq.de/new.php?mode=dump&project=$PROJECT_NAME&username=$USER" > build_number
 
-git_version=$(git describe --tags)
+git_version=$(git describe --tags --abbrev=0)
 version=${git_version#raumfeld-}
 buildnumber=$(cat build_number)
-versionstr="$buildnumber ($version)"
+versionstr="$version.$buildnumber"
 
 ./buildlog.sh $0: versionstr=$versionstr
 
