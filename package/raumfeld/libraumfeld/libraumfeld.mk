@@ -42,4 +42,4 @@ $(LIBRAUMFELD_HOOK_POST_CONFIGURE):
 	$(call MESSAGE,"Patching libtool for static linking")
 	toolchain/patch-kernel.sh \
 		$(LIBRAUMFELD_DIR) package/raumfeld/libraumfeld libtool-static.patch
-
+	touch $@
