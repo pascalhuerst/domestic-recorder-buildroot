@@ -51,7 +51,7 @@ for hardwareid in $hardwareids; do
 	description=Software update ($version) for $target
 	num_files=$numfiles
 	hardware=$hardwareid
-	version=$buildnumber
+	version=$version
 
 __EOF__
     echo "update $shasum created in $update_dir"
