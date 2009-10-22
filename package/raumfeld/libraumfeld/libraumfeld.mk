@@ -37,3 +37,9 @@ $(LIBRAUMFELD_DIR)/.stamp_downloaded: $(LIBRAUMFELD_DIR)/.bzr
 $(LIBRAUMFELD_DIR)/.stamp_extracted: $(LIBRAUMFELD_DIR)/.stamp_downloaded
 	(cd $(LIBRAUMFELD_DIR); gtkdocize)
 	touch $@
+
+$(LIBRAUMFELD_HOOK_POST_CONFIGURE):
+	$(call MESSAGE,"Patching libtool for static linking")
+	toolchain/patch-kernel.sh \
+		$(LIBRAUMFELD_DIR) package/raumfeld/libraumfeld libtool-static.patch
+
