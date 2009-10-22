@@ -1,5 +1,4 @@
-updates
-rootfs-audioadapter-arm/etc/raumfeld-version
-rootfs-remotecontrol-arm/etc/raumfeld-version
+rootfs-arm/etc/raumfeld-version
+rootfs-geode/etc/raumfeld-version
 audiotest.wav
 

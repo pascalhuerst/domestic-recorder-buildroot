@@ -77,11 +77,8 @@ case $target in
 				--kernel=binaries/initramfs-arm/uImage \
 			        --version=$version
 		done
-
-		raumfeld/updatecreate.sh \
-			--target=$target \
-			--targz=$ROOTFS
 		;;
+
 	remotecontrol-arm)
                 ROOTFS=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
 		for t in $IMAGES; do
@@ -93,11 +90,8 @@ case $target in
 				--kernel=binaries/initramfs-arm/uImage \
 			        --version=$version
 		done
-
-		raumfeld/updatecreate.sh \
-			--target=$target \
-			--targz=$ROOTFS
 		;;
+
 	base-geode)
                 ROOTFS=binaries/uclibc/rootfs-base.i586.tar.gz
 		for t in $IMAGES; do
@@ -109,10 +103,17 @@ case $target in
 				--kernel=binaries/initramfs-geode/bzImage \
 				--version=$version
 		done
+                ;;
 esac
 
 
-# create a list of all files in the rootfs
 if [ -n "$ROOTFS" ]; then
+    # create a list of all files in the rootfs
     tar ztvf $ROOTFS > $target.contents
+
+    # create  the update image
+    raumfeld/updatecreate.sh \
+	--target=$target \
+	--targz=$ROOTFS \
+        --version=$version
 fi
