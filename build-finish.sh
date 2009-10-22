@@ -12,7 +12,7 @@ targets="devel-arm devel-geode                  \
 
 echo_usage() {
 cat << __EOF__ >&2
-Usage: $0 --target=<target> [--image=<image> --revision=<revision>]
+Usage: $0 --target=<target> [--image=<image> --version=<version>]
        $0 --update-configs
 
    target is one of
@@ -22,8 +22,8 @@ for t in $targets; do echo "            $t"; done
 
 cat << __EOF__ >&2
 
-   image      is optional and can be one of 'init flash final'
-   revision   is optional and serves as an identifier for this build
+   image     is optional and can be one of 'init flash final'
+   version   is optional and serves as an identifier for this build
 
    If --update-configs is specified, the target configs are all ran
    thru 'make oldconfig'. No further action is taken.
@@ -75,7 +75,7 @@ case $target in
 				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=binaries/initramfs-arm/uImage \
-			        --revision=$revision
+			        --version=$version
 		done
 
 		raumfeld/updatecreate.sh \
@@ -91,7 +91,7 @@ case $target in
 				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=binaries/initramfs-arm/uImage \
-			        --revision=$revision
+			        --version=$version
 		done
 
 		raumfeld/updatecreate.sh \
@@ -107,7 +107,7 @@ case $target in
 				--base-rootfs-img=binaries/uclibc/imgrootfs.i586.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=binaries/initramfs-geode/bzImage \
-				--revision=$revision
+				--version=$version
 		done
 esac
 
