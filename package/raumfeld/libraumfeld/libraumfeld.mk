@@ -21,7 +21,8 @@ LIBRAUMFELD_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-LIBRAUMFELD_DEPENDENCIES = host-pkgconfig host-libglib2 dbus-glib gupnp-av openssl libarchive
+LIBRAUMFELD_DEPENDENCIES = \
+	host-pkgconfig host-libglib2 dbus-glib gupnp-av openssl libarchive
 
 $(eval $(call AUTOTARGETS,package/raumfeld,libraumfeld))
 
