@@ -41,6 +41,5 @@ $(LIBRAUMFELD_DIR)/.stamp_extracted: $(LIBRAUMFELD_DIR)/.stamp_downloaded
 
 $(LIBRAUMFELD_HOOK_POST_CONFIGURE):
 	$(call MESSAGE,"Patching libtool for static linking")
-	toolchain/patch-kernel.sh \
-		$(LIBRAUMFELD_DIR) package/raumfeld/libraumfeld libtool-static.patch
+	cat package/raumfeld/libraumfeld/libtool-static.patch | patch -p1 -N -d $(LIBRAUMFELD_DIR)
 	touch $@
