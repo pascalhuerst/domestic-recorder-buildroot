@@ -13,6 +13,7 @@ targets="devel-arm devel-geode                  \
 echo_usage() {
 cat << __EOF__ >&2
 Usage: $0 --target=<target> [--image=<image> --version=<version>]
+       $0 --update-configs
 
    target is one of
 __EOF__
@@ -22,6 +23,10 @@ for t in $targets; do echo "            $t"; done
 cat << __EOF__ >&2
 
    image     is optional and can be one of 'init flash final'
+   version   is optional and serves as an identifier for this build
+
+   If --update-configs is specified, the target configs are all ran
+   thru 'make oldconfig'. No further action is taken.
 
 __EOF__
         exit 1
@@ -55,11 +60,9 @@ case $target in
 	# free inodes when building the deployment targets.
 	# this should probably be made part of br2 some day.
 	imgrootfs-arm)
-                ROOTFS=binaries/uclibc/rootfs-imgrootfs.arm.tar.gz
 		/sbin/resize2fs binaries/uclibc/imgrootfs.arm.ext2 100M
 		;;
 	imgrootfs-geode)
-                ROOTFS=binaries/uclibc/rootfs-imgrootfs.i586.tar.gz
 		/sbin/resize2fs binaries/uclibc/imgrootfs.i586.ext2 100M
 		;;
 
@@ -74,7 +77,6 @@ case $target in
 				--kernel=binaries/initramfs-arm/uImage \
 			        --version=$version
 		done
-		update=1
 		;;
 
 	remotecontrol-arm)
@@ -88,7 +90,6 @@ case $target in
 				--kernel=binaries/initramfs-arm/uImage \
 			        --version=$version
 		done
-		update=1
 		;;
 
 	base-geode)
@@ -102,7 +103,6 @@ case $target in
 				--kernel=binaries/initramfs-geode/bzImage \
 				--version=$version
 		done
-		update=1
                 ;;
 esac
 
@@ -110,9 +110,10 @@ esac
 if [ -n "$ROOTFS" ]; then
     # create a list of all files in the rootfs
     tar ztvf $ROOTFS > $target.contents
-fi
 
-if [ -n "$update" ]; then
     # create  the update image
-    raumfeld/updatecreate.sh --target=$target --targz=$ROOTFS --version=$version
+    raumfeld/updatecreate.sh \
+	--target=$target \
+	--targz=$ROOTFS \
+        --version=$version
 fi
