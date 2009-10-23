@@ -3,6 +3,7 @@ config BR2_PACKAGE_LIBRAUMFELD
 	select BR2_PACKAGE_GUPNP_AV
 	select BR2_PACKAGE_DBUS_LIB
         select BR2_PACKAGE_OPENSSL
+        select BR2_PACKAGE_LIBARCHIVE
 	help
 	  libraumfeld is a utility library for the Raumfeld software stack
 

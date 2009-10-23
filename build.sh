@@ -12,7 +12,7 @@ targets="devel-arm devel-geode			\
 
 echo_usage() {
 cat << __EOF__ >&2
-Usage: $0 --target=<target> [--image=<image> --revision=<revision>]
+Usage: $0 --target=<target> [--image=<image> --build=<number>]
        $0 --update-configs
 
    target is one of
@@ -22,8 +22,8 @@ for t in $targets; do echo "		$t"; done
 
 cat << __EOF__ >&2
 
-   image      is optional and can be one of 'init flash final'
-   revision   is optional and serves as an identifier for this build
+   image   is optional and can be one of 'init flash final'
+   build   is an optional number needed for the update image
 
    If --update-configs is specified, the target configs are all ran
    thru 'make oldconfig'. No further action is taken.
@@ -61,10 +61,26 @@ if [ "$found" != "1" ]; then
 	exit 1
 fi
 
+
 # cleanup from previous builds
 
 eval `grep BR2_ARCH .config`
 rm -fr build_$BR2_ARCH project_build_$BR2_ARCH toolchain_build_$BR2_ARCH
+
+
+# update the raumfeld-version
+
+git_version=$(git describe --tags --abbrev=0)
+version=${git_version#raumfeld-}
+
+if [ -n "$build" ]; then
+  versionstr="$version.$build"
+fi
+
+./buildlog.sh $0: versionstr=$versionstr
+
+mkdir -p raumfeld/rootfs/etc
+echo $versionstr > raumfeld/rootfs/etc/raumfeld-version
 
 
 # put the .config file in place
@@ -79,5 +95,5 @@ make
 
 # do post-processing for some targets ...
 
-./build-finish.sh --target=$target --image=$image --revision=$revision
+./build-finish.sh --target=$target --image=$image --version=$versionstr
 

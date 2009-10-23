@@ -10,8 +10,8 @@
 #   the system to run upon start ($rootfsdir)
 # - the testsuite which is copied together with the rootfs (testdir)
 #
-# Optionally this script takes a revision identifier as extra
-# parameter. If this is unspecified a revision is created from
+# Optionally this script takes a version identifier as extra
+# parameter. If this is unspecified a version is created from
 # the current date and time.
 
 set -e
@@ -23,7 +23,7 @@ Usage: $0 --target=<target>
 	--base-rootfs-img=<base-rootfs-img>
 	--target-rootfs-tgz=<target-rootfs-tgz>
 	--kernel=<kernel>
-	[--revision=<revision>]
+	[--version=<version>]
 
 __EOF__
 	exit 1
@@ -41,7 +41,7 @@ if [ -z "$target" ]		|| \
    [ -z "$target_rootfs_tgz" ];
 then echo_usage; fi
 
-test -z "$revision" && revision=$(date +%F-%T)
+test -z "$version" && version=$(date +%F-%T)
 
 ###### BUILD BINARIES #######
 echo "building prerequisites ..."
@@ -59,7 +59,7 @@ resize2fs=/sbin/resize2fs
 # ext2_img has to be created in binaries/ temporarily. will be removed later.
 ext2_img=binaries/$target.ext2
 
-target_img=binaries/$target-$revision.img
+target_img=binaries/$target-$version.img
 
 test -f $kernel		|| echo "ERROR: $kernel not found"
 test -f $kernel		|| exit 1
@@ -75,10 +75,12 @@ echo "Operating in $tmpdir"
 cp $target_rootfs_tgz $tmpdir/rootfs.tgz
 cp -a raumfeld/testsuite/rootfs/* $tmpdir/
 
-# FIXME! put this file somewhere else
+IMG_PRIMARY_SITE=http://devel.internal/buildroot/dl
+IMG_BACKUP_SITE=http://caiaq.de/download/raumfeld
+
 test -f raumfeld/audiotest.wav || \
-	wget http://caiaq.de/download/raumfeld/audiotest.wav \
-	-O raumfeld/audiotest.wav
+    for site in $IMG_PRIMARY_SITE $IMG_BACKUP_SITE; \
+        do wget -P raumfeld $site/audiotest.wav && break; done
 
 cp raumfeld/audiotest.wav $tmpdir/
 

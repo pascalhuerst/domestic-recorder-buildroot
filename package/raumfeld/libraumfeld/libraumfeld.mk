@@ -21,7 +21,8 @@ LIBRAUMFELD_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-LIBRAUMFELD_DEPENDENCIES = host-pkgconfig host-libglib2 dbus-glib gupnp-av openssl
+LIBRAUMFELD_DEPENDENCIES = \
+	host-pkgconfig host-libglib2 dbus-glib gupnp-av openssl libarchive
 
 $(eval $(call AUTOTARGETS,package/raumfeld,libraumfeld))
 
@@ -37,3 +38,10 @@ $(LIBRAUMFELD_DIR)/.stamp_downloaded: $(LIBRAUMFELD_DIR)/.bzr
 $(LIBRAUMFELD_DIR)/.stamp_extracted: $(LIBRAUMFELD_DIR)/.stamp_downloaded
 	(cd $(LIBRAUMFELD_DIR); gtkdocize)
 	touch $@
+
+ifeq ($(BR2_arm),y)
+$(LIBRAUMFELD_HOOK_POST_CONFIGURE):
+	$(call MESSAGE,"Patching libtool for static linking")
+	cat package/raumfeld/libraumfeld/libtool-static-arm.patch | patch -p1 -d $(LIBRAUMFELD_DIR)
+	touch $@
+endif
