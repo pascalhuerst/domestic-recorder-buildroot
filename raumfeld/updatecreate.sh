@@ -1,15 +1,23 @@
 #!/bin/bash
 
 echo_usage() {
-	echo "Usage: $0 --target=<target> --targz=<tar.gz> --version=<version>"
+	echo "Usage: $0 --target=<target> --targz=<tar.gz>"
         exit 1
 }
 
 . ./getopt.inc
 getopt $*
 
-if [ -z "$target" ] || [ -z "$targz" ] || [ -z "$version" ]; then
+if [ -z "$target" ] || [ -z "$targz" ]; then
     echo_usage
+fi
+
+
+version=$(tar -f $targz -zx --to-stdout ./etc/raumfeld-version)
+
+if [ -z "$version" ]; then
+    echo "Cowardly refusing to build an update without a version."
+    exit 1
 fi
 
 numfiles=$(tar -f $targz -zt | wc -l)
@@ -30,7 +38,7 @@ case $target in
 		hardwareids="5"
 		;;
 	*)
-		echo "unable to map $target to hardware ID. bummer."
+		echo "Unable to map $target to hardware ID. bummer."
 		exit 1
 		;;
 esac
@@ -54,6 +62,6 @@ for hardwareid in $hardwareids; do
 	version=$version
 
 __EOF__
-    echo "update $shasum created in $update_dir"
+    echo "Update $shasum ($version) created in $update_dir"
 done
 

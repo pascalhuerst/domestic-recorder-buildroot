@@ -79,8 +79,8 @@ fi
 
 ./buildlog.sh $0: versionstr=$versionstr
 
-echo $versionstr > raumfeld/rootfs-arm/etc/raumfeld-version
-echo $versionstr > raumfeld/rootfs-geode/etc/raumfeld-version
+mkdir -p raumfeld/rootfs/etc
+echo $versionstr > raumfeld/rootfs/etc/raumfeld-version
 
 
 # put the .config file in place
