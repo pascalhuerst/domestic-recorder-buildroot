@@ -93,7 +93,7 @@ make oldconfig
 
 make
 
+
 # do post-processing for some targets ...
 
-./build-finish.sh --target=$target --image=$image --version=$versionstr
-
+./build-finish.sh --target=$target --image=$image
