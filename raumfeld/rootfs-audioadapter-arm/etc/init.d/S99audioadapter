@@ -1,4 +1,5 @@
 #!/bin/sh
 #
 
-/raumfeld/master-process/raumfeld-master-sh.sh &
+RAUMFELD_UPDATES_URL=http://devel.internal/updates \
+    /raumfeld/master-process/raumfeld-master-sh.sh &
