@@ -39,7 +39,9 @@ $(LIBRAUMFELD_DIR)/.stamp_extracted: $(LIBRAUMFELD_DIR)/.stamp_downloaded
 	(cd $(LIBRAUMFELD_DIR); gtkdocize)
 	touch $@
 
+ifeq ($(BR2_arm),y)
 $(LIBRAUMFELD_HOOK_POST_CONFIGURE):
 	$(call MESSAGE,"Patching libtool for static linking")
-	cat package/raumfeld/libraumfeld/libtool-static.patch | patch -p1 -N -d $(LIBRAUMFELD_DIR)
+	cat package/raumfeld/libraumfeld/libtool-static-arm.patch | patch -p1 -d $(LIBRAUMFELD_DIR)
 	touch $@
+endif
