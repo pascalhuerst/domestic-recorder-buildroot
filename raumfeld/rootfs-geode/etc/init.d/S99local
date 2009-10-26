@@ -2,5 +2,7 @@
 
 mkdir -p /Music
 mount /dev/hda3 /Music
+chown nobody.nobody /Music
+chmod 755 /Music
 cd /raumfeld/master-process
 ./raumfeld-master-sh.sh &
