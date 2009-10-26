@@ -114,6 +114,5 @@ if [ -n "$ROOTFS" ]; then
     # create  the update image
     raumfeld/updatecreate.sh \
 	--target=$target \
-	--targz=$ROOTFS \
-        --version=$version
+	--targz=$ROOTFS
 fi

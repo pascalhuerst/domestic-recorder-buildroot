@@ -96,4 +96,4 @@ make
 
 # do post-processing for some targets ...
 
-./build-finish.sh --target=$target --image=$image
+./build-finish.sh --target=$target --image=$image --version=$versionstr
