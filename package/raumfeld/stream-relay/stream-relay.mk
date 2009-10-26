@@ -3,7 +3,7 @@
 # stream-relay
 #
 #############################################################
-STREAM_RELAY_VERSION:=$(BR2_PACKAGE_RAUMFELD_BRANCH)
+STREAM_RELAY_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 STREAM_RELAY_DIR:=$(BUILD_DIR)/stream-relay-$(STREAM_RELAY_VERSION)
 STREAM_RELAY_TARGET_DIR:=raumfeld/stream-relay
 STREAM_RELAY_BINARY:=$(STREAM_RELAY_TARGET_DIR)/stream-relay
@@ -12,17 +12,16 @@ STREAM_RELAY_CROSS_PREFIX:=$(BUILD_DIR)/..
 STREAM_RELAY_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp flac ffmpeg libmms libvorbis
 
 ifeq ($(ARCH),arm)
-STREAM_RELAY_CROSS=ARM
-else
-ifeq ($(ARCH),i586)
-STREAM_RELAY_CROSS=GEODE
-else
-echo "renderer can only be build for ARM or GEODE"
-exit 1
+STREAM_RELAY_CROSS = ARM
 endif
+
+ifeq ($(ARCH),i586)
+STREAM_RELAY_CROSS = GEODE
 endif
 
 $(STREAM_RELAY_DIR)/.bzr:
+	test ! -z "$(STREAM_RELAY_CROSS)" || \
+		(echo "stream-relay can only be built for ARM or GEODE"; exit -1)
 	if ! test -d $(STREAM_RELAY_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p stream-relay-$(STREAM_RELAY_VERSION); \

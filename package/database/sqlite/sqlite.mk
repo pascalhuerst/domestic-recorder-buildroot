@@ -4,7 +4,7 @@
 #
 #############################################################
 
-SQLITE_VERSION = 3.6.16
+SQLITE_VERSION = 3.6.18
 SQLITE_SOURCE = sqlite-amalgamation-$(SQLITE_VERSION).tar.gz
 SQLITE_SITE = http://www.sqlite.org
 SQLITE_INSTALL_STAGING = YES
@@ -14,8 +14,7 @@ SQLITE_DEPENDENCIES = uclibc
 
 SQLITE_CONF_OPT =	--enable-shared \
 			--enable-static \
-			--enable-tempstore=yes \
-			--enable-threadsafe \
+			--disable-threadsafe \
 			--enable-releasemode \
 			--disable-tcl \
 			--localstatedir=/var

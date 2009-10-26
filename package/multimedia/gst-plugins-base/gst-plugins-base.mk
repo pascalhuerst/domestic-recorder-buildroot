@@ -3,7 +3,7 @@
 # gst-plugins-base
 #
 #############################################################
-GST_PLUGINS_BASE_VERSION = 0.10.24
+GST_PLUGINS_BASE_VERSION = 0.10.25
 GST_PLUGINS_BASE_SOURCE = gst-plugins-base-$(GST_PLUGINS_BASE_VERSION).tar.bz2
 GST_PLUGINS_BASE_SITE = http://gstreamer.freedesktop.org/src/gst-plugins-base
 GST_PLUGINS_BASE_INSTALL_STAGING = YES
@@ -123,11 +123,24 @@ else
 GST_PLUGINS_BASE_CONF_OPT += --disable-volume
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_GIO),y)
+GST_PLUGINS_BASE_CONF_OPT += --enable-gio
+else
+GST_PLUGINS_BASE_CONF_OPT += --disable-gio
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_OGG),y)
 GST_PLUGINS_BASE_CONF_OPT += --enable-ogg
 GST_PLUGINS_BASE_DEPENDENCIES += libogg
 else
 GST_PLUGINS_BASE_CONF_OPT += --disable-ogg
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_PANGO),y)
+GST_PLUGINS_BASE_CONF_OPT += --enable-pango
+GST_PLUGINS_BASE_DEPENDENCIES += pango
+else
+GST_PLUGINS_BASE_CONF_OPT += --disable-pango
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_THEORA),y)
@@ -142,6 +155,12 @@ GST_PLUGINS_BASE_CONF_OPT += --enable-vorbis
 GST_PLUGINS_BASE_DEPENDENCIES += libvorbis
 else
 GST_PLUGINS_BASE_CONF_OPT += --disable-vorbis
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_V4L),y)
+GST_PLUGINS_BASE_CONF_OPT += --enable-gst_v4l
+else
+GST_PLUGINS_BASE_CONF_OPT += --disable-gst_v4l
 endif
 
 $(eval $(call AUTOTARGETS,package/multimedia,gst-plugins-base))

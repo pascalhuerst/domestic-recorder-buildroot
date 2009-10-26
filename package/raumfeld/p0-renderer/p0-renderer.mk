@@ -3,40 +3,39 @@
 # p0-renderer
 #
 #############################################################
-P0_RENDERER_VERSION:=$(BR2_PACKAGE_RAUMFELD_BRANCH)
+P0_RENDERER_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 P0_RENDERER_DIR:=$(BUILD_DIR)/p0-renderer-$(P0_RENDERER_VERSION)
 P0_RENDERER_TARGET_DIR:=raumfeld/p0-renderer
 P0_RENDERER_BINARY:=$(P0_RENDERER_TARGET_DIR)/p0-renderer
 P0_RENDERER_CROSS_PREFIX:=$(BUILD_DIR)/..
 
-P0_RENDERER_DEPENDENCIES = host-pkgconfig alsa-lib dbus-glib flac gstreamer liboil libraumfeld
+P0_RENDERER_DEPENDENCIES = host-pkgconfig host-libglib2 host-dbus-glib alsa-lib dbus-glib flac liboil libraumfeld
 
 ifeq ($(ARCH),arm)
-P0_RENDERER_CROSS=ARM
-else
-ifeq ($(ARCH),i586)
-P0_RENDERER_CROSS=GEODE
-else
-echo "renderer can only be build for ARM or GEODE"
-exit 1
+P0_RENDERER_CROSS = ARM
 endif
+
+ifeq ($(ARCH),i586)
+P0_RENDERER_CROSS = GEODE
 endif
 
 $(P0_RENDERER_DIR)/.bzr:
+	test ! -z "$(P0_RENDERER_CROSS)" || \
+		(echo "renderer can only be built for ARM or GEODE"; exit -1)
 	if ! test -d $(P0_RENDERER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p p0-renderer-$(P0_RENDERER_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer p0-renderer-$(P0_RENDERER_VERSION)) \
+	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer/$(P0_RENDERER_VERSION) p0-renderer-$(P0_RENDERER_VERSION)) \
 	fi
 	touch -c $@
 
 p0-renderer-source: $(P0_RENDERER_DIR)/.bzr 
 
 $(STAGING_DIR)/$(P0_RENDERER_BINARY): p0-renderer-source
-	$(MAKE) -C $(P0_RENDERER_DIR) CROSS=$(P0_RENDERER_CROSS) DEST=$(STAGING_DIR)/raumfeld CROSS_PREFIX=$(P0_RENDERER_CROSS_PREFIX)
+	PATH=$(TARGET_PATH) $(MAKE) -C $(P0_RENDERER_DIR) CROSS=$(P0_RENDERER_CROSS) DEST=$(STAGING_DIR)/raumfeld CROSS_PREFIX=$(P0_RENDERER_CROSS_PREFIX)
 
 $(TARGET_DIR)/$(P0_RENDERER_BINARY): $(STAGING_DIR)/$(P0_RENDERER_BINARY)
-	$(MAKE) -C $(P0_RENDERER_DIR) CROSS=$(P0_RENDERER_CROSS) DEST=$(TARGET_DIR)/raumfeld CROSS_PREFIX=$(P0_RENDERER_CROSS_PREFIX)
+	PATH=$(TARGET_PATH) $(MAKE) -C $(P0_RENDERER_DIR) CROSS=$(P0_RENDERER_CROSS) DEST=$(TARGET_DIR)/raumfeld CROSS_PREFIX=$(P0_RENDERER_CROSS_PREFIX)
 	$(STRIPCMD) $(STRIP_STRIP_UNNEEDED) $(TARGET_DIR)/$(P0_RENDERER_BINARY)
 
 p0-renderer: $(P0_RENDERER_DEPENDENCIES) $(TARGET_DIR)/$(P0_RENDERER_BINARY)

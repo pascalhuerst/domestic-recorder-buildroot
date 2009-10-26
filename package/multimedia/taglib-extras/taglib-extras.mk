@@ -27,12 +27,11 @@ $(TAGLIB_EXTRAS_DIR)/.configured: $(TAGLIB_EXTRAS_DIR)/.unpacked
         echo "SET(CMAKE_INSTALL_PREFIX $(STAGING_DIR)/usr)">> Toolchain.cmake; \
 	echo "SET(CMAKE_LIBRARY_PATH $(STAGING_DIR)/usr/lib)">> Toolchain.cmake; \
 	echo "SET(CMAKE_FIND_ROOT_PATH $(STAGING_DIR))" >> Toolchain.cmake;\
-	echo "SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)" >> Toolchain.cmake;\
+	echo "SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)" >> Toolchain.cmake;\
 	echo "SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)" >> Toolchain.cmake;\
 	echo "SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)" >> Toolchain.cmake;\
 	cmake -DCMAKE_TOOLCHAIN_FILE=Toolchain.cmake \
 	       -DCMAKE_VERBOSE_MAKEFILE=TRUE \
-	       -DCMAKE_FIND_ROOT_PATH=$(STAGING_DIR) \
 	       -DCMAKE_INSTALL_PREFIX=$(STAGING_DIR)/usr \
                -DCMAKE_LINKER_FLAGS=-L$(STAGING_DIR)/usr/lib \
                -DCMAKE_SHARED_LINKER_FLAGS=-L$(STAGING_DIR)/usr/lib \

@@ -3,13 +3,18 @@
 # gst-ffmpeg
 #
 #############################################################
-GST_FFMPEG_VERSION = 0.10.8
+GST_FFMPEG_VERSION = 0.10.9
 GST_FFMPEG_SOURCE = gst-ffmpeg-$(GST_FFMPEG_VERSION).tar.bz2
 GST_FFMPEG_SITE = http://gstreamer.freedesktop.org/src/gst-ffmpeg
 GST_FFMPEG_INSTALL_STAGING = YES
 GST_FFMPEG_LIBTOOL_PATCH = NO
 GST_FFMPEG_DIR := $(BUILD_DIR)/gst-ffmpeg-$(GST_FFMPEG_VERSION)
-GST_FFMPEG_TARGET_LIBRARY = $(TARGET_DIR)/usr/lib/gstreamer-0.10/libgstffmpeg.so
+GST_FFMPEG_LIBRARY = libgstffmpeg.so
+GST_FFMPEG_DESTDIR:=usr/lib/gstreamer-0.10
+GST_FFMPEG_TARGET_LIBRARY = $(TARGET_DIR)/$(GST_FFMPEG_DESTDIR)/$(GST_FFMPEG_LIBRARY)
+GST_FFMPEG_STAGING_LIBRARY = $(STAGING_DIR)/$(GST_FFMPEG_DESTDIR)/$(GST_FFMPEG_LIBRARY)
+
+GST_FFMPEG_DEPENDENCIES = gstreamer gst-plugins-base
 
 GST_FFMPEG_CONF_OPT = \
 		$(DISABLE_NLS) \
@@ -68,26 +73,17 @@ $(GST_FFMPEG_DIR)/.configured: $(GST_FFMPEG_DIR)/.unpacked
 	)
 	touch $@
 
-#		--cross-prefix=$(TARGET_CROSS) \
-#		--sysroot=$(STAGING_DIR) \
-#		--host-cc=$(HOSTCC) \
-#		--cc=$(TARGET_CC) \
-#		--arch=$(BR_ARCH) \
-#		--extra-cflags=-fPIC \
-
-
-$(GST_FFMPEG_DIR)/libgstffmpeg: $(GST_FFMPEG_DIR)/.configured
+$(GST_FFMPEG_DIR)/ext/ffmpeg/$(GST_FFMPEG_LIBRARY): $(GST_FFMPEG_DIR)/.configured
 	$(MAKE) -C $(GST_FFMPEG_DIR)
 
-$(STAGING_DIR)/usr/lib/gstreamer-0.10/libgstffmpeg.so: $(GST_FFMPEG_DIR)/libgstffmpeg
+$(GST_FFMPEG_STAGING_LIBRARY): $(GST_FFMPEG_DIR)/ext/ffmpeg/$(GST_FFMPEG_LIBRARY)
 	$(MAKE) -C $(GST_FFMPEG_DIR) install
 
-GST_FFMPEG_TARGET_LIBRARY: $(STAGING_DIR)/usr/lib/gstreamer-0.10/libgstffmpeg.so
-	cp -dpf $(STAGING_DIR)/usr/lib/gstreamer-0.10/libgstffmpeg.so* $(TARGET_DIR)/usr/lib/gstreamer-0.10/
+$(GST_FFMPEG_TARGET_LIBRARY): $(GST_FFMPEG_STAGING_LIBRARY)
+	cp -dpf $(STAGING_DIR)/$(GST_FFMPEG_DESTDIR)/libgstffmpeg.so* $(TARGET_DIR)/$(GST_FFMPEG_DESTDIR)
 	-$(STRIPCMD) $(STRIP_STRIP_UNNEEDED) $(GST_FFMPEG_TARGET_LIBRARY)
 
-
-gst-ffmpeg: $(GST_FFMPEG_DEPENDENCIES) GST_FFMPEG_TARGET_LIBRARY
+gst-ffmpeg: $(GST_FFMPEG_DEPENDENCIES) $(GST_FFMPEG_TARGET_LIBRARY)
 
 gst-ffmpeg-source: $(DL_DIR)/$(GST_FFMPEG_SOURCE)
 
@@ -96,6 +92,11 @@ gst-ffmpeg-unpacked: $(GST_FFMPEG_DIR)/.unpacked
 gst-ffmpeg-dirclean:
 	rm -rf $(GST_FFMPEG_DIR)
 
-GST_FFMPEG_DEPENDENCIES = gstreamer
-
-
+#############################################################
+#
+# Toplevel Makefile options
+#
+#############################################################
+ifeq ($(BR2_PACKAGE_GST_FFMPEG),y)
+TARGETS+=gst-ffmpeg
+endif

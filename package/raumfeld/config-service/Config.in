@@ -1,0 +1,8 @@
+config BR2_PACKAGE_RAUMFELD_CONFIG_SERVICE
+	bool "config-service"
+	select BR2_PACKAGE_LIBRAUMFELD
+	select BR2_PACKAGE_LIBRAUMFELDCPP
+	help
+	  raumfeld config service
+
+	  http://www.raumfeld.com/

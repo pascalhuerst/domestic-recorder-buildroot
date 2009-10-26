@@ -1,1 +1,4 @@
-updates
+rootfs-arm/etc/raumfeld-version
+rootfs-geode/etc/raumfeld-version
+audiotest.wav
+

@@ -1,51 +1,99 @@
-#!/bin/sh
+#!/bin/bash
+
+targets="devel-arm devel-geode			\
+         initramfs-arm imgrootfs-arm		\
+         initramfs-geode imgrootfs-geode	\
+         audioadapter-arm remotecontrol-arm	\
+         base-geode"
+
+# create a timestamp
+
+./buildlog.sh $0 $*
+
+echo_usage() {
+cat << __EOF__ >&2
+Usage: $0 --target=<target> [--image=<image> --build=<number>]
+       $0 --update-configs
+
+   target is one of
+__EOF__
+
+for t in $targets; do echo "		$t"; done
+
+cat << __EOF__ >&2
+
+   image   is optional and can be one of 'init flash final'
+   build   is an optional number needed for the update image
+
+   If --update-configs is specified, the target configs are all ran
+   thru 'make oldconfig'. No further action is taken.
+
+__EOF__
+	exit 1
+}
+
+. ./getopt.inc
+getopt $*
 
 set -e
 
-case $1 in
-	devel-arm)
-		;;
-	devel-geode)
-		;;
-	initramfs-arm)
-		;;
-	imgrootfs-arm)
-		;;
-	audioadapter-arm)
-		;;
-	remotecontrol-arm)
-		;;
+if [ ! -z "$update_configs" ]; then
+	for x in $targets; do
+		echo "updating config for $x ..."
+		cp raumfeld/br2-$x.config .config
+		/usr/bin/make oldconfig
+		cp .config raumfeld/br2-$x.config
+	done
 
-	configs)
-		for x in \
-			devel-arm devel-geode \
-			initramfs-arm imgrootfs-arm \
-			audioadapter-arm remotecontrol-arm; do
+	exit 0
+fi
 
-                        echo "updating config for $x ..."
-			cp raumfeld/br2-$x.config .config
-			/usr/bin/make oldconfig
-			cp .config raumfeld/br2-$x.config
-		done
+test -z "$target" && echo_usage
 
-		exit 0;
-		;;
+found=0
 
-	*)
-		echo "unknown target '$1'. bummer."
-		exit 1
-esac
+for x in $targets; do
+	[ "$x" = "$target" ] && found=1
+done
 
-cp raumfeld/br2-$1.config .config
+if [ "$found" != "1" ]; then
+	echo "unknown target '$target'. bummer."
+	exit 1
+fi
 
-# is that really needed?
+
+# cleanup from previous builds
+
 eval `grep BR2_ARCH .config`
 rm -fr build_$BR2_ARCH project_build_$BR2_ARCH toolchain_build_$BR2_ARCH
 
+
+# update the raumfeld-version
+
+git_version=$(git describe --tags --abbrev=0)
+version=${git_version#raumfeld-}
+
+if [ -n "$build" ]; then
+  versionstr="$version.$build"
+fi
+
+./buildlog.sh $0: versionstr=$versionstr
+
+mkdir -p raumfeld/rootfs/etc
+echo $versionstr > raumfeld/rootfs/etc/raumfeld-version
+
+
+# put the .config file in place
+
+cp raumfeld/br2-$target.config .config
 make oldconfig
+
+
+# run the actual build process
+
 make
 
 
 # do post-processing for some targets ...
 
-./build-finish.sh $*
+./build-finish.sh --target=$target --image=$image

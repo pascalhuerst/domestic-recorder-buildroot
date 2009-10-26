@@ -68,9 +68,16 @@ config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_VOLUME
 
 comment "plugins with external dependencies (there may be more available)"
 
+config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_GIO
+	bool "gio (gio/gvfs source)"
+
 config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_OGG
 	bool "ogg (*.ogg audio/video)"
 	select BR2_PACKAGE_LIBOGG
+
+config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_PANGO
+	bool "pango font renderer"
+        select BR2_PACKAGE_PANGO
 
 config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_THEORA
 	bool "theora (*.ogg video)"
@@ -80,5 +87,8 @@ config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_VORBIS
 	bool "vorbis (*.ogg audio)"
 	select BR2_PACKAGE_LIBVORBIS
 
-endif
+config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_V4L
+	bool "video4linux"
 
+
+endif

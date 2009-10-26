@@ -3,7 +3,7 @@
 # meta-server
 #
 #############################################################
-META_SERVER_VERSION:=$(BR2_PACKAGE_RAUMFELD_BRANCH)
+META_SERVER_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 META_SERVER_DIR:=$(BUILD_DIR)/meta-server-$(META_SERVER_VERSION)
 META_SERVER_TARGET_DIR:=raumfeld/meta-server
 META_SERVER_BINARY:=$(META_SERVER_TARGET_DIR)/meta-server
@@ -13,17 +13,16 @@ META_SERVER_CROSS_PREFIX:=$(BUILD_DIR)/..
 META_SERVER_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp sqlite taglib taglib-extras
 
 ifeq ($(ARCH),arm)
-META_SERVER_CROSS=ARM
-else
-ifeq ($(ARCH),i586)
-META_SERVER_CROSS=GEODE
-else
-echo "renderer can only be build for ARM or GEODE"
-exit 1
+META_SERVER_CROSS = ARM
 endif
+
+ifeq ($(ARCH),i586)
+META_SERVER_CROSS = GEODE
 endif
 
 $(META_SERVER_DIR)/.bzr:
+	test ! -z "$(META_SERVER_CROSS)" || \
+		(echo "meta-server can only be built for ARM or GEODE"; exit -1)
 	if ! test -d $(META_SERVER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p meta-server-$(META_SERVER_VERSION); \

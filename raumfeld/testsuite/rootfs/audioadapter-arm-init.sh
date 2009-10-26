@@ -4,7 +4,23 @@ source tests.inc
 
 cd tests
 
-./wifi     && \
-./ethaddr  && \
-./ethernet && \
-dialog_msg "ALL TESTS PASSED."
+if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
+	./wifi			&&
+	./ethaddr  		&& \
+	./ethernet 		&& \
+	./rotary		&& \
+	./nand     		&& \
+	./zerosetup-button
+else
+	./wifi     		&& \
+	./ethaddr  		&& \
+	./ethernet 		&& \
+	./nand     		&& \
+	./audio			&& \
+	./zerosetup-button
+fi
+
+test_result
+
+./test-menu
+

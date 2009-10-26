@@ -123,12 +123,12 @@ static int test_touch(int fd)
 
 #define ROTARY_STEPS 24
 
-static int test_rotary(int fd)
+static int _test_rotary(int fd, int expected, int scale, int offset)
 {
-	int cnt, ret, expected = 1;
+	int cnt, ret;
 	struct input_event ev;
 
-	for (cnt = 0; cnt < ROTARY_STEPS * 2;) {
+	for (cnt = 0; cnt < ROTARY_STEPS;) {
 		ret = read(fd, &ev, sizeof(ev));
 		if (ret < 0)
 			return ret;
@@ -139,28 +139,59 @@ static int test_rotary(int fd)
 		cnt++;
 
 		/* output percentage for dialog */
-		printf("%d\n", (cnt * 100) / ROTARY_STEPS/2);
+		printf("%d\n", offset + 
+				((cnt * 100) / (ROTARY_STEPS * scale)));
 		fflush(stdout);
-
-		if (cnt == ROTARY_STEPS)
-			expected *= -1;
 	}
 
 	return 0;
 }
 
-#define ABS(x) (((x) > 0) ? (x) : (-(x)))
-static int test_accel(int fd, int thresh)
+static int test_rotary(int fd)
 {
-	int ret;
+	_test_rotary(fd, 1, 2, 0);
+	_test_rotary(fd, -1, 2, 50);
+	return 0;
+}
+
+static int test_rotary_cw(int fd)
+{
+	_test_rotary(fd, 1, 1, 0);
+	return 0;
+}
+
+static int test_rotary_ccw(int fd)
+{
+	_test_rotary(fd, -1, 1, 0);
+	return 0;
+}
+
+#define ABS(x) (((x) > 0) ? (x) : (-(x)))
+#define UNSET 0xffff
+
+static int test_accel(int fd, int axis, int thresh)
+{
+	int min = UNSET, max = UNSET;
 	struct input_event ev;
 
 	for (;;) {
-		ret = read(fd, &ev, sizeof(ev));
+		int ret = read(fd, &ev, sizeof(ev));
 		if (ret < 0)
 			return ret;
 
-		if (ev.type == EV_ABS && ABS(ev.value) > thresh)
+		if (ret != sizeof(ev))
+			continue;
+
+		if (ev.type != EV_ABS || ev.code != axis)
+			continue;
+
+		if (ev.value > max || max == UNSET)
+			max = ev.value;
+
+		if (ev.value < min || min == UNSET)
+			min = ev.value;
+
+		if (ABS(max - min) > thresh)
 			return 0;
 	}
 
@@ -191,17 +222,17 @@ static int test_key(int fd, int code)
 	return 0;
 }
 
-#define ACCEL_SIMPLE_THRESH	20
-#define ACCEL_FULL_THRESH	1000
+#define ACCEL_SIMPLE_THRESH	10
+#define ACCEL_FULL_THRESH	100
 
 static int test_accel_simple(int fd)
 {
-	return test_accel(fd, ACCEL_SIMPLE_THRESH);
+	return test_accel(fd, ABS_Z, ACCEL_SIMPLE_THRESH);
 }
 
 static int test_accel_full(int fd)
 {
-	return test_accel(fd, ACCEL_FULL_THRESH);
+	return test_accel(fd, ABS_X, ACCEL_FULL_THRESH);
 }
 
 static int test_key_1(int fd)
@@ -251,6 +282,18 @@ static struct test_func {
 		.desc	= "\trotary left/right 360° test",
 		.dev	= "rotary-encoder",
 		.proc	= test_rotary
+	},
+	{
+		.name	= "rotary_cw",
+		.desc	= "\trotary clockwise test",
+		.dev	= "rotary-encoder",
+		.proc	= test_rotary_cw
+	},
+	{
+		.name	= "rotary_ccw",
+		.desc	= "\trotary clockwise test",
+		.dev	= "rotary-encoder",
+		.proc	= test_rotary_ccw
 	},
 	{
 		.name	= "accel_simple",

@@ -8,5 +8,11 @@ cd tests
 ./rotary &&		\
 ./accel-simple &&	\
 ./touch &&		\
-dialog_msg "ALL TESTS PASSED."
+./wifi &&		\
+./battery &&		\
+./nand
+
+test_result
+
+./test-menu
 

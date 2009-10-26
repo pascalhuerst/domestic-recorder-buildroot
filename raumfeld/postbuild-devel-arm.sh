@@ -3,6 +3,7 @@
 # post-build.sh for the devel-arm target
 
 echo "Populating the root filesystem ..."
+cp -r raumfeld/rootfs/* $1
 cp -r raumfeld/rootfs-arm/* $1
 
 if [ -d raumfeld/rootfs-devel-arm ]; then

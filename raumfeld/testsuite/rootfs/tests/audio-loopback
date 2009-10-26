@@ -1,0 +1,20 @@
+#!/bin/sh
+
+. ../tests.inc
+TITLE="AUDIOLOOPBACK"
+DIALOGOPTS="--title $TITLE"
+
+rm -f /tmp/out
+
+/raumfeld/p0-audiotest/p0-audiotest 2>&1 | \
+	tee /tmp/out | \
+	/percent 216 | \
+	dialog_progress "Testing audio loopback. Please wait." $DIALOGOPTS
+
+if [ -z "$(grep ERROR /tmp/out)" ]; then
+	dialog_success "OK!" $DIALOGOPTS
+else
+	dialog_err "TEST FAILED!" $DIALOGOPTS
+	exit 1
+fi
+

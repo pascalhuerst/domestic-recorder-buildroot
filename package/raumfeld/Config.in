@@ -19,7 +19,10 @@ source "package/raumfeld/remote-control/Config.in"
 source "package/raumfeld/master-process/Config.in"
 source "package/raumfeld/p0-renderer/Config.in"
 source "package/raumfeld/p0-timeserver/Config.in"
-source "package/raumfeld/stream-relay/Config.in"
+source "package/raumfeld/config-service/Config.in"
 source "package/raumfeld/meta-server/Config.in"
+source "package/raumfeld/stream-decoder/Config.in"
+source "package/raumfeld/stream-relay/Config.in"
+source "package/raumfeld/loopbacktest/Config.in"
 endmenu
 

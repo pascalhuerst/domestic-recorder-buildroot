@@ -119,7 +119,9 @@ int img_create (const char *uimage,
 	sha_256_t sha;
 	void *buf;
 
-	fd_out = open(output, O_RDWR | O_CREAT);
+	fd_out = open(output,
+                      O_RDWR | O_CREAT,
+                      S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (fd_out < 0) {
 		perror("open");
 		return fd_out;
@@ -134,7 +136,7 @@ int img_create (const char *uimage,
 	}
 
 	printf("done.\n");
-	
+
 	/* continue with description */
 	printf("Copying description from >%s< ... ", description);
 	lseek(fd_out, DESC_OFFSET, SEEK_SET);
