@@ -1,0 +1,183 @@
+diff -Nur taglib-extras-0.1.4-orig/taglib-extras/wav/wavfile.cpp taglib-extras-0.1.4/taglib-extras/wav/wavfile.cpp
+--- taglib-extras-0.1.4-orig/taglib-extras/wav/wavfile.cpp	2009-03-12 21:12:14.000000000 +0100
++++ taglib-extras-0.1.4/taglib-extras/wav/wavfile.cpp	2009-10-30 10:39:32.000000000 +0100
+@@ -37,35 +37,21 @@
+ 
+ Wav::File::File(TagLib::FileName file,
+         bool readProperties,
+-        Properties::ReadStyle propertiesStyle,
+-        FILE *fp)
++        Properties::ReadStyle propertiesStyle)
+         : TagLib::File(file)
+         , wavtag( NULL )
+         , properties( NULL )
+ {
+ 
+-    //   debug ("Wav::File: create new file object.");
+-    //debug ( file );
++  /**
++   * Create the Wav file.
++   */
+ 
+-    /**
+-     * Create the Wav file.
+-     */
+-
+-    if(fp)
+-        wavfile = fp;
+-    else
+-        wavfile = TagLibOpenFile(file, "rb");
+-
+-    if( isOpen() )
+-    {
+-        read(readProperties, propertiesStyle );
+-    }
++  read(readProperties, propertiesStyle );
+ }
+ 
+ Wav::File::~File()
+ {
+-    if(wavfile)
+-        fclose(wavfile);
+     delete properties;
+ }
+ 
+@@ -89,10 +75,6 @@
+     return false;
+ }
+ 
+-bool Wav::File::isOpen()
+-{
+-    return wavfile != NULL;
+-}
+ 
+ ////////////////////////////////////////////////////////////////////////////////
+ // private members
+@@ -102,13 +84,11 @@
+ {
+     properties =  new Wav::Properties(propertiesStyle);
+ 
+-    if (wavfile != NULL) {
+-        if(readProperties)
+-        {
+-            // Parse bitrate etc.
+-            properties->readWavProperties( wavfile );
+-        }
+-    }
++    if(readProperties)
++      {
++	// Parse bitrate etc.
++	properties->readWavProperties( this );
++      }
+ }
+ 
+ }
+diff -Nur taglib-extras-0.1.4-orig/taglib-extras/wav/wavfile.h taglib-extras-0.1.4/taglib-extras/wav/wavfile.h
+--- taglib-extras-0.1.4-orig/taglib-extras/wav/wavfile.h	2009-03-12 22:12:54.000000000 +0100
++++ taglib-extras-0.1.4/taglib-extras/wav/wavfile.h	2009-10-30 10:31:08.000000000 +0100
+@@ -45,8 +45,7 @@
+                  * false, \a propertiesStyle is ignored.
+                  */
+                 explicit File(TagLib::FileName file, bool readProperties = true,
+-                        Properties::ReadStyle propertiesStyle = Properties::Average,
+-                        FILE *fp=NULL);
++                        Properties::ReadStyle propertiesStyle = Properties::Average);
+ 
+                 /*!
+                  * Destroys this instance of the File.
+@@ -79,13 +78,9 @@
+             protected:
+                 File(const File &);
+                 File &operator=(const File &);
+-                bool isOpen();
+-
+ 
+                 TagLib::Tag *wavtag;
+                 Wav::Properties *properties;
+-
+-                FILE *wavfile;
+         };
+     }
+ }
+diff -Nur taglib-extras-0.1.4-orig/taglib-extras/wav/wavproperties.cpp taglib-extras-0.1.4/taglib-extras/wav/wavproperties.cpp
+--- taglib-extras-0.1.4-orig/taglib-extras/wav/wavproperties.cpp	2009-03-27 00:50:36.000000000 +0100
++++ taglib-extras-0.1.4/taglib-extras/wav/wavproperties.cpp	2009-10-30 10:41:38.000000000 +0100
+@@ -30,7 +30,7 @@
+ #include <stdint.h>
+ #endif
+ #include <stdio.h>
+-
++#include <memory.h>
+ #include "wavfile.h"
+ 
+ #if !defined(_WIN32) && !defined(_WIN64)
+@@ -101,23 +101,27 @@
+ #define swap16(x) ((((x)&0xff00)>>8) | (((x)&0x00ff)<<8))
+ #define swap32(x) ((swap16((x)&0x0000ffff)<<16) | swap16(((x)&0xffff0000)>>16))
+ 
+-void Wav::Properties::readWavProperties( FILE *fp )
++void Wav::Properties::readWavProperties( TagLib::File *fp )
+ {
+-    fseek(fp, 0, SEEK_SET );
++    fp->seek(0);
+     WavHeader header;
+-    if( fread(&header, sizeof(header), 1, fp) != 1 )
+-    {
+-        return;
+-    }
+-
+-    m_channels = ntohs(swap16(header.num_channels));
+-    m_sampleRate = ntohl(swap32(header.num_samples_per_sec));
+-    m_bitrate = ntohl(swap32(header.num_avg_bytes_per_sec)) * 8 / 1000;
++
++    ByteVector headerBlock = fp->readBlock(sizeof(WavHeader));
++
++    if(headerBlock.size() == sizeof(WavHeader))
++      {
++	memcpy(&header, headerBlock.data(), sizeof(WavHeader));
++	m_channels = ntohs(swap16(header.num_channels));
++	m_sampleRate = ntohl(swap32(header.num_samples_per_sec));
++	m_bitrate = ntohl(swap32(header.num_avg_bytes_per_sec)) * 8 / 1000;
+     
+-    if( ntohl(swap32(header.num_avg_bytes_per_sec)) != 0 )
+-    {
+-        m_length = ntohl(swap32(header.num_data_bytes))/ntohl(swap32(header.num_avg_bytes_per_sec));
+-    }else{
+-        std::cerr << "Error in parsing WavHeader - num_avg_bytes_per_sec should not be 0 - file is corrupted!" << std::endl;
+-    }
++	if( ntohl(swap32(header.num_avg_bytes_per_sec)) != 0 )
++	  {
++	    m_length = ntohl(swap32(header.num_data_bytes))/ntohl(swap32(header.num_avg_bytes_per_sec));
++	  }
++	else
++	  {
++	    std::cerr << "Error in parsing WavHeader - num_avg_bytes_per_sec should not be 0 - file is corrupted!" << std::endl;
++	  }
++      }
+ }
+diff -Nur taglib-extras-0.1.4-orig/taglib-extras/wav/wavproperties.h taglib-extras-0.1.4/taglib-extras/wav/wavproperties.h
+--- taglib-extras-0.1.4-orig/taglib-extras/wav/wavproperties.h	2009-03-12 22:12:54.000000000 +0100
++++ taglib-extras-0.1.4/taglib-extras/wav/wavproperties.h	2009-10-30 10:40:46.000000000 +0100
+@@ -32,6 +32,8 @@
+ 
+ namespace TagLib {
+ 
++  class File;
++
+     namespace Wav {
+ 
+         class File;
+@@ -61,11 +63,11 @@
+                 virtual int sampleRate() const;
+                 virtual int channels() const;
+ 
+-                void readWavProperties(FILE *file);
++                void readWavProperties(TagLib::File *file);
+ 
+ 
+             private:
+-                void readAudioTrackProperties(FILE *file);
++                void readAudioTrackProperties(TagLib::File *file);
+                 friend class Wav::File;
+ 
+                 int m_length;
