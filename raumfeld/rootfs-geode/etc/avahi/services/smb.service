@@ -1,0 +1,8 @@
+<?xml version="1.0" standalone='no'?>
+<service-group>
+  <name>Base</name>
+  <service>
+  	<type>_smb._tcp</type>
+  	<port>139</port>
+  </service>
+</service-group>
