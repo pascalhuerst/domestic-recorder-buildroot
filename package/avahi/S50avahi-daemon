@@ -2,7 +2,9 @@
 #
 # avahi-daemon init script
 
+export LD_PRELOAD=libpthread.so.0
 DAEMON=/usr/sbin/avahi-daemon
+
 case "$1" in
     start)
 	$DAEMON -c || $DAEMON -D
