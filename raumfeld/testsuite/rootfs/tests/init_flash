@@ -4,7 +4,8 @@ set -e
 
 UBIDEV=0
 UBIMTD=3
-ROOT_SIZE=115MiB
+ROOT_SIZE=87MiB
+UPDATE_SIZE=32MiB
 
 # first, detach the volume attached by the kernel
 ubidetach /dev/ubi_ctrl -d $UBIDEV
@@ -17,3 +18,4 @@ ubiattach /dev/ubi_ctrl -d $UBIDEV -m $UBIMTD
 
 # create the volume
 ubimkvol /dev/ubi$UBIDEV -N RootFS -s $ROOT_SIZE
+ubimkvol /dev/ubi$UBIDEV -N Updates -s $UPDATE_SIZE
