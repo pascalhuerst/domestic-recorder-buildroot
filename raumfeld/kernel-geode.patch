@@ -295,3 +295,19 @@ index 731d4ee..e41b252 100644
  }
  
  module_init(alix_led_init);
+diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
+index cd982f4..05cfc1c 100644
+--- a/arch/x86/kernel/tsc.c
++++ b/arch/x86/kernel/tsc.c
+@@ -392,7 +392,10 @@ success:
+ 	delta *= PIT_TICK_RATE;
+ 	do_div(delta, i*256*1000);
+ 	printk("Fast TSC calibration using PIT\n");
+-	return delta;
++	
++	/* HACK HACK */
++	return 498000;
++	//return delta;
+ }
+ 
+ /**
