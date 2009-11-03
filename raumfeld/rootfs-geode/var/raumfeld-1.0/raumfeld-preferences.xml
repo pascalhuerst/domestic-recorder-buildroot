@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Preferences revision="1">
+  <ZoneConfig>
+    <Renderers/>
+    <Rooms/>
+    <Zones/>
+  </ZoneConfig>
+  <Storages>
+    <Storage id="uuid:4a5a835a-c875-11de-b13c-00137790b861">
+      <Path>file:///Music</Path>
+    </Storage>
+  </Storages>
+  <Accounts/>
+</Preferences>
+
