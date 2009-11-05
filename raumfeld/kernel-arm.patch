@@ -1,3 +1,17 @@
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 9107b38..80ac54e 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -743,6 +743,9 @@ and is between 256 and 4096 characters. It is defined in the file
+ 			Format: <interval>,<probability>,<space>,<times>
+ 			See also /Documentation/fault-injection/.
+ 
++	fbcon_disable_cursor
++			Disable the cursor in the framebuffer console
++
+ 	fd_mcs=		[HW,SCSI]
+ 			See header of drivers/scsi/fd_mcs.c.
+ 
 diff --git a/arch/arm/configs/raumfeld_defconfig b/arch/arm/configs/raumfeld_defconfig
 new file mode 100644
 index 0000000..acb1a8f
@@ -6065,6 +6079,35 @@ index 80232e1..81e744c 100644
  obj-$(CONFIG_FB_W100)		  += w100fb.o
  obj-$(CONFIG_FB_TMIO)		  += tmiofb.o
  obj-$(CONFIG_FB_AU1100)		  += au1100fb.o
+diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
+index 5a686ce..1d05d05 100644
+--- a/drivers/video/console/fbcon.c
++++ b/drivers/video/console/fbcon.c
+@@ -116,6 +116,14 @@ static int fbcon_has_exited;
+ static int primary_device = -1;
+ static int fbcon_has_console_bind;
+ 
++static int fbcon_disable_cursor = 1;
++static int __init _fbcon_disable_cursor(char *str)
++{
++	fbcon_disable_cursor = 1;
++	return 1;
++}
++__setup("fbcon_disable_cursor", _fbcon_disable_cursor);
++
+ #ifdef CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY
+ static int map_override;
+ 
+@@ -1288,7 +1296,8 @@ static void fbcon_cursor(struct vc_data *vc, int mode)
+ 	int y;
+  	int c = scr_readw((u16 *) vc->vc_pos);
+ 
+-	if (fbcon_is_inactive(vc, info) || vc->vc_deccm != 1)
++	if (fbcon_is_inactive(vc, info) || vc->vc_deccm != 1 ||
++	    fbcon_disable_cursor)
+ 		return;
+ 
+ 	if (vc->vc_cursor_type & 0x10)
 diff --git a/drivers/video/logo/Kconfig b/drivers/video/logo/Kconfig
 index 39ac49e..4459eff 100644
 --- a/drivers/video/logo/Kconfig
