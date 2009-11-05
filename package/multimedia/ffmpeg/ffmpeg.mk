@@ -38,15 +38,20 @@ FFMPEG_CONF_OPT = \
 	--disable-amd3dnow	\
 	--disable-amd3dnowext	\
 	--disable-encoders	\
-	--disable-decoders	\
-	--disable-muxers	\
-	--disable-demuxers	\
 	--disable-bsfs		\
+	--disable-muxers	\
+	--disable-devices 	\
 	--disable-filters 	\
 	--disable-protocols 	\
-	--disable-devices 	\
 	--disable-parsers 	\
-	--enable-parser=aac
+	--disable-demuxers	\
+	--disable-decoders	\
+	--enable-parser=aac	\
+	--enable-demuxer=aac	
+
+#	--enable-decoder=aac	
+
+
 
 ifeq ($(BR2_PACKAGE_FFMPEG_GPL),y)
 FFMPEG_CONF_OPT += --enable-gpl
