@@ -19,6 +19,6 @@ LIBFAAD2_CONF_OPT = \
 
 LIBFAAD2_DEPENDENCIES = uclibc
 
-$(eval $(call AUTOTARGETS,package,libfaad2))
+$(eval $(call AUTOTARGETS,package/multimedia,libfaad2))
 
 

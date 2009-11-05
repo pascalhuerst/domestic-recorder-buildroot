@@ -1,7 +1,7 @@
 diff -ru gssdp-0.6.4.orig/libgssdp/gssdp-client.c gssdp-0.6.4/libgssdp/gssdp-client.c
 --- gssdp-0.6.4.orig/libgssdp/gssdp-client.c	2009-01-06 15:44:15.000000000 +0100
 +++ gssdp-0.6.4/libgssdp/gssdp-client.c	2009-11-04 20:26:12.000000000 +0100
-@@ -642,3 +642,41 @@
+@@ -642,3 +642,39 @@
  
          return socket_source_cb (client->priv->multicast_socket, client);
  }
@@ -31,12 +31,10 @@ diff -ru gssdp-0.6.4.orig/libgssdp/gssdp-client.c gssdp-0.6.4/libgssdp/gssdp-cli
 +                                 client->priv->main_context);
 +                g_source_unref  ((GSource *) client->priv->multicast_socket);
 +
-+                g_warning("Created new multicast socket\n");
-+
 +                return TRUE;
 +        }
 +   
-+        g_warning("multicast socket still dead\n");
++        g_printerr("%s: multicast socket still dead\n", G_STRFUNC);
 +
 +        return FALSE;
 +}
