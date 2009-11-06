@@ -1,17 +1,3 @@
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 9107b38..80ac54e 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -743,6 +743,9 @@ and is between 256 and 4096 characters. It is defined in the file
- 			Format: <interval>,<probability>,<space>,<times>
- 			See also /Documentation/fault-injection/.
- 
-+	fbcon_disable_cursor
-+			Disable the cursor in the framebuffer console
-+
- 	fd_mcs=		[HW,SCSI]
- 			See header of drivers/scsi/fd_mcs.c.
- 
 diff --git a/arch/arm/configs/raumfeld_defconfig b/arch/arm/configs/raumfeld_defconfig
 new file mode 100644
 index 0000000..acb1a8f
@@ -5106,6 +5092,78 @@ index 94be7bb..cae5cbf 100644
  # Database of machine macros and numbers
  #
  # This file is linux/arch/arm/tools/mach-types
+diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
+index 6aad99e..1e01ea4 100644
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -88,6 +88,33 @@ config VT_HW_CONSOLE_BINDING
+ 	 information. For framebuffer console users, please refer to
+ 	 <file:Documentation/fb/fbcon.txt>.
+ 
++choice
++	prompt "Console default cursor type"
++	depends on HW_CONSOLE
++	default CONSOLE_DEF_CUR_UNDERLINE
++	help
++	  This option selects the default cursor type for the text console.
++
++config CONSOLE_DEF_CUR_NONE
++	bool "none"
++
++config CONSOLE_DEF_CUR_UNDERLINE
++	bool "underline"
++
++config CONSOLE_DEF_CUR_LOWER_THIRD
++	bool "lower third"
++
++config CONSOLE_DEF_CUR_LOWER_HALF
++	bool "lower half"
++
++config CONSOLE_DEF_CUR_TWO_THIRDS
++	bool "two thirds"
++
++config CONSOLE_DEF_CUR_BLOCK
++	bool "block"
++
++endchoice
++
+ config DEVKMEM
+ 	bool "/dev/kmem virtual device support"
+ 	default y
+diff --git a/drivers/char/vt.c b/drivers/char/vt.c
+index 0c80c68..0078f6e 100644
+--- a/drivers/char/vt.c
++++ b/drivers/char/vt.c
+@@ -111,6 +111,29 @@
+ #define CON_DRIVER_FLAG_INIT   2
+ #define CON_DRIVER_FLAG_ATTR   4
+ 
++#if defined(CONFIG_CONSOLE_DEF_CUR_NONE)
++#define CUR_DEFAULT CUR_NONE
++
++#elif defined(CONFIG_CONSOLE_DEF_CUR_UNDERLINE)
++#define CUR_DEFAULT CUR_UNDERLINE
++
++#elif defined(CONFIG_CONSOLE_DEF_CUR_LOWER_THIRD)
++#define CUR_DEFAULT CUR_LOWER_THIRD
++
++#elif defined(CONFIG_CONSOLE_DEF_CUR_LOWER_HALF)
++#define CUR_DEFAULT CUR_LOWER_HALF
++
++#elif defined(CONFIG_CONSOLE_DEF_CUR_TWO_THIRDS)
++#define CUR_DEFAULT CUR_TWO_THIRDS
++
++#elif defined(CONFIG_CONSOLE_DEF_CUR_BLOCK)
++#define CUR_DEFAULT CUR_BLOCK
++
++#else
++#warning "no default console cursor type defined, defaulting to 'underline'"
++#define CUR_DEFAULT CUR_UNDERLINE
++#endif
++
+ struct con_driver {
+ 	const struct consw *con;
+ 	const char *desc;
 diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
 index e4f599f..e6b042d 100644
 --- a/drivers/leds/Kconfig
@@ -6079,35 +6137,6 @@ index 80232e1..81e744c 100644
  obj-$(CONFIG_FB_W100)		  += w100fb.o
  obj-$(CONFIG_FB_TMIO)		  += tmiofb.o
  obj-$(CONFIG_FB_AU1100)		  += au1100fb.o
-diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
-index 5a686ce..1d05d05 100644
---- a/drivers/video/console/fbcon.c
-+++ b/drivers/video/console/fbcon.c
-@@ -116,6 +116,14 @@ static int fbcon_has_exited;
- static int primary_device = -1;
- static int fbcon_has_console_bind;
- 
-+static int fbcon_disable_cursor = 1;
-+static int __init _fbcon_disable_cursor(char *str)
-+{
-+	fbcon_disable_cursor = 1;
-+	return 1;
-+}
-+__setup("fbcon_disable_cursor", _fbcon_disable_cursor);
-+
- #ifdef CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY
- static int map_override;
- 
-@@ -1288,7 +1296,8 @@ static void fbcon_cursor(struct vc_data *vc, int mode)
- 	int y;
-  	int c = scr_readw((u16 *) vc->vc_pos);
- 
--	if (fbcon_is_inactive(vc, info) || vc->vc_deccm != 1)
-+	if (fbcon_is_inactive(vc, info) || vc->vc_deccm != 1 ||
-+	    fbcon_disable_cursor)
- 		return;
- 
- 	if (vc->vc_cursor_type & 0x10)
 diff --git a/drivers/video/logo/Kconfig b/drivers/video/logo/Kconfig
 index 39ac49e..4459eff 100644
 --- a/drivers/video/logo/Kconfig
@@ -398720,6 +398749,19 @@ index 1820c4a..e5ceda5 100644
  
  	fbi->reg_lccr0 = fbi->lccr0 |
  		(LCCR0_LDM | LCCR0_SFM | LCCR0_IUM | LCCR0_EFM |
+diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
+index 38fe59d..6c024a0 100644
+--- a/include/linux/console_struct.h
++++ b/include/linux/console_struct.h
+@@ -130,8 +130,6 @@ extern void vc_SAK(struct work_struct *work);
+ #define CUR_HWMASK	0x0f
+ #define CUR_SWMASK	0xfff0
+ 
+-#define CUR_DEFAULT CUR_UNDERLINE
+-
+ #define CON_IS_VISIBLE(conp) (*conp->vc_display_fg == conp)
+ 
+ #endif /* _LINUX_CONSOLE_STRUCT_H */
 diff --git a/include/linux/linux_logo.h b/include/linux/linux_logo.h
 index ca5bd91..58ac1b6 100644
 --- a/include/linux/linux_logo.h
