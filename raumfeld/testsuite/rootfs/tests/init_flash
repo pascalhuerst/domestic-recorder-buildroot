@@ -4,8 +4,8 @@ set -e
 
 UBIDEV=0
 UBIMTD=3
-ROOT_SIZE=82MiB
-UPDATE_SIZE=37MiB
+ROOT_SIZE=81MiB
+UPDATE_SIZE=39MiB
 
 # first, detach the volume attached by the kernel
 ubidetach /dev/ubi_ctrl -d $UBIDEV
