@@ -32,7 +32,7 @@ case $target in
 		hardwareids="2"
 		;;
 	audioadapter-arm)
-		hardwareids="3 4"
+		hardwareids="3 4 6"
 		;;
 	base-geode)
 		hardwareids="5"
