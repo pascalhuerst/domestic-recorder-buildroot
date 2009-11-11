@@ -1,0 +1,18 @@
+--- ./libgupnp/gupnp-service-proxy.c	2009-05-11 13:48:39.000000000 +0200
++++ ./libgupnp/gupnp-service-proxy.c	2009-11-11 12:41:50.000000000 +0100
+@@ -245,6 +245,15 @@
+                                             proxy->priv->pending_messages);
+         }
+ 
++	/* Unsubscribe again, in case a pending subscription response came
++	 while we were in unsubscribe(). This definitly happens sometimes 
++	 since the pending messages are canceled after unsubscribe */
++        if (proxy->priv->subscribed) {
++                unsubscribe (proxy);
++
++                proxy->priv->subscribed = FALSE;
++        }
++
+         /* Cancel pending notifications */
+         if (proxy->priv->notify_idle_src) {
+                 g_source_destroy (proxy->priv->notify_idle_src);
