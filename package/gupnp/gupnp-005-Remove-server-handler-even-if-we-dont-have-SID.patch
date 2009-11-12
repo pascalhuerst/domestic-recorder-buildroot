@@ -1,0 +1,42 @@
+commit 5ec7e26cc54b939e09fc11a4b637167683daa17b
+Author: Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+Date:   Wed Jul 15 16:24:29 2009 +0300
+
+    Remove server handler even if we don't have SID
+    
+    This fixes a crash that happens when service-proxy goes down before
+    subscribtion to it completes.
+
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index b5bdff3..dcd4c89 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -1855,11 +1855,15 @@ unsubscribe (GUPnPServiceProxy *proxy)
+         SoupServer *server;
+         char *sub_url;
+ 
++        context = gupnp_service_info_get_context (GUPNP_SERVICE_INFO (proxy));
++
++        /* Remove server handler */
++        server = gupnp_context_get_server (context);
++        soup_server_remove_handler (server, proxy->priv->path);
++
+         if (proxy->priv->sid == NULL)
+                 return; /* No SID: nothing to unsubscribe */
+ 
+-        context = gupnp_service_info_get_context (GUPNP_SERVICE_INFO (proxy));
+-
+         /* Create unsubscription message */
+         sub_url = gupnp_service_info_get_event_subscription_url
+                                                 (GUPNP_SERVICE_INFO (proxy));
+@@ -1892,10 +1896,6 @@ unsubscribe (GUPnPServiceProxy *proxy)
+                 g_source_destroy (proxy->priv->subscription_timeout_src);
+                 proxy->priv->subscription_timeout_src = NULL;
+         }
+-
+-        /* Remove server handler */
+-        server = gupnp_context_get_server (context);
+-        soup_server_remove_handler (server, proxy->priv->path);
+ }
+ 
+ /**
