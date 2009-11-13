@@ -1,0 +1,20 @@
+commit 25a9de34fbb3b091c0440a6554e3447d53234c94
+Author: Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+Date:   Wed Jul 15 16:26:54 2009 +0300
+
+    Correct condition for SID being NULL
+
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index dcd4c89..a8ee0cb 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -1446,7 +1446,8 @@ server_handler (SoupServer        *soup_server,
+ 
+         hdr = soup_message_headers_get (msg->request_headers, "SID");
+         if (hdr == NULL ||
+-            (proxy->priv->sid && (strcmp (hdr, proxy->priv->sid) != 0))) {
++            (proxy->priv->sid == NULL ||
++             strcmp (hdr, proxy->priv->sid) != 0)) {
+                 /* No SID or not ours */
+                 soup_message_set_status (msg, SOUP_STATUS_PRECONDITION_FAILED);
+ 

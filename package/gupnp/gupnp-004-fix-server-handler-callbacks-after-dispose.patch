@@ -1,0 +1,11 @@
+--- gupnp-0.12.8-orig/libgupnp/gupnp-service-proxy.c	2009-05-11 13:48:39.000000000 +0200
++++ gupnp-0.12.8/libgupnp/gupnp-service-proxy.c	2009-11-10 13:50:55.000000000 +0100
+@@ -1421,6 +1421,8 @@
+ 
+         proxy = GUPNP_SERVICE_PROXY (user_data);
+ 
++	g_return_if_fail(proxy);
++
+         if (strcmp (msg->method, GENA_METHOD_NOTIFY) != 0) {
+                 /* We don't implement this method */
+                 soup_message_set_status (msg, SOUP_STATUS_NOT_IMPLEMENTED);
