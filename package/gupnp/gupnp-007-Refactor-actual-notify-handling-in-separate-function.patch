@@ -1,17 +1,6 @@
-From d3244abfd2c64871b7e2ee3c79fef24e97a6b6d0 Mon Sep 17 00:00:00 2001
-From: Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
-Date: Fri, 13 Nov 2009 19:31:02 +0200
-Subject: [PATCH] Refactor: Actual notify handling in separate function
-
----
- libgupnp/gupnp-service-proxy.c |  105 ++++++++++++++++++++++------------------
- 1 files changed, 58 insertions(+), 47 deletions(-)
-
-diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
-index 32a606e..19460b6 100644
---- a/libgupnp/gupnp-service-proxy.c
-+++ b/libgupnp/gupnp-service-proxy.c
-@@ -1402,58 +1402,16 @@ emit_notifications (gpointer user_data)
+--- gupnp-0.12.8/libgupnp/gupnp-service-proxy.c.orig	2009-11-14 13:13:24.000000000 +0100
++++ gupnp-0.12.8/libgupnp/gupnp-service-proxy.c	2009-11-14 13:15:44.000000000 +0100
+@@ -1402,86 +1402,16 @@
  }
  
  /*
@@ -36,6 +25,8 @@ index 32a606e..19460b6 100644
          xmlNode *node;
  
 -        proxy = GUPNP_SERVICE_PROXY (user_data);
+-
+-	g_return_if_fail(proxy);
 -
 -        if (strcmp (msg->method, GENA_METHOD_NOTIFY) != 0) {
 -                /* We don't implement this method */
@@ -70,10 +61,36 @@ index 32a606e..19460b6 100644
 -                return;
 -        }
 -
+-        /* We do not error out if proxy->priv->sid is NIL as the subscription
+-         * response may not have been processed yet. */
+-#if 0
+-        if (!proxy->priv->sid) {
+-                GUPnPContext *context;
+-                GMainContext *main_context;
+-
+-                context = gupnp_service_info_get_context
+-                                        (GUPNP_SERVICE_INFO (proxy));
+-                main_context = gssdp_client_get_main_context
+-                                        (GSSDP_CLIENT (context));
+-
+-                /* Wait. Perhaps the subscription response has not yet
+-                 * been processed. */
+-                g_main_context_iteration (main_context, FALSE);
+-
+-                if (!proxy->priv->sid || strcmp (hdr, proxy->priv->sid) != 0) {
+-                        /* Really not our SID */
+-                        soup_message_set_status
+-                                (msg, SOUP_STATUS_PRECONDITION_FAILED);
+-
+-                        return;
+-                }
+-        }
+-#endif
+-
          hdr = soup_message_headers_get (msg->request_headers, "SEQ");
          if (hdr == NULL) {
                  /* No SEQ header */
-@@ -1503,7 +1461,7 @@ server_handler (SoupServer        *soup_server,
+@@ -1531,7 +1461,7 @@
  
                  return;
          }
@@ -82,7 +99,7 @@ index 32a606e..19460b6 100644
  	/*
  	 * Some UPnP stacks (hello, myigd/1.0) block when sending a NOTIFY, so
  	 * call the callbacks in an idle handler so that if the client calls the
-@@ -1528,12 +1486,65 @@ server_handler (SoupServer        *soup_server,
+@@ -1556,12 +1486,65 @@
  
                  g_source_unref (proxy->priv->notify_idle_src);
  	}
@@ -149,6 +166,3 @@ index 32a606e..19460b6 100644
   * Generates a timeout header for the subscription timeout specified
   * in our GUPnPContext.
   */
--- 
-1.6.1
-
