@@ -1,0 +1,154 @@
+From d3244abfd2c64871b7e2ee3c79fef24e97a6b6d0 Mon Sep 17 00:00:00 2001
+From: Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+Date: Fri, 13 Nov 2009 19:31:02 +0200
+Subject: [PATCH] Refactor: Actual notify handling in separate function
+
+---
+ libgupnp/gupnp-service-proxy.c |  105 ++++++++++++++++++++++------------------
+ 1 files changed, 58 insertions(+), 47 deletions(-)
+
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index 32a606e..19460b6 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -1402,58 +1402,16 @@ emit_notifications (gpointer user_data)
+ }
+ 
+ /*
+- * HTTP server received a message. Handle, if this was a NOTIFY
+- * message with our SID.
++ * Handles a NOTIFY message.
+  */
+-static void
+-server_handler (SoupServer        *soup_server,
+-                SoupMessage       *msg, 
+-                const char        *server_path,
+-                GHashTable        *query,
+-                SoupClientContext *soup_client,
+-                gpointer           user_data)
++static void handle_notify (GUPnPServiceProxy *proxy,
++                           SoupMessage       *msg)
+ {
+-        GUPnPServiceProxy *proxy;
+         const char *hdr;
+         int seq;
+         xmlDoc *doc;
+         xmlNode *node;
+ 
+-        proxy = GUPNP_SERVICE_PROXY (user_data);
+-
+-        if (strcmp (msg->method, GENA_METHOD_NOTIFY) != 0) {
+-                /* We don't implement this method */
+-                soup_message_set_status (msg, SOUP_STATUS_NOT_IMPLEMENTED);
+-
+-                return;
+-        }
+-
+-        hdr = soup_message_headers_get (msg->request_headers, "NT");
+-        if (hdr == NULL || strcmp (hdr, "upnp:event") != 0) {
+-                /* Proper NT header lacking */
+-                soup_message_set_status (msg, SOUP_STATUS_PRECONDITION_FAILED);
+-
+-                return;
+-        }
+-
+-        hdr = soup_message_headers_get (msg->request_headers, "NTS");
+-        if (hdr == NULL || strcmp (hdr, "upnp:propchange") != 0) {
+-                /* Proper NTS header lacking */
+-                soup_message_set_status (msg, SOUP_STATUS_PRECONDITION_FAILED);
+-
+-                return;
+-        }
+-
+-        hdr = soup_message_headers_get (msg->request_headers, "SID");
+-        if (hdr == NULL ||
+-            (proxy->priv->sid == NULL ||
+-             strcmp (hdr, proxy->priv->sid) != 0)) {
+-                /* No SID or not ours */
+-                soup_message_set_status (msg, SOUP_STATUS_PRECONDITION_FAILED);
+-
+-                return;
+-        }
+-
+         hdr = soup_message_headers_get (msg->request_headers, "SEQ");
+         if (hdr == NULL) {
+                 /* No SEQ header */
+@@ -1503,7 +1461,7 @@ server_handler (SoupServer        *soup_server,
+ 
+                 return;
+         }
+-	
++
+ 	/*
+ 	 * Some UPnP stacks (hello, myigd/1.0) block when sending a NOTIFY, so
+ 	 * call the callbacks in an idle handler so that if the client calls the
+@@ -1528,12 +1486,65 @@ server_handler (SoupServer        *soup_server,
+ 
+                 g_source_unref (proxy->priv->notify_idle_src);
+ 	}
+-        
++
+         /* Everything went OK */
+         soup_message_set_status (msg, SOUP_STATUS_OK);
+ }
+ 
+ /*
++ * HTTP server received a message. Handle, if this was a NOTIFY
++ * message with our SID.
++ */
++static void
++server_handler (SoupServer        *soup_server,
++                SoupMessage       *msg,
++                const char        *server_path,
++                GHashTable        *query,
++                SoupClientContext *soup_client,
++                gpointer           user_data)
++{
++        GUPnPServiceProxy *proxy;
++        const char *hdr;
++
++        proxy = GUPNP_SERVICE_PROXY (user_data);
++
++        if (strcmp (msg->method, GENA_METHOD_NOTIFY) != 0) {
++                /* We don't implement this method */
++                soup_message_set_status (msg, SOUP_STATUS_NOT_IMPLEMENTED);
++
++                return;
++        }
++
++        hdr = soup_message_headers_get (msg->request_headers, "NT");
++        if (hdr == NULL || strcmp (hdr, "upnp:event") != 0) {
++                /* Proper NT header lacking */
++                soup_message_set_status (msg, SOUP_STATUS_PRECONDITION_FAILED);
++
++                return;
++        }
++
++        hdr = soup_message_headers_get (msg->request_headers, "NTS");
++        if (hdr == NULL || strcmp (hdr, "upnp:propchange") != 0) {
++                /* Proper NTS header lacking */
++                soup_message_set_status (msg, SOUP_STATUS_PRECONDITION_FAILED);
++
++                return;
++        }
++
++        hdr = soup_message_headers_get (msg->request_headers, "SID");
++        if (hdr == NULL ||
++            (proxy->priv->sid == NULL ||
++             strcmp (hdr, proxy->priv->sid) != 0)) {
++                /* No SID or not ours */
++                soup_message_set_status (msg, SOUP_STATUS_PRECONDITION_FAILED);
++
++                return;
++        }
++
++        handle_notify (proxy, msg);
++}
++
++/*
+  * Generates a timeout header for the subscription timeout specified
+  * in our GUPnPContext.
+  */
+-- 
+1.6.1
+
