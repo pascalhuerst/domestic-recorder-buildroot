@@ -1,17 +1,15 @@
 #!/bin/sh
 
-export RAUMFELD_UPDATES_URL=http://devel.internal/updates/
-
 while (true); do
 
     echo "creating pipe"
-    mknod /tmp/master-process-logger-pipe pipe
+    mknod /tmp/remote-control-logger-pipe pipe
 
     echo "starting logger"
-    logger -t "remote-control" < /tmp/master-process-logger-pipe &
+    logger -t "remote-control" < /tmp/remote-control-logger-pipe &
 
     echo "starting remote-control"
-    remote-control > /tmp/master-process-logger-pipe 2>&1
+    remote-control > /tmp/remote-control-logger-pipe 2>&1
     
     echo "remote-control exited"
 
