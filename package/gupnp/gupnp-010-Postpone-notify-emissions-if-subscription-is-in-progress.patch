@@ -1,0 +1,32 @@
+From 6d03948af5ca87b172f6450891e5be2db7683c3a Mon Sep 17 00:00:00 2001
+From: Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+Date: Sun, 15 Nov 2009 21:49:35 +0200
+Subject: [PATCH] Postpone notify emissions if subscription in progress
+
+If subscription is in progress, postpone the pending notify emissions.
+---
+ libgupnp/gupnp-service-proxy.c |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
+
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index 1918fd9..a2a9aa5 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -1414,7 +1414,13 @@ emit_notifications (gpointer user_data)
+         GUPnPServiceProxy *proxy = user_data;
+ 
+         g_assert (user_data);
+-        
++
++        if (proxy->priv->sid == NULL)
++                /* No SID */
++                if (G_LIKELY (proxy->priv->subscribed))
++                        /* subscription in progress, delay emision! */
++                        return TRUE;
++
+         while (proxy->priv->pending_notifies != NULL) {
+                 EmitNotifyData *emit_notify_data;
+ 
+-- 
+1.6.1
+

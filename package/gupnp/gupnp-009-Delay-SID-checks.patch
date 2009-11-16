@@ -1,0 +1,147 @@
+From 61aa1fbe2021961f5a0c11c8f3babdda2412cd50 Mon Sep 17 00:00:00 2001
+From: Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+Date: Sun, 15 Nov 2009 21:47:59 +0200
+Subject: [PATCH] Delay SID checks
+
+We were rejecting all 'notify' messages if we don't have an SID from
+the service. The problem is that we may very well receive a notify
+before we are able to process the subscription response. So now we don't
+compare the SID on the notify message to that of our own immediately but
+delay it to idle handler handling notification emmissions.
+---
+ libgupnp/gupnp-service-proxy.c |   67 ++++++++++++++++++++++++++++++---------
+ 1 files changed, 51 insertions(+), 16 deletions(-)
+
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index 463bc5f..1918fd9 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -106,6 +106,12 @@ typedef struct {
+         gpointer user_data;
+ } CallbackData;
+ 
++typedef struct {
++        char *sid;
++
++        xmlDoc *doc;
++} EmitNotifyData;
++
+ static void
+ subscribe_got_response (SoupSession       *session,
+                         SoupMessage       *msg,
+@@ -135,6 +141,30 @@ notify_data_free (NotifyData *data)
+         g_slice_free (NotifyData, data);
+ }
+ 
++/* Steals doc reference */
++static EmitNotifyData *
++emit_notify_data_new (const char *sid,
++                      xmlDoc     *doc)
++{
++        EmitNotifyData *data;
++
++        data = g_slice_new (EmitNotifyData);
++
++        data->sid = g_strdup (sid);
++        data->doc = doc;
++
++        return data;
++}
++
++static void
++emit_notify_data_free (EmitNotifyData *data)
++{
++        g_free (data->sid);
++        xmlFreeDoc (data->doc);
++
++        g_slice_free (EmitNotifyData, data);
++}
++
+ static void
+ gupnp_service_proxy_init (GUPnPServiceProxy *proxy)
+ {
+@@ -1386,20 +1416,24 @@ emit_notifications (gpointer user_data)
+         g_assert (user_data);
+         
+         while (proxy->priv->pending_notifies != NULL) {
+-                xmlDoc *doc;
++                EmitNotifyData *emit_notify_data;
+ 
+-                doc = proxy->priv->pending_notifies->data;
++                emit_notify_data = proxy->priv->pending_notifies->data;
+ 
+-                emit_notification (proxy, doc);
++                if (G_LIKELY (proxy->priv->sid != NULL &&
++                              strcmp (emit_notify_data->sid,
++                                      proxy->priv->sid) == 0))
++                        /* Our SID, entertain! */
++                        emit_notification (proxy, emit_notify_data->doc);
+ 
+                 /* Cleanup */
+-                xmlFreeDoc (doc);
++                emit_notify_data_free (emit_notify_data);
+ 
+                 proxy->priv->pending_notifies =
+                         g_list_delete_link (proxy->priv->pending_notifies,
+                                             proxy->priv->pending_notifies);
+         }
+-        
++
+         proxy->priv->notify_idle_src = NULL;
+ 
+ 	return FALSE;
+@@ -1422,6 +1456,7 @@ server_handler (SoupServer        *soup_server,
+         int seq;
+         xmlDoc *doc;
+         xmlNode *node;
++        EmitNotifyData *emit_notify_data;
+ 
+         proxy = GUPNP_SERVICE_PROXY (user_data);
+ 
+@@ -1448,16 +1483,6 @@ server_handler (SoupServer        *soup_server,
+                 return;
+         }
+ 
+-        hdr = soup_message_headers_get (msg->request_headers, "SID");
+-        if (hdr == NULL ||
+-            (proxy->priv->sid == NULL ||
+-             strcmp (hdr, proxy->priv->sid) != 0)) {
+-                /* No SID or not ours */
+-                soup_message_set_status (msg, SOUP_STATUS_PRECONDITION_FAILED);
+-
+-                return;
+-        }
+-
+         hdr = soup_message_headers_get (msg->request_headers, "SEQ");
+         if (hdr == NULL) {
+                 /* No SEQ header */
+@@ -1484,6 +1509,14 @@ server_handler (SoupServer        *soup_server,
+         else
+                 proxy->priv->seq = 1;
+ 
++        hdr = soup_message_headers_get (msg->request_headers, "SID");
++        if (hdr == NULL) {
++                /* No SID */
++                soup_message_set_status (msg, SOUP_STATUS_PRECONDITION_FAILED);
++
++                return;
++        }
++
+         /* Parse the actual XML message content */
+         doc = xmlRecoverMemory (msg->request_body->data,
+                                 msg->request_body->length);
+@@ -1513,8 +1546,10 @@ server_handler (SoupServer        *soup_server,
+ 	 * call the callbacks in an idle handler so that if the client calls the
+ 	 * device in the notify callback the server can actually respond.
+ 	 */
++        emit_notify_data = emit_notify_data_new (hdr, doc);
++
+         proxy->priv->pending_notifies =
+-                g_list_append (proxy->priv->pending_notifies, doc);
++                g_list_append (proxy->priv->pending_notifies, emit_notify_data);
+         if (!proxy->priv->notify_idle_src) {
+ 	        GUPnPContext *context;
+ 	        GMainContext *main_context;
+-- 
+1.6.1
+
