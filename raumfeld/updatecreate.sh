@@ -25,7 +25,7 @@ shasum=$(sha256sum $targz | cut -f1 -d' ')
 privatekey=raumfeld/rsa-private.key
 
 # map target name to hardware ID
-# keep this in sync with the enum in libraumfeld!
+# keep this in sync with the enum RaumfeldPlatform in libraumfeld
 
 case $target in
 	remotecontrol-arm)
