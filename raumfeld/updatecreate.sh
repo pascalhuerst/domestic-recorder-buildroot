@@ -26,6 +26,7 @@ privatekey=raumfeld/rsa-private.key
 
 # map target name to hardware ID
 # keep this in sync with the enum RaumfeldPlatform in libraumfeld
+names=( "Unknown" "Prototype" "Controller" "Connector" "Speaker S" "Base" "Speaker M" )
 
 case $target in
 	remotecontrol-arm)
@@ -46,6 +47,7 @@ esac
 # only one update per target for the time being.
 
 for hardwareid in $hardwareids; do
+    hardwarename=${names[$hardwareid]}
     update_dir=binaries/updates/$hardwareid/
     rm -fr $update_dir
     mkdir -p $update_dir
@@ -56,7 +58,7 @@ for hardwareid in $hardwareids; do
 
     cat > $update_dir/$hardwareid.updates << __EOF__
 [$shasum]
-	description=Software update ($version) for $target
+	description=Software update ($version) for $hardwarename
 	num_files=$numfiles
 	hardware=$hardwareid
 	version=$version
