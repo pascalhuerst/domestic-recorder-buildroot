@@ -7063,7 +7063,7 @@ index 09b7b1a..fcb0721 100644
  	&pxa_device_rtc,
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..120d7b8
+index 0000000..8e79e34
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
 @@ -0,0 +1,1082 @@
@@ -7501,11 +7501,11 @@ index 0000000..120d7b8
 +
 +/* PWM controlled backlight */
 +static struct platform_pwm_backlight_data raumfeld_pwm_backlight_data = {
-+	.pwm_id	 = 0,
-+	.max_brightness = 100,
-+	.dft_brightness = 100,
-+	/* 10000 ns = 10ms ^= 100KHz */
-+	.pwm_period_ns  = 10000,
++	.pwm_id		= 0,
++	.max_brightness	= 100,
++	.dft_brightness	= 100,
++	/* 10000 ns = 10 ms ^= 100 kHz */
++	.pwm_period_ns	= 10000,
 +};
 +
 +static struct platform_device raumfeld_pwm_backlight_device = {
@@ -7758,8 +7758,8 @@ index 0000000..120d7b8
 +			ret = regulator_set_voltage(regulator,
 +					WIFI_VOLTAGE, WIFI_VOLTAGE);
 +		mdelay(100);
-+	} else if (!on && regulator_is_enabled(regulator))
-+		ret = regulator_disable(regulator);
++	} //else if (!on && regulator_is_enabled(regulator))
++	//	ret = regulator_disable(regulator);
 +
 +	if (ret)
 +		printk(KERN_ERR "%s: unable to %sable regulator: ret = %d\n",
