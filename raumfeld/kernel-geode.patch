@@ -311,3 +311,16 @@ index cd982f4..05cfc1c 100644
  }
  
  /**
+
+--- a/drivers/net/wireless/ath/ath5k/base.orig	2009-11-23 16:17:45.000000000 +0100
++++ b/drivers/net/wireless/ath/ath5k/base.c	2009-11-23 16:18:04.000000000 +0100
+@@ -2824,7 +2824,7 @@
+ 	 * then we must allow the user to set how many tx antennas we
+ 	 * have available
+ 	 */
+-	ath5k_hw_set_antenna_mode(ah, AR5K_ANTMODE_DEFAULT);
++	ath5k_hw_set_antenna_mode(ah, AR5K_ANTMODE_SINGLE_AP);
+ 
+ unlock:
+ 	mutex_unlock(&sc->lock);
+
