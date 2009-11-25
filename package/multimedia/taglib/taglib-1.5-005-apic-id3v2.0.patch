@@ -1,0 +1,78 @@
+diff -Naur taglib-1.5-orig/taglib/mpeg/id3v2/frames/attachedpictureframe.cpp taglib-1.5/taglib/mpeg/id3v2/frames/attachedpictureframe.cpp
+--- taglib-1.5-orig/taglib/mpeg/id3v2/frames/attachedpictureframe.cpp	2009-11-19 15:17:52.000000000 +0100
++++ taglib-1.5/taglib/mpeg/id3v2/frames/attachedpictureframe.cpp	2009-11-19 15:19:32.000000000 +0100
+@@ -34,14 +34,17 @@
+ class AttachedPictureFrame::AttachedPictureFramePrivate
+ {
+ public:
+-  AttachedPictureFramePrivate() : textEncoding(String::Latin1),
+-                                  type(AttachedPictureFrame::Other) {}
++  AttachedPictureFramePrivate(ID3v2::Header *tagHeader = NULL) :
++    textEncoding(String::Latin1),
++    type(AttachedPictureFrame::Other),
++    m_tagHeader(tagHeader) {}
+ 
+   String::Type textEncoding;
+   String mimeType;
+   AttachedPictureFrame::Type type;
+   String description;
+   ByteVector data;
++  ID3v2::Header *m_tagHeader;
+ };
+ 
+ ////////////////////////////////////////////////////////////////////////////////
+@@ -135,7 +138,18 @@
+ 
+   int pos = 1;
+ 
+-  d->mimeType = readStringField(data, String::Latin1, &pos);
++  if(d->m_tagHeader->majorVersion() < 3)
++  {
++    // fixed to 3 bytes in id3v2.[<3]
++    d->mimeType = data.mid(pos, 3);
++    pos += 3;
++  }
++  else
++  {
++    // variable string length in id3v2.[>=3]
++    d->mimeType = readStringField(data, String::Latin1, &pos);
++  }
++
+   d->type = (TagLib::ID3v2::AttachedPictureFrame::Type)data[pos++];
+   d->description = readStringField(data, d->textEncoding, &pos);
+ 
+@@ -163,8 +177,8 @@
+ // private members
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+-AttachedPictureFrame::AttachedPictureFrame(const ByteVector &data, Header *h) : Frame(h)
++AttachedPictureFrame::AttachedPictureFrame(const ByteVector &data, Header *h, ID3v2::Header *tagHeader) : Frame(h)
+ {
+-  d = new AttachedPictureFramePrivate;
++  d = new AttachedPictureFramePrivate(tagHeader);
+   parseFields(fieldData(data));
+ }
+diff -Naur taglib-1.5-orig/taglib/mpeg/id3v2/frames/attachedpictureframe.h taglib-1.5/taglib/mpeg/id3v2/frames/attachedpictureframe.h
+--- taglib-1.5-orig/taglib/mpeg/id3v2/frames/attachedpictureframe.h	2009-11-19 15:17:52.000000000 +0100
++++ taglib-1.5/taglib/mpeg/id3v2/frames/attachedpictureframe.h	2009-11-19 15:23:16.000000000 +0100
+@@ -207,7 +207,7 @@
+       virtual ByteVector renderFields() const;
+ 
+     private:
+-      AttachedPictureFrame(const ByteVector &data, Header *h);
++      AttachedPictureFrame(const ByteVector &data, Header *h, ID3v2::Header *tagHeader);
+       AttachedPictureFrame(const AttachedPictureFrame &);
+       AttachedPictureFrame &operator=(const AttachedPictureFrame &);
+ 
+diff -Naur taglib-1.5-orig/taglib/mpeg/id3v2/id3v2framefactory.cpp taglib-1.5/taglib/mpeg/id3v2/id3v2framefactory.cpp
+--- taglib-1.5-orig/taglib/mpeg/id3v2/id3v2framefactory.cpp	2009-11-19 15:17:52.000000000 +0100
++++ taglib-1.5/taglib/mpeg/id3v2/id3v2framefactory.cpp	2009-11-19 15:20:22.000000000 +0100
+@@ -175,7 +175,7 @@
+   // Attached Picture (frames 4.14)
+ 
+   if(frameID == "APIC") {
+-    AttachedPictureFrame *f = new AttachedPictureFrame(data, header);
++    AttachedPictureFrame *f = new AttachedPictureFrame(data, header, tagHeader);
+     d->setTextEncoding(f);
+     return f;
+   }
