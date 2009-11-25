@@ -7063,10 +7063,10 @@ index 09b7b1a..fcb0721 100644
  	&pxa_device_rtc,
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..8e79e34
+index 0000000..cb263b9
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
-@@ -0,0 +1,1082 @@
+@@ -0,0 +1,1084 @@
 +/*
 + *  arch/arm/mach-pxa/raumfeld.c
 + *
@@ -8004,6 +8004,8 @@ index 0000000..8e79e34
 +		GPIO102_GPIO,
 +		/* DISPLAY_ENABLE */
 +		GPIO106_GPIO,
++		/* DOCK_DETECT */
++		GPIO116_GPIO | MFP_LPM_FLOAT | MFP_PULL_FLOAT,
 +	};
 +
 +	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_controller_pin_config));
@@ -9434,6 +9436,29 @@ index 0c80c68..0078f6e 100644
  struct con_driver {
  	const struct consw *con;
  	const char *desc;
+diff --git a/drivers/input/keyboard/gpio_keys.c b/drivers/input/keyboard/gpio_keys.c
+index 77d1309..cb5f862 100644
+--- a/drivers/input/keyboard/gpio_keys.c
++++ b/drivers/input/keyboard/gpio_keys.c
+@@ -171,6 +171,18 @@ static int __devinit gpio_keys_probe(struct platform_device *pdev)
+ 		goto fail2;
+ 	}
+ 
++	/* get current state of buttons */
++	for (i = 0; i < pdata->nbuttons; i++) {
++		struct gpio_keys_button *button = &pdata->buttons[i];
++		int state = !!gpio_get_value(button->gpio) ^ button->active_low;
++
++		if (state) {
++			unsigned int type = button->type ?: EV_KEY;
++			input_event(input, type, button->code, !!state);
++			input_sync(input);
++		}
++	}
++
+ 	device_init_wakeup(&pdev->dev, wakeup);
+ 
+ 	return 0;
 diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
 index e4f599f..e6b042d 100644
 --- a/drivers/leds/Kconfig
