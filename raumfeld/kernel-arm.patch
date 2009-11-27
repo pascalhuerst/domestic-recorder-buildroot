@@ -7077,10 +7077,10 @@ index 09b7b1a..fcb0721 100644
  	&pxa_device_rtc,
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..f7239b6
+index 0000000..815b846
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
-@@ -0,0 +1,1266 @@
+@@ -0,0 +1,1267 @@
 +/*
 + * arch/arm/mach-pxa/raumfeld.c
 + *
@@ -7996,6 +7996,7 @@ index 0000000..f7239b6
 +		.valid_ops_mask		= REGULATOR_CHANGE_STATUS |
 +					  REGULATOR_CHANGE_VOLTAGE |
 +					  REGULATOR_CHANGE_MODE,
++		.always_on		= 1,
 +	},
 +	.consumer_supplies = &vcc_mmc_supply,
 +	.num_consumer_supplies = 1,
