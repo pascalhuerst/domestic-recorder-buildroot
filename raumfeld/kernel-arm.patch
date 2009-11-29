@@ -7077,7 +7077,7 @@ index 09b7b1a..fcb0721 100644
  	&pxa_device_rtc,
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..b04aff0
+index 0000000..815b846
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
 @@ -0,0 +1,1267 @@
@@ -7986,7 +7986,7 @@ index 0000000..b04aff0
 + */
 +
 +static struct regulator_consumer_supply vcc_mmc_supply =
-+	REGULATOR_SUPPLY("vmmc", "pxa2xx-mci.0-diabled");
++	REGULATOR_SUPPLY("vmmc", "pxa2xx-mci.0");
 +
 +static struct regulator_init_data vcc_mmc_init_data = {
 +	.constraints = {
