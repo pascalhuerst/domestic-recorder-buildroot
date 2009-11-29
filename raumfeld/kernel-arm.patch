@@ -1,5 +1,36 @@
+diff --git a/Documentation/filesystems/ocfs2.txt b/Documentation/filesystems/ocfs2.txt
+index c2a0871..c58b9f5 100644
+--- a/Documentation/filesystems/ocfs2.txt
++++ b/Documentation/filesystems/ocfs2.txt
+@@ -20,15 +20,16 @@ Lots of code taken from ext3 and other projects.
+ Authors in alphabetical order:
+ Joel Becker   <joel.becker@oracle.com>
+ Zach Brown    <zach.brown@oracle.com>
+-Mark Fasheh   <mark.fasheh@oracle.com>
++Mark Fasheh   <mfasheh@suse.com>
+ Kurt Hackel   <kurt.hackel@oracle.com>
++Tao Ma        <tao.ma@oracle.com>
+ Sunil Mushran <sunil.mushran@oracle.com>
+ Manish Singh  <manish.singh@oracle.com>
++Tiger Yang    <tiger.yang@oracle.com>
+ 
+ Caveats
+ =======
+ Features which OCFS2 does not support yet:
+-	- quotas
+ 	- Directory change notification (F_NOTIFY)
+ 	- Distributed Caching (F_SETLEASE/F_GETLEASE/break_lease)
+ 
+@@ -70,7 +71,6 @@ commit=nrsec	(*)	Ocfs2 can be told to sync all its data and metadata
+ 			performance.
+ localalloc=8(*)		Allows custom localalloc size in MB. If the value is too
+ 			large, the fs will silently revert it to the default.
+-			Localalloc is not enabled for local mounts.
+ localflocks		This disables cluster aware flock.
+ inode64			Indicates that Ocfs2 is allowed to create inodes at
+ 			any location in the filesystem, including those which
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 81d68d5..6ff4771 100644
+index c824b4d..54f7d4a 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
 @@ -707,6 +707,19 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
@@ -3862,19 +3893,6 @@ index 16295cf..d68871b 100644
  #define IRQ_PXA168_SM_INT		63
  
  /*
-diff --git a/arch/arm/mach-mmp/include/mach/mfp-pxa910.h b/arch/arm/mach-mmp/include/mach/mfp-pxa910.h
-index bf1189f..7e8a80f 100644
---- a/arch/arm/mach-mmp/include/mach/mfp-pxa910.h
-+++ b/arch/arm/mach-mmp/include/mach/mfp-pxa910.h
-@@ -160,7 +160,7 @@
- #define MMC1_WP_MMC1_WP		MFP_CFG_DRV(MMC1_WP, AF0, MEDIUM)
- 
- /* PWM */
--#define GPIO27 PWM3 AF2		MFP_CFG(GPIO27, AF2)
-+#define GPIO27_PWM3_AF2		MFP_CFG(GPIO27, AF2)
- #define GPIO51_PWM2_OUT		MFP_CFG(GPIO51, AF2)
- #define GPIO117_PWM1_OUT	MFP_CFG(GPIO117, AF2)
- #define GPIO118_PWM2_OUT	MFP_CFG(GPIO118, AF2)
 diff --git a/arch/arm/mach-pxa/Kconfig b/arch/arm/mach-pxa/Kconfig
 index a6f8eab..2bcaf87 100644
 --- a/arch/arm/mach-pxa/Kconfig
@@ -4875,28 +4893,10 @@ index 37c239c..45c23fd 100644
  	colibri_pxa300_init_ohci();
  	colibri_pxa3xx_init_nand();
 diff --git a/arch/arm/mach-pxa/colibri-pxa320.c b/arch/arm/mach-pxa/colibri-pxa320.c
-index 4945728..ae835fa 100644
+index ec0e14b..ae835fa 100644
 --- a/arch/arm/mach-pxa/colibri-pxa320.c
 +++ b/arch/arm/mach-pxa/colibri-pxa320.c
-@@ -27,6 +27,7 @@
- #include <mach/colibri.h>
- #include <mach/pxafb.h>
- #include <mach/ohci.h>
-+#include <mach/audio.h>
- 
- #include "generic.h"
- #include "devices.h"
-@@ -145,7 +146,8 @@ static void __init colibri_pxa320_init_lcd(void)
- static inline void colibri_pxa320_init_lcd(void) {}
- #endif
- 
--#if defined(SND_AC97_CODEC) || defined(SND_AC97_CODEC_MODULE)
-+#if	defined(CONFIG_SND_AC97_CODEC) || \
-+	defined(CONFIG_SND_AC97_CODEC_MODULE)
- static mfp_cfg_t colibri_pxa320_ac97_pin_config[] __initdata = {
- 	GPIO34_AC97_SYSCLK,
- 	GPIO35_AC97_SDATA_IN_0,
-@@ -197,6 +199,10 @@ static void __init colibri_pxa320_init_uart(void)
+@@ -199,6 +199,10 @@ static void __init colibri_pxa320_init_uart(void)
  
  void __init colibri_pxa320_init(void)
  {
@@ -4937,6 +4937,31 @@ index a093282..d4a0733 100644
  	.status_high_acin = 188,
  	.status_low_acin  = 178,
  	.status_high_noac = 185,
+diff --git a/arch/arm/mach-pxa/cpufreq-pxa2xx.c b/arch/arm/mach-pxa/cpufreq-pxa2xx.c
+index 983cc8c..9e4d981 100644
+--- a/arch/arm/mach-pxa/cpufreq-pxa2xx.c
++++ b/arch/arm/mach-pxa/cpufreq-pxa2xx.c
+@@ -447,6 +447,7 @@ static __init int pxa_cpufreq_init(struct cpufreq_policy *policy)
+ 		pxa27x_freq_table[i].frequency = freq;
+ 		pxa27x_freq_table[i].index = i;
+ 	}
++	pxa27x_freq_table[i].index = i;
+ 	pxa27x_freq_table[i].frequency = CPUFREQ_TABLE_END;
+ 
+ 	/*
+diff --git a/arch/arm/mach-pxa/cpufreq-pxa3xx.c b/arch/arm/mach-pxa/cpufreq-pxa3xx.c
+index 67f34a8..149cdd9 100644
+--- a/arch/arm/mach-pxa/cpufreq-pxa3xx.c
++++ b/arch/arm/mach-pxa/cpufreq-pxa3xx.c
+@@ -102,7 +102,7 @@ static int setup_freqs_table(struct cpufreq_policy *policy,
+ 		table[i].index = i;
+ 		table[i].frequency = freqs[i].cpufreq_mhz * 1000;
+ 	}
+-	table[num].frequency = i;
++	table[num].index = i;
+ 	table[num].frequency = CPUFREQ_TABLE_END;
+ 
+ 	pxa3xx_freqs = freqs;
 diff --git a/arch/arm/mach-pxa/csb726.c b/arch/arm/mach-pxa/csb726.c
 index 965480e..88575b8 100644
 --- a/arch/arm/mach-pxa/csb726.c
@@ -5538,7 +5563,7 @@ index cea99fe..f9a2e4b 100644
  	platform_add_devices(devices, ARRAY_SIZE(devices));
  }
 diff --git a/arch/arm/mach-pxa/hx4700.c b/arch/arm/mach-pxa/hx4700.c
-index abff9e1..458fd78 100644
+index 83bd3c6..6b3c90e 100644
 --- a/arch/arm/mach-pxa/hx4700.c
 +++ b/arch/arm/mach-pxa/hx4700.c
 @@ -849,6 +849,10 @@ static void __init hx4700_init(void)
@@ -5584,17 +5609,6 @@ index 2a4945d..5b0862d 100644
  	/* SPI chip select directions - all other directions should
  	 * be handled by drivers.*/
  	gpio_direction_output(37, 0);
-diff --git a/arch/arm/mach-pxa/include/mach/entry-macro.S b/arch/arm/mach-pxa/include/mach/entry-macro.S
-index 2418806..a73bc86 100644
---- a/arch/arm/mach-pxa/include/mach/entry-macro.S
-+++ b/arch/arm/mach-pxa/include/mach/entry-macro.S
-@@ -46,5 +46,6 @@
- 		beq	1001f
- 		bic	\irqstat, \irqstat, #0x80000000
- 		mov	\irqnr, \irqstat, lsr #16
-+		add	\irqnr, \irqnr, #(PXA_IRQ(0))
- 1001:
- 		.endm
 diff --git a/arch/arm/mach-pxa/include/mach/hardware.h b/arch/arm/mach-pxa/include/mach/hardware.h
 index aa3d9f7..50f1297 100644
 --- a/arch/arm/mach-pxa/include/mach/hardware.h
@@ -7063,26 +7077,26 @@ index 09b7b1a..fcb0721 100644
  	&pxa_device_rtc,
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..8e79e34
+index 0000000..b04aff0
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
-@@ -0,0 +1,1082 @@
+@@ -0,0 +1,1267 @@
 +/*
-+ *  arch/arm/mach-pxa/raumfeld.c
++ * arch/arm/mach-pxa/raumfeld.c
 + *
-+ *  Support for the following Raumfeld devices:
++ * Support for the following Raumfeld devices:
 + *
-+ *  	* Controller
++ * 	* Controller
 + *  	* Connector
 + *  	* Speaker S/M
 + *
-+ *  See http://www.raumfeld.com for details.
++ * See http://www.raumfeld.com for details.
 + *
-+ *  Copyright (c) 2009 Daniel Mack <daniel@caiaq.de>
++ * Copyright (c) 2009 Daniel Mack <daniel@caiaq.de>
 + *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2 as
-+ *  published by the Free Software Foundation.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
 + */
 +
 +#include <linux/init.h>
@@ -7104,11 +7118,15 @@ index 0000000..8e79e34
 +#include <linux/spi/spi.h>
 +#include <linux/spi/spi_gpio.h>
 +#include <linux/lis3lv02d.h>
-+#include <linux/delay.h>
-+#include <linux/regulator/consumer.h>
++#include <linux/pda_power.h>
++#include <linux/power_supply.h>
 +#include <linux/pda_power.h>
 +#include <linux/power_supply.h>
 +#include <linux/regulator/max8660.h>
++#include <linux/regulator/machine.h>
++#include <linux/regulator/fixed.h>
++#include <linux/regulator/consumer.h>
++#include <linux/delay.h>
 +
 +#include <asm/mach-types.h>
 +#include <asm/mach/arch.h>
@@ -7130,63 +7148,57 @@ index 0000000..8e79e34
 +/* common GPIO	definitions */
 +
 +/* inputs */
-+#define GPIO_ON_OFF		MFP_PIN_GPIO14
-+#define GPIO_VOLENC_A		MFP_PIN_GPIO19
-+#define GPIO_VOLENC_B		MFP_PIN_GPIO20
-+#define GPIO_CHARGE_DONE	MFP_PIN_GPIO23
-+#define GPIO_CHARGE_IND		MFP_PIN_GPIO27
-+#define GPIO_TOUCH_IRQ		MFP_PIN_GPIO32
-+#define GPIO_ETH_IRQ		MFP_PIN_GPIO40
-+#define GPIO_SPI_MISO		MFP_PIN_GPIO98
-+#define GPIO_ACCEL_IRQ		MFP_PIN_GPIO104
-+#define GPIO_RESCUE_BOOT	MFP_PIN_GPIO115
-+#define GPIO_DOCK_DETECT	MFP_PIN_GPIO116
-+#define GPIO_KEY1		MFP_PIN_GPIO117
-+#define GPIO_KEY2		MFP_PIN_GPIO118
-+#define GPIO_KEY3		MFP_PIN_GPIO119
-+#define GPIO_CHARGE_USB_OK	MFP_PIN_GPIO112
-+#define GPIO_CHARGE_DC_OK	MFP_PIN_GPIO101
-+#define GPIO_CHARGE_USB_SUSP	MFP_PIN_GPIO102
++#define GPIO_ON_OFF		(14)
++#define GPIO_VOLENC_A		(19)
++#define GPIO_VOLENC_B		(20)
++#define GPIO_CHARGE_DONE	(23)
++#define GPIO_CHARGE_IND		(27)
++#define GPIO_TOUCH_IRQ		(32)
++#define GPIO_ETH_IRQ		(40)
++#define GPIO_SPI_MISO		(98)
++#define GPIO_ACCEL_IRQ		(104)
++#define GPIO_RESCUE_BOOT	(115)
++#define GPIO_DOCK_DETECT	(116)
++#define GPIO_KEY1		(117)
++#define GPIO_KEY2		(118)
++#define GPIO_KEY3		(119)
++#define GPIO_CHARGE_USB_OK	(112)
++#define GPIO_CHARGE_DC_OK	(101)
++#define GPIO_CHARGE_USB_SUSP	(102)
 +
 +/* outputs */
-+#define GPIO_SHUTDOWN_SUPPLY	MFP_PIN_GPIO16
-+#define GPIO_SHUTDOWN_BATT	MFP_PIN_GPIO18
-+#define GPIO_CHRG_PEN2		MFP_PIN_GPIO31
-+#define GPIO_TFT_VA_EN		MFP_PIN_GPIO33
-+#define GPIO_SPDIF_CS		MFP_PIN_GPIO34
-+#define GPIO_LED2		MFP_PIN_GPIO35
-+#define GPIO_LED1		MFP_PIN_GPIO36
-+#define GPIO_SPDIF_RESET	MFP_PIN_GPIO38
-+#define GPIO_SPI_CLK		MFP_PIN_GPIO95
-+#define GPIO_MCLK_DAC_CS	MFP_PIN_GPIO96
-+#define GPIO_SPI_MOSI		MFP_PIN_GPIO97
-+#define GPIO_W1_PULLUP_ENABLE	MFP_PIN_GPIO105
-+#define GPIO_MCLK_RESET		MFP_PIN_GPIO111
-+#define GPIO_W2W_RESET		MFP_PIN_GPIO113
-+#define GPIO_W2W_PDN		MFP_PIN_GPIO114
-+#define GPIO_CODEC_RESET	MFP_PIN_GPIO120
-+#define GPIO_AUDIO_VA_ENABLE	MFP_PIN_GPIO124
-+#define GPIO_ACCEL_CS		MFP_PIN_GPIO125
-+#define GPIO_ONE_WIRE		MFP_PIN_GPIO126
-+#define GPIO_DISPLAY_ENABLE	MFP_PIN_GPIO106
++#define GPIO_SHUTDOWN_SUPPLY	(16)
++#define GPIO_SHUTDOWN_BATT	(18)
++#define GPIO_CHRG_PEN2		(31)
++#define GPIO_TFT_VA_EN		(33)
++#define GPIO_SPDIF_CS		(34)
++#define GPIO_LED2		(35)
++#define GPIO_LED1		(36)
++#define GPIO_SPDIF_RESET	(38)
++#define GPIO_SPI_CLK		(95)
++#define GPIO_MCLK_DAC_CS	(96)
++#define GPIO_SPI_MOSI		(97)
++#define GPIO_W1_PULLUP_ENABLE	(105)
++#define GPIO_DISPLAY_ENABLE	(106)
++#define GPIO_MCLK_RESET		(111)
++#define GPIO_W2W_RESET		(113)
++#define GPIO_W2W_PDN		(114)
++#define GPIO_CODEC_RESET	(120)
++#define GPIO_AUDIO_VA_ENABLE	(124)
++#define GPIO_ACCEL_CS		(125)
++#define GPIO_ONE_WIRE		(126)
 +
 +/* prototype */
-+#define GPIO_CHARGE_USB_OK_PROTO	MFP_PIN_GPIO25
-+#define GPIO_CHARGE_DC_OK_PROTO		MFP_PIN_GPIO26
-+#define GPIO_CHARGE_USB_SUSP_PROTO	MFP_PIN_GPIO28
-+#define GPIO_DISPLAY_ENABLE_PROTO	MFP_PIN_GPIO29
-+#define GPIO_DEBUG_LED			MFP_PIN_GPIO35
-+
-+void debugled(int i)
-+{
-+	gpio_direction_output(mfp_to_gpio(GPIO_DEBUG_LED), i);
-+	//gpio_set_value(mfp_to_gpio(GPIO_DEBUG_LED), i);
-+}
++#define GPIO_CHARGE_USB_OK_PROTO	(25)
++#define GPIO_CHARGE_DC_OK_PROTO		(26)
++#define GPIO_CHARGE_USB_SUSP_PROTO	(28)
++#define GPIO_DISPLAY_ENABLE_PROTO	(29)
++#define GPIO_DEBUG_LED			(35)
 +
 +/*
-+ * GPIO configuration (common for all hardware platforms)
++ * GPIO configurations
 + */
-+static mfp_cfg_t raumfeld_pin_config[] __initdata = {
++static mfp_cfg_t raumfeld_controller_pin_config[] __initdata = {
 +	/* UART1 */
 +	GPIO77_UART1_RXD,
 +	GPIO78_UART1_TXD,
@@ -7218,6 +7230,143 @@ index 0000000..8e79e34
 +	GPIO6_MMC1_DAT3,
 +	GPIO7_MMC1_CLK,
 +	GPIO8_MMC1_CMD,
++
++	/* One-wire */
++	GPIO126_GPIO | MFP_LPM_FLOAT,
++	GPIO105_GPIO | MFP_PULL_LOW | MFP_LPM_PULL_LOW,
++
++	/* CHRG_USB_OK */
++	GPIO101_GPIO | MFP_PULL_HIGH,
++	/* CHRG_USB_OK */
++	GPIO112_GPIO | MFP_PULL_HIGH,
++	/* CHRG_USB_SUSP */
++	GPIO102_GPIO,
++	/* DISPLAY_ENABLE */
++	GPIO106_GPIO,
++	/* DOCK_DETECT */
++	GPIO116_GPIO | MFP_LPM_FLOAT | MFP_PULL_FLOAT,
++
++	/* LCD */
++	GPIO54_LCD_LDD_0,
++	GPIO55_LCD_LDD_1,
++	GPIO56_LCD_LDD_2,
++	GPIO57_LCD_LDD_3,
++	GPIO58_LCD_LDD_4,
++	GPIO59_LCD_LDD_5,
++	GPIO60_LCD_LDD_6,
++	GPIO61_LCD_LDD_7,
++	GPIO62_LCD_LDD_8,
++	GPIO63_LCD_LDD_9,
++	GPIO64_LCD_LDD_10,
++	GPIO65_LCD_LDD_11,
++	GPIO66_LCD_LDD_12,
++	GPIO67_LCD_LDD_13,
++	GPIO68_LCD_LDD_14,
++	GPIO69_LCD_LDD_15,
++	GPIO70_LCD_LDD_16,
++	GPIO71_LCD_LDD_17,
++	GPIO72_LCD_FCLK,
++	GPIO73_LCD_LCLK,
++	GPIO74_LCD_PCLK,
++	GPIO75_LCD_BIAS,
++};
++
++static mfp_cfg_t raumfeld_connector_pin_config[] __initdata = {
++	/* UART1 */
++	GPIO77_UART1_RXD,
++	GPIO78_UART1_TXD,
++	GPIO79_UART1_CTS,
++	GPIO81_UART1_DSR,
++	GPIO83_UART1_DTR,
++	GPIO84_UART1_RTS,
++
++	/* UART3 */
++	GPIO110_UART3_RXD,
++
++	/* USB Host */
++	GPIO0_2_USBH_PEN,
++	GPIO1_2_USBH_PWR,
++
++	/* I2C */
++	GPIO21_I2C_SCL | MFP_LPM_FLOAT | MFP_PULL_FLOAT,
++	GPIO22_I2C_SDA | MFP_LPM_FLOAT | MFP_PULL_FLOAT,
++
++	/* SPI */
++	GPIO34_GPIO,	/* SPDIF_CS */
++	GPIO96_GPIO,	/* MCLK_CS */
++	GPIO125_GPIO,	/* ACCEL_CS */
++
++	/* MMC */
++	GPIO3_MMC1_DAT0,
++	GPIO4_MMC1_DAT1,
++	GPIO5_MMC1_DAT2,
++	GPIO6_MMC1_DAT3,
++	GPIO7_MMC1_CLK,
++	GPIO8_MMC1_CMD,
++
++	/* Ethernet */
++	GPIO1_nCS2,			/* CS */
++	GPIO40_GPIO | MFP_PULL_HIGH,	/* IRQ */
++
++	/* SSP for I2S */
++	GPIO85_SSP1_SCLK,
++	GPIO89_SSP1_EXTCLK,
++	GPIO86_SSP1_FRM,
++	GPIO87_SSP1_TXD,
++	GPIO88_SSP1_RXD,
++	GPIO90_SSP1_SYSCLK,
++
++	/* SSP2 for S/PDIF */
++	GPIO25_SSP2_SCLK,
++	GPIO26_SSP2_FRM,
++	GPIO27_SSP2_TXD,
++	GPIO29_SSP2_EXTCLK,
++};
++
++static mfp_cfg_t raumfeld_speaker_pin_config[] __initdata = {
++	/* UART1 */
++	GPIO77_UART1_RXD,
++	GPIO78_UART1_TXD,
++	GPIO79_UART1_CTS,
++	GPIO81_UART1_DSR,
++	GPIO83_UART1_DTR,
++	GPIO84_UART1_RTS,
++
++	/* UART3 */
++	GPIO110_UART3_RXD,
++
++	/* USB Host */
++	GPIO0_2_USBH_PEN,
++	GPIO1_2_USBH_PWR,
++
++	/* I2C */
++	GPIO21_I2C_SCL | MFP_LPM_FLOAT | MFP_PULL_FLOAT,
++	GPIO22_I2C_SDA | MFP_LPM_FLOAT | MFP_PULL_FLOAT,
++
++	/* SPI */
++	GPIO34_GPIO,	/* SPDIF_CS */
++	GPIO96_GPIO,	/* MCLK_CS */
++	GPIO125_GPIO,	/* ACCEL_CS */
++
++	/* MMC */
++	GPIO3_MMC1_DAT0,
++	GPIO4_MMC1_DAT1,
++	GPIO5_MMC1_DAT2,
++	GPIO6_MMC1_DAT3,
++	GPIO7_MMC1_CLK,
++	GPIO8_MMC1_CMD,
++
++	/* Ethernet */
++	GPIO1_nCS2,			/* CS */
++	GPIO40_GPIO | MFP_PULL_HIGH,	/* IRQ */
++
++	/* SSP for I2S */
++	GPIO85_SSP1_SCLK,
++	GPIO89_SSP1_EXTCLK,
++	GPIO86_SSP1_FRM,
++	GPIO87_SSP1_TXD,
++	GPIO88_SSP1_RXD,
++	GPIO90_SSP1_SYSCLK,
 +};
 +
 +/*
@@ -7231,8 +7380,8 @@ index 0000000..8e79e34
 +		.flags	= IORESOURCE_MEM,
 +	},
 +	{
-+		.start	= gpio_to_irq(mfp_to_gpio(GPIO_ETH_IRQ)),
-+		.end	= gpio_to_irq(mfp_to_gpio(GPIO_ETH_IRQ)),
++		.start	= gpio_to_irq(GPIO_ETH_IRQ),
++		.end	= gpio_to_irq(GPIO_ETH_IRQ),
 +		.flags	= IORESOURCE_IRQ | IRQF_TRIGGER_FALLING,
 +	}
 +};
@@ -7254,20 +7403,10 @@ index 0000000..8e79e34
 +	}
 +};
 +
-+static mfp_cfg_t raumfeld_eth_pin_config[] __initdata = {
-+	GPIO1_nCS2,			/* CS */
-+	GPIO40_GPIO | MFP_PULL_HIGH,	/* IRQ */
-+};
-+
-+static void __init raumfeld_eth_init(void)
-+{
-+	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_eth_pin_config));
-+	platform_device_register(&smc91x_device);
-+}
-+
 +/**
 + * NAND
 + */
++
 +static struct mtd_partition raumfeld_nand_partitions[] = {
 +	{
 +		.name		= "Bootloader",
@@ -7302,6 +7441,7 @@ index 0000000..8e79e34
 +/**
 + * USB (OHCI) support
 + */
++
 +static struct pxaohci_platform_data raumfeld_ohci_info = {
 +	.port_mode      = PMM_GLOBAL_MODE,
 +	.flags		= ENABLE_PORT1,
@@ -7310,12 +7450,13 @@ index 0000000..8e79e34
 +/**
 + * Rotary encoder input device
 + */
++
 +static struct rotary_encoder_platform_data raumfeld_rotary_encoder_info = {
 +	.steps		= 24,
 +	.axis		= REL_X,
 +	.relative_axis	= 1,
-+	.gpio_a		= mfp_to_gpio(GPIO_VOLENC_A),
-+	.gpio_b		= mfp_to_gpio(GPIO_VOLENC_B),
++	.gpio_a		= GPIO_VOLENC_A,
++	.gpio_b		= GPIO_VOLENC_B,
 +	.inverted_a	= 1,
 +	.inverted_b	= 0,
 +};
@@ -7336,7 +7477,7 @@ index 0000000..8e79e34
 +	{
 +		.code			= KEY_F1,
 +		.type			= EV_KEY,
-+		.gpio			= mfp_to_gpio(GPIO_KEY1),
++		.gpio			= GPIO_KEY1,
 +		.active_low		= 1,
 +		.wakeup			= 0,
 +		.debounce_interval	= 5, /* ms */
@@ -7345,7 +7486,7 @@ index 0000000..8e79e34
 +	{
 +		.code			= KEY_F2,
 +		.type			= EV_KEY,
-+		.gpio			= mfp_to_gpio(GPIO_KEY2),
++		.gpio			= GPIO_KEY2,
 +		.active_low		= 1,
 +		.wakeup			= 0,
 +		.debounce_interval	= 5, /* ms */
@@ -7354,7 +7495,7 @@ index 0000000..8e79e34
 +	{
 +		.code			= KEY_F3,
 +		.type			= EV_KEY,
-+		.gpio			= mfp_to_gpio(GPIO_KEY3),
++		.gpio			= GPIO_KEY3,
 +		.active_low		= 1,
 +		.wakeup			= 0,
 +		.debounce_interval	= 5, /* ms */
@@ -7363,7 +7504,7 @@ index 0000000..8e79e34
 +	{
 +		.code			= KEY_F4,
 +		.type			= EV_KEY,
-+		.gpio			= mfp_to_gpio(GPIO_RESCUE_BOOT),
++		.gpio			= GPIO_RESCUE_BOOT,
 +		.active_low		= 0,
 +		.wakeup			= 0,
 +		.debounce_interval	= 5, /* ms */
@@ -7372,16 +7513,16 @@ index 0000000..8e79e34
 +	{
 +		.code			= KEY_F5,
 +		.type			= EV_KEY,
-+		.gpio			= mfp_to_gpio(GPIO_DOCK_DETECT),
-+		.active_low		= 0,
++		.gpio			= GPIO_DOCK_DETECT,
++		.active_low		= 1,
 +		.wakeup			= 0,
 +		.debounce_interval	= 5, /* ms */
-+		.desc			= "charging dock detect",
++		.desc			= "dock detect",
 +	},
 +	{
 +		.code			= KEY_F6,
 +		.type			= EV_KEY,
-+		.gpio			= mfp_to_gpio(GPIO_ON_OFF),
++		.gpio			= GPIO_ON_OFF,
 +		.active_low		= 0,
 +		.wakeup			= 0,
 +		.debounce_interval	= 5, /* ms */
@@ -7410,13 +7551,13 @@ index 0000000..8e79e34
 +static struct gpio_led raumfeld_leds[] = {
 +	{
 +		.name		= "raumfeld:1",
-+		.gpio		= mfp_to_gpio(GPIO_LED1),
++		.gpio		= GPIO_LED1,
 +		.active_low	= 1,
 +		.default_state	= LEDS_GPIO_DEFSTATE_ON,
 +	},
 +	{
 +		.name		= "raumfeld:2",
-+		.gpio		= mfp_to_gpio(GPIO_LED2),
++		.gpio		= GPIO_LED2,
 +		.active_low	= 0,
 +		.default_state	= LEDS_GPIO_DEFSTATE_OFF,
 +	}
@@ -7438,14 +7579,15 @@ index 0000000..8e79e34
 +/**
 + * One-wire (W1 bus) support
 + */
++
 +static void w1_enable_external_pullup(int enable)
 +{
-+	gpio_set_value(mfp_to_gpio(GPIO_W1_PULLUP_ENABLE), enable);
-+	schedule_timeout(HZ);
++	gpio_set_value(GPIO_W1_PULLUP_ENABLE, enable);
++	msleep(100);
 +}
 +
 +static struct w1_gpio_platform_data w1_gpio_platform_data = {
-+	.pin			= mfp_to_gpio(GPIO_ONE_WIRE),
++	.pin			= GPIO_ONE_WIRE,
 +	.is_open_drain		= 0,
 +	.enable_external_pullup	= w1_enable_external_pullup,
 +};
@@ -7459,45 +7601,20 @@ index 0000000..8e79e34
 +
 +static void __init raumfeld_w1_init(void)
 +{
-+	mfp_cfg_t raumfeld_onewire_pin_config[] = {
-+		GPIO126_GPIO | MFP_LPM_FLOAT,
-+		GPIO105_GPIO | MFP_PULL_LOW | MFP_LPM_PULL_LOW,
-+	};
++	int ret = gpio_request(GPIO_W1_PULLUP_ENABLE,
++				"W1 external pullup enable");
 +
-+	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_onewire_pin_config));
-+	gpio_request(mfp_to_gpio(GPIO_W1_PULLUP_ENABLE),
-+		"W1 external pullup enable");
-+	gpio_direction_output(mfp_to_gpio(GPIO_W1_PULLUP_ENABLE), 0);
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_W1_PULLUP_ENABLE\n");
++	else
++		gpio_direction_output(GPIO_W1_PULLUP_ENABLE, 0);
++
 +	platform_device_register(&raumfeld_w1_gpio_device);
 +}
 +
 +/**
 + * Framebuffer device
 + */
-+static mfp_cfg_t raumfeld_lcd_pin_config[] __initdata = {
-+	GPIO54_LCD_LDD_0,
-+	GPIO55_LCD_LDD_1,
-+	GPIO56_LCD_LDD_2,
-+	GPIO57_LCD_LDD_3,
-+	GPIO58_LCD_LDD_4,
-+	GPIO59_LCD_LDD_5,
-+	GPIO60_LCD_LDD_6,
-+	GPIO61_LCD_LDD_7,
-+	GPIO62_LCD_LDD_8,
-+	GPIO63_LCD_LDD_9,
-+	GPIO64_LCD_LDD_10,
-+	GPIO65_LCD_LDD_11,
-+	GPIO66_LCD_LDD_12,
-+	GPIO67_LCD_LDD_13,
-+	GPIO68_LCD_LDD_14,
-+	GPIO69_LCD_LDD_15,
-+	GPIO70_LCD_LDD_16,
-+	GPIO71_LCD_LDD_17,
-+	GPIO72_LCD_FCLK,
-+	GPIO73_LCD_LCLK,
-+	GPIO74_LCD_PCLK,
-+	GPIO75_LCD_BIAS,
-+};
 +
 +/* PWM controlled backlight */
 +static struct platform_pwm_backlight_data raumfeld_pwm_backlight_data = {
@@ -7564,7 +7681,8 @@ index 0000000..8e79e34
 +
 +static void __init raumfeld_lcd_init(void)
 +{
-+	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_lcd_pin_config));
++	int ret;
++
 +	set_pxa_fb_info(&raumfeld_sharp_lcd_info);
 +
 +	/* Earlier devices had the backlight regulator controlled
@@ -7581,13 +7699,17 @@ index 0000000..8e79e34
 +	else /* assuming prototype */
 +		gpio_display_enable = GPIO_DISPLAY_ENABLE_PROTO;
 +
-+	gpio_request(mfp_to_gpio(GPIO_TFT_VA_EN), "display VA enable");
-+	gpio_direction_output(mfp_to_gpio(GPIO_TFT_VA_EN), 1);
-+	gpio_set_value(mfp_to_gpio(GPIO_TFT_VA_EN), 1);
++	ret = gpio_request(GPIO_TFT_VA_EN, "display VA enable");
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_TFT_VA_EN\n");
++	else
++		gpio_direction_output(GPIO_TFT_VA_EN, 1);
 +
-+	gpio_request(mfp_to_gpio(gpio_display_enable), "display enable");
-+	gpio_direction_output(mfp_to_gpio(gpio_display_enable), 1);
-+	gpio_set_value(mfp_to_gpio(gpio_display_enable), 1);
++	ret = gpio_request(gpio_display_enable, "display enable");
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_DISPLAY_ENABLE\n");
++	else
++		gpio_direction_output(gpio_display_enable, 1);
 +
 +#ifdef CONFIG_PXA3XX_GCU
 +	platform_device_register(&pxa3xx_device_gcu);
@@ -7599,9 +7721,9 @@ index 0000000..8e79e34
 + */
 +
 +struct spi_gpio_platform_data raumfeld_spi_platform_data = {
-+	.sck		= mfp_to_gpio(GPIO_SPI_CLK),
-+	.mosi		= mfp_to_gpio(GPIO_SPI_MOSI),
-+	.miso		= mfp_to_gpio(GPIO_SPI_MISO),
++	.sck		= GPIO_SPI_CLK,
++	.mosi		= GPIO_SPI_MOSI,
++	.miso		= GPIO_SPI_MISO,
 +	.num_chipselect	= 3,
 +};
 +
@@ -7633,7 +7755,7 @@ index 0000000..8e79e34
 +	.max_speed_hz	= 10000,	\
 +	.bus_num	= 0,		\
 +	.chip_select	= 0,		\
-+	.controller_data = (void *) mfp_to_gpio(GPIO_SPDIF_CS),	\
++	.controller_data = (void *) GPIO_SPDIF_CS,	\
 +}
 +
 +#define SPI_LIS3	\
@@ -7642,9 +7764,9 @@ index 0000000..8e79e34
 +	.max_speed_hz	= 1000000,		\
 +	.bus_num	= 0,			\
 +	.chip_select	= 1,			\
-+	.controller_data = (void *) mfp_to_gpio(GPIO_ACCEL_CS),	\
++	.controller_data = (void *) GPIO_ACCEL_CS,	\
 +	.platform_data	= &lis3_pdata,		\
-+	.irq		= gpio_to_irq(mfp_to_gpio(GPIO_ACCEL_IRQ)),	\
++	.irq		= gpio_to_irq(GPIO_ACCEL_IRQ),	\
 +}
 +
 +#define SPI_DAC7512	\
@@ -7653,7 +7775,7 @@ index 0000000..8e79e34
 +	.max_speed_hz	= 1000000,		\
 +	.bus_num	= 0,			\
 +	.chip_select	= 2,			\
-+	.controller_data = (void *) mfp_to_gpio(GPIO_MCLK_DAC_CS),	\
++	.controller_data = (void *) GPIO_MCLK_DAC_CS,	\
 +}
 +
 +static struct spi_board_info connector_spi_devices[] __initdata = {
@@ -7669,112 +7791,19 @@ index 0000000..8e79e34
 +	SPI_LIS3,
 +};
 +
-+static struct spi_board_info proto_spi_devices[] __initdata = {
-+	SPI_AK4104,
-+	SPI_LIS3,
-+	SPI_DAC7512,
-+};
-+
-+/**
-+ * Audio related things
-+ */
-+void raumfeld_enable_audio(bool en)
-+{
-+	if (!machine_is_raumfeld_proto() &&
-+	    !machine_is_raumfeld_speaker() &&
-+	    !machine_is_raumfeld_connector())
-+		return;
-+
-+	if (en) {
-+		gpio_set_value(mfp_to_gpio(GPIO_AUDIO_VA_ENABLE), 1);
-+		gpio_set_value(mfp_to_gpio(GPIO_MCLK_RESET), 1);
-+
-+		/* wait 500ms to let VA and the clocks become stable */
-+		mdelay(500);
-+
-+		gpio_set_value(mfp_to_gpio(GPIO_SPDIF_RESET), 1);
-+		gpio_set_value(mfp_to_gpio(GPIO_CODEC_RESET), 1);
-+	} else {
-+		gpio_set_value(mfp_to_gpio(GPIO_MCLK_RESET), 0);
-+		gpio_set_value(mfp_to_gpio(GPIO_SPDIF_RESET), 0);
-+		gpio_set_value(mfp_to_gpio(GPIO_CODEC_RESET), 0);
-+		gpio_set_value(mfp_to_gpio(GPIO_AUDIO_VA_ENABLE), 0);
-+	}
-+}
-+
-+static void raumfeld_claim_audio_gpios(void)
-+{
-+	gpio_request(mfp_to_gpio(GPIO_AUDIO_VA_ENABLE), "Audio VA enable");
-+	gpio_direction_output(mfp_to_gpio(GPIO_AUDIO_VA_ENABLE), 0);
-+
-+	gpio_request(mfp_to_gpio(GPIO_MCLK_RESET), "MCLK reset");
-+	gpio_direction_output(mfp_to_gpio(GPIO_MCLK_RESET), 0);
-+
-+	gpio_request(mfp_to_gpio(GPIO_CODEC_RESET), "cs4270 codec reset");
-+	gpio_direction_output(mfp_to_gpio(GPIO_CODEC_RESET), 0);
-+
-+	gpio_request(mfp_to_gpio(GPIO_SPDIF_RESET), "ak4104 s/pdif reset");
-+	gpio_direction_output(mfp_to_gpio(GPIO_SPDIF_RESET), 0);
-+}
-+
-+static mfp_cfg_t raumfeld_ssp1_pin_config[] = {
-+	/* SSP for I2S */
-+	GPIO85_SSP1_SCLK,
-+	GPIO89_SSP1_EXTCLK,
-+	GPIO86_SSP1_FRM,
-+	GPIO87_SSP1_TXD,
-+	GPIO88_SSP1_RXD,
-+	GPIO90_SSP1_SYSCLK,
-+};
-+
-+static mfp_cfg_t raumfeld_ssp2_pin_config[] = {
-+	GPIO25_SSP2_SCLK,
-+	GPIO26_SSP2_FRM,
-+	GPIO27_SSP2_TXD,
-+	GPIO29_SSP2_EXTCLK,
-+};
-+
 +/**
 + * MMC for Marvell Libertas 8688 via SDIO
 + */
 +
-+#define WIFI_VOLTAGE	3300000
-+
 +static void raumfeld_mci_setpower(struct device *dev, unsigned int on)
 +{
-+	int ret = 0;
-+	struct regulator *regulator = regulator_get(dev, "vcc_wifi");
-+
-+	/* bring up V6 for SDIO/WLAN */
-+	if (IS_ERR(regulator)) {
-+		printk(KERN_ERR "%s(): unable to get regulator. err = %ld\n",
-+			__func__, PTR_ERR(regulator));
-+		return;
-+	}
-+
-+	if (on && !regulator_is_enabled(regulator)) {
-+		ret = regulator_enable(regulator);
-+		if (!ret)
-+			ret = regulator_set_voltage(regulator,
-+					WIFI_VOLTAGE, WIFI_VOLTAGE);
-+		mdelay(100);
-+	} //else if (!on && regulator_is_enabled(regulator))
-+	//	ret = regulator_disable(regulator);
-+
-+	if (ret)
-+		printk(KERN_ERR "%s: unable to %sable regulator: ret = %d\n",
-+				__func__, on ? "en" : "dis", ret);
-+
-+	regulator_put(regulator);
-+
-+	gpio_set_value(mfp_to_gpio(GPIO_W2W_RESET), on);
-+	gpio_set_value(mfp_to_gpio(GPIO_W2W_PDN), on);
++	gpio_set_value(GPIO_W2W_RESET, on);
++	gpio_set_value(GPIO_W2W_PDN, on);
 +}
 +
 +static struct pxamci_platform_data raumfeld_mci_platform_data = {
-+	.detect_delay		= 20,
-+	.ocr_mask		= MMC_VDD_32_33 | MMC_VDD_33_34,
 +	.setpower		= raumfeld_mci_setpower,
++	.detect_delay		= 20,
 +	.gpio_card_detect	= -1,
 +	.gpio_card_ro		= -1,
 +	.gpio_power		= -1,
@@ -7785,9 +7814,7 @@ index 0000000..8e79e34
 + */
 +
 +static int gpio_charge_dc_ok;
-+static int gpio_charge_usb_ok;
 +static int gpio_charge_usb_susp;
-+static int gpio_charge_ind;
 +
 +static int power_supply_init(struct device *dev)
 +{
@@ -7853,67 +7880,132 @@ index 0000000..8e79e34
 +
 +static void __init raumfeld_power_init(void)
 +{
-+	int err;
++	int ret;
 +
 +	/* Set PEN2 high to enable maximum charge current */
-+	gpio_request(mfp_to_gpio(GPIO_CHRG_PEN2), "CHRG_PEN2");
-+	gpio_direction_output(mfp_to_gpio(GPIO_CHRG_PEN2), 1);
++	ret = gpio_request(GPIO_CHRG_PEN2, "CHRG_PEN2");
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_CHRG_PEN2\n");
++	else
++		gpio_direction_output(GPIO_CHRG_PEN2, 1);
 +
-+	gpio_charge_ind = mfp_to_gpio(GPIO_CHARGE_IND);
++	gpio_charge_dc_ok = GPIO_CHARGE_DC_OK;
++	gpio_charge_usb_susp = GPIO_CHARGE_USB_SUSP;
 +
-+	if (machine_is_raumfeld_rc()) {
-+		gpio_charge_dc_ok = mfp_to_gpio(GPIO_CHARGE_DC_OK);
-+		gpio_charge_usb_ok = mfp_to_gpio(GPIO_CHARGE_USB_OK);
-+		gpio_charge_usb_susp = mfp_to_gpio(GPIO_CHARGE_USB_SUSP);
-+	} else { /* assuming proto */
-+		gpio_charge_dc_ok = mfp_to_gpio(GPIO_CHARGE_DC_OK_PROTO);
-+		gpio_charge_usb_ok = mfp_to_gpio(GPIO_CHARGE_USB_OK_PROTO);
-+		gpio_charge_usb_susp = mfp_to_gpio(GPIO_CHARGE_USB_SUSP_PROTO);
-+	}
++	ret = gpio_request(gpio_charge_dc_ok, "CABLE_DC_OK");
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_CHARGE_DC_OK\n");
 +
-+	gpio_request(gpio_charge_ind, "CHARGE_IND");
-+	gpio_request(gpio_charge_dc_ok, "CABLE_DC_OK");
-+	gpio_request(gpio_charge_usb_ok, "CABLE_USB_OK");
-+	gpio_request(gpio_charge_usb_susp, "CHARGE_USB_SUSP");
-+	gpio_direction_output(gpio_charge_usb_susp, 0);
++	ret = gpio_request(gpio_charge_usb_susp, "CHARGE_USB_SUSP");
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_CHARGE_USB_SUSP\n");
++	else
++		gpio_direction_output(gpio_charge_usb_susp, 0);
 +
 +	power_supply_resources[0].start = gpio_to_irq(gpio_charge_dc_ok);
 +	power_supply_resources[0].end = gpio_to_irq(gpio_charge_dc_ok);
 +
-+	err = request_irq(mfp_to_gpio(gpio_to_irq(GPIO_CHARGE_DONE)),
++	ret = request_irq(gpio_to_irq(GPIO_CHARGE_DONE),
 +			&charge_done_irq, IORESOURCE_IRQ_LOWEDGE,
 +			"charge_done", NULL);
 +
-+	if (err < 0)
++	if (ret < 0)
 +		printk(KERN_ERR "%s: unable to register irq %d\n", __func__,
 +			GPIO_CHARGE_DONE);
 +	else
 +		platform_device_register(&raumfeld_power_supply);
 +}
 +
++/* Fixed regulator for AUDIO_VA, 0-0048 maps to the cs4270 codec device */
++
++static struct regulator_consumer_supply audio_va_consumer_supply =
++	REGULATOR_SUPPLY("va", "0-0048");
++
++struct regulator_init_data audio_va_initdata = {
++	.consumer_supplies = &audio_va_consumer_supply,
++	.num_consumer_supplies = 1,
++	.constraints = {
++		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
++	},
++};
++
++static struct fixed_voltage_config audio_va_config = {
++	.supply_name		= "audio_va",
++	.microvolts		= 5000000,
++	.gpio			= GPIO_AUDIO_VA_ENABLE,
++	.enable_high		= 1,
++	.enabled_at_boot	= 0,
++	.init_data		= &audio_va_initdata,
++};
++
++static struct platform_device audio_va_device = {
++	.name	= "reg-fixed-voltage",
++	.id	= 0,
++	.dev	= {
++		.platform_data = &audio_va_config,
++	},
++};
++
++/* Dummy supplies for Codec's VD/VLC */
++
++static struct regulator_consumer_supply audio_dummy_supplies[] = {
++	REGULATOR_SUPPLY("vd", "0-0048"),
++	REGULATOR_SUPPLY("vlc", "0-0048"),
++};
++
++struct regulator_init_data audio_dummy_initdata = {
++	.consumer_supplies = audio_dummy_supplies,
++	.num_consumer_supplies = ARRAY_SIZE(audio_dummy_supplies),
++	.constraints = {
++		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
++	},
++};
++
++static struct fixed_voltage_config audio_dummy_config = {
++	.supply_name		= "audio_vd",
++	.microvolts		= 3300000,
++	.gpio			= -1,
++	.init_data		= &audio_dummy_initdata,
++};
++
++static struct platform_device audio_supply_dummy_device = {
++	.name	= "reg-fixed-voltage",
++	.id	= 1,
++	.dev	= {
++		.platform_data = &audio_dummy_config,
++	},
++};
++
++static struct platform_device *audio_regulator_devices[] = {
++	&audio_va_device,
++	&audio_supply_dummy_device,
++};
++
 +/**
-+ * Regulator support for vcc_wifi
++ * Regulator support via MAX8660
 + */
 +
-+static struct regulator_consumer_supply vcc_wifi_supply =
-+	REGULATOR_SUPPLY("vcc_wifi", "pxa2xx-mci.0");
++static struct regulator_consumer_supply vcc_mmc_supply =
++	REGULATOR_SUPPLY("vmmc", "pxa2xx-mci.0-diabled");
 +
-+static struct regulator_init_data vcc_wifi_init_data = {
++static struct regulator_init_data vcc_mmc_init_data = {
 +	.constraints = {
-+		.min_uV = WIFI_VOLTAGE,
-+		.max_uV = WIFI_VOLTAGE,
-+		.valid_modes_mask = REGULATOR_MODE_NORMAL,
-+		.valid_ops_mask = REGULATOR_CHANGE_STATUS |
-+				  REGULATOR_CHANGE_VOLTAGE,
++		.min_uV			= 3300000,
++		.max_uV			= 3300000,
++		.valid_modes_mask	= REGULATOR_MODE_NORMAL,
++		.valid_ops_mask		= REGULATOR_CHANGE_STATUS |
++					  REGULATOR_CHANGE_VOLTAGE |
++					  REGULATOR_CHANGE_MODE,
++		.always_on		= 1,
 +	},
-+	.consumer_supplies = &vcc_wifi_supply,
++	.consumer_supplies = &vcc_mmc_supply,
 +	.num_consumer_supplies = 1,
 +};
 +
 +struct max8660_subdev_data max8660_v6_subdev_data = {
 +	.id		= MAX8660_V6,
-+	.name		= "vcc_wifi",
-+	.platform_data	= &vcc_wifi_init_data,
++	.name		= "vmmc",
++	.platform_data	= &vcc_mmc_init_data,
 +};
 +
 +static struct max8660_platform_data max8660_pdata = {
@@ -7945,7 +8037,7 @@ index 0000000..8e79e34
 +static struct i2c_board_info raumfeld_controller_i2c_board_info __initdata = {
 +	.type	= "eeti_ts",
 +	.addr	= 0x0a,
-+	.irq	= gpio_to_irq(mfp_to_gpio(GPIO_TOUCH_IRQ)),
++	.irq	= gpio_to_irq(GPIO_TOUCH_IRQ),
 +	.platform_data = &eeti_ts_pdata,
 +};
 +
@@ -7955,8 +8047,35 @@ index 0000000..8e79e34
 +	&raumfeld_spi_device,
 +};
 +
++static void __init raumfeld_audio_init(void)
++{
++	int ret;
++
++	ret = gpio_request(GPIO_CODEC_RESET, "cs4270 reset");
++	if (ret < 0)
++		pr_warning("unable to request GPIO_CODEC_RESET\n");
++	else
++		gpio_direction_output(GPIO_CODEC_RESET, 1);
++
++	ret = gpio_request(GPIO_SPDIF_RESET, "ak4104 s/pdif reset");
++	if (ret < 0)
++		pr_warning("unable to request GPIO_SPDIF_RESET\n");
++	else
++		gpio_direction_output(GPIO_SPDIF_RESET, 1);
++
++	ret = gpio_request(GPIO_MCLK_RESET, "MCLK reset");
++	if (ret < 0)
++		pr_warning("unable to request GPIO_MCLK_RESET\n");
++	else
++		gpio_direction_output(GPIO_MCLK_RESET, 1);
++
++	platform_add_devices(ARRAY_AND_SIZE(audio_regulator_devices));
++}
++
 +static void __init raumfeld_common_init(void)
 +{
++	int ret;
++
 +	/* The on/off button polarity has changed after revision 1 */
 +	if ((system_rev & 0xff) > 1) {
 +		int i;
@@ -7967,52 +8086,52 @@ index 0000000..8e79e34
 +	}
 +
 +	enable_irq_wake(IRQ_WAKEUP0);
-+	pxa_set_ffuart_info(NULL);
 +
-+	gpio_request(mfp_to_gpio(GPIO_W2W_RESET), "Wi2Wi reset");
-+	gpio_direction_output(mfp_to_gpio(GPIO_W2W_RESET), 0);
-+
-+	gpio_request(mfp_to_gpio(GPIO_W2W_PDN), "Wi2Wi powerup");
-+	gpio_direction_output(mfp_to_gpio(GPIO_W2W_PDN), 0);
-+
-+	/* this can be used to switch off the device */
-+	gpio_request(mfp_to_gpio(GPIO_SHUTDOWN_SUPPLY), "supply shutdown");
-+	gpio_direction_output(mfp_to_gpio(GPIO_SHUTDOWN_SUPPLY), 0);
-+
-+	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_pin_config));
-+	pxa_set_ohci_info(&raumfeld_ohci_info);
-+	platform_add_devices(ARRAY_AND_SIZE(raumfeld_common_devices));
 +	pxa3xx_set_nand_info(&raumfeld_nand_info);
++	pxa3xx_set_i2c_power_info(NULL);
++	pxa_set_ohci_info(&raumfeld_ohci_info);
 +	pxa_set_mci_info(&raumfeld_mci_platform_data);
 +	pxa_set_i2c_info(NULL);
-+	pxa3xx_set_i2c_power_info(NULL);
++	pxa_set_ffuart_info(NULL);
++
++	ret = gpio_request(GPIO_W2W_RESET, "Wi2Wi reset");
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_W2W_RESET\n");
++	else
++		gpio_direction_output(GPIO_W2W_RESET, 0);
++
++	ret = gpio_request(GPIO_W2W_PDN, "Wi2Wi powerup");
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_W2W_PDN\n");
++	else
++		gpio_direction_output(GPIO_W2W_PDN, 0);
++
++	/* this can be used to switch off the device */
++	ret = gpio_request(GPIO_SHUTDOWN_SUPPLY,
++				"supply shutdown");
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_SHUTDOWN_SUPPLY\n");
++	else
++		gpio_direction_output(GPIO_SHUTDOWN_SUPPLY, 0);
++
++	platform_add_devices(ARRAY_AND_SIZE(raumfeld_common_devices));
 +	i2c_register_board_info(1, &raumfeld_pwri2c_board_info, 1);
 +}
 +
 +static void __init raumfeld_controller_init(void)
 +{
-+	struct platform_device *raumfeld_controller_devices[] = {
-+		&rotary_encoder_device,
-+	};
-+
-+	mfp_cfg_t raumfeld_controller_pin_config[] = {
-+		/* CHRG_USB_OK */
-+		GPIO101_GPIO | MFP_PULL_HIGH,
-+		/* CHRG_USB_OK */
-+		GPIO112_GPIO | MFP_PULL_HIGH,
-+		/* CHRG_USB_SUSP */
-+		GPIO102_GPIO,
-+		/* DISPLAY_ENABLE */
-+		GPIO106_GPIO,
-+	};
++	int ret;
 +
 +	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_controller_pin_config));
-+	platform_add_devices(ARRAY_AND_SIZE(raumfeld_controller_devices));
++	platform_device_register(&rotary_encoder_device);
 +	spi_register_board_info(ARRAY_AND_SIZE(controller_spi_devices));
 +	i2c_register_board_info(0, &raumfeld_controller_i2c_board_info, 1);
 +
-+	gpio_request(mfp_to_gpio(GPIO_SHUTDOWN_BATT), "battery shutdown");
-+	gpio_direction_output(mfp_to_gpio(GPIO_SHUTDOWN_BATT), 0);
++	ret = gpio_request(GPIO_SHUTDOWN_BATT, "battery shutdown");
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_SHUTDOWN_BATT\n");
++	else
++		gpio_direction_output(GPIO_SHUTDOWN_BATT, 0);
 +
 +	raumfeld_common_init();
 +	raumfeld_power_init();
@@ -8022,36 +8141,29 @@ index 0000000..8e79e34
 +
 +static void __init raumfeld_connector_init(void)
 +{
-+	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_ssp1_pin_config));
-+	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_ssp2_pin_config));
++	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_connector_pin_config));
 +	spi_register_board_info(ARRAY_AND_SIZE(connector_spi_devices));
 +	i2c_register_board_info(0,
 +			ARRAY_AND_SIZE(raumfeld_connector_i2c_board_info));
 +
-+	raumfeld_common_init();
-+	raumfeld_eth_init();
++	platform_device_register(&smc91x_device);
 +
-+	raumfeld_claim_audio_gpios();
-+	raumfeld_enable_audio(true);
++	raumfeld_audio_init();
++	raumfeld_common_init();
 +}
 +
 +static void __init raumfeld_speaker_init(void)
 +{
-+	struct platform_device *raumfeld_speaker_devices[] = {
-+		&rotary_encoder_device,
-+	};
-+
-+	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_ssp1_pin_config));
-+	platform_add_devices(ARRAY_AND_SIZE(raumfeld_speaker_devices));
++	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_speaker_pin_config));
 +	spi_register_board_info(ARRAY_AND_SIZE(speaker_spi_devices));
 +	i2c_register_board_info(0,
 +			ARRAY_AND_SIZE(raumfeld_connector_i2c_board_info));
 +
-+	raumfeld_common_init();
-+	raumfeld_eth_init();
++	platform_device_register(&smc91x_device);
++	platform_device_register(&rotary_encoder_device);
 +
-+	raumfeld_claim_audio_gpios();
-+	raumfeld_enable_audio(true);
++	raumfeld_audio_init();
++	raumfeld_common_init();
 +}
 +
 +static struct i2c_board_info raumfeld_proto_i2c_board_info[] __initdata = {
@@ -8067,35 +8179,122 @@ index 0000000..8e79e34
 +	}
 +};
 +
++struct platform_device *raumfeld_proto_devices[] __initdata = {
++	&rotary_encoder_device,
++	&smc91x_device,
++};
++
++static mfp_cfg_t raumfeld_proto_pin_config[] __initdata = {
++	/* UART1 */
++	GPIO77_UART1_RXD,
++	GPIO78_UART1_TXD,
++	GPIO79_UART1_CTS,
++	GPIO81_UART1_DSR,
++	GPIO83_UART1_DTR,
++	GPIO84_UART1_RTS,
++
++	/* UART3 */
++	GPIO110_UART3_RXD,
++
++	/* USB Host */
++	GPIO0_2_USBH_PEN,
++	GPIO1_2_USBH_PWR,
++
++	/* I2C */
++	GPIO21_I2C_SCL | MFP_LPM_FLOAT | MFP_PULL_FLOAT,
++	GPIO22_I2C_SDA | MFP_LPM_FLOAT | MFP_PULL_FLOAT,
++
++	/* SPI */
++	GPIO34_GPIO,	/* SPDIF_CS */
++	GPIO96_GPIO,	/* MCLK_CS */
++	GPIO125_GPIO,	/* ACCEL_CS */
++
++	/* MMC */
++	GPIO3_MMC1_DAT0,
++	GPIO4_MMC1_DAT1,
++	GPIO5_MMC1_DAT2,
++	GPIO6_MMC1_DAT3,
++	GPIO7_MMC1_CLK,
++	GPIO8_MMC1_CMD,
++
++	/* One-wire */
++	GPIO126_GPIO | MFP_LPM_FLOAT,
++	GPIO105_GPIO | MFP_PULL_LOW | MFP_LPM_PULL_LOW,
++
++	/* CHRG_USB_OK */
++	GPIO101_GPIO | MFP_PULL_HIGH,
++	/* CHRG_USB_OK */
++	GPIO112_GPIO | MFP_PULL_HIGH,
++	/* CHRG_USB_SUSP */
++	GPIO102_GPIO,
++	/* DISPLAY_ENABLE */
++	GPIO106_GPIO,
++	/* DOCK_DETECT */
++	GPIO116_GPIO | MFP_LPM_FLOAT | MFP_PULL_FLOAT,
++
++	/* LCD */
++	GPIO54_LCD_LDD_0,
++	GPIO55_LCD_LDD_1,
++	GPIO56_LCD_LDD_2,
++	GPIO57_LCD_LDD_3,
++	GPIO58_LCD_LDD_4,
++	GPIO59_LCD_LDD_5,
++	GPIO60_LCD_LDD_6,
++	GPIO61_LCD_LDD_7,
++	GPIO62_LCD_LDD_8,
++	GPIO63_LCD_LDD_9,
++	GPIO64_LCD_LDD_10,
++	GPIO65_LCD_LDD_11,
++	GPIO66_LCD_LDD_12,
++	GPIO67_LCD_LDD_13,
++	GPIO68_LCD_LDD_14,
++	GPIO69_LCD_LDD_15,
++	GPIO70_LCD_LDD_16,
++	GPIO71_LCD_LDD_17,
++	GPIO72_LCD_FCLK,
++	GPIO73_LCD_LCLK,
++	GPIO74_LCD_PCLK,
++	GPIO75_LCD_BIAS,
++
++	/* SSP for I2S */
++	GPIO85_SSP1_SCLK,
++	GPIO89_SSP1_EXTCLK,
++	GPIO86_SSP1_FRM,
++	GPIO87_SSP1_TXD,
++	GPIO88_SSP1_RXD,
++	GPIO90_SSP1_SYSCLK,
++
++	/* PROTO */
++	GPIO25_GPIO | MFP_PULL_HIGH,
++	GPIO26_GPIO | MFP_PULL_HIGH,
++	GPIO28_GPIO,
++	GPIO29_GPIO,
++};
++
++static struct spi_board_info proto_spi_devices[] __initdata = {
++	SPI_AK4104,
++	SPI_DAC7512,
++	SPI_LIS3,
++};
++
 +static void __init raumfeld_proto_init(void)
 +{
-+	struct platform_device *raumfeld_proto_devices[] = {
-+		&rotary_encoder_device,
-+	};
++	int ret = gpio_request(mfp_to_gpio(GPIO_DEBUG_LED), "gpio led");
 +
-+	mfp_cfg_t raumfeld_proto_pin_config[] = {
-+		GPIO25_GPIO | MFP_PULL_HIGH,
-+		GPIO26_GPIO | MFP_PULL_HIGH,
-+		GPIO28_GPIO,
-+		GPIO29_GPIO,
-+	};
++	if (ret < 0)
++		pr_warning("Unable to request GPIO_DEBUG_LED\n");
++	else
++		gpio_direction_output(GPIO_DEBUG_LED, 0);
 +
-+	gpio_request(mfp_to_gpio(GPIO_DEBUG_LED), "gpio led");
-+	gpio_direction_output(mfp_to_gpio(GPIO_DEBUG_LED), 0);
-+
-+	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_ssp1_pin_config));
 +	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_proto_pin_config));
 +	platform_add_devices(ARRAY_AND_SIZE(raumfeld_proto_devices));
 +	spi_register_board_info(ARRAY_AND_SIZE(proto_spi_devices));
 +	i2c_register_board_info(0, ARRAY_AND_SIZE(raumfeld_proto_i2c_board_info));
 +
++	raumfeld_audio_init();
 +	raumfeld_common_init();
-+	raumfeld_eth_init();
 +	raumfeld_lcd_init();
 +	raumfeld_w1_init();
-+
-+	raumfeld_claim_audio_gpios();
-+	raumfeld_enable_audio(true);
 +}
 +
 +
@@ -9362,78 +9561,114 @@ index 94be7bb..cae5cbf 100644
  # Database of machine macros and numbers
  #
  # This file is linux/arch/arm/tools/mach-types
-diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index 6aad99e..1e01ea4 100644
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -88,6 +88,33 @@ config VT_HW_CONSOLE_BINDING
- 	 information. For framebuffer console users, please refer to
- 	 <file:Documentation/fb/fbcon.txt>.
+diff --git a/drivers/i2c/busses/i2c-pnx.c b/drivers/i2c/busses/i2c-pnx.c
+index 6ff6c20..1fca590 100644
+--- a/drivers/i2c/busses/i2c-pnx.c
++++ b/drivers/i2c/busses/i2c-pnx.c
+@@ -19,7 +19,9 @@
+ #include <linux/completion.h>
+ #include <linux/platform_device.h>
+ #include <linux/i2c-pnx.h>
++#include <linux/io.h>
+ #include <mach/hardware.h>
++#include <mach/i2c.h>
+ #include <asm/irq.h>
+ #include <asm/uaccess.h>
  
-+choice
-+	prompt "Console default cursor type"
-+	depends on HW_CONSOLE
-+	default CONSOLE_DEF_CUR_UNDERLINE
-+	help
-+	  This option selects the default cursor type for the text console.
-+
-+config CONSOLE_DEF_CUR_NONE
-+	bool "none"
-+
-+config CONSOLE_DEF_CUR_UNDERLINE
-+	bool "underline"
-+
-+config CONSOLE_DEF_CUR_LOWER_THIRD
-+	bool "lower third"
-+
-+config CONSOLE_DEF_CUR_LOWER_HALF
-+	bool "lower half"
-+
-+config CONSOLE_DEF_CUR_TWO_THIRDS
-+	bool "two thirds"
-+
-+config CONSOLE_DEF_CUR_BLOCK
-+	bool "block"
-+
-+endchoice
-+
- config DEVKMEM
- 	bool "/dev/kmem virtual device support"
- 	default y
-diff --git a/drivers/char/vt.c b/drivers/char/vt.c
-index 0c80c68..0078f6e 100644
---- a/drivers/char/vt.c
-+++ b/drivers/char/vt.c
-@@ -111,6 +111,29 @@
- #define CON_DRIVER_FLAG_INIT   2
- #define CON_DRIVER_FLAG_ATTR   4
+@@ -54,6 +56,9 @@ static inline void i2c_pnx_arm_timer(struct i2c_adapter *adap)
+ 	struct timer_list *timer = &data->mif.timer;
+ 	int expires = I2C_PNX_TIMEOUT / (1000 / HZ);
  
-+#if defined(CONFIG_CONSOLE_DEF_CUR_NONE)
-+#define CUR_DEFAULT CUR_NONE
++	if (expires <= 1)
++		expires = 2;
 +
-+#elif defined(CONFIG_CONSOLE_DEF_CUR_UNDERLINE)
-+#define CUR_DEFAULT CUR_UNDERLINE
+ 	del_timer_sync(timer);
+ 
+ 	dev_dbg(&adap->dev, "Timer armed at %lu plus %u jiffies.\n",
+diff --git a/drivers/input/keyboard/gpio_keys.c b/drivers/input/keyboard/gpio_keys.c
+index 77d1309..605947d 100644
+--- a/drivers/input/keyboard/gpio_keys.c
++++ b/drivers/input/keyboard/gpio_keys.c
+@@ -38,10 +38,8 @@ struct gpio_keys_drvdata {
+ 	struct gpio_button_data data[0];
+ };
+ 
+-static void gpio_keys_report_event(struct work_struct *work)
++static void gpio_keys_report_event(struct gpio_button_data *bdata)
+ {
+-	struct gpio_button_data *bdata =
+-		container_of(work, struct gpio_button_data, work);
+ 	struct gpio_keys_button *button = bdata->button;
+ 	struct input_dev *input = bdata->input;
+ 	unsigned int type = button->type ?: EV_KEY;
+@@ -51,6 +49,14 @@ static void gpio_keys_report_event(struct work_struct *work)
+ 	input_sync(input);
+ }
+ 
++static void gpio_keys_work_func(struct work_struct *work)
++{
++	struct gpio_button_data *bdata =
++		container_of(work, struct gpio_button_data, work);
 +
-+#elif defined(CONFIG_CONSOLE_DEF_CUR_LOWER_THIRD)
-+#define CUR_DEFAULT CUR_LOWER_THIRD
++	gpio_keys_report_event(bdata);
++}
 +
-+#elif defined(CONFIG_CONSOLE_DEF_CUR_LOWER_HALF)
-+#define CUR_DEFAULT CUR_LOWER_HALF
+ static void gpio_keys_timer(unsigned long _data)
+ {
+ 	struct gpio_button_data *data = (struct gpio_button_data *)_data;
+@@ -116,9 +122,8 @@ static int __devinit gpio_keys_probe(struct platform_device *pdev)
+ 
+ 		bdata->input = input;
+ 		bdata->button = button;
+-		setup_timer(&bdata->timer,
+-			    gpio_keys_timer, (unsigned long)bdata);
+-		INIT_WORK(&bdata->work, gpio_keys_report_event);
++		setup_timer(&bdata->timer, gpio_keys_timer, (unsigned long)bdata);
++		INIT_WORK(&bdata->work, gpio_keys_work_func);
+ 
+ 		error = gpio_request(button->gpio, button->desc ?: "gpio_keys");
+ 		if (error < 0) {
+@@ -171,6 +176,11 @@ static int __devinit gpio_keys_probe(struct platform_device *pdev)
+ 		goto fail2;
+ 	}
+ 
++	/* get current state of buttons */
++	for (i = 0; i < pdata->nbuttons; i++)
++		gpio_keys_report_event(&ddata->data[i]);
++	input_sync(input);
 +
-+#elif defined(CONFIG_CONSOLE_DEF_CUR_TWO_THIRDS)
-+#define CUR_DEFAULT CUR_TWO_THIRDS
+ 	device_init_wakeup(&pdev->dev, wakeup);
+ 
+ 	return 0;
+@@ -239,18 +249,21 @@ static int gpio_keys_suspend(struct device *dev)
+ static int gpio_keys_resume(struct device *dev)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
++	struct gpio_keys_drvdata *ddata = platform_get_drvdata(pdev);
+ 	struct gpio_keys_platform_data *pdata = pdev->dev.platform_data;
+ 	int i;
+ 
+-	if (device_may_wakeup(&pdev->dev)) {
+-		for (i = 0; i < pdata->nbuttons; i++) {
+-			struct gpio_keys_button *button = &pdata->buttons[i];
+-			if (button->wakeup) {
+-				int irq = gpio_to_irq(button->gpio);
+-				disable_irq_wake(irq);
+-			}
++	for (i = 0; i < pdata->nbuttons; i++) {
 +
-+#elif defined(CONFIG_CONSOLE_DEF_CUR_BLOCK)
-+#define CUR_DEFAULT CUR_BLOCK
++		struct gpio_keys_button *button = &pdata->buttons[i];
++		if (button->wakeup && device_may_wakeup(&pdev->dev)) {
++			int irq = gpio_to_irq(button->gpio);
++			disable_irq_wake(irq);
+ 		}
 +
-+#else
-+#warning "no default console cursor type defined, defaulting to 'underline'"
-+#define CUR_DEFAULT CUR_UNDERLINE
-+#endif
-+
- struct con_driver {
- 	const struct consw *con;
- 	const char *desc;
++		gpio_keys_report_event(&ddata->data[i]);
+ 	}
++	input_sync(ddata->input);
+ 
+ 	return 0;
+ }
 diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
 index e4f599f..e6b042d 100644
 --- a/drivers/leds/Kconfig
@@ -9828,6 +10063,28 @@ index 0000000..d3f229a
 +
 +module_init(dac7512_init);
 +module_exit(dac7512_exit);
+diff --git a/drivers/mmc/host/pxamci.c b/drivers/mmc/host/pxamci.c
+index b00d673..c35df2b 100644
+--- a/drivers/mmc/host/pxamci.c
++++ b/drivers/mmc/host/pxamci.c
+@@ -84,7 +84,7 @@ static inline void pxamci_init_ocr(struct pxamci_host *host)
+ 		host->mmc->ocr_avail = mmc_regulator_get_ocrmask(host->vcc);
+ 		if (host->pdata && host->pdata->ocr_mask)
+ 			dev_warn(mmc_dev(host->mmc),
+-				"ocr_mask/setpower will not be used\n");
++				"given ocr_mask will not be used\n");
+ 	}
+ #endif
+ 	if (host->vcc == NULL) {
+@@ -109,7 +109,7 @@ static inline void pxamci_set_power(struct pxamci_host *host, unsigned int vdd)
+ 		gpio_set_value(host->pdata->gpio_power,
+ 			       !!on ^ host->pdata->gpio_power_invert);
+ 	}
+-	if (!host->vcc && host->pdata && host->pdata->setpower)
++	if (host->pdata && host->pdata->setpower)
+ 		host->pdata->setpower(mmc_dev(host->mmc), vdd);
+ }
+ 
 diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
 index bcbb161..63ba433 100644
 --- a/drivers/regulator/Kconfig
@@ -403028,19 +403285,240 @@ index 1820c4a..f58a3aa 100644
  
  	fbi->reg_lccr0 = fbi->lccr0 |
  		(LCCR0_LDM | LCCR0_SFM | LCCR0_IUM | LCCR0_EFM |
+diff --git a/fs/ocfs2/file.c b/fs/ocfs2/file.c
+index 89fc8ee..de059f4 100644
+--- a/fs/ocfs2/file.c
++++ b/fs/ocfs2/file.c
+@@ -1712,7 +1712,8 @@ int ocfs2_check_range_for_refcount(struct inode *inode, loff_t pos,
+ 	struct super_block *sb = inode->i_sb;
+ 
+ 	if (!ocfs2_refcount_tree(OCFS2_SB(inode->i_sb)) ||
+-	    !(OCFS2_I(inode)->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL))
++	    !(OCFS2_I(inode)->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL) ||
++	    OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL)
+ 		return 0;
+ 
+ 	cpos = pos >> OCFS2_SB(sb)->s_clustersize_bits;
+diff --git a/fs/ocfs2/ocfs2.h b/fs/ocfs2/ocfs2.h
+index eae4046..d963d86 100644
+--- a/fs/ocfs2/ocfs2.h
++++ b/fs/ocfs2/ocfs2.h
+@@ -35,12 +35,7 @@
+ #include <linux/kref.h>
+ #include <linux/mutex.h>
+ #include <linux/lockdep.h>
+-#ifndef CONFIG_OCFS2_COMPAT_JBD
+-# include <linux/jbd2.h>
+-#else
+-# include <linux/jbd.h>
+-# include "ocfs2_jbd_compat.h"
+-#endif
++#include <linux/jbd2.h>
+ 
+ /* For union ocfs2_dlm_lksb */
+ #include "stackglue.h"
+diff --git a/fs/ocfs2/refcounttree.c b/fs/ocfs2/refcounttree.c
+index 60287fc..3a0df7a 100644
+--- a/fs/ocfs2/refcounttree.c
++++ b/fs/ocfs2/refcounttree.c
+@@ -3743,6 +3743,9 @@ static int ocfs2_attach_refcount_tree(struct inode *inode,
+ 		goto out;
+ 	}
+ 
++	if (oi->ip_dyn_features & OCFS2_INLINE_DATA_FL)
++		goto attach_xattr;
++
+ 	ocfs2_init_dinode_extent_tree(&di_et, INODE_CACHE(inode), di_bh);
+ 
+ 	size = i_size_read(inode);
+@@ -3769,6 +3772,7 @@ static int ocfs2_attach_refcount_tree(struct inode *inode,
+ 		cpos += num_clusters;
+ 	}
+ 
++attach_xattr:
+ 	if (oi->ip_dyn_features & OCFS2_HAS_XATTR_FL) {
+ 		ret = ocfs2_xattr_attach_refcount_tree(inode, di_bh,
+ 						       &ref_tree->rf_ci,
+@@ -3858,6 +3862,49 @@ out:
+ 	return ret;
+ }
+ 
++static int ocfs2_duplicate_inline_data(struct inode *s_inode,
++				       struct buffer_head *s_bh,
++				       struct inode *t_inode,
++				       struct buffer_head *t_bh)
++{
++	int ret;
++	handle_t *handle;
++	struct ocfs2_super *osb = OCFS2_SB(s_inode->i_sb);
++	struct ocfs2_dinode *s_di = (struct ocfs2_dinode *)s_bh->b_data;
++	struct ocfs2_dinode *t_di = (struct ocfs2_dinode *)t_bh->b_data;
++
++	BUG_ON(!(OCFS2_I(s_inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL));
++
++	handle = ocfs2_start_trans(osb, OCFS2_INODE_UPDATE_CREDITS);
++	if (IS_ERR(handle)) {
++		ret = PTR_ERR(handle);
++		mlog_errno(ret);
++		goto out;
++	}
++
++	ret = ocfs2_journal_access_di(handle, INODE_CACHE(t_inode), t_bh,
++				      OCFS2_JOURNAL_ACCESS_WRITE);
++	if (ret) {
++		mlog_errno(ret);
++		goto out_commit;
++	}
++
++	t_di->id2.i_data.id_count = s_di->id2.i_data.id_count;
++	memcpy(t_di->id2.i_data.id_data, s_di->id2.i_data.id_data,
++	       le16_to_cpu(s_di->id2.i_data.id_count));
++	spin_lock(&OCFS2_I(t_inode)->ip_lock);
++	OCFS2_I(t_inode)->ip_dyn_features |= OCFS2_INLINE_DATA_FL;
++	t_di->i_dyn_features = cpu_to_le16(OCFS2_I(t_inode)->ip_dyn_features);
++	spin_unlock(&OCFS2_I(t_inode)->ip_lock);
++
++	ocfs2_journal_dirty(handle, t_bh);
++
++out_commit:
++	ocfs2_commit_trans(osb, handle);
++out:
++	return ret;
++}
++
+ static int ocfs2_duplicate_extent_list(struct inode *s_inode,
+ 				struct inode *t_inode,
+ 				struct buffer_head *t_bh,
+@@ -3997,6 +4044,14 @@ static int ocfs2_create_reflink_node(struct inode *s_inode,
+ 		goto out;
+ 	}
+ 
++	if (OCFS2_I(s_inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL) {
++		ret = ocfs2_duplicate_inline_data(s_inode, s_bh,
++						  t_inode, t_bh);
++		if (ret)
++			mlog_errno(ret);
++		goto out;
++	}
++
+ 	ret = ocfs2_lock_refcount_tree(osb, le64_to_cpu(di->i_refcount_loc),
+ 				       1, &ref_tree, &ref_root_bh);
+ 	if (ret) {
+@@ -4013,10 +4068,6 @@ static int ocfs2_create_reflink_node(struct inode *s_inode,
+ 		goto out_unlock_refcount;
+ 	}
+ 
+-	ret = ocfs2_complete_reflink(s_inode, s_bh, t_inode, t_bh, preserve);
+-	if (ret)
+-		mlog_errno(ret);
+-
+ out_unlock_refcount:
+ 	ocfs2_unlock_refcount_tree(osb, ref_tree, 1);
+ 	brelse(ref_root_bh);
+@@ -4068,9 +4119,17 @@ static int __ocfs2_reflink(struct dentry *old_dentry,
+ 		ret = ocfs2_reflink_xattrs(inode, old_bh,
+ 					   new_inode, new_bh,
+ 					   preserve);
+-		if (ret)
++		if (ret) {
+ 			mlog_errno(ret);
++			goto inode_unlock;
++		}
+ 	}
++
++	ret = ocfs2_complete_reflink(inode, old_bh,
++				     new_inode, new_bh, preserve);
++	if (ret)
++		mlog_errno(ret);
++
+ inode_unlock:
+ 	ocfs2_inode_unlock(new_inode, 1);
+ 	brelse(new_bh);
+diff --git a/fs/ocfs2/super.c b/fs/ocfs2/super.c
+index c0e48ae..14f47d2 100644
+--- a/fs/ocfs2/super.c
++++ b/fs/ocfs2/super.c
+@@ -773,18 +773,20 @@ static int ocfs2_sb_probe(struct super_block *sb,
+ 		if (tmpstat < 0) {
+ 			status = tmpstat;
+ 			mlog_errno(status);
+-			goto bail;
++			break;
+ 		}
+ 		di = (struct ocfs2_dinode *) (*bh)->b_data;
+ 		memset(stats, 0, sizeof(struct ocfs2_blockcheck_stats));
+ 		spin_lock_init(&stats->b_lock);
+-		status = ocfs2_verify_volume(di, *bh, blksize, stats);
+-		if (status >= 0)
+-			goto bail;
+-		brelse(*bh);
+-		*bh = NULL;
+-		if (status != -EAGAIN)
++		tmpstat = ocfs2_verify_volume(di, *bh, blksize, stats);
++		if (tmpstat < 0) {
++			brelse(*bh);
++			*bh = NULL;
++		}
++		if (tmpstat != -EAGAIN) {
++			status = tmpstat;
+ 			break;
++		}
+ 	}
+ 
+ bail:
+@@ -1645,6 +1647,10 @@ static int ocfs2_statfs(struct dentry *dentry, struct kstatfs *buf)
+ 	buf->f_bavail = buf->f_bfree;
+ 	buf->f_files = numbits;
+ 	buf->f_ffree = freebits;
++	buf->f_fsid.val[0] = crc32_le(0, osb->uuid_str, OCFS2_VOL_UUID_LEN)
++				& 0xFFFFFFFFUL;
++	buf->f_fsid.val[1] = crc32_le(0, osb->uuid_str + OCFS2_VOL_UUID_LEN,
++				OCFS2_VOL_UUID_LEN) & 0xFFFFFFFFUL;
+ 
+ 	brelse(bh);
+ 
+diff --git a/fs/ocfs2/uptodate.c b/fs/ocfs2/uptodate.c
+index b6284f2..c613693 100644
+--- a/fs/ocfs2/uptodate.c
++++ b/fs/ocfs2/uptodate.c
+@@ -53,11 +53,6 @@
+ #include <linux/highmem.h>
+ #include <linux/buffer_head.h>
+ #include <linux/rbtree.h>
+-#ifndef CONFIG_OCFS2_COMPAT_JBD
+-# include <linux/jbd2.h>
+-#else
+-# include <linux/jbd.h>
+-#endif
+ 
+ #define MLOG_MASK_PREFIX ML_UPTODATE
+ 
 diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
-index 38fe59d..6c024a0 100644
+index 38fe59d..67bb7b7 100644
 --- a/include/linux/console_struct.h
 +++ b/include/linux/console_struct.h
-@@ -130,8 +130,6 @@ extern void vc_SAK(struct work_struct *work);
+@@ -130,7 +130,7 @@ extern void vc_SAK(struct work_struct *work);
  #define CUR_HWMASK	0x0f
  #define CUR_SWMASK	0xfff0
  
 -#define CUR_DEFAULT CUR_UNDERLINE
--
++#define CUR_DEFAULT CUR_NONE
+ 
  #define CON_IS_VISIBLE(conp) (*conp->vc_display_fg == conp)
  
- #endif /* _LINUX_CONSOLE_STRUCT_H */
+diff --git a/include/linux/i2c-pnx.h b/include/linux/i2c-pnx.h
+index f13255e..9eb07bb 100644
+--- a/include/linux/i2c-pnx.h
++++ b/include/linux/i2c-pnx.h
+@@ -21,7 +21,7 @@ struct i2c_pnx_mif {
+ 	int			mode;		/* Interface mode */
+ 	struct completion	complete;	/* I/O completion */
+ 	struct timer_list	timer;		/* Timeout */
+-	char *			buf;		/* Data buffer */
++	u8 *			buf;		/* Data buffer */
+ 	int			len;		/* Length of data buffer */
+ };
+ 
 diff --git a/include/linux/linux_logo.h b/include/linux/linux_logo.h
 index ca5bd91..58ac1b6 100644
 --- a/include/linux/linux_logo.h
@@ -403117,10 +403595,82 @@ index 0000000..9936763
 +};
 +#endif
 diff --git a/sound/soc/codecs/cs4270.c b/sound/soc/codecs/cs4270.c
-index ca1e24a..8069023 100644
+index ca1e24a..34cd97d 100644
 --- a/sound/soc/codecs/cs4270.c
 +++ b/sound/soc/codecs/cs4270.c
-@@ -520,6 +520,7 @@ static const struct snd_kcontrol_new cs4270_snd_controls[] = {
+@@ -28,6 +28,7 @@
+ #include <sound/initval.h>
+ #include <linux/i2c.h>
+ #include <linux/delay.h>
++#include <linux/regulator/consumer.h>
+ 
+ #include "cs4270.h"
+ 
+@@ -114,6 +115,12 @@ struct cs4270_private {
+ 	unsigned int mode; /* The mode (I2S or left-justified) */
+ 	unsigned int slave_mode;
+ 	unsigned int manual_mute;
++
++	/* power domain regulators */
++	struct regulator *va_reg;
++	struct regulator *vd_reg;
++	struct regulator *vlc_reg;
++	bool va_reg_enabled;
+ };
+ 
+ /**
+@@ -458,6 +465,50 @@ static int cs4270_hw_params(struct snd_pcm_substream *substream,
+ }
+ 
+ /**
++ * cs4270_set_bias_level - catches BIAS level changes
++ * @dai: the SOC DAI
++ * @level: the new BIAS level
++ *
++ * This function controls the voltage regulators to properly
++ * power up/down the voltage regulator domains
++ */
++
++static int cs4270_set_bias_level(struct snd_soc_codec *codec,
++				 enum snd_soc_bias_level level)
++{
++	int ret;
++	struct cs4270_private *cs4270 = codec->private_data;
++
++	switch (level) {
++	case SND_SOC_BIAS_ON:
++	case SND_SOC_BIAS_PREPARE:
++		if (!cs4270->va_reg_enabled) {
++			ret = regulator_enable(cs4270->va_reg);
++			if (ret < 0)
++				return ret;
++
++			cs4270->va_reg_enabled = true;
++		}
++
++		break;
++	case SND_SOC_BIAS_STANDBY:
++	case SND_SOC_BIAS_OFF:
++		if (cs4270->va_reg_enabled) {
++			ret = regulator_disable(cs4270->va_reg);
++			if (ret < 0)
++				return ret;
++
++			cs4270->va_reg_enabled = false;
++		}
++
++		break;
++	}
++
++	codec->bias_level = level;
++	return 0;
++}
++
++/**
+  * cs4270_dai_mute - enable/disable the CS4270 external mute
+  * @dai: the SOC DAI
+  * @mute: 0 = disable mute, 1 = enable mute
+@@ -520,6 +571,7 @@ static const struct snd_kcontrol_new cs4270_snd_controls[] = {
  	SOC_SINGLE("Digital Sidetone Switch", CS4270_FORMAT, 5, 1, 0),
  	SOC_SINGLE("Soft Ramp Switch", CS4270_TRANS, 6, 1, 0),
  	SOC_SINGLE("Zero Cross Switch", CS4270_TRANS, 5, 1, 0),
@@ -403128,6 +403678,123 @@ index ca1e24a..8069023 100644
  	SOC_SINGLE("Popguard Switch", CS4270_MODE, 0, 1, 1),
  	SOC_SINGLE("Auto-Mute Switch", CS4270_MUTE, 5, 1, 0),
  	SOC_DOUBLE("Master Capture Switch", CS4270_MUTE, 3, 4, 1, 1),
+@@ -578,6 +630,7 @@ static int cs4270_probe(struct platform_device *pdev)
+ {
+ 	struct snd_soc_device *socdev = platform_get_drvdata(pdev);
+ 	struct snd_soc_codec *codec = cs4270_codec;
++	struct cs4270_private *cs4270 = codec->private_data;
+ 	int ret;
+ 
+ 	/* Connect the codec to the socdev.  snd_soc_new_pcms() needs this. */
+@@ -598,6 +651,25 @@ static int cs4270_probe(struct platform_device *pdev)
+ 		goto error_free_pcms;
+ 	}
+ 
++	/* get the power supply regulators */
++	cs4270->va_reg = regulator_get(codec->dev, "va");
++	cs4270->vd_reg = regulator_get(codec->dev, "vd");
++	cs4270->vlc_reg = regulator_get(codec->dev, "vlc");
++
++	if (IS_ERR(cs4270->va_reg) ||
++	    IS_ERR(cs4270->vd_reg) ||
++	    IS_ERR(cs4270->vlc_reg)) {
++		dev_err(codec->dev,
++			"failed to get supplies for device %s\n",
++			dev_name(codec->dev));
++		goto error_free_pcms;
++	}
++
++	regulator_enable(cs4270->vd_reg);
++	regulator_enable(cs4270->vlc_reg);
++
++	cs4270_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
++
+ 	/* And finally, register the socdev */
+ 	ret = snd_soc_init_card(socdev);
+ 	if (ret < 0) {
+@@ -608,6 +680,10 @@ static int cs4270_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ error_free_pcms:
++	regulator_put(cs4270->va_reg);
++	regulator_put(cs4270->vd_reg);
++	regulator_put(cs4270->vlc_reg);
++
+ 	snd_soc_free_pcms(socdev);
+ 
+ 	return ret;
+@@ -622,9 +698,21 @@ error_free_pcms:
+ static int cs4270_remove(struct platform_device *pdev)
+ {
+ 	struct snd_soc_device *socdev = platform_get_drvdata(pdev);
++	struct snd_soc_codec *codec = cs4270_codec;
++	struct cs4270_private *cs4270 = codec->private_data;
+ 
+ 	snd_soc_free_pcms(socdev);
+ 
++	if (cs4270->va_reg_enabled)
++		regulator_disable(cs4270->va_reg);
++
++	regulator_disable(cs4270->vd_reg);
++	regulator_disable(cs4270->vlc_reg);
++
++	regulator_put(cs4270->va_reg);
++	regulator_put(cs4270->vd_reg);
++	regulator_put(cs4270->vlc_reg);
++
+ 	return 0;
+ };
+ 
+@@ -698,6 +786,8 @@ static int cs4270_i2c_probe(struct i2c_client *i2c_client,
+ 	codec->write = cs4270_i2c_write;
+ 	codec->reg_cache = cs4270->reg_cache;
+ 	codec->reg_cache_size = CS4270_NUMREGS;
++	codec->bias_level = SND_SOC_BIAS_OFF;
++	codec->set_bias_level = cs4270_set_bias_level;
+ 
+ 	/* The I2C interface is set up, so pre-fill our register cache */
+ 
+@@ -821,17 +911,38 @@ static int cs4270_i2c_resume(struct i2c_client *client)
+ static int cs4270_soc_suspend(struct platform_device *pdev, pm_message_t mesg)
+ {
+ 	struct snd_soc_codec *codec = cs4270_codec;
+-	int reg = snd_soc_read(codec, CS4270_PWRCTL) | CS4270_PWRCTL_PDN_ALL;
++	struct cs4270_private *cs4270 = codec->private_data;
++	int reg, ret;
+ 
+-	return snd_soc_write(codec, CS4270_PWRCTL, reg);
++	reg = snd_soc_read(codec, CS4270_PWRCTL) | CS4270_PWRCTL_PDN_ALL;
++	if (reg < 0)
++		return reg;
++
++	ret = snd_soc_write(codec, CS4270_PWRCTL, reg);
++	if (ret < 0)
++		return ret;
++
++	ret = cs4270_set_bias_level(codec, SND_SOC_BIAS_OFF);
++	if (ret < 0)
++		return ret;
++
++	regulator_disable(cs4270->vd_reg);
++	regulator_disable(cs4270->vlc_reg);
++
++	return 0;
+ }
+ 
+ static int cs4270_soc_resume(struct platform_device *pdev)
+ {
+ 	struct snd_soc_codec *codec = cs4270_codec;
++	struct cs4270_private *cs4270 = codec->private_data;
+ 	struct i2c_client *i2c_client = codec->control_data;
+ 	int reg;
+ 
++	regulator_enable(cs4270->vd_reg);
++	regulator_enable(cs4270->vlc_reg);
++	cs4270_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
++
+ 	/* In case the device was put to hard reset during sleep, we need to
+ 	 * wait 500ns here before any I2C communication. */
+ 	ndelay(500);
 diff --git a/sound/soc/pxa/Kconfig b/sound/soc/pxa/Kconfig
 index dcb3181..9c3bfd9 100644
 --- a/sound/soc/pxa/Kconfig
@@ -403167,59 +403834,75 @@ index 6e096b4..f3e08fd 100644
 +obj-$(CONFIG_SND_SOC_RAUMFELD) += snd-soc-raumfeld.o
 diff --git a/sound/soc/pxa/raumfeld.c b/sound/soc/pxa/raumfeld.c
 new file mode 100644
-index 0000000..e31c85b
+index 0000000..5d7bb8c
 --- /dev/null
 +++ b/sound/soc/pxa/raumfeld.c
-@@ -0,0 +1,339 @@
+@@ -0,0 +1,336 @@
 +/*
-+ *  raumfeld_audio.c  --  SoC audio for Raumfeld audio devices
++ * raumfeld_audio.c  --  SoC audio for Raumfeld audio devices
 + *
-+ *  Copyright 2009 Daniel Mack <daniel@caiaq.de>
++ * Copyright (c) 2009 Daniel Mack <daniel@caiaq.de>
 + *
-+ *  based on code from:
++ * based on code from:
 + *
 + *    Wolfson Microelectronics PLC.
 + *    Openedhand Ltd.
 + *    Liam Girdwood <lrg@slimlogic.co.uk>
 + *    Richard Purdie <richard@openedhand.com>
 + *
-+ *  This program is free software; you can redistribute  it and/or modify it
-+ *  under  the terms of  the GNU General  Public License as published by the
-+ *  Free Software Foundation;  either version 2 of the  License, or (at your
-+ *  option) any later version.
++ * This program is free software; you can redistribute  it and/or modify it
++ * under  the terms of  the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the  License, or (at your
++ * option) any later version.
 + */
 +
 +#include <linux/module.h>
 +#include <linux/i2c.h>
 +#include <linux/delay.h>
++#include <linux/gpio.h>
 +#include <sound/pcm.h>
 +#include <sound/soc.h>
 +#include <sound/soc-dapm.h>
++
 +#include <asm/mach-types.h>
-+#include <mach/mfp-pxa3xx.h>
-+#include <mach/mfp-pxa300.h>
 +
 +#include "../codecs/cs4270.h"
 +#include "../codecs/ak4104.h"
 +#include "pxa2xx-pcm.h"
 +#include "pxa-ssp.h"
 +
-+extern void raumfeld_enable_audio(bool en);
++#define GPIO_SPDIF_RESET	(38)
++#define GPIO_MCLK_RESET		(111)
++#define GPIO_CODEC_RESET	(120)
 +
 +static struct i2c_client *max9486_client;
 +static struct i2c_board_info max9486_hwmon_info = {
 +	I2C_BOARD_INFO("max9485", 0x63),
 +};
 +
-+/* set_max9485_clk() - call with
-+ * 	clk = 0 for 11.2896 MHz
-+ * 	clk = 1 for 12.2880 MHz
-+ */
++#define MAX9485_MCLK_FREQ_112896 0x22
++#define	MAX9485_MCLK_FREQ_122880 0x23
 +
-+static void set_max9485_clk(int clk)
++static void set_max9485_clk(char clk)
 +{
-+	char buf = clk ? 0x23 : 0x22;
-+	i2c_master_send(max9486_client, &buf, 1);
++	i2c_master_send(max9486_client, &clk, 1);
++}
++
++static void raumfeld_enable_audio(bool en)
++{
++	if (en) {
++		gpio_set_value(GPIO_MCLK_RESET, 1);
++
++		/* wait some time to let the clocks become stable */
++		msleep(100);
++
++		gpio_set_value(GPIO_SPDIF_RESET, 1);
++		gpio_set_value(GPIO_CODEC_RESET, 1);
++	} else {
++		gpio_set_value(GPIO_MCLK_RESET, 0);
++		gpio_set_value(GPIO_SPDIF_RESET, 0);
++		gpio_set_value(GPIO_CODEC_RESET, 0);
++	}
 +}
 +
 +/* CS4270 */
@@ -403228,13 +403911,9 @@ index 0000000..e31c85b
 +	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 +	struct snd_soc_dai *codec_dai = rtd->dai->codec_dai;
 +
-+	set_max9485_clk(0);
++	set_max9485_clk(MAX9485_MCLK_FREQ_112896);
 +
 +	return snd_soc_dai_set_sysclk(codec_dai, 0, 11289600, 0);
-+}
-+
-+static void raumfeld_cs4270_shutdown(struct snd_pcm_substream *substream)
-+{
 +}
 +
 +static int raumfeld_cs4270_hw_params(struct snd_pcm_substream *substream,
@@ -403251,14 +403930,14 @@ index 0000000..e31c85b
 +	case 16000:
 +	case 48000:
 +	case 96000:
-+		set_max9485_clk(1);
++		set_max9485_clk(MAX9485_MCLK_FREQ_122880);
 +		clk = 12288000;
 +		break;
 +	case 11025:
 +	case 22050:
 +	case 44100:
 +	case 88200:
-+		set_max9485_clk(0);
++		set_max9485_clk(MAX9485_MCLK_FREQ_112896);
 +		clk = 11289600;
 +		break;
 +	}
@@ -403299,13 +403978,7 @@ index 0000000..e31c85b
 +static struct snd_soc_ops raumfeld_cs4270_ops = {
 +	.startup = raumfeld_cs4270_startup,
 +	.hw_params = raumfeld_cs4270_hw_params,
-+	.shutdown = raumfeld_cs4270_shutdown,
 +};
-+
-+static int raumfeld_cs4270_init(struct snd_soc_codec *codec)
-+{
-+	return 0;
-+}
 +
 +static int raumfeld_line_suspend(struct platform_device *pdev, pm_message_t state)
 +{
@@ -403324,7 +403997,6 @@ index 0000000..e31c85b
 +	.stream_name	= "CS4270",
 +	.cpu_dai	= &pxa_ssp_dai[PXA_DAI_SSP1],
 +	.codec_dai	= &cs4270_dai,
-+	.init		= raumfeld_cs4270_init,
 +	.ops		= &raumfeld_cs4270_ops,
 +};
 +
@@ -403340,15 +404012,6 @@ index 0000000..e31c85b
 +
 +/* AK4104 */
 +
-+static int raumfeld_ak4104_startup(struct snd_pcm_substream *substream)
-+{
-+	return 0;
-+}
-+
-+static void raumfeld_ak4104_shutdown(struct snd_pcm_substream *substream)
-+{
-+}
-+
 +static int raumfeld_ak4104_hw_params(struct snd_pcm_substream *substream,
 +				     struct snd_pcm_hw_params *params)
 +{
@@ -403362,14 +404025,14 @@ index 0000000..e31c85b
 +	case 16000:
 +	case 48000:
 +	case 96000:
-+		set_max9485_clk(1);
++		set_max9485_clk(MAX9485_MCLK_FREQ_122880);
 +		clk = 12288000;
 +		break;
 +	case 11025:
 +	case 22050:
 +	case 44100:
 +	case 88200:
-+		set_max9485_clk(0);
++		set_max9485_clk(MAX9485_MCLK_FREQ_112896);
 +		clk = 11289600;
 +		break;
 +	}
@@ -403402,22 +404065,14 @@ index 0000000..e31c85b
 +}
 +
 +static struct snd_soc_ops raumfeld_ak4104_ops = {
-+	.startup = raumfeld_ak4104_startup,
 +	.hw_params = raumfeld_ak4104_hw_params,
-+	.shutdown = raumfeld_ak4104_shutdown,
 +};
-+
-+static int raumfeld_ak4104_init(struct snd_soc_codec *codec)
-+{
-+	return 0;
-+}
 +
 +static struct snd_soc_dai_link raumfeld_spdif_dai = {
 +	.name		= "ak4104",
 +	.stream_name	= "Playback",
 +	.cpu_dai	= &pxa_ssp_dai[PXA_DAI_SSP2],
 +	.codec_dai	= &ak4104_dai,
-+	.init		= raumfeld_ak4104_init,
 +	.ops		= &raumfeld_ak4104_ops,
 +};
 +
@@ -403452,12 +404107,12 @@ index 0000000..e31c85b
 +		return 0;
 +
 +	max9486_client = i2c_new_device(i2c_get_adapter(0),
-+					 &max9486_hwmon_info);
++					&max9486_hwmon_info);
 +
 +	if (!max9486_client)
 +		return -ENOMEM;
 +
-+	set_max9485_clk(1);
++	set_max9485_clk(MAX9485_MCLK_FREQ_122880);
 +
 +	/* LINE */
 +	raumfeld_audio_line_device = platform_device_alloc("soc-audio", 0);
@@ -403471,6 +404126,7 @@ index 0000000..e31c85b
 +	if (ret)
 +		platform_device_put(raumfeld_audio_line_device);
 +
++	/* no S/PDIF on Speakers */
 +	if (machine_is_raumfeld_speaker() && !!machine_is_raumfeld_proto())
 +		return ret;
 +
@@ -403490,17 +404146,25 @@ index 0000000..e31c85b
 +		platform_device_put(raumfeld_audio_spdif_device);
 +	}
 +
++	raumfeld_enable_audio(true);
++
 +	return ret;
 +}
 +
 +static void __exit raumfeld_audio_exit(void)
 +{
++	raumfeld_enable_audio(false);
++
 +	platform_device_unregister(raumfeld_audio_line_device);
 +
 +	if (machine_is_raumfeld_connector())
 +		platform_device_unregister(raumfeld_audio_spdif_device);
 +
 +	i2c_unregister_device(max9486_client);
++
++	gpio_free(GPIO_MCLK_RESET);
++	gpio_free(GPIO_CODEC_RESET);
++	gpio_free(GPIO_SPDIF_RESET);
 +}
 +
 +module_init(raumfeld_audio_init);

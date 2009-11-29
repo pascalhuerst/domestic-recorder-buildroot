@@ -1,0 +1,81 @@
+From dd719231edb88716586e393b75062443084e33ec Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Wed, 25 Nov 2009 12:02:26 +0100
+Subject: [PATCH] input: initialize linux_input key states
+
+IDirectFBInputDevice caches the key states (up/down) by keeping track
+of press and release events. This doesn't take into account that a key
+may be pressed at the time the device is opened.
+
+This change introduces code to the linux_input driver that queries
+the keystates when the event thread is started and synthesizes key
+press events for all pressed keys.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ inputdrivers/linux_input/linux_input.c |   35 ++++++++++++++++++++++++++++++-
+ 1 files changed, 33 insertions(+), 2 deletions(-)
+
+diff --git a/inputdrivers/linux_input/linux_input.c b/inputdrivers/linux_input/linux_input.c
+index 17cd627..006dc5a 100644
+--- a/inputdrivers/linux_input/linux_input.c
++++ b/inputdrivers/linux_input/linux_input.c
+@@ -147,6 +147,7 @@ typedef struct {
+      int                      fd;
+      int                      quitpipe[2];
+ 
++     bool                     has_keys;
+      bool                     has_leds;
+      unsigned long            led_state[NBITS(LED_CNT)];
+      DFBInputDeviceLockState  locks;
+@@ -817,6 +818,35 @@ linux_input_EventThread( DirectThread *thread, void *driver_data )
+           fsm_state.y.max = absinfo.maximum;
+      }
+ 
++     /* Query key states. */
++     if (data->has_keys) {
++          unsigned long keybit[NBITS(KEY_CNT)];
++          unsigned long keystate[NBITS(KEY_CNT)];
++          int i;
++
++          /* get keyboard bits */
++          ioctl( data->fd, EVIOCGBIT(EV_KEY, sizeof(keybit)), keybit );
++
++          /* get key states */
++          ioctl( data->fd, EVIOCGKEY(sizeof(keystate)), keystate );
++
++          /* for each pressed key, synthetize a press event */
++          for (i=0; i<=KEY_CNT; i++) {
++               if (test_bit( i, keybit ) && test_bit( i, keystate) ) {
++                    int key = translate_key( i );
++
++                    if (key != DIKI_UNKNOWN && DFB_KEY_TYPE(key) == DIKT_IDENTIFIER) {
++                         DFBInputEvent devt = { .type     = DIET_KEYPRESS,
++                                                .key_id   = key,
++                                                .key_code = i,
++                                                .flags    = DIEF_KEYID | DIEF_KEYCODE };
++
++                         dfb_input_dispatch( data->device, &devt );
++                    }
++               }
++          }
++     }
++
+      while (1) {
+           DFBInputEvent devt = { .type = DIET_UNKNOWN };
+ 
+@@ -1241,8 +1271,9 @@ driver_open_device( CoreInputDevice  *device,
+           return D_OOM();
+      }
+ 
+-     data->fd     = fd;
+-     data->device = device;
++     data->fd       = fd;
++     data->device   = device;
++     data->has_keys = (info->desc.caps & DICAPS_KEYS) != 0;
+      data->touchpad = touchpad;
+      data->vt_fd    = -1;
+ 
+-- 
+1.6.0.4
+
