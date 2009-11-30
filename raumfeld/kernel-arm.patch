@@ -7077,10 +7077,10 @@ index 09b7b1a..fcb0721 100644
  	&pxa_device_rtc,
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..b04aff0
+index 0000000..9b66ba6
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
-@@ -0,0 +1,1267 @@
+@@ -0,0 +1,1268 @@
 +/*
 + * arch/arm/mach-pxa/raumfeld.c
 + *
@@ -7803,6 +7803,7 @@ index 0000000..b04aff0
 +
 +static struct pxamci_platform_data raumfeld_mci_platform_data = {
 +	.setpower		= raumfeld_mci_setpower,
++	.ocr_mask               = MMC_VDD_32_33 | MMC_VDD_33_34,
 +	.detect_delay		= 20,
 +	.gpio_card_detect	= -1,
 +	.gpio_card_ro		= -1,
