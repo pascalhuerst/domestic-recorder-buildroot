@@ -1,0 +1,12 @@
+diff -Naur taglib-1.5/taglib/mpeg/mpegproperties.cpp taglib-1.5-mod/taglib/mpeg/mpegproperties.cpp
+--- taglib-1.5/taglib/mpeg/mpegproperties.cpp	2009-11-29 15:00:26.000000000 +0100
++++ taglib-1.5-mod/taglib/mpeg/mpegproperties.cpp	2009-11-29 15:02:08.000000000 +0100
+@@ -32,7 +32,7 @@
+ 
+ using namespace TagLib;
+ 
+-#define EXCLUDE_VBR 1
++#define EXCLUDE_VBR 0
+ 
+ class MPEG::Properties::PropertiesPrivate
+ {
