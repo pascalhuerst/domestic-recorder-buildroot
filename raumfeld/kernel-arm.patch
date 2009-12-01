@@ -14332,7 +14332,7 @@ index 0000000..d3f229a
 +module_init(dac7512_init);
 +module_exit(dac7512_exit);
 diff --git a/drivers/mmc/host/pxamci.c b/drivers/mmc/host/pxamci.c
-index b00d673..c35df2b 100644
+index b00d673..fb0978c 100644
 --- a/drivers/mmc/host/pxamci.c
 +++ b/drivers/mmc/host/pxamci.c
 @@ -84,7 +84,7 @@ static inline void pxamci_init_ocr(struct pxamci_host *host)
@@ -14353,6 +14353,24 @@ index b00d673..c35df2b 100644
  		host->pdata->setpower(mmc_dev(host->mmc), vdd);
  }
  
+@@ -760,6 +760,8 @@ static int pxamci_remove(struct platform_device *pdev)
+ 	if (mmc) {
+ 		struct pxamci_host *host = mmc_priv(mmc);
+ 
++		mmc_remove_host(mmc);
++
+ 		if (host->pdata) {
+ 			gpio_cd = host->pdata->gpio_card_detect;
+ 			gpio_ro = host->pdata->gpio_card_ro;
+@@ -779,8 +781,6 @@ static int pxamci_remove(struct platform_device *pdev)
+ 		if (host->pdata && host->pdata->exit)
+ 			host->pdata->exit(&pdev->dev, mmc);
+ 
+-		mmc_remove_host(mmc);
+-
+ 		pxamci_stop_clock(host);
+ 		writel(TXFIFO_WR_REQ|RXFIFO_RD_REQ|CLK_IS_OFF|STOP_CMD|
+ 		       END_CMD_RES|PRG_DONE|DATA_TRAN_DONE,
 diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
 index e19ca4b..b2f71f7 100644
 --- a/drivers/net/Kconfig
