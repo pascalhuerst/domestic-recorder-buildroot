@@ -4,7 +4,7 @@
 #
 #############################################################
 GVFS_VERSION_MAJOR = 1.4
-GVFS_VERSION_MINOR = 0
+GVFS_VERSION_MINOR = 2
 GVFS_VERSION = $(GVFS_VERSION_MAJOR).$(GVFS_VERSION_MINOR)
 GVFS_SOURCE = gvfs-$(GVFS_VERSION).tar.gz
 GVFS_SITE = http://ftp.gnome.org/pub/GNOME/sources/gvfs/$(GVFS_VERSION_MAJOR)
@@ -65,7 +65,8 @@ GVFS_CONF_OPT += \
 	--enable-samba \
 	--with-samba-includes=$(STAGING_DIR)/usr/include \
 	--with-samba-libs=$(STAGING_DIR)/usr/lib \
-	ac_cv_lib_smbclient_smbc_option_get=yes
+	ac_cv_lib_smbclient_smbc_option_get=yes	\
+	ac_cv_lib_smbclient_smbc_getFunctionStatVFS=yes
 else
 GVFS_CONF_OPT += --disable-samba
 endif
