@@ -1,6 +1,6 @@
-diff -ur gvfs-1.4.0-orig/configure gvfs-1.4.0/configure
---- gvfs-1.4.0-orig/configure	2009-09-21 16:33:27.000000000 +0200
-+++ gvfs-1.4.0/configure	2009-10-18 13:28:02.000000000 +0200
+diff -ur gvfs-1.4.2-orig/configure gvfs-1.4.2/configure
+--- gvfs-1.4.2-orig/configure	2009-09-21 16:33:27.000000000 +0200
++++ gvfs-1.4.2/configure	2009-10-18 13:28:02.000000000 +0200
 @@ -17056,8 +17056,8 @@
  
  if test "x$enable_http" != "xno"; then
@@ -71,9 +71,9 @@ diff -ur gvfs-1.4.0-orig/configure gvfs-1.4.0/configure
  
  $HTTP_PKG_ERRORS
  
-diff -ur gvfs-1.4.0-orig/daemon/gvfsbackendhttp.c gvfs-1.4.0/daemon/gvfsbackendhttp.c
---- gvfs-1.4.0-orig/daemon/gvfsbackendhttp.c	2009-04-20 12:41:37.000000000 +0200
-+++ gvfs-1.4.0/daemon/gvfsbackendhttp.c	2009-10-18 13:28:02.000000000 +0200
+diff -ur gvfs-1.4.2-orig/daemon/gvfsbackendhttp.c gvfs-1.4.2/daemon/gvfsbackendhttp.c
+--- gvfs-1.4.2-orig/daemon/gvfsbackendhttp.c	2009-04-20 12:41:37.000000000 +0200
++++ gvfs-1.4.2/daemon/gvfsbackendhttp.c	2009-10-18 13:28:02.000000000 +0200
 @@ -33,7 +33,7 @@
  #include <glib/gi18n.h>
  #include <gio/gio.h>
