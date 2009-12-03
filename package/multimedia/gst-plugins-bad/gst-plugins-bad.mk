@@ -319,6 +319,14 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-sdl
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_TREMOR),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-ivorbis \
+	ac_cv_lib_vorbisidec_vorbis_block_init=yes
+GST_PLUGINS_BAD_DEPENDENCIES += tremor
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-ivorbis
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_VCD),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-vcd
 else
