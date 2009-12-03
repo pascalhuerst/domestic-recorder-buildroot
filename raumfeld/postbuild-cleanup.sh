@@ -31,5 +31,6 @@ rm -f  $1/usr/libexec/gvfsd-burn
 rm -f  $1/usr/libexec/gvfsd-trash
 rm -fr $1/usr/share/aclocal
 rm -rf $1/usr/share/alsa
+rm -rf $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/gdb
 rm -fr $1/usr/share/glib-2.0
