@@ -61,7 +61,12 @@ $(TREMOR_DIR)/.libs: $(TREMOR_DIR)/.configured
 	$(MAKE) CC=$(TARGET_CC) -C $(TREMOR_DIR)
 	touch $@
 
-$(TARGET_DIR)/usr/lib/tremor.so: $(TREMOR_DIR)/.libs
+$(STAGING_DIR)/usr/lib/tremor.so: $(TREMOR_DIR)/.libs
+	$(MAKE) prefix=$(STAGING_DIR)/usr -C $(TREMOR_DIR) install
+	rm -f $(STAGING_DIR)/usr/lib/libvorbisidec.la
+	touch $@
+
+$(TARGET_DIR)/usr/lib/tremor.so: $(STAGING_DIR)/usr/lib/tremor.so
 	$(MAKE) prefix=$(TARGET_DIR)/usr -C $(TREMOR_DIR) \
 		$(if $(BR2_STRIP_none),install,install-strip)
 	touch $@

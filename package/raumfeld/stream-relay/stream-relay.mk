@@ -9,7 +9,7 @@ STREAM_RELAY_TARGET_DIR:=raumfeld/stream-relay
 STREAM_RELAY_BINARY:=$(STREAM_RELAY_TARGET_DIR)/stream-relay
 STREAM_RELAY_CROSS_PREFIX:=$(BUILD_DIR)/..
 
-STREAM_RELAY_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp flac ffmpeg libmms libvorbis
+STREAM_RELAY_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp flac ffmpeg libmms libvorbis taglib
 
 ifeq ($(ARCH),arm)
 STREAM_RELAY_CROSS = ARM
