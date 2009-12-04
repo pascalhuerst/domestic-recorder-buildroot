@@ -4,7 +4,7 @@
 #
 #############################################################
 
-REMOTE_CONTROL_VERSION = madwifi
+REMOTE_CONTROL_VERSION = $(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 REMOTE_CONTROL_AUTORECONF = YES
 REMOTE_CONTROL_LIBTOOL_PATCH = NO
 REMOTE_CONTROL_INSTALL_STAGING = YES
@@ -25,7 +25,7 @@ $(eval $(call AUTOTARGETS,package/raumfeld,remote-control))
 $(REMOTE_CONTROL_DIR)/.bzr:
 	if ! test -d $(REMOTE_CONTROL_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/remote-control/branches/$(REMOTE_CONTROL_VERSION) remote-control-$(REMOTE_CONTROL_VERSION)) \
+	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/remote-control/$(REMOTE_CONTROL_VERSION) remote-control-$(REMOTE_CONTROL_VERSION)) \
 	fi
 
 $(REMOTE_CONTROL_DIR)/.stamp_downloaded: $(REMOTE_CONTROL_DIR)/.bzr
