@@ -1,23 +1,25 @@
-From dd719231edb88716586e393b75062443084e33ec Mon Sep 17 00:00:00 2001
+From 39793938080d582733290aab09aebfc28f4351f4 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Wed, 25 Nov 2009 12:02:26 +0100
 Subject: [PATCH] input: initialize linux_input key states
 
 IDirectFBInputDevice caches the key states (up/down) by keeping track
 of press and release events. This doesn't take into account that a key
-may be pressed at the time the device is opened.
+may be pressed at the time the device is opened or that a key might
+have changed state while the device was in suspend.
 
 This change introduces code to the linux_input driver that queries
 the keystates when the event thread is started and synthesizes key
-press events for all pressed keys.
+events for all keys depending on the key state as reported by the
+linux input layer.
 
 Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
 ---
- inputdrivers/linux_input/linux_input.c |   35 ++++++++++++++++++++++++++++++-
- 1 files changed, 33 insertions(+), 2 deletions(-)
+ inputdrivers/linux_input/linux_input.c |   39 ++++++++++++++++++++++++++++++-
+ 1 files changed, 37 insertions(+), 2 deletions(-)
 
 diff --git a/inputdrivers/linux_input/linux_input.c b/inputdrivers/linux_input/linux_input.c
-index 17cd627..006dc5a 100644
+index 17cd627..08b0d36 100644
 --- a/inputdrivers/linux_input/linux_input.c
 +++ b/inputdrivers/linux_input/linux_input.c
 @@ -147,6 +147,7 @@ typedef struct {
@@ -28,7 +30,7 @@ index 17cd627..006dc5a 100644
       bool                     has_leds;
       unsigned long            led_state[NBITS(LED_CNT)];
       DFBInputDeviceLockState  locks;
-@@ -817,6 +818,35 @@ linux_input_EventThread( DirectThread *thread, void *driver_data )
+@@ -817,6 +818,39 @@ linux_input_EventThread( DirectThread *thread, void *driver_data )
            fsm_state.y.max = absinfo.maximum;
       }
  
@@ -44,16 +46,20 @@ index 17cd627..006dc5a 100644
 +          /* get key states */
 +          ioctl( data->fd, EVIOCGKEY(sizeof(keystate)), keystate );
 +
-+          /* for each pressed key, synthetize a press event */
++          /* for each key,
++             synthetize a press or release event depending on the key state */
 +          for (i=0; i<=KEY_CNT; i++) {
-+               if (test_bit( i, keybit ) && test_bit( i, keystate) ) {
-+                    int key = translate_key( i );
++               if (test_bit( i, keybit )) {
++                    const int key = translate_key( i );
 +
-+                    if (key != DIKI_UNKNOWN && DFB_KEY_TYPE(key) == DIKT_IDENTIFIER) {
-+                         DFBInputEvent devt = { .type     = DIET_KEYPRESS,
-+                                                .key_id   = key,
-+                                                .key_code = i,
-+                                                .flags    = DIEF_KEYID | DIEF_KEYCODE };
++                    if (DFB_KEY_TYPE(key) == DIKT_IDENTIFIER) {
++                         DFBInputEvent devt;
++
++                         devt.type     = (test_bit( i, keystate )
++                                          ? DIET_KEYPRESS : DIET_KEYRELEASE);
++                         devt.flags    = DIEF_KEYID | DIEF_KEYCODE;
++                         devt.key_id   = key;
++                         devt.key_code = i;
 +
 +                         dfb_input_dispatch( data->device, &devt );
 +                    }
@@ -64,7 +70,7 @@ index 17cd627..006dc5a 100644
       while (1) {
            DFBInputEvent devt = { .type = DIET_UNKNOWN };
  
-@@ -1241,8 +1271,9 @@ driver_open_device( CoreInputDevice  *device,
+@@ -1241,8 +1275,9 @@ driver_open_device( CoreInputDevice  *device,
            return D_OOM();
       }
  
