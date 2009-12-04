@@ -11,7 +11,7 @@ HOSTAPD_DIR:=$(BUILD_DIR)/hostapd-$(HOSTAPD_VERSION)
 HOSTAPD_BINARY:=hostapd
 HOSTAPD_TARGET_BINARY:=usr/bin/hostapd
 
-HOSTAPD_DEPENDENCIES = uclibc libnl openssl
+HOSTAPD_DEPENDENCIES = uclibc libnl openssl madwifi
 
 $(DL_DIR)/$(HOSTAPD_SOURCE):
 	$(call DOWNLOAD,$(HOSTAPD_SITE),$(HOSTAPD_SOURCE))
@@ -23,6 +23,8 @@ $(HOSTAPD_DIR)/.source: $(DL_DIR)/$(HOSTAPD_SOURCE)
 # hostpad has no configure script, we just copy a inlude file for make
 $(HOSTAPD_DIR)/.configured: $(HOSTAPD_DIR)/.source
 	cp -dPf package/hostapd/hostapd.config $(HOSTAPD_DIR)/hostapd/.config
+	echo "CONFIG_DRIVER_MADWIFI=y" >>$(HOSTAPD_DIR)/hostapd/.config
+	echo "CFLAGS += -I/$(MADWIFI_DIR)" >>$(HOSTAPD_DIR)/hostapd/.config
 	touch $@
 
 $(HOSTAPD_DIR)/hostapd/$(HOSTAPD_BINARY): $(HOSTAPD_DIR)/.configured
