@@ -17,13 +17,13 @@ auto eth0
 #	netmask 255.255.255.0
 #	gateway 192.168.12.1
 
-auto wlan0
+auto ath0
 #iface wlan0 inet manual
 #	pre-up wlanconfig ath0 destroy || true
 #	pre-up wlanconfig ath0 create wlandev wifi0 wlanmode ap
 #	post-down wlanconfig ath0 destroy
-	wireless-mode master
-	wireless-channel 1
+#	wireless-mode master
+#	wireless-channel 1
 #	address 192.168.11.1
 #	netmask 255.255.255.0
 #	gateway 192.168.12.1

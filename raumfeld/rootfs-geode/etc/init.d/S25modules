@@ -6,8 +6,9 @@
 case "$1" in
   start)
  	echo "Loading modules..."
-        modprobe via-rhine
-	modprobe ath5k
+        #modprobe via-rhine
+	#modprobe ath5k
+	modprobe ath_pci
 	;;
   *)
         ;;

@@ -1,0 +1,12 @@
+--- a/Makefile	2009-12-03 18:29:10.000000000 +0100
++++ b/Makefile	2009-12-03 18:29:17.000000000 +0100
+@@ -92,9 +92,6 @@
+ 	for i in $(obj-y); do \
+ 		$(MAKE) -C $$i install || exit 1; \
+ 	done
+-ifeq ($(DESTDIR),)
+-	(export KMODPATH=$(KMODPATH); /sbin/depmod -ae $(KERNELRELEASE))
+-endif
+ 
+ install-tools:
+ 	$(MAKE) -C $(TOOLS) install || exit 1

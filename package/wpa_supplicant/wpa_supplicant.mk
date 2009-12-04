@@ -15,6 +15,11 @@ WPA_SUPPLICANT_SUBDIR = wpa_supplicant
 WPA_SUPPLICANT_TARGET_BINS = wpa_cli wpa_supplicant wpa_passphrase
 WPA_SUPPLICANT_DBUS_SERVICE = fi.epitest.hostap.WPASupplicant
 
+
+ifeq ($(BR2_PACKAGE_MADWIFI),y)
+	WPA_SUPPLICANT_DEPENDENCIES += madwifi
+endif
+
 ifeq ($(BR2_PACKAGE_WPA_SUPPLICANT_OPENSSL),y)
 	WPA_SUPPLICANT_DEPENDENCIES += openssl
 endif
@@ -46,6 +51,11 @@ endif
 ifeq ($(BR2_PACKAGE_DBUS),y)
 	echo "CONFIG_CTRL_IFACE_DBUS=y" >>$(WPA_SUPPLICANT_CONFIG)
 endif
+ifeq ($(BR2_PACKAGE_MADWIFI),y)
+	echo "CONFIG_DRIVER_MADWIFI=y" >>$(WPA_SUPPLICANT_CONFIG)
+	echo "CFLAGS += -I/$(MADWIFI_DIR)" >>$(WPA_SUPPLICANT_CONFIG)
+endif
+
 	touch $@
 
 $(WPA_SUPPLICANT_HOOK_POST_INSTALL):
