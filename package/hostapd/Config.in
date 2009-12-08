@@ -1,6 +1,8 @@
 config BR2_PACKAGE_HOSTAPD
 	bool "hostapd"
-	depends on BR2_PACKAGE_LIBNL
+        select BR2_PACKAGE_LIBNL
+        select BR2_PACKAGE_OPENSSL
+        select BR2_PACKAGE_MADWIFI
 	help
           user space daemon for access points, including, e.g., IEEE
 	  802.1X/WPA/EAP Authenticator for number of Linux and BSD

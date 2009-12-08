@@ -11,7 +11,7 @@ HOSTAPD_DIR:=$(BUILD_DIR)/hostapd-$(HOSTAPD_VERSION)
 HOSTAPD_BINARY:=hostapd
 HOSTAPD_TARGET_BINARY:=usr/bin/hostapd
 
-HOSTAPD_DEPENDENCIES = uclibc libnl openssl madwifi
+HOSTAPD_DEPENDENCIES = libnl openssl madwifi
 
 $(DL_DIR)/$(HOSTAPD_SOURCE):
 	$(call DOWNLOAD,$(HOSTAPD_SITE),$(HOSTAPD_SOURCE))
