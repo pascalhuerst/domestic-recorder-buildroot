@@ -29,10 +29,14 @@ done
 mkdir $TMPROOT
 mount -t ext3 ${DEV}2 $TMPROOT
 
+mkdir $TMPROOT/boot
+mount -t ext3 ${DEV}1 $TMPROOT/boot
+
 zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
 	/percent `cat /rootfs.tgz.numfiles` | \
 	dialog_progress "Copying files to harddisk. Please wait." $DIALOGOPTS
 
 chmod 0755 $TMPROOT
+umount $TMPROOT/boot
 umount $TMPROOT
 
