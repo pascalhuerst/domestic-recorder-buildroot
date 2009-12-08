@@ -5,17 +5,17 @@ source tests.inc
 cd tests
 
 if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
-	./wifi			&&
+	./nand     		&& \
+	./wifi			&& \
 	./ethaddr  		&& \
 	./ethernet 		&& \
 	./rotary		&& \
-	./nand     		&& \
 	./zerosetup-button
 else
+	./nand     		&& \
 	./wifi     		&& \
 	./ethaddr  		&& \
 	./ethernet 		&& \
-	./nand     		&& \
 	./audio			&& \
 	./zerosetup-button
 fi
