@@ -16,7 +16,7 @@ dd if=/dev/zero of=$DEV bs=512 count=1
 # create a new one
 sfdisk $DEV << __EOF__
 0,8
-,900
+,300
 ;
 ;
 __EOF__
