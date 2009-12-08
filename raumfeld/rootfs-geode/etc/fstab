@@ -7,4 +7,4 @@ devpts		/dev/pts	devpts	defaults,gid=5,mode=620	0	0
 tmpfs		/tmp		tmpfs	defaults	0	0
 sysfs		/sys		sysfs	defaults	0	0
 
-/dev/hda3	/Music          ext3	rw		0	0
+/dev/hda3	/Music          ext3	rw,uid=99,gid=99,mode=755	0	0
