@@ -1,5 +1,8 @@
 #!/bin/sh
 
+chown nobody.nobody /Music
+chmod 755 /Music
+
 ifconfig ath0 up
 cd /raumfeld/master-process
 ./raumfeld-master-sh.sh &
