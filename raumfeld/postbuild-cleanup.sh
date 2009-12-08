@@ -29,6 +29,16 @@ rm -f  $1/usr/libexec/gvfsd-archive
 rm -f  $1/usr/libexec/gvfsd-burn
 rm -f  $1/usr/libexec/gvfsd-trash
 rm -fr $1/usr/share/aclocal
+rm -f  $1/usr/share/alsa/cards/[A-Z]*.conf
+rm -f  $1/usr/share/alsa/pcm/center_lfe.conf
+rm -f  $1/usr/share/alsa/pcm/dpl.conf
+rm -f  $1/usr/share/alsa/pcm/front.conf
+rm -f  $1/usr/share/alsa/pcm/hdmi.conf
+rm -f  $1/usr/share/alsa/pcm/iec958.conf
+rm -f  $1/usr/share/alsa/pcm/modem.conf
+rm -f  $1/usr/share/alsa/pcm/rear.conf
+rm -f  $1/usr/share/alsa/pcm/side.conf
+rm -f  $1/usr/share/alsa/pcm/surround*.conf
 rm -rf $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/gdb
 rm -fr $1/usr/share/glib-2.0
