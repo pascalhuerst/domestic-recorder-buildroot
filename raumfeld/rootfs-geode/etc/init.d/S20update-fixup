@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# this script is run once after an update from version 0.4.94 to 0.4.105
+
+# check if we are upgrading from an affected version
+if ! test -e /boot/bzImage; then
+   # burn after reading
+   rm /etc/init.d/S20update-fixup
+   exit 0
+fi
+
+# kernel fixup
+mount /dev/hda1 /mnt
+mv /boot/bzImage /mnt
+umount /mnt
+
+# fix up move from /Music to /data/Music
+mv /data/* /data/Music
+mv /data/Music/lost+found /data
+
+# burn after reading
+rm /etc/init.d/S20update-fixup
+reboot
