@@ -12,6 +12,7 @@ fi
 # fix move from /Music to /data/Music
 mv /data/* /data/Music
 mv /data/Music/lost+found /data
+sed -e 's|file:///Music|file:///data/Music|' /var/raumfeld-1.0/raumfeld-preferences.xml > /tmp/prefs && mv /tmp/prefs /var/raumfeld-1.0/raumfeld-preferences.xml
 
 # kernel fixup
 mount /dev/hda1 /mnt
