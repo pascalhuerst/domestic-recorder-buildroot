@@ -1,0 +1,5 @@
+#!/bin/sh
+
+mkdir -p /data/Music
+chown nobody.nobody /data/Music
+chmod 755 /data/Music

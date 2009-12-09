@@ -1,9 +1,5 @@
 #!/bin/sh
 
-mkdir -p /data/Music
-chown nobody.nobody /data/Music
-chmod 755 /data/Music
-
 ifconfig ath0 up
 
 cd /raumfeld/master-process
