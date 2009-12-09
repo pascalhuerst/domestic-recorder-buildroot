@@ -10,6 +10,9 @@ case $mode in
 		iwconfig wlan0 mode ad-hoc
 		iwconfig wlan0 essid $(hostname)
 		ifconfig wlan0 192.168.23.1
+		iwconfig wlan1 mode ad-hoc
+		iwconfig wlan1 essid $(hostname)
+		ifconfig wlan1 192.168.23.1
 		
 		ifconfig eth0 10.0.0.1
 
