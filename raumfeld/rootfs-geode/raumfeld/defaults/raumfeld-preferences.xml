@@ -7,7 +7,7 @@
   </ZoneConfig>
   <Storages>
     <Storage id="uuid:4a5a835a-c875-11de-b13c-00137790b861">
-      <Path>file:///Music</Path>
+      <Path>file:///data/Music</Path>
     </Storage>
   </Storages>
   <Accounts/>
