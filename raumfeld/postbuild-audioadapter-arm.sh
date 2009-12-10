@@ -10,5 +10,8 @@ if [ -d raumfeld/rootfs-audioadapter-arm ]; then
     cp -r raumfeld/rootfs-audioadapter-arm/* $1
 fi
 
+echo "Creating the update mount-point ..."
+mkdir $1/update
+
 raumfeld/postbuild-cleanup.sh $1
 

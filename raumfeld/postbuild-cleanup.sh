@@ -2,6 +2,8 @@
 #
 # post-build cleanup for the target rootfs
 
+echo "Purging unwanted files ..."
+
 rm -fr $1/usr/include
 rm -f  $1/usr/bin/dbus-binding-tool
 rm -f  $1/usr/bin/faad
