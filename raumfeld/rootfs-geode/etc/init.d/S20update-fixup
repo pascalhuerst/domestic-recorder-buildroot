@@ -9,15 +9,16 @@ if ! test -e /boot/bzImage; then
    exit 0
 fi
 
-# fix move from /Music to /data/Music
-mv /data/* /data/Music
-mv /data/Music/lost+found /data
-sed -e 's|file:///Music|file:///data/Music|' /var/raumfeld-1.0/raumfeld-preferences.xml > /tmp/prefs && mv /tmp/prefs /var/raumfeld-1.0/raumfeld-preferences.xml
-
 # kernel fixup
 mount /dev/hda1 /mnt
 mv /boot/bzImage /mnt
 umount /mnt
+
+# fix move from /Music to /data/Music
+mkdir /data/Music
+mv /data/* /data/Music
+mv /data/Music/lost+found /data
+sed -e 's|file:///Music|file:///data/Music|' /var/raumfeld-1.0/raumfeld-preferences.xml > /tmp/prefs && mv /tmp/prefs /var/raumfeld-1.0/raumfeld-preferences.xml
 
 # burn after reading
 rm /etc/init.d/S20update-fixup
