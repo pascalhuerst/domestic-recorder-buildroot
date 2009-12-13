@@ -9,7 +9,7 @@ ok=0
 
 while [ ! "$ok" = "1" ] && [ ! "$retry" = "0" ]; do
 	TMP=$(/sbin/iwlist ${WIRELESS_IFNAME} scan | \
-		awk '/ESSID/ { id=$1 } /Mode:/ { mode=$1 } /Signal level/ { print $3 " " id " " mode }' | \
+		awk '/ESSID/ { id=$1 } /Signal level/ { level=$3 } /Mode:/ { print level " " id " " $1 }' | \
 		grep Ad-Hoc | sort | head -n 1)
 
 	ok=1
