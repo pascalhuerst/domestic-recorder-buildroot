@@ -1,36 +1,35 @@
 config BR2_PACKAGE_SAMBA
 	bool "samba"
-	select BR2_PACKAGE_LIBICONV
+	select BR2_PACKAGE_SAMBA_COMMONLIBS
 	help
-	  Provides print services to all manner of SMB/CIFS clients,
-	  including the numerous versions of Microsoft Windows
-	  operating systems.
+	  Provides file and print services to all manner of SMB/CIFS clients,
+	  including the numerous versions of Microsoft Windows operating systems.
 
 	  http://www.samba.org/
 
 	  NOTE: A complete Samba install takes over 50MB of space,
-		so choose only the components you need.
+	        so choose only the components you need.
 
 menu "Samba tools selection"
 	depends on BR2_PACKAGE_SAMBA
 
 config BR2_PACKAGE_SAMBA_CIFS
 	bool "cifs"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Support CIFS
 
 config BR2_PACKAGE_SAMBA_EVENTLOGADM
 	bool "eventlogadm"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Write Eventlog records to a tdb or perform other eventlog functions
 
 config BR2_PACKAGE_SAMBA_FINDSMB
 	bool "findsmb"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA_SMBCLIENT
 	depends on BR2_PACKAGE_SAMBA_NMBLOOKUP
 	depends on BR2_PACKAGE_MICROPERL
@@ -42,7 +41,7 @@ comment "findsmb       - disabled (requires nmblookup, smbclient and perl)"
 
 config BR2_PACKAGE_SAMBA_NET
 	bool "net"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Distributed SMB/CIFS Server Management Utility
@@ -57,7 +56,7 @@ config BR2_PACKAGE_SAMBA_NMBD
 
 config BR2_PACKAGE_SAMBA_NMBLOOKUP
 	bool "nmblookup"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Query NetBIOS names and map them to IP addresses in a network
@@ -65,21 +64,21 @@ config BR2_PACKAGE_SAMBA_NMBLOOKUP
 
 config BR2_PACKAGE_SAMBA_NTLM_AUTH
 	bool "ntlm_auth"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Helper utility that authenticates users using NT/LM authentication
 
 config BR2_PACKAGE_SAMBA_PDBEDIT
 	bool "pdbedit"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Manage the SAM database (Database of Samba Users)
 
 config BR2_PACKAGE_SAMBA_PROFILES
 	bool "profiles"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Utility that reports and changes SIDs in Windows NT registry files
@@ -87,7 +86,7 @@ config BR2_PACKAGE_SAMBA_PROFILES
 config BR2_PACKAGE_SAMBA_RPCCLIENT
 	bool "rpcclient"
 	select BR2_PACKAGE_READLINE
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Tool for executing client side MS-RPC functions using RPC
@@ -95,10 +94,17 @@ config BR2_PACKAGE_SAMBA_RPCCLIENT
 
 config BR2_PACKAGE_SAMBA_SMBCACLS
 	bool "smbcacls"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Set or get ACLs on an NT file or directory names
+
+config BR2_PACKAGE_SAMBA_SMBD
+	bool "smbd"
+	default y
+	depends on BR2_PACKAGE_SAMBA
+	help
+	  The server daemon that provides filesharing and printing services,
 
 config BR2_PACKAGE_SAMBA_SMBCLIENT
 	bool "smbclient"
@@ -110,28 +116,28 @@ config BR2_PACKAGE_SAMBA_SMBCLIENT
 
 config BR2_PACKAGE_SAMBA_SMBCONTROL
 	bool "smbcontrol"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Send messages to smbd, nmbd or winbindd processes
 
 config BR2_PACKAGE_SAMBA_SMBCQUOTAS
 	bool "smbcquotas"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Set or get QUOTAs of NTFS 5 shares
 
 config BR2_PACKAGE_SAMBA_SMBGET
 	bool "smbget"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  wget-like utility for download files over SMB
 
 config BR2_PACKAGE_SAMBA_SMBLDBTOOLS
 	bool "smbldbtools"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  ldbadd ldbdel ldbedit ldbmodify ldbrename ldbsearch tools
@@ -145,42 +151,42 @@ config BR2_PACKAGE_SAMBA_SMBPASSWD
 
 config BR2_PACKAGE_SAMBA_SMBSHARESEC
 	bool "smbsharesec"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Manipulate share permissions on SMB file shares
 
 config BR2_PACKAGE_SAMBA_SMBSPOOL
 	bool "smbspool"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Send a print file to an SMB printer
 
 config BR2_PACKAGE_SAMBA_SMBSTATUS
 	bool "smbstatus"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Report on current Samba connections
 
 config BR2_PACKAGE_SAMBA_SMBTREE
 	bool "smbtree"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  A text based smb network browser
 
 config BR2_PACKAGE_SAMBA_SWAT
 	bool "swat"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Samba Web Administration Tool
 
 config BR2_PACKAGE_SAMBA_SMBTAR
 	bool "smbtar"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA_SMBCLIENT
 	help
 	  tar-like script that wraps smbclient
@@ -190,28 +196,28 @@ comment "smbtar        - disabled (requires smbclient)"
 
 config BR2_PACKAGE_SAMBA_TDB
 	bool "tdb"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Tools to operate on the .tdb database files
 
 config BR2_PACKAGE_SAMBA_TESTPARM
 	bool "testparm"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Check an smb.conf configuration file for internal correctness
 
 config BR2_PACKAGE_SAMBA_WINBINDD
 	bool "winbindd"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA
 	help
 	  Name Service Switch daemon for resolving names from NT servers
 
 config BR2_PACKAGE_SAMBA_WBINFO
 	bool "wbinfo"
-	default y
+	default n
 	depends on BR2_PACKAGE_SAMBA_WINBINDD
 	help
 	  Query information from winbind daemon
@@ -221,6 +227,12 @@ endmenu
 
 menu "Samba libraries selection"
 	depends on BR2_PACKAGE_SAMBA
+
+config BR2_PACKAGE_SAMBA_COMMONLIBS
+	bool "common libraries"
+	depends on BR2_PACKAGE_SAMBA
+	help
+	  Install libraries common to all tools.
 
 config BR2_PACKAGE_SAMBA_LIBSMBCLIENT
 	bool "libsmbclient"
@@ -258,6 +270,21 @@ config BR2_PACKAGE_SAMBA_GAMIN
 
 comment "support gamin - disabled (requires gamin)"
 	depends on !BR2_PACKAGE_GAMIN
+
+config BR2_PACKAGE_SAMBA_LIBICONV
+	bool "support libiconv"
+	default y
+	depends on BR2_PACKAGE_SAMBA
+	depends on BR2_PACKAGE_LIBICONV
+	help
+	  Include libiconv support for extended conversion of
+	  filename encodings. Samba has built-in support for
+	  UTF-8, ISO-8859-1 and ASCII. For conversion of other
+	  filename encodings (as found on USB devices and NTFS
+	  partitions), libiconv is needed.
+
+comment "support iconv - disabled (requires libiconv)"
+	depends on !BR2_PACKAGE_LIBICONV
 
 endmenu
 

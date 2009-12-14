@@ -16,11 +16,11 @@ SAMBA_INSTALL_TARGET = YES
 
 
 SAMBA_DEPENDENCIES = \
-	libiconv \
 	$(if $(BR2_PACKAGE_SAMBA_RPCCLIENT),readline) \
 	$(if $(BR2_PACKAGE_SAMBA_SMBCLIENT),readline) \
 	$(if $(BR2_PACKAGE_SAMBA_AVAHI),avahi) \
-	$(if $(BR2_PACKAGE_SAMBA_GAMIN),gamin)
+	$(if $(BR2_PACKAGE_SAMBA_GAMIN),gamin) \
+	$(if $(BR2_PACKAGE_SAMBA_LIBICONV),libiconv)
 
 
 SAMBA_CONF_ENV = \
@@ -63,9 +63,9 @@ SAMBA_CONF_OPT = \
 	--without-ldap \
 	--with-included-popt \
 	--with-included-iniparser \
-	--with-libiconv=$(STAGING_DIR) \
 	\
 	$(if $(BR2_PACKAGE_SAMBA_CIFS),--with-cifsmount,--without-cifsmount) \
+	$(if $(BR2_PACKAGE_SAMBA_LIBICONV),--with-libiconv=$(STAGING_DIR)) \
 	$(if $(BR2_PACKAGE_SAMBA_RPCCLIENT),--with-readline=$(STAGING_DIR)) \
 	$(if $(BR2_PACKAGE_SAMBA_SMBCLIENT),--with-readline=$(STAGING_DIR)) \
 	$(if $(BR2_PACKAGE_SAMBA_WINBINDD),--with-winbind,--without-winbind)
@@ -88,19 +88,6 @@ SAMBA_UNINSTALL_TARGET_OPT = \
 $(eval $(call AUTOTARGETS,package,samba))
 
 
-# binaries to keep
-SAMBA_BINTARGETS_y = \
-	usr/sbin/smbd \
-	usr/lib/libtalloc.so \
-	usr/lib/libtdb.so
-
-
-# binaries to remove
-SAMBA_BINTARGETS_ = \
-	usr/lib/libnetapi.so* \
-	usr/lib/libsmbsharemodes.so*
-
-
 # binaries to keep or remove
 SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_CIFS) += usr/sbin/mount.cifs
 SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_CIFS) += usr/sbin/umount.cifs
@@ -116,6 +103,7 @@ SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_SMBCACLS) += usr/bin/smbcacls
 SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_SMBCLIENT) += usr/bin/smbclient
 SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_SMBCONTROL) += usr/bin/smbcontrol
 SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_SMBCQUOTAS) += usr/bin/smbcquotas
+SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_SMBD) += usr/sbin/smbd
 SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_SMBGET) += usr/bin/smbget
 SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_SMBLDBTOOLS) += usr/bin/ldbadd
 SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_SMBLDBTOOLS) += usr/bin/ldbdel
@@ -139,21 +127,24 @@ SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_WBINFO) += usr/bin/wbinfo
 # libraries to keep or remove
 SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_WINBINDD) += usr/lib/libwbclient.so*
 SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_LIBSMBCLIENT) += usr/lib/libsmbclient.so*
+SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_COMMONLIBS) += usr/lib/libtalloc.so*
+SAMBA_BINTARGETS_$(BR2_PACKAGE_SAMBA_COMMONLIBS) += usr/lib/libtdb.so*
 
+# non-binaries to keep or remove
+SAMBA_TXTTARGETS_$(BR2_PACKAGE_SAMBA_FINDSMB) += usr/bin/findsmb
+SAMBA_TXTTARGETS_$(BR2_PACKAGE_SAMBA_SMBTAR) += usr/bin/smbtar
+
+# libraries to remove
+SAMBA_BINTARGETS_ += usr/lib/libnetapi.so* usr/lib/libsmbsharemodes.so*
 
 # non-binaries to remove
-SAMBA_TXTTARGETS_ = \
+SAMBA_TXTTARGETS_ += \
 	usr/include/libsmbclient.h \
 	usr/include/netapi.h \
 	usr/include/smb_share_modes.h \
 	usr/include/talloc.h \
 	usr/include/tdb.h \
 	usr/include/wbclient.h
-
-
-# non-binaries to keep or remove
-SAMBA_TXTTARGETS_$(BR2_PACKAGE_SAMBA_FINDSMB) += usr/bin/findsmb
-SAMBA_TXTTARGETS_$(BR2_PACKAGE_SAMBA_SMBTAR) += usr/bin/smbtar
 
 
 $(SAMBA_HOOK_POST_INSTALL):
