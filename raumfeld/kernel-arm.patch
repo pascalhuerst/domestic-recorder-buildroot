@@ -7206,10 +7206,10 @@ index 09b7b1a..fcb0721 100644
  	&pxa_device_rtc,
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..c95245d
+index 0000000..66a87c3
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
-@@ -0,0 +1,1259 @@
+@@ -0,0 +1,1264 @@
 +/*
 + * arch/arm/mach-pxa/raumfeld.c
 + *
@@ -7840,9 +7840,7 @@ index 0000000..c95245d
 +	else
 +		gpio_direction_output(gpio_display_enable, 1);
 +
-+#ifdef CONFIG_PXA3XX_GCU
 +	platform_device_register(&pxa3xx_device_gcu);
-+#endif
 +}
 +
 +/**
@@ -7924,16 +7922,23 @@ index 0000000..c95245d
 + * MMC for Marvell Libertas 8688 via SDIO
 + */
 +
-+static void raumfeld_mci_setpower(struct device *dev, unsigned int on)
++static int raumfeld_mci_init(struct device *dev, irq_handler_t isr, void *data)
 +{
-+	mdelay(100);
-+	gpio_set_value(GPIO_W2W_RESET, !!on);
-+	gpio_set_value(GPIO_W2W_PDN, !!on);
++	gpio_set_value(GPIO_W2W_RESET, 1);
++	gpio_set_value(GPIO_W2W_PDN, 1);
++
++	return 0;
++}
++
++static void raumfeld_mci_exit(struct device *dev, void *data)
++{
++	gpio_set_value(GPIO_W2W_RESET, 0);
++	gpio_set_value(GPIO_W2W_PDN, 0);
 +}
 +
 +static struct pxamci_platform_data raumfeld_mci_platform_data = {
-+	.setpower		= raumfeld_mci_setpower,
-+	.ocr_mask               = MMC_VDD_32_33 | MMC_VDD_33_34,
++	.init			= raumfeld_mci_init,
++	.exit			= raumfeld_mci_exit,
 +	.detect_delay		= 20,
 +	.gpio_card_detect	= -1,
 +	.gpio_card_ro		= -1,
@@ -11004,6 +11009,21 @@ index 9fb480b..25d2367 100644
  
  		if (host->pdata && host->pdata->exit)
  			host->pdata->exit(&pdev->dev, mmc);
+diff --git a/drivers/net/wireless/libertas/wext.c b/drivers/net/wireless/libertas/wext.c
+index be837a0..01c738b 100644
+--- a/drivers/net/wireless/libertas/wext.c
++++ b/drivers/net/wireless/libertas/wext.c
+@@ -1953,10 +1953,8 @@ static int lbs_get_essid(struct net_device *dev, struct iw_request_info *info,
+ 	if (priv->connect_status == LBS_CONNECTED) {
+ 		memcpy(extra, priv->curbssparams.ssid,
+ 		       priv->curbssparams.ssid_len);
+-		extra[priv->curbssparams.ssid_len] = '\0';
+ 	} else {
+ 		memset(extra, 0, 32);
+-		extra[priv->curbssparams.ssid_len] = '\0';
+ 	}
+ 	/*
+ 	 * If none, we may want to get the one that was set
 diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
 index bcbb161..63ba433 100644
 --- a/drivers/regulator/Kconfig
