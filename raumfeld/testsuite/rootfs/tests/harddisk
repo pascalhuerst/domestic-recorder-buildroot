@@ -32,6 +32,11 @@ mount -t ext3 ${DEV}2 $TMPROOT
 mkdir $TMPROOT/boot
 mount -t ext3 ${DEV}1 $TMPROOT/boot
 
+if [ -z "$(mount | grep $TMPROOT)" ]; then
+	touch /tmp/hdd-failed
+	exit
+fi
+
 zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
 	/percent `cat /rootfs.tgz.numfiles` | \
 	dialog_progress "Copying files to harddisk. Please wait." $DIALOGOPTS

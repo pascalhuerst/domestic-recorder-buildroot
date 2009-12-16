@@ -12,9 +12,11 @@ pid=$!
 
 kill $pid
 
-if [ -f /tmp/test-failed ]; then
+if [ -f /tmp/hdd-failed ]; then
+	dialog_err "HARDDISK INIT FAILED"
         ./leds-blink 2
 fi
 
+dialog_info "All tests passed"
 ./leds-blink 3
 
