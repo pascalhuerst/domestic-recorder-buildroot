@@ -94,7 +94,7 @@ case $target in
 
 	base-geode)
                 ROOTFS=binaries/uclibc/rootfs-base.i586.tar.gz
-		for t in $IMAGES; do
+		for t in $IMAGES coreboot; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=geode \
