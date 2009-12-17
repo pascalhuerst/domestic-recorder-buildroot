@@ -9,8 +9,7 @@ ok=0
 
 while [ ! "$ok" = "1" ] && [ ! "$retry" = "0" ]; do
 	TMP=$(/sbin/iwlist ${WIRELESS_IFNAME} scan | \
-		awk '/ESSID/ { id=$1 } /Signal level/ { level=$3 } /Mode:/ { print level " " id " " $1 }' | \
-		grep Ad-Hoc | sort | head -n 1)
+		/wireless_scan | sort | head -n 1)
 
 	ok=1
 
@@ -19,8 +18,8 @@ while [ ! "$ok" = "1" ] && [ ! "$retry" = "0" ]; do
 		ok=0
 	fi
 
-	ESSID=$(echo ${TMP} | cut -f2 -d\")
-	QUALITY=$(echo ${TMP} | cut -f2 -d= | cut -f1 -d' ')
+	QUALITY=$(echo ${TMP} | cut -f1)
+	ESSID=$(echo ${TMP} | cut -f2)
 	MIN_QUALITY=-35
 
 	if [ ${MIN_QUALITY} -gt ${QUALITY} ]; then

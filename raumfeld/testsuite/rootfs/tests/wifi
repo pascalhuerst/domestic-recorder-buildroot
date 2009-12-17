@@ -6,10 +6,10 @@ DIALOGOPTS="--title $TITLE"
 
 source ./wifi.inc
 
-/sbin/ifconfig ${WIRELESS_IFNAME} up
+/sbin/ifconfig ${WIRELESS_IFNAME} down
 /sbin/iwconfig ${WIRELESS_IFNAME} mode Ad-Hoc
 /sbin/iwconfig ${WIRELESS_IFNAME} essid ${ESSID}
-/sbin/ifconfig ${WIRELESS_IFNAME} ${IP_WIRELESS}
+/sbin/ifconfig ${WIRELESS_IFNAME} ${IP_WIRELESS} up
 sleep 2
 
 dialog_info "Testing WIRELESS. Please wait. ---------------------------------- ESSID=$ESSID QUALITY=$QUALITY" $DIALOGOPTS

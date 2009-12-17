@@ -51,7 +51,6 @@ make -C raumfeld/imgtool
 
 tmpdir=$(tempfile)-$PPID
 testdir=raumfeld/testsuite/
-#inputtest_bin=$testdir/input_test/input_test
 imgcreate=raumfeld/imgtool/imgcreate
 imginfo=raumfeld/imgtool/imginfo
 resize2fs=/sbin/resize2fs
