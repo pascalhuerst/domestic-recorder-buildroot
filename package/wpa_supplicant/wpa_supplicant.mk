@@ -4,7 +4,7 @@
 #
 #############################################################
 
-WPA_SUPPLICANT_VERSION = 0.6.9
+WPA_SUPPLICANT_VERSION = 0.7.0
 WPA_SUPPLICANT_SOURCE = wpa_supplicant-$(WPA_SUPPLICANT_VERSION).tar.gz
 WPA_SUPPLICANT_SITE = http://hostap.epitest.fi/releases
 WPA_SUPPLICANT_LIBTOOL_PATCH = NO
@@ -38,8 +38,7 @@ $(WPA_SUPPLICANT_TARGET_CONFIGURE):
 	echo "CC = $(TARGET_CC)" >>$(WPA_SUPPLICANT_CONFIG)
 	$(SED) "s/\/local//" $(WPA_SUPPLICANT_DIR)/wpa_supplicant/Makefile
 ifneq ($(BR2_PACKAGE_WPA_SUPPLICANT_EAP),y)
-	$(SED) "s/^CONFIG_EAP_*/#CONFIG_EAP_/g" $(WPA_SUPPLICANT_CONFIG)
-	echo "CONFIG_TLS=none" >>$(WPA_SUPPLICANT_CONFIG)
+	$(SED) "s/^\(CONFIG_.*EAP.*\)/#\1/g" $(WPA_SUPPLICANT_CONFIG)
 else
 ifeq ($(BR2_PACKAGE_WPA_SUPPLICANT_OPENSSL),y)
 	echo "CONFIG_TLS=openssl" >>$(WPA_SUPPLICANT_CONFIG)
