@@ -12,7 +12,7 @@ dialog --menu "Select test to run" 20 60 15 \
 	2	nand		\
 	3	ethernet	\
 	4	macaddr		\
-	5	audioloopback	\
+	5	audiotest	\
 	6	spdif		\
 	7	display		\
 	8	touch		\
@@ -21,6 +21,7 @@ dialog --menu "Select test to run" 20 60 15 \
 	11	accel-full	\
 	12	zerosetup-button \
 	13	battery		\
+	14	audioloopback	\
 	XX	shell		\
 	2> $OUT
 
@@ -41,7 +42,7 @@ case $n in
 		./ethaddr
 		;;
 	5)
-		./audio-loopback
+		./audio-test
 		;;
 	6)
 		./spdif
@@ -66,6 +67,9 @@ case $n in
 		;;
 	13)
 		./battery
+		;;
+	14)
+		./audio-loopback
 		;;
 	XX)
 		exit 0

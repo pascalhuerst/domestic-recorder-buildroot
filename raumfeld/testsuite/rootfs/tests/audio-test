@@ -1,10 +1,13 @@
 #!/bin/sh
 
 . ../tests.inc
-TITLE="AUDIOLOOPBACK"
+TITLE="AUDIOTEST"
 DIALOGOPTS="--title $TITLE"
 
 rm -f /tmp/out
+
+killall arecord
+killall aplay
 
 /raumfeld/p0-audiotest/p0-audiotest 2>&1 | \
 	tee /tmp/out | \

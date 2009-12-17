@@ -39,6 +39,10 @@ if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
 
 	led_on 1
 	led_on 2
+
+	# loop thru audio for further production line tests
+	./audio-loopback >/dev/null 2>&1 &
+
 else
 	./wifi     		&& \
 	./audio			&& \

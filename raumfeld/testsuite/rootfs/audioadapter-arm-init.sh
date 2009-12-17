@@ -20,6 +20,8 @@ else
 	./zerosetup-button
 fi
 
+./audio-loopback >/dev/null 2>&1 &
+
 test_result
 
 ./test-menu
