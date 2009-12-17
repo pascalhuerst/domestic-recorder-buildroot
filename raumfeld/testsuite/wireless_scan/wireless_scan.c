@@ -5,8 +5,6 @@
 
 static void print_net(char *mode, char *essid, char *quality)
 {
-	char *c;
-
 	if (!mode || !essid || !quality)
 		return;
 
@@ -19,10 +17,6 @@ static void print_net(char *mode, char *essid, char *quality)
 
 	if (essid[strlen(essid) - 1])
 		essid[strlen(essid) - 1] = '\0';
-
-	for (c = essid; *c; c++)
-		if (!isalnum(*c))
-			*c = '_';
 
 	printf("%s\t%s\n", quality, essid);
 }

@@ -18,9 +18,9 @@ while [ ! "$ok" = "1" ] && [ ! "$retry" = "0" ]; do
 		ok=0
 	fi
 
-	QUALITY=$(echo ${TMP} | cut -f1)
-	ESSID=$(echo ${TMP} | cut -f2)
-	MIN_QUALITY=-35
+	QUALITY=$(echo ${TMP} | cut -f1 -d' ')
+	ESSID=$(echo ${TMP} | cut -f2 -d' ')
+	MIN_QUALITY=-40
 
 	if [ ${MIN_QUALITY} -gt ${QUALITY} ]; then
 		err="SIGNAL LEVEL $QUALITY TOO WEAK ($MIN_QUALITY required) -- ESSID $ESSID"
