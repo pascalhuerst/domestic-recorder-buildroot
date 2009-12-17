@@ -1,0 +1,5 @@
+#!/bin/sh
+
+amixer cset numid=1 255
+arecord -f cd - | aplay -f cd -
+
