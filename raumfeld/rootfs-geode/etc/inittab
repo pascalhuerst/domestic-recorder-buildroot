@@ -31,10 +31,8 @@ tty2::respawn:/sbin/getty 38400 tty2
 ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL
 
 # Logging junk
-null::sysinit:/bin/touch /var/log/messages
-null::respawn:/sbin/syslogd -n -m 0
+null::respawn:/sbin/syslogd -n -m 0 -C
 null::respawn:/sbin/klogd -n
-tty3::respawn:/usr/bin/tail -f /var/log/messages
 
 # Stuff to do for the 3-finger salute
 ::ctrlaltdel:/sbin/reboot
