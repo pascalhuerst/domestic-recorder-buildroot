@@ -74,6 +74,9 @@ echo "Operating in $tmpdir"
 cp $target_rootfs_tgz $tmpdir/rootfs.tgz
 cp -a raumfeld/testsuite/rootfs/* $tmpdir/
 
+test "$target" == "base-geode-coreboot" && \
+	cp -a raumfeld/testsuite/coreboot $tmpdir/
+
 IMG_PRIMARY_SITE=http://devel.internal/buildroot/dl
 IMG_BACKUP_SITE=http://caiaq.de/download/raumfeld
 
