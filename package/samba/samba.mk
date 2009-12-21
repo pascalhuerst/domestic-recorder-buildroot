@@ -17,10 +17,10 @@ SAMBA_INSTALL_TARGET = YES
 
 SAMBA_DEPENDENCIES = \
 	libiconv \
-	$(if $(BR2_PACKAGE_SAMBA_RPCCLIENT),readline,) \
-	$(if $(BR2_PACKAGE_SAMBA_SMBCLIENT),readline,) \
-	$(if $(BR2_PACKAGE_SAMBA_AVAHI),avahi,) \
-	$(if $(BR2_PACKAGE_SAMBA_GAMIN),gamin,)
+	$(if $(BR2_PACKAGE_SAMBA_RPCCLIENT),readline) \
+	$(if $(BR2_PACKAGE_SAMBA_SMBCLIENT),readline) \
+	$(if $(BR2_PACKAGE_SAMBA_AVAHI),avahi) \
+	$(if $(BR2_PACKAGE_SAMBA_GAMIN),gamin)
 
 
 SAMBA_CONF_ENV = \
@@ -34,7 +34,7 @@ SAMBA_CONF_ENV = \
 	samba_cv_CC_NEGATIVE_ENUM_VALUES=yes \
 	samba_cv_fpie=no \
 	libreplace_cv_HAVE_IPV6=$(if $(BR2_INET_IPV6),yes,no) \
-	$(if $(BR2_PACKAGE_SAMBA_AVAHI),AVAHI_LIBS=-pthread,)
+	$(if $(BR2_PACKAGE_SAMBA_AVAHI),AVAHI_LIBS=-pthread)
 
 
 SAMBA_CONF_OPT = \
@@ -66,23 +66,23 @@ SAMBA_CONF_OPT = \
 	--with-libiconv=$(STAGING_DIR) \
 	\
 	$(if $(BR2_PACKAGE_SAMBA_CIFS),--with-cifsmount,--without-cifsmount) \
-	$(if $(BR2_PACKAGE_SAMBA_RPCCLIENT),--with-readline=$(STAGING_DIR),) \
-	$(if $(BR2_PACKAGE_SAMBA_SMBCLIENT),--with-readline=$(STAGING_DIR),) \
+	$(if $(BR2_PACKAGE_SAMBA_RPCCLIENT),--with-readline=$(STAGING_DIR)) \
+	$(if $(BR2_PACKAGE_SAMBA_SMBCLIENT),--with-readline=$(STAGING_DIR)) \
 	$(if $(BR2_PACKAGE_SAMBA_WINBINDD),--with-winbind,--without-winbind)
 
 
 SAMBA_INSTALL_TARGET_OPT = \
 	DESTDIR=$(TARGET_DIR) -C $(SAMBA_DIR)/$(SAMBA_SUBDIR) \
 	installlibs installservers installbin installscripts \
-	$(if $(BR2_PACKAGE_SAMBA_CIFS),installcifsmount,) \
-	$(if $(BR2_PACKAGE_SAMBA_SWAT),installswat,)
+	$(if $(BR2_PACKAGE_SAMBA_CIFS),installcifsmount) \
+	$(if $(BR2_PACKAGE_SAMBA_SWAT),installswat)
 
 
 SAMBA_UNINSTALL_TARGET_OPT = \
 	DESTDIR=$(TARGET_DIR) -C $(SAMBA_DIR)/$(SAMBA_SUBDIR) \
 	uninstalllibs uninstallservers uninstallbin uninstallscripts \
-	$(if $(BR2_PACKAGE_SAMBA_CIFS),uninstallcifsmount,) \
-	$(if $(BR2_PACKAGE_SAMBA_SWAT),uninstallswat,)
+	$(if $(BR2_PACKAGE_SAMBA_CIFS),uninstallcifsmount) \
+	$(if $(BR2_PACKAGE_SAMBA_SWAT),uninstallswat)
 
 
 $(eval $(call AUTOTARGETS,package,samba))
