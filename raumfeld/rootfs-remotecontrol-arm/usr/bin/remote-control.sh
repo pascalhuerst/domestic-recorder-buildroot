@@ -1,5 +1,11 @@
 #!/bin/sh
 
+echo "starting gvfsd"
+# export GVFS_SMB_DEBUG=3
+# export GVFS_DEBUG=1
+eval `dbus-launch --sh-syntax`
+/usr/libexec/gvfsd &
+
 while (true); do
 
     echo "creating pipe"
@@ -13,6 +19,6 @@ while (true); do
     
     echo "remote-control exited"
 
-    sleep 1
+    sleep 2
 
 done
