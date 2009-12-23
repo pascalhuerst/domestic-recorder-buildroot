@@ -67,8 +67,6 @@ $(GST_FFMPEG_DIR)/.configured: $(GST_FFMPEG_DIR)/.unpacked
 		--sysconfdir=/etc \
 		--enable-shared \
 		--prefix=$(STAGING_DIR)/usr \
-		--enable-cross-compile \
-		--disable-examples \
 		$(GST_FFMPEG_CONF_OPT) \
 	)
 	touch $@
