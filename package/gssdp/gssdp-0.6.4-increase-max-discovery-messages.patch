@@ -1,0 +1,11 @@
+--- gssdp-0.6.4-orig/libgssdp/gssdp-resource-browser.c	2009-01-06 15:44:15.000000000 +0100
++++ gssdp-0.6.4/libgssdp/gssdp-resource-browser.c	2010-01-04 14:57:56.000000000 +0100
+@@ -40,7 +40,7 @@
+ #include "gssdp-protocol.h"
+ #include "gssdp-marshal.h"
+ 
+-#define MAX_DISCOVERY_MESSAGES 3
++#define MAX_DISCOVERY_MESSAGES 10
+ #define DISCOVERY_FREQUENCY    500 /* 500 ms */
+ 
+ G_DEFINE_TYPE (GSSDPResourceBrowser,
