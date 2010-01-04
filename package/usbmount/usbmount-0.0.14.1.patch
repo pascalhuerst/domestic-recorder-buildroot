@@ -43,7 +43,7 @@ diff -ur usbmount-0.0.14.1/usbmount.conf usbmount-0.0.14.1-patched/usbmount.conf
  # "sync" command in a terminal window).  Otherwise, you *WILL* lose data!   #
  #############################################################################
 -FILESYSTEMS="ext2 ext3"
-+FILESYSTEMS="ext2 ext3 msdos vfat"
++FILESYSTEMS="ext2 ext3 msdos vfat ntfs hfs hfsplus"
  
  # Mount options: Options passed to the mount command with the -o flag.
  # WARNING!  Removing "sync" from the options is a very bad idea and
