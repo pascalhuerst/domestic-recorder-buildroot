@@ -1,0 +1,1 @@
+KERNEL=="sd??", ACTION=="remove", RUN+="/raumfeld/meta-server/handleUnmount.sh"

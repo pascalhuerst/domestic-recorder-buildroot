@@ -1,2 +1,2 @@
-KERNEL=="sda?", BUS=="usb", ACTION=="add",    RUN+="/sbin/usbmount add"
-KERNEL=="sda?",             ACTION=="remove", RUN+="/sbin/usbmount remove"
+KERNEL=="sd??", ACTION=="add", RUN+="/raumfeld/meta-server/handleMount.sh"
+
