@@ -1,0 +1,32 @@
+--- usbmount-0.0.14.1/usbmount	2010-01-05 15:04:40.000000000 +0100
++++ usbmount-0.0.14.1/usbmount-edited	2010-01-05 16:05:29.000000000 +0100
+@@ -40,17 +40,20 @@
+ test -x /lib/udev/vol_id || { log err "cannnot execute /lib/udev/vol_id"; exit 1; }
+ 
+ # Default values for configuration variables.
+-MOUNTPOINTS=""
+-FILESYSTEMS=""
+-MOUNTOPTIONS=""
+-FS_MOUNTOPTIONS=""
+-VERBOSE="no"
++# MOUNTPOINTS=""
++# FILESYSTEMS=""
++# MOUNTOPTIONS=""
++# FS_MOUNTOPTIONS=""
++# VERBOSE="no"
+ 
+ # Read configuration file.
+-if test -r /etc/usbmount/usbmount.conf; then
+-    . /etc/usbmount/usbmount.conf
+-fi
+-
++# if test -r /etc/usbmount/usbmount.conf; then
++#     . /etc/usbmount/usbmount.conf
++# fi
++
++FILESYSTEMS="ext2 ext3 msdos vfat ntfs hfs hfsplus"
++MOUNTOPTIONS="sync,noexec,nodev,noatime,ro"
++LOGFILE="/var/log/usbmount.log"
+ 
+ umask 022
+ 
