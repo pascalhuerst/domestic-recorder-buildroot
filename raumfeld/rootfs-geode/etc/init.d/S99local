@@ -1,6 +1,9 @@
 #!/bin/sh
 
 ifconfig ath0 up
+echo 1 > /proc/sys/dev/wifi0/diversity
+echo 0 > /proc/sys/dev/wifi0/txantenna
+echo 0 > /proc/sys/dev/wifi0/rxantenna
 
 cd /raumfeld/master-process
 ./raumfeld-master-sh.sh &
