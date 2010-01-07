@@ -1,0 +1,213 @@
+diff -Naur /home/hhoegelo/buildroot/build_i586/taglib-extras-0.1.6/taglib-extras/wav/wavproperties.cpp ./taglib-extras/wav/wavproperties.cpp
+--- /home/hhoegelo/buildroot/build_i586/taglib-extras-0.1.6/taglib-extras/wav/wavproperties.cpp	2010-01-05 14:58:34.000000000 +0100
++++ ./taglib-extras/wav/wavproperties.cpp	2010-01-07 15:29:32.000000000 +0100
+@@ -44,23 +44,12 @@
+ 
+ using namespace TagLib;
+ 
+-struct WavHeader
++bool isBigEndian()
+ {
+-    uint32_t       riff_id;
+-    uint32_t       riff_size;
+-    uint32_t       wave_id;
+-    uint32_t       format_id;
+-    uint32_t       format_size;
+-    uint16_t       format_tag;
+-    uint16_t       num_channels;
+-    uint32_t       num_samples_per_sec;
+-    uint32_t       num_avg_bytes_per_sec;
+-    uint16_t       num_block_align;
+-    uint16_t       bits_per_sample;
+-    uint32_t       data_id;
+-    uint32_t       num_data_bytes;
+-};
+-
++  static const uint32_t tester = 1;
++  static const char* bytes = (const char*)&tester;
++  return bytes[3] == 1;
++}
+ 
+ ////////////////////////////////////////////////////////////////////////////////
+ // public members
+@@ -68,10 +57,6 @@
+ 
+ Wav::Properties::Properties(Properties::ReadStyle style) : AudioProperties(style)
+ {
+-    m_length = 0;
+-    m_bitrate = 0;
+-    m_sampleRate = 0;
+-    m_channels = 0;
+ }
+ 
+ Wav::Properties::~Properties()
+@@ -80,48 +65,87 @@
+ 
+ int Wav::Properties::length() const
+ {
+-    return m_length;
++  return dataChunk.base.chunkSize / formatChunk.num_avg_bytes_per_sec;
+ }
+ 
+ int Wav::Properties::bitrate() const
+ {
+-    return m_bitrate;
++  return formatChunk.num_avg_bytes_per_sec * 8;
+ }
+ 
+ int Wav::Properties::sampleRate() const
+ {
+-    return m_sampleRate;
++  return formatChunk.num_samples_per_sec;
+ }
+ 
+ int Wav::Properties::channels() const
+ {
+-    return m_channels;
++  return formatChunk.num_channels;
++}
++
++uint32_t Wav::Properties::readU32(TagLib::File *fp)
++{
++  ByteVector headerBlock = fp->readBlock(4);
++  return headerBlock.toUInt(isBigEndian());
++}
++
++int16_t Wav::Properties::read16(TagLib::File *fp)
++{
++  ByteVector headerBlock = fp->readBlock(2);
++  return headerBlock.toShort(isBigEndian());
++}
++
++bool Wav::Properties::parseChunk(ChunkBase &chunk, TagLib::File *fp)
++{
++  chunk.chunkID = readU32(fp);
++  chunk.chunkSize = readU32(fp);
++  return chunk.chunkSize && fp->tell() < fp->length();
+ }
+ 
+-#define swap16(x) ((((x)&0xff00)>>8) | (((x)&0x00ff)<<8))
+-#define swap32(x) ((swap16((x)&0x0000ffff)<<16) | swap16(((x)&0xffff0000)>>16))
++Wav::Properties::FormatChunk Wav::Properties::parseFormatChunk(const ChunkBase &chunk, TagLib::File *fp)
++{
++  FormatChunk c;
++  c.base = chunk;
++
++  c.format_tag = read16(fp);
++  c.num_channels = read16(fp);
++  c.num_samples_per_sec = readU32(fp);
++  c.num_avg_bytes_per_sec = readU32(fp);
++  c.num_block_align = read16(fp);
++  c.bits_per_sample = read16(fp);
++
++  return c;
++}
+ 
+-void Wav::Properties::readWavProperties( TagLib::File *fp )
++void Wav::Properties::readWavProperties(TagLib::File *fp)
+ {
+-    fp->seek(0);
+-    WavHeader header;
+-
+-    ByteVector headerBlock = fp->readBlock(sizeof(WavHeader));
+-
+-    if(headerBlock.size() == sizeof(WavHeader))
+-      {
+-	memcpy(&header, headerBlock.data(), sizeof(WavHeader));
+-	m_channels = ntohs(swap16(header.num_channels));
+-	m_sampleRate = ntohl(swap32(header.num_samples_per_sec));
+-	m_bitrate = ntohl(swap32(header.num_avg_bytes_per_sec)) * 8 / 1000;
+-    
+-	if( ntohl(swap32(header.num_avg_bytes_per_sec)) != 0 )
+-	  {
+-	    m_length = ntohl(swap32(header.num_data_bytes))/ntohl(swap32(header.num_avg_bytes_per_sec));
+-	  }
+-	else
+-	  {
+-	    std::cerr << "Error in parsing WavHeader - num_avg_bytes_per_sec should not be 0 - file is corrupted!" << std::endl;
+-	  }
+-      }
++  fp->seek(0);
++
++  WavHeader header;
++  header.riff_id = readU32(fp);
++  header.riff_size = readU32(fp);
++  header.wave_id = readU32(fp);
++
++  ChunkBase chunk;
++
++  while(parseChunk(chunk, fp))
++  {
++    size_t chunkStartPos = fp->tell();
++
++    switch(chunk.chunkID)
++    {
++    case ' tmf':
++      formatChunk = parseFormatChunk(chunk, fp);
++      break;
++
++    case 'atad':
++      dataChunk.base = chunk;
++      break;
++
++    default:
++      break;
++    }
++
++    fp->seek(chunkStartPos + chunk.chunkSize);
++  }
+ }
+diff -Naur /home/hhoegelo/buildroot/build_i586/taglib-extras-0.1.6/taglib-extras/wav/wavproperties.h ./taglib-extras/wav/wavproperties.h
+--- /home/hhoegelo/buildroot/build_i586/taglib-extras-0.1.6/taglib-extras/wav/wavproperties.h	2010-01-05 14:58:34.000000000 +0100
++++ ./taglib-extras/wav/wavproperties.h	2010-01-07 15:31:19.000000000 +0100
+@@ -70,15 +70,45 @@
+                 void readAudioTrackProperties(TagLib::File *file);
+                 friend class Wav::File;
+ 
+-                int m_length;
+-                int m_bitrate;
+-                int m_sampleRate;
+-                int m_channels;
+-
+                 Properties(const Properties &);
+                 Properties &operator=(const Properties &);
+ 
+                 void read();
++
++                struct ChunkBase
++                {
++                  uint32_t chunkID;
++                  uint32_t chunkSize;
++                };
++
++                struct FormatChunk
++                {
++                  ChunkBase base;
++
++                  uint16_t format_tag;
++                  uint16_t num_channels;
++                  uint32_t num_samples_per_sec;
++                  uint32_t num_avg_bytes_per_sec;
++                  uint16_t num_block_align;
++                  uint16_t bits_per_sample;
++                } formatChunk;
++
++                struct DataChunk
++                {
++                  ChunkBase base;
++                } dataChunk;
++
++                struct WavHeader
++                {
++                  uint32_t       riff_id;
++                  uint32_t       riff_size;
++                  uint32_t       wave_id;
++                } header;
++
++                uint32_t readU32(TagLib::File *fp);
++                int16_t read16(TagLib::File *fp);
++                bool parseChunk(ChunkBase &chunk, TagLib::File *fp);
++                FormatChunk parseFormatChunk(const ChunkBase &chunk, TagLib::File *fp);
+         };
+     }
+ }
