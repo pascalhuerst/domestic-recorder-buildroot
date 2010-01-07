@@ -1,0 +1,235 @@
+--- taglib-1.5/taglib/toolkit/tfile.cpp	2010-01-05 14:57:18.000000000 +0100
++++ taglib-1.5/taglib/toolkit/tfile.cpp	2010-01-07 11:17:56.000000000 +0100
+@@ -68,11 +68,24 @@
+   {
+     enum
+     {
+-      CACHE_LINE_SIZE = 1024 * 16
++      CACHE_LINE_SIZE = 1024 * 16,
++      MAX_NUM_CACHE_LINES = 16
+     };
+ 
+     struct CacheLine
+     {
++      static int numLines;
++
++      CacheLine()
++      {
++        g_atomic_int_inc(&numLines);
++      }
++
++      ~CacheLine()
++      {
++        g_atomic_int_dec_and_test(&numLines);
++      }
++
+       char buffer[CACHE_LINE_SIZE];
+     };
+ 
+@@ -87,12 +100,20 @@
+     ~GIOFile()
+     {
+       tCache::iterator it = cache.begin();
++
++      g_static_mutex_lock(&s_pool_cs);
++
+       for (; it != cache.end(); ++it)
+       {
+-        g_static_mutex_lock (&s_pool_cs);
++        if (s_pool.size() >= MAX_NUM_CACHE_LINES)
++        {
++          break;
++        }
++
+         s_pool.push_back(it->second);
+-	 g_static_mutex_unlock (&s_pool_cs);
+       }
++
++      g_static_mutex_unlock(&s_pool_cs);
+     }
+ 
+     int getCacheLinePos(int filePos)
+@@ -103,6 +124,9 @@
+ 
+     void aquire(int where, int len)
+     {
++      int origWhere = where;
++      int origLen = len;
++
+       int lastSeekedPos = -1;
+ 
+       while (len > 0)
+@@ -117,11 +141,32 @@
+ 
+           tCacheLinePtr line;
+ 
+-	   g_static_mutex_lock (&s_pool_cs);
++          g_static_mutex_lock(&s_pool_cs);
+ 
+           if (s_pool.empty())
+           {
+-            line = tCacheLinePtr(new CacheLine);
++            // try to find a cache line we can use:
++            tCache::iterator it = cache.begin();
++            for (; it != cache.end(); ++it)
++            {
++              int wantedS = origWhere;
++              int wantedE = origWhere + origLen;
++
++              int havingS = it->first;
++              int havingE = it->first + CACHE_LINE_SIZE;
++
++              if (wantedE < havingS || havingE < wantedS)
++              {
++                line = it->second;
++                cache.erase(it);
++                break;
++              }
++            }
++
++            if (!line)
++            {
++              line = tCacheLinePtr(new CacheLine);
++            }
+           }
+           else
+           {
+@@ -129,10 +174,15 @@
+             s_pool.pop_back();
+           }
+ 
+-	   g_static_mutex_unlock (&s_pool_cs);
++          g_static_mutex_unlock(&s_pool_cs);
+ 
+           gsize numBytes = 0;
+-          g_input_stream_read_all((GInputStream*) stream, line->buffer, CACHE_LINE_SIZE, &numBytes, NULL, NULL);
++          g_input_stream_read_all((GInputStream*) stream,
++                                  line->buffer,
++                                  CACHE_LINE_SIZE,
++                                  &numBytes,
++                                  NULL,
++                                  NULL);
+           lastSeekedPos += numBytes;
+ 
+           cache[where] = line;
+@@ -145,6 +195,11 @@
+ 
+     int read(int len, char *buf)
+     {
++      if (seekPos >= length)
++      {
++        return 0;
++      }
++
+       int cacheLinePos = getCacheLinePos(seekPos);
+       int overhead = seekPos - cacheLinePos;
+       aquire(cacheLinePos, len + overhead);
+@@ -177,6 +232,7 @@
+     static GStaticMutex s_pool_cs;
+   };
+ 
++  int GIOFile::CacheLine::numLines = 0;
+   GIOFile::tCacheLinePool GIOFile::s_pool;
+   GStaticMutex GIOFile::s_pool_cs = G_STATIC_MUTEX_INIT;
+ 
+@@ -190,7 +246,11 @@
+     ret->length = 0;
+     ret->seekPos = 0;
+ 
+-    GFileInfo *inf = g_file_query_info(file, G_FILE_ATTRIBUTE_STANDARD_SIZE, G_FILE_QUERY_INFO_NONE, NULL, NULL);
++    GFileInfo *inf = g_file_query_info(file,
++                                       G_FILE_ATTRIBUTE_STANDARD_SIZE,
++                                       G_FILE_QUERY_INFO_NONE,
++                                       NULL,
++                                       NULL);
+     if (inf)
+     {
+       ret->length = g_file_info_get_size(inf);
+@@ -441,7 +501,9 @@
+   FILE_IO::write(data.data(), sizeof(char), data.size(), d->file);
+ }
+ 
+-long File::find(const ByteVector &pattern, long fromOffset, const ByteVector &before)
++long File::find(const ByteVector &pattern,
++                long fromOffset,
++                const ByteVector &before)
+ {
+   if (!d->file || pattern.size() > d->bufferSize)
+     return -1;
+@@ -484,7 +546,8 @@
+   // then check for "before".  The order is important because it gives priority
+   // to "real" matches.
+ 
+-  for (buffer = readBlock(d->bufferSize); buffer.size() > 0; buffer = readBlock(d->bufferSize))
++  for (buffer = readBlock(d->bufferSize); buffer.size() > 0; buffer
++      = readBlock(d->bufferSize))
+   {
+ 
+     // (1) previous partial match
+@@ -499,7 +562,8 @@
+       }
+     }
+ 
+-    if (!before.isNull() && beforePreviousPartialMatch >= 0 && int(d->bufferSize) > beforePreviousPartialMatch)
++    if (!before.isNull() && beforePreviousPartialMatch >= 0
++        && int(d->bufferSize) > beforePreviousPartialMatch)
+     {
+       const int beforeOffset = (d->bufferSize - beforePreviousPartialMatch);
+       if (buffer.containsAt(before, 0, beforeOffset))
+@@ -543,7 +607,9 @@
+   return -1;
+ }
+ 
+-long File::rfind(const ByteVector &pattern, long fromOffset, const ByteVector &before)
++long File::rfind(const ByteVector &pattern,
++                 long fromOffset,
++                 const ByteVector &before)
+ {
+   if (!d->file || pattern.size() > d->bufferSize)
+     return -1;
+@@ -581,7 +647,8 @@
+ 
+   // See the notes in find() for an explanation of this algorithm.
+ 
+-  for (buffer = readBlock(d->bufferSize); buffer.size() > 0; buffer = readBlock(d->bufferSize))
++  for (buffer = readBlock(d->bufferSize); buffer.size() > 0; buffer
++      = readBlock(d->bufferSize))
+   {
+ 
+     // TODO: (1) previous partial match
+@@ -665,7 +732,10 @@
+   // That's a bit slower than using char *'s so, we're only doing it here.
+ 
+   seek(readPosition);
+-  int bytesRead = FILE_IO::read(aboutToOverwrite.data(), sizeof(char), bufferLength, d->file);
++  int bytesRead = FILE_IO::read(aboutToOverwrite.data(),
++                                sizeof(char),
++                                bufferLength,
++                                d->file);
+   readPosition += bufferLength;
+ 
+   seek(writePosition);
+@@ -688,7 +758,10 @@
+     // to overwrite.  Appropriately increment the readPosition.
+ 
+     seek(readPosition);
+-    bytesRead = FILE_IO::read(aboutToOverwrite.data(), sizeof(char), bufferLength, d->file);
++    bytesRead = FILE_IO::read(aboutToOverwrite.data(),
++                              sizeof(char),
++                              bufferLength,
++                              d->file);
+     aboutToOverwrite.resize(bytesRead);
+     readPosition += bufferLength;
+ 
+@@ -734,7 +807,10 @@
+   while (bytesRead != 0)
+   {
+     seek(readPosition);
+-    bytesRead = FILE_IO::read(buffer.data(), sizeof(char), bufferLength, d->file);
++    bytesRead = FILE_IO::read(buffer.data(),
++                              sizeof(char),
++                              bufferLength,
++                              d->file);
+     readPosition += bytesRead;
+ 
+     // Check to see if we just read the last block.  We need to call clear()
