@@ -1,0 +1,26 @@
+--- taglib-1.5/taglib/mpeg/id3v2/id3v2tag.cpp	2008-02-04 21:33:54.000000000 +0100
++++ taglib-1.5/taglib/mpeg/id3v2/id3v2tag.cpp	2010-01-08 17:20:36.000000000 +0100
+@@ -441,18 +441,13 @@
+     Frame *frame = d->factory->createFrame(data.mid(frameDataPosition),
+                                            &d->header);
+ 
+-    if(!frame)
+-      return;
+-
+-    // Checks to make sure that frame parsed correctly.
+-
+-    if(frame->size() <= 0) {
+-      delete frame;
+-      return;
++    if(frame)
++    {
++      frameDataPosition += frame->size();
++      addFrame(frame);
+     }
+ 
+-    frameDataPosition += frame->size() + Frame::headerSize(d->header.majorVersion());
+-    addFrame(frame);
++    frameDataPosition += Frame::headerSize(d->header.majorVersion());
+   }
+ }
+ 
