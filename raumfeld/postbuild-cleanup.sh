@@ -2,6 +2,9 @@
 #
 # post-build cleanup for the target rootfs
 
+echo "Creating default files"
+test -d $1/etc/raumfeld/ || mkdir $1/etc/raumfeld/
+
 echo "Purging unwanted files ..."
 
 rm -fr $1/usr/include
