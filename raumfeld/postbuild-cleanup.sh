@@ -47,3 +47,6 @@ rm -f  $1/usr/share/alsa/pcm/surround*.conf
 rm -rf $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/gdb
 rm -fr $1/usr/share/glib-2.0
+
+echo "Enable SSH access (for now)"
+touch $1/etc/raumfeld/sshd_enabled
