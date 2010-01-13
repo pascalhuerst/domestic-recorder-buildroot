@@ -1,9 +1,14 @@
 #!/bin/sh
 
+# set the standby (spindown) timeout for the internal hard-disk
+hdparm -S 60 /dev/hda
+
+# configure the Wifi interface
 ifconfig ath0 up
 echo 1 > /proc/sys/dev/wifi0/diversity
 echo 0 > /proc/sys/dev/wifi0/txantenna
 echo 0 > /proc/sys/dev/wifi0/rxantenna
 
+# start the master-process
 cd /raumfeld/master-process
 ./raumfeld-master-sh.sh &
