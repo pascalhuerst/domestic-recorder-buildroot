@@ -3,6 +3,9 @@
 # sshd        Starts sshd.
 #
 
+# Bail out if daemon is not enabled
+[ -f /etc/raumfeld/sshd_enabled ] || exit 0
+
 # Make sure the ssh-keygen progam exists
 [ -f /usr/bin/ssh-keygen ] || exit 0
 
