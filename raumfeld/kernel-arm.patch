@@ -407618,7 +407618,7 @@ index 0000000..e2fad96
 +
 +#endif
 diff --git a/sound/soc/codecs/cs4270.c b/sound/soc/codecs/cs4270.c
-index ca1e24a..8b54575 100644
+index ca1e24a..70c5edb 100644
 --- a/sound/soc/codecs/cs4270.c
 +++ b/sound/soc/codecs/cs4270.c
 @@ -28,6 +28,7 @@
@@ -407668,7 +407668,7 @@ index ca1e24a..8b54575 100644
  
  	/* Connect the codec to the socdev.  snd_soc_new_pcms() needs this. */
  	socdev->card->codec = codec;
-@@ -598,12 +608,14 @@ static int cs4270_probe(struct platform_device *pdev)
+@@ -598,15 +608,26 @@ static int cs4270_probe(struct platform_device *pdev)
  		goto error_free_pcms;
  	}
  
@@ -407685,10 +407685,22 @@ index ca1e24a..8b54575 100644
 +	if (ret < 0)
  		goto error_free_pcms;
 -	}
++
++	ret = regulator_bulk_enable(ARRAY_SIZE(cs4270->supplies),
++				    cs4270->supplies);
++	if (ret < 0)
++		goto error_free_regulators;
  
  	return 0;
  
-@@ -622,8 +634,11 @@ error_free_pcms:
++error_free_regulators:
++		regulator_bulk_free(ARRAY_SIZE(cs4270->supplies),
++				    cs4270->supplies);
++
+ error_free_pcms:
+ 	snd_soc_free_pcms(socdev);
+ 
+@@ -622,8 +643,12 @@ error_free_pcms:
  static int cs4270_remove(struct platform_device *pdev)
  {
  	struct snd_soc_device *socdev = platform_get_drvdata(pdev);
@@ -407696,11 +407708,12 @@ index ca1e24a..8b54575 100644
 +	struct cs4270_private *cs4270 = codec->private_data;
  
  	snd_soc_free_pcms(socdev);
++	regulator_bulk_disable(ARRAY_SIZE(cs4270->supplies), cs4270->supplies);
 +	regulator_bulk_free(ARRAY_SIZE(cs4270->supplies), cs4270->supplies);
  
  	return 0;
  };
-@@ -802,36 +817,36 @@ MODULE_DEVICE_TABLE(i2c, cs4270_id);
+@@ -802,36 +827,36 @@ MODULE_DEVICE_TABLE(i2c, cs4270_id);
   * and all registers are written back to the hardware when resuming.
   */
  
@@ -407754,7 +407767,7 @@ index ca1e24a..8b54575 100644
  	/* In case the device was put to hard reset during sleep, we need to
  	 * wait 500ns here before any I2C communication. */
  	ndelay(500);
-@@ -853,8 +868,6 @@ static int cs4270_soc_resume(struct platform_device *pdev)
+@@ -853,8 +878,6 @@ static int cs4270_soc_resume(struct platform_device *pdev)
  	return snd_soc_write(codec, CS4270_PWRCTL, reg);
  }
  #else
@@ -407763,7 +407776,7 @@ index ca1e24a..8b54575 100644
  #define cs4270_soc_suspend	NULL
  #define cs4270_soc_resume	NULL
  #endif /* CONFIG_PM */
-@@ -873,8 +886,6 @@ static struct i2c_driver cs4270_i2c_driver = {
+@@ -873,8 +896,6 @@ static struct i2c_driver cs4270_i2c_driver = {
  	.id_table = cs4270_id,
  	.probe = cs4270_i2c_probe,
  	.remove = cs4270_i2c_remove,
@@ -415657,10 +415670,20 @@ index 9f7c61e..4c8d99a 100644
  		return ret;
  
 diff --git a/sound/soc/pxa/pxa-ssp.c b/sound/soc/pxa/pxa-ssp.c
-index d11a6d7..3bd7712 100644
+index d11a6d7..ebde673 100644
 --- a/sound/soc/pxa/pxa-ssp.c
 +++ b/sound/soc/pxa/pxa-ssp.c
-@@ -305,8 +305,8 @@ static int pxa_ssp_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
+@@ -146,6 +146,9 @@ static int pxa_ssp_resume(struct snd_soc_dai *cpu_dai)
+ {
+ 	struct ssp_priv *priv = cpu_dai->private_data;
+ 
++	/* the cached format information is invalid now */
++	priv->dai_fmt = (unsigned int) -1;
++
+ 	if (!cpu_dai->active)
+ 		return 0;
+ 
+@@ -305,8 +308,8 @@ static int pxa_ssp_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
  /*
   * Configure the PLL frequency pxa27x and (afaik - pxa320 only)
   */
@@ -415671,7 +415694,7 @@ index d11a6d7..3bd7712 100644
  {
  	struct ssp_priv *priv = cpu_dai->private_data;
  	struct ssp_device *ssp = priv->dev.ssp;
-@@ -760,13 +760,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -760,13 +763,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
@@ -415687,7 +415710,7 @@ index d11a6d7..3bd7712 100644
  			.rates = PXA_SSP_RATES,
  			.formats = PXA_SSP_FORMATS,
  		 },
-@@ -780,13 +780,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -780,13 +783,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
@@ -415703,7 +415726,7 @@ index d11a6d7..3bd7712 100644
  			.rates = PXA_SSP_RATES,
  			.formats = PXA_SSP_FORMATS,
  		 },
-@@ -801,13 +801,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -801,13 +804,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
@@ -415719,7 +415742,7 @@ index d11a6d7..3bd7712 100644
  			.rates = PXA_SSP_RATES,
  			.formats = PXA_SSP_FORMATS,
  		 },
-@@ -822,13 +822,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -822,13 +825,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
