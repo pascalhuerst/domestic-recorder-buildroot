@@ -1,5 +1,5 @@
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 4f96ac8..22a3dd4 100644
+index c57d396..23aadfb 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
 @@ -729,6 +729,19 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
@@ -5261,10 +5261,10 @@ index 9866c7b..aad129b 100644
  			"GPIO11_CLK", NULL),
  	eseries_get_tmio_gpios();
 diff --git a/arch/arm/mach-pxa/em-x270.c b/arch/arm/mach-pxa/em-x270.c
-index aec7f42..e0b0fda 100644
+index 86a8732..3e9489a 100644
 --- a/arch/arm/mach-pxa/em-x270.c
 +++ b/arch/arm/mach-pxa/em-x270.c
-@@ -1286,6 +1286,10 @@ static void __init em_x270_init(void)
+@@ -1285,6 +1285,10 @@ static void __init em_x270_init(void)
  {
  	pxa2xx_mfp_config(ARRAY_AND_SIZE(common_pin_config));
  
@@ -11009,21 +11009,6 @@ index 9fb480b..25d2367 100644
  
  		if (host->pdata && host->pdata->exit)
  			host->pdata->exit(&pdev->dev, mmc);
-diff --git a/drivers/net/wireless/libertas/wext.c b/drivers/net/wireless/libertas/wext.c
-index be837a0..01c738b 100644
---- a/drivers/net/wireless/libertas/wext.c
-+++ b/drivers/net/wireless/libertas/wext.c
-@@ -1953,10 +1953,8 @@ static int lbs_get_essid(struct net_device *dev, struct iw_request_info *info,
- 	if (priv->connect_status == LBS_CONNECTED) {
- 		memcpy(extra, priv->curbssparams.ssid,
- 		       priv->curbssparams.ssid_len);
--		extra[priv->curbssparams.ssid_len] = '\0';
- 	} else {
- 		memset(extra, 0, 32);
--		extra[priv->curbssparams.ssid_len] = '\0';
- 	}
- 	/*
- 	 * If none, we may want to get the one that was set
 diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
 index bcbb161..63ba433 100644
 --- a/drivers/regulator/Kconfig
@@ -411028,7 +411013,7 @@ index 92ec034..a2763c2 100644
  	return ret;
  }
 diff --git a/sound/soc/codecs/wm8350.c b/sound/soc/codecs/wm8350.c
-index 593d5b9..f82125d 100644
+index 2089fe7..91eccf8 100644
 --- a/sound/soc/codecs/wm8350.c
 +++ b/sound/soc/codecs/wm8350.c
 @@ -800,7 +800,7 @@ static int wm8350_add_widgets(struct snd_soc_codec *codec)
@@ -411171,7 +411156,7 @@ index b9ef4d9..b432f4d 100644
  
  static int __init wm8400_codec_init(void)
 diff --git a/sound/soc/codecs/wm8510.c b/sound/soc/codecs/wm8510.c
-index 060d5d0..265e68c 100644
+index 8db62e2..af8cb69 100644
 --- a/sound/soc/codecs/wm8510.c
 +++ b/sound/soc/codecs/wm8510.c
 @@ -219,7 +219,6 @@ static int wm8510_add_widgets(struct snd_soc_codec *codec)
@@ -412747,7 +412732,7 @@ index 5e9c855..c9438dd 100644
  	return ret;
  }
 diff --git a/sound/soc/codecs/wm8903.c b/sound/soc/codecs/wm8903.c
-index fe1307b..b8cae17 100644
+index eedf33c..a8c7286 100644
 --- a/sound/soc/codecs/wm8903.c
 +++ b/sound/soc/codecs/wm8903.c
 @@ -919,8 +919,6 @@ static int wm8903_add_widgets(struct snd_soc_codec *codec)
@@ -412759,7 +412744,7 @@ index fe1307b..b8cae17 100644
  	return 0;
  }
  
-@@ -1655,21 +1653,6 @@ static __devexit int wm8903_i2c_remove(struct i2c_client *client)
+@@ -1656,21 +1654,6 @@ static __devexit int wm8903_i2c_remove(struct i2c_client *client)
  	return 0;
  }
  
@@ -412781,7 +412766,7 @@ index fe1307b..b8cae17 100644
  /* i2c codec control layer */
  static const struct i2c_device_id wm8903_i2c_id[] = {
         { "wm8903", 0 },
-@@ -1684,8 +1667,6 @@ static struct i2c_driver wm8903_i2c_driver = {
+@@ -1685,8 +1668,6 @@ static struct i2c_driver wm8903_i2c_driver = {
  	},
  	.probe    = wm8903_i2c_probe,
  	.remove   = __devexit_p(wm8903_i2c_remove),
@@ -412790,7 +412775,7 @@ index fe1307b..b8cae17 100644
  	.id_table = wm8903_i2c_id,
  };
  
-@@ -1712,17 +1693,8 @@ static int wm8903_probe(struct platform_device *pdev)
+@@ -1713,17 +1694,8 @@ static int wm8903_probe(struct platform_device *pdev)
  				ARRAY_SIZE(wm8903_snd_controls));
  	wm8903_add_widgets(socdev->card->codec);
  
@@ -412809,7 +412794,7 @@ index fe1307b..b8cae17 100644
  	return ret;
  }
 diff --git a/sound/soc/codecs/wm8940.c b/sound/soc/codecs/wm8940.c
-index 1ef2454..3d850b9 100644
+index 63bc2ae..31e39ff 100644
 --- a/sound/soc/codecs/wm8940.c
 +++ b/sound/soc/codecs/wm8940.c
 @@ -298,7 +298,6 @@ static int wm8940_add_widgets(struct snd_soc_codec *codec)
@@ -413034,7 +413019,7 @@ index d66efb0..d9540d5 100644
  	kfree(codec->reg_cache);
  	return ret;
 diff --git a/sound/soc/codecs/wm8974.c b/sound/soc/codecs/wm8974.c
-index 98d663a..81c57b5 100644
+index 0dbf6fe..8812751 100644
 --- a/sound/soc/codecs/wm8974.c
 +++ b/sound/soc/codecs/wm8974.c
 @@ -276,41 +276,42 @@ static int wm8974_add_widgets(struct snd_soc_codec *codec)
@@ -413418,7 +413403,7 @@ index e7d2840..ec54c6d 100644
  
  reset_err:
 diff --git a/sound/soc/codecs/wm9712.c b/sound/soc/codecs/wm9712.c
-index 1fd4e88..0ac1215 100644
+index e9123f5..e237bf6 100644
 --- a/sound/soc/codecs/wm9712.c
 +++ b/sound/soc/codecs/wm9712.c
 @@ -436,7 +436,6 @@ static int wm9712_add_widgets(struct snd_soc_codec *codec)
@@ -413429,7 +413414,7 @@ index 1fd4e88..0ac1215 100644
  	return 0;
  }
  
-@@ -695,17 +694,11 @@ static int wm9712_soc_probe(struct platform_device *pdev)
+@@ -696,17 +695,11 @@ static int wm9712_soc_probe(struct platform_device *pdev)
  	snd_soc_add_controls(codec, wm9712_snd_ac97_controls,
  				ARRAY_SIZE(wm9712_snd_ac97_controls));
  	wm9712_add_widgets(codec);
@@ -415670,20 +415655,41 @@ index 9f7c61e..4c8d99a 100644
  		return ret;
  
 diff --git a/sound/soc/pxa/pxa-ssp.c b/sound/soc/pxa/pxa-ssp.c
-index d11a6d7..ebde673 100644
+index d11a6d7..e69397f 100644
 --- a/sound/soc/pxa/pxa-ssp.c
 +++ b/sound/soc/pxa/pxa-ssp.c
-@@ -146,6 +146,9 @@ static int pxa_ssp_resume(struct snd_soc_dai *cpu_dai)
+@@ -135,10 +135,11 @@ static int pxa_ssp_suspend(struct snd_soc_dai *cpu_dai)
+ 	struct ssp_priv *priv = cpu_dai->private_data;
+ 
+ 	if (!cpu_dai->active)
+-		return 0;
++		clk_enable(priv->dev.ssp->clk);
+ 
+ 	ssp_save_state(&priv->dev, &priv->state);
+ 	clk_disable(priv->dev.ssp->clk);
++
+ 	return 0;
+ }
+ 
+@@ -146,12 +147,13 @@ static int pxa_ssp_resume(struct snd_soc_dai *cpu_dai)
  {
  	struct ssp_priv *priv = cpu_dai->private_data;
  
-+	/* the cached format information is invalid now */
-+	priv->dai_fmt = (unsigned int) -1;
+-	if (!cpu_dai->active)
+-		return 0;
+-
+ 	clk_enable(priv->dev.ssp->clk);
+ 	ssp_restore_state(&priv->dev, &priv->state);
+-	ssp_enable(&priv->dev);
 +
- 	if (!cpu_dai->active)
- 		return 0;
++	if (cpu_dai->active)
++		ssp_enable(&priv->dev);
++	else
++		clk_disable(priv->dev.ssp->clk);
  
-@@ -305,8 +308,8 @@ static int pxa_ssp_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
+ 	return 0;
+ }
+@@ -305,8 +307,8 @@ static int pxa_ssp_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
  /*
   * Configure the PLL frequency pxa27x and (afaik - pxa320 only)
   */
@@ -415694,7 +415700,7 @@ index d11a6d7..ebde673 100644
  {
  	struct ssp_priv *priv = cpu_dai->private_data;
  	struct ssp_device *ssp = priv->dev.ssp;
-@@ -760,13 +763,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -760,13 +762,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
@@ -415710,7 +415716,7 @@ index d11a6d7..ebde673 100644
  			.rates = PXA_SSP_RATES,
  			.formats = PXA_SSP_FORMATS,
  		 },
-@@ -780,13 +783,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -780,13 +782,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
@@ -415726,7 +415732,7 @@ index d11a6d7..ebde673 100644
  			.rates = PXA_SSP_RATES,
  			.formats = PXA_SSP_FORMATS,
  		 },
-@@ -801,13 +804,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -801,13 +803,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
@@ -415742,7 +415748,7 @@ index d11a6d7..ebde673 100644
  			.rates = PXA_SSP_RATES,
  			.formats = PXA_SSP_FORMATS,
  		 },
-@@ -822,13 +825,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -822,13 +824,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
