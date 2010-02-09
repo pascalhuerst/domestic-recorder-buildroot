@@ -7541,6 +7541,7 @@ index 0000000..66a87c3
 +		.name		= "Bootloader",
 +		.offset		= 0,
 +		.size		= 0xa0000,
++		.mask_flags	= 0,
 +	},
 +	{
 +		.name		= "BootloaderEnvironment",
