@@ -1,68 +1,40 @@
-From 39793938080d582733290aab09aebfc28f4351f4 Mon Sep 17 00:00:00 2001
-From: Sven Neumann <s.neumann@raumfeld.com>
-Date: Wed, 25 Nov 2009 12:02:26 +0100
-Subject: [PATCH] input: initialize linux_input key states
-
-IDirectFBInputDevice caches the key states (up/down) by keeping track
-of press and release events. This doesn't take into account that a key
-may be pressed at the time the device is opened or that a key might
-have changed state while the device was in suspend.
-
-This change introduces code to the linux_input driver that queries
-the keystates when the event thread is started and synthesizes key
-events for all keys depending on the key state as reported by the
-linux input layer.
-
-Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
----
- inputdrivers/linux_input/linux_input.c |   39 ++++++++++++++++++++++++++++++-
- 1 files changed, 37 insertions(+), 2 deletions(-)
-
-diff --git a/inputdrivers/linux_input/linux_input.c b/inputdrivers/linux_input/linux_input.c
-index 17cd627..08b0d36 100644
---- a/inputdrivers/linux_input/linux_input.c
-+++ b/inputdrivers/linux_input/linux_input.c
-@@ -147,6 +147,7 @@ typedef struct {
-      int                      fd;
-      int                      quitpipe[2];
+--- directfb-1.4.3-orig/inputdrivers/linux_input/linux_input.c	2009-12-08 13:55:27.000000000 +0100
++++ directfb-1.4.3/inputdrivers/linux_input/linux_input.c	2010-02-09 15:37:12.000000000 +0100
+@@ -797,6 +797,8 @@
+      struct input_event levt[64];
+      fd_set             set;
+      struct touchpad_fsm_state fsm_state;
++     unsigned long      keybit[NBITS(KEY_CNT)];
++     unsigned long      keystate[NBITS(KEY_CNT)];
  
-+     bool                     has_keys;
-      bool                     has_leds;
-      unsigned long            led_state[NBITS(LED_CNT)];
-      DFBInputDeviceLockState  locks;
-@@ -817,6 +818,39 @@ linux_input_EventThread( DirectThread *thread, void *driver_data )
+      D_DEBUG_AT( Debug_LinuxInput, "%s()\n", __FUNCTION__ );
+ 
+@@ -817,7 +819,33 @@
            fsm_state.y.max = absinfo.maximum;
       }
  
-+     /* Query key states. */
-+     if (data->has_keys) {
-+          unsigned long keybit[NBITS(KEY_CNT)];
-+          unsigned long keystate[NBITS(KEY_CNT)];
-+          int i;
++     /* get keyboard bits */
++     ioctl( data->fd, EVIOCGBIT(EV_KEY, sizeof(keybit)), keybit );
 +
-+          /* get keyboard bits */
-+          ioctl( data->fd, EVIOCGBIT(EV_KEY, sizeof(keybit)), keybit );
++     /* get key states */
++     ioctl( data->fd, EVIOCGKEY(sizeof(keystate)), keystate );
 +
-+          /* get key states */
-+          ioctl( data->fd, EVIOCGKEY(sizeof(keystate)), keystate );
++     /* for each key,
++        synthetize a press or release event depending on the key state */
++     for (i=0; i<=KEY_CNT; i++) {
++          if (test_bit( i, keybit )) {
++               const int key = translate_key( i );
 +
-+          /* for each key,
-+             synthetize a press or release event depending on the key state */
-+          for (i=0; i<=KEY_CNT; i++) {
-+               if (test_bit( i, keybit )) {
-+                    const int key = translate_key( i );
++               if (DFB_KEY_TYPE(key) == DIKT_IDENTIFIER) {
++                    DFBInputEvent devt;
 +
-+                    if (DFB_KEY_TYPE(key) == DIKT_IDENTIFIER) {
-+                         DFBInputEvent devt;
++                    devt.type     = (test_bit( i, keystate )
++                                     ? DIET_KEYPRESS : DIET_KEYRELEASE);
++                    devt.flags    = DIEF_KEYID | DIEF_KEYCODE;
++                    devt.key_id   = key;
++                    devt.key_code = i;
 +
-+                         devt.type     = (test_bit( i, keystate )
-+                                          ? DIET_KEYPRESS : DIET_KEYRELEASE);
-+                         devt.flags    = DIEF_KEYID | DIEF_KEYCODE;
-+                         devt.key_id   = key;
-+                         devt.key_code = i;
-+
-+                         dfb_input_dispatch( data->device, &devt );
-+                    }
++                    dfb_input_dispatch( data->device, &devt );
 +               }
 +          }
 +     }
@@ -70,18 +42,4 @@ index 17cd627..08b0d36 100644
       while (1) {
            DFBInputEvent devt = { .type = DIET_UNKNOWN };
  
-@@ -1241,8 +1275,9 @@ driver_open_device( CoreInputDevice  *device,
-           return D_OOM();
-      }
  
--     data->fd     = fd;
--     data->device = device;
-+     data->fd       = fd;
-+     data->device   = device;
-+     data->has_keys = (info->desc.caps & DICAPS_KEYS) != 0;
-      data->touchpad = touchpad;
-      data->vt_fd    = -1;
- 
--- 
-1.6.0.4
-
