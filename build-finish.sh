@@ -81,7 +81,7 @@ case $target in
 
 	remotecontrol-arm)
                 ROOTFS=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
-		for t in $IMAGES; do
+		for t in $IMAGES uboot; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=arm \
