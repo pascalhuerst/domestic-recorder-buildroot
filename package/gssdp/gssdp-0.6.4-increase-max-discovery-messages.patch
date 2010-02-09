@@ -5,7 +5,7 @@
  #include "gssdp-marshal.h"
  
 -#define MAX_DISCOVERY_MESSAGES 3
-+#define MAX_DISCOVERY_MESSAGES 10
++#define MAX_DISCOVERY_MESSAGES 20
  #define DISCOVERY_FREQUENCY    500 /* 500 ms */
  
  G_DEFINE_TYPE (GSSDPResourceBrowser,
