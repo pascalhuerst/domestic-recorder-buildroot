@@ -14,7 +14,7 @@ case "$hw" in
 		img="raumfeld-connector.bin"
 		;;
 	Speaker)
-		if [ -z "`cat /proc/cpuinfo | grep ^revision | grep \ 010`" ]
+		if [ -z "`cat /proc/cpuinfo | grep ^revision | grep \ 010`" ]; then
 			img="raumfeld-speaker_s.bin"
 		else
 			img="raumfeld-speaker_m.bin"
