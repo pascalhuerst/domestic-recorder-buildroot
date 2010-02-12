@@ -7206,10 +7206,10 @@ index 09b7b1a..fcb0721 100644
  	&pxa_device_rtc,
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
 new file mode 100644
-index 0000000..66a87c3
+index 0000000..1172f88
 --- /dev/null
 +++ b/arch/arm/mach-pxa/raumfeld.c
-@@ -0,0 +1,1264 @@
+@@ -0,0 +1,1272 @@
 +/*
 + * arch/arm/mach-pxa/raumfeld.c
 + *
@@ -7450,6 +7450,10 @@ index 0000000..66a87c3
 +	GPIO26_SSP2_FRM,
 +	GPIO27_SSP2_TXD,
 +	GPIO29_SSP2_EXTCLK,
++
++	/* LED */
++	GPIO35_GPIO | MFP_LPM_PULL_LOW,
++	GPIO36_GPIO | MFP_LPM_DRIVE_HIGH,
 +};
 +
 +static mfp_cfg_t raumfeld_speaker_pin_config[] __initdata = {
@@ -7496,6 +7500,10 @@ index 0000000..66a87c3
 +	GPIO87_SSP1_TXD,
 +	GPIO88_SSP1_RXD,
 +	GPIO90_SSP1_SYSCLK,
++
++	/* LED */
++	GPIO35_GPIO | MFP_LPM_PULL_LOW,
++	GPIO36_GPIO | MFP_LPM_DRIVE_HIGH,
 +};
 +
 +/*
