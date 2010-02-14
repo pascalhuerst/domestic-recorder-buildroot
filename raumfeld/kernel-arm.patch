@@ -407603,7 +407603,7 @@ index 0000000..e2fad96
 +
 +#endif
 diff --git a/sound/soc/codecs/cs4270.c b/sound/soc/codecs/cs4270.c
-index ca1e24a..70c5edb 100644
+index ca1e24a..63cb669 100644
 --- a/sound/soc/codecs/cs4270.c
 +++ b/sound/soc/codecs/cs4270.c
 @@ -28,6 +28,7 @@
@@ -407679,8 +407679,8 @@ index ca1e24a..70c5edb 100644
  	return 0;
  
 +error_free_regulators:
-+		regulator_bulk_free(ARRAY_SIZE(cs4270->supplies),
-+				    cs4270->supplies);
++	regulator_bulk_free(ARRAY_SIZE(cs4270->supplies),
++			    cs4270->supplies);
 +
  error_free_pcms:
  	snd_soc_free_pcms(socdev);
