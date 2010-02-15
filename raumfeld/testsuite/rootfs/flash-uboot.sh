@@ -3,6 +3,13 @@
 hw=$(cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' ')
 rev=$(cat /proc/cpuinfo | grep ^Revision | cut -f 2 -d: | cut -f2 -d' ')
 
+# ancient version of our hardware do not report the revision.
+# default to '1' in this case.
+
+if [ "$rev" == "0000" ]; then
+	rev="0001"
+fi
+
 case "$hw" in
 	Controller)
 		img="raumfeld-controller-$rev.bin"
