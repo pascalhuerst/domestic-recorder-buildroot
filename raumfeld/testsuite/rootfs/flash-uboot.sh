@@ -32,5 +32,5 @@ dd bs=1024 count=128 skip=640 if=/$img of=/dev/mtdblock1
 test -z "$ethaddr" || fw_setenv ethaddr $ethaddr
 
 # write the bootloader splash image
-dd bs=1024 count=128 skip=768 if=/$img of=/dev/mtdblock2
+dd bs=1024 count=384 skip=768 if=/$img of=/dev/mtdblock2
 
