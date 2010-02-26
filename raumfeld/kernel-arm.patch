@@ -406545,10 +406545,25 @@ index 0000000..dbcf50e
 +extern struct snd_soc_dai ads117x_dai;
 +extern struct snd_soc_codec_device soc_codec_dev_ads117x;
 diff --git a/sound/soc/codecs/ak4104.c b/sound/soc/codecs/ak4104.c
-index 4d47bc4..b9ef7e4 100644
+index 4d47bc4..b68d99f 100644
 --- a/sound/soc/codecs/ak4104.c
 +++ b/sound/soc/codecs/ak4104.c
-@@ -185,9 +185,7 @@ struct snd_soc_dai ak4104_dai = {
+@@ -90,12 +90,10 @@ static int ak4104_spi_write(struct snd_soc_codec *codec, unsigned int reg,
+ 	if (reg >= codec->reg_cache_size)
+ 		return -EINVAL;
+ 
+-	reg &= AK4104_REG_MASK;
+-	reg |= AK4104_WRITE;
+-
+ 	/* only write to the hardware if value has changed */
+ 	if (cache[reg] != value) {
+-		u8 tmp[2] = { reg, value };
++		u8 tmp[2] = { (reg & AK4104_REG_MASK) | AK4104_WRITE, value };
++
+ 		if (spi_write(spi, tmp, sizeof(tmp))) {
+ 			dev_err(&spi->dev, "SPI write failed\n");
+ 			return -EIO;
+@@ -185,9 +183,7 @@ struct snd_soc_dai ak4104_dai = {
  		.stream_name = "Playback",
  		.channels_min = 2,
  		.channels_max = 2,
@@ -406559,7 +406574,7 @@ index 4d47bc4..b9ef7e4 100644
  		.formats = SNDRV_PCM_FMTBIT_S16_LE  |
  			   SNDRV_PCM_FMTBIT_S24_3LE |
  			   SNDRV_PCM_FMTBIT_S24_LE
-@@ -313,14 +311,6 @@ static int ak4104_probe(struct platform_device *pdev)
+@@ -313,14 +309,6 @@ static int ak4104_probe(struct platform_device *pdev)
  		return ret;
  	}
  
