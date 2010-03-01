@@ -50,10 +50,36 @@ if [ "$found" != "1" ]; then
 	exit 1
 fi
 
-# do post-processing for some targets ...
 
-IMAGES="init flash final"
-test ! -z "$image" && IMAGES=$image
+# decide which images should be created ...
+
+case $target in
+	*-arm)
+                IMAGES="init flash final uboot"
+		;;
+
+        *-geode)
+                IMAGES="init flash final coreboot"
+                ;;
+esac
+
+if ! test -z "$image"; then
+    found=0
+
+    for x in $IMAGES; do
+	[ "$x" = "$image" ] && found=1
+    done
+
+    if [ "$found" == "1" ]; then
+        IMAGES=$image
+    else
+	echo "unknown image '$image'. bummer."
+	exit 1
+    fi
+fi
+
+
+# do post-processing for some targets ...
 
 case $target in
 	# resize the root fs ext2 image so that genext2fs will find
@@ -68,7 +94,7 @@ case $target in
 
 	audioadapter-arm)
                 ROOTFS=binaries/uclibc/rootfs-audioadapter.arm.tar.gz
-		for t in $IMAGES uboot; do
+		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=arm \
@@ -81,7 +107,7 @@ case $target in
 
 	remotecontrol-arm)
                 ROOTFS=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
-		for t in $IMAGES uboot; do
+		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=arm \
@@ -94,7 +120,7 @@ case $target in
 
 	base-geode)
                 ROOTFS=binaries/uclibc/rootfs-base.i586.tar.gz
-		for t in $IMAGES coreboot; do
+		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=geode \
