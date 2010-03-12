@@ -142,6 +142,7 @@ endif
 source "package/dnsmasq/Config.in"
 source "package/dropbear/Config.in"
 source "package/ethtool/Config.in"
+source "package/gnutls/Config.in"
 source "package/gupnp/Config.in"
 source "package/gupnp-av/Config.in"
 source "package/gupnp-igd/Config.in"
