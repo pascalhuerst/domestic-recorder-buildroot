@@ -8,3 +8,10 @@ config BR2_PACKAGE_LIBSOUP
 	  applications.
 
 	  http://live.gnome.org/LibSoup
+
+config BR2_PACKAGE_LIBSOUP_SSL
+	bool "ssl support"
+	depends on BR2_PACKAGE_LIBSOUP
+        select BR2_PACKAGE_GNUTLS
+	help
+	  Enable SSL support (needs gnutls)

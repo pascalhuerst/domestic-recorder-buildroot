@@ -20,14 +20,22 @@ ifneq ($(BR2_INET_IPV6),y)
 LIBSOUP_CONF_ENV += soup_cv_ipv6=no
 endif
 
+ifeq ($(BR2_PACKAGE_LIBSOUP_SSL),y)
+LIBSOUP_SSL_CONF_OPT = --enable-ssl
+LIBSOUP_SSL_DEPENDENCIES = gnutls
+else
+LIBSOUP_SSL_CONF_OPT = --disable-ssl
+endif
+
 LIBSOUP_CONF_OPT = \
 	--enable-shared		\
 	--enable-static		\
 	--disable-explicit-deps \
 	--disable-glibtest	\
+	$(LIBSOUP_SSL_CONF_OPT) \
 	--without-gnome		\
 	--disable-gtk-doc --without-html-dir
 
-LIBSOUP_DEPENDENCIES = uclibc gettext libintl host-pkgconfig host-libglib2 libglib2 libxml2
+LIBSOUP_DEPENDENCIES = uclibc gettext libintl host-pkgconfig host-libglib2 libglib2 libxml2 $(LIBSOUP_SSL_DEPENDENCIES)
 
 $(eval $(call AUTOTARGETS,package,libsoup))
