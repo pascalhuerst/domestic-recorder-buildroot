@@ -1,0 +1,1 @@
+KERNEL=="sd??", ACTION=="remove", RUN+="/usr/share/remote-control/scripts/unmount.sh"
