@@ -404796,7 +404796,7 @@ index 0000000..9936763
 +};
 +#endif
 diff --git a/include/sound/soc-dai.h b/include/sound/soc-dai.h
-index 97ca9af..ca24e7f 100644
+index 97ca9af..4a63120 100644
 --- a/include/sound/soc-dai.h
 +++ b/include/sound/soc-dai.h
 @@ -30,6 +30,7 @@ struct snd_pcm_substream;
@@ -404848,6 +404848,36 @@ index 97ca9af..ca24e7f 100644
  	int (*set_tristate)(struct snd_soc_dai *dai, int tristate);
  
  	/*
+@@ -209,7 +217,6 @@ struct snd_soc_dai {
+ 	struct snd_soc_codec *codec;
+ 	unsigned int active;
+ 	unsigned char pop_wait:1;
+-	void *dma_data;
+ 
+ 	/* DAI private data */
+ 	void *private_data;
+@@ -220,4 +227,21 @@ struct snd_soc_dai {
+ 	struct list_head list;
+ };
+ 
++static inline void *snd_soc_dai_get_dma_data(const struct snd_soc_dai *dai,
++					     const struct snd_pcm_substream *ss)
++{
++	return (ss->stream == SNDRV_PCM_STREAM_PLAYBACK) ?
++		dai->playback.dma_data : dai->capture.dma_data;
++}
++
++static inline void snd_soc_dai_set_dma_data(struct snd_soc_dai *dai,
++					    const struct snd_pcm_substream *ss,
++					    void *data)
++{
++	if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK)
++		dai->playback.dma_data = data;
++	else
++		dai->capture.dma_data = data;
++}
++
+ #endif
 diff --git a/include/sound/soc-dapm.h b/include/sound/soc-dapm.h
 index c1410e3..c5c95e1 100644
 --- a/include/sound/soc-dapm.h
@@ -404898,7 +404928,7 @@ index c1410e3..c5c95e1 100644
  	struct list_head list_sink;
  	struct list_head list;
 diff --git a/include/sound/soc.h b/include/sound/soc.h
-index 475cb7e..0d7718f 100644
+index 475cb7e..8eb4401 100644
 --- a/include/sound/soc.h
 +++ b/include/sound/soc.h
 @@ -223,15 +223,15 @@ int snd_soc_codec_set_cache_io(struct snd_soc_codec *codec,
@@ -404932,7 +404962,15 @@ index 475cb7e..0d7718f 100644
  };
  #endif
  
-@@ -413,6 +415,7 @@ struct snd_soc_codec {
+@@ -353,6 +355,7 @@ struct snd_soc_pcm_stream {
+ 	unsigned int channels_min;	/* min channels */
+ 	unsigned int channels_max;	/* max channels */
+ 	unsigned int active:1;		/* stream is in use */
++	void *dma_data;
+ };
+ 
+ /* SoC audio ops */
+@@ -413,6 +416,7 @@ struct snd_soc_codec {
  	unsigned int num_dai;
  
  #ifdef CONFIG_DEBUG_FS
@@ -405002,6 +405040,18 @@ index 0000000..e8c901e
 +};
 +
 +#endif
+diff --git a/sound/arm/pxa2xx-pcm-lib.c b/sound/arm/pxa2xx-pcm-lib.c
+index 743ac6a..fd51fa8 100644
+--- a/sound/arm/pxa2xx-pcm-lib.c
++++ b/sound/arm/pxa2xx-pcm-lib.c
+@@ -205,6 +205,7 @@ int __pxa2xx_pcm_open(struct snd_pcm_substream *substream)
+ 	if (!rtd->dma_desc_array)
+ 		goto err1;
+ 
++	rtd->dma_ch = -1;
+ 	runtime->private_data = rtd;
+ 	return 0;
+ 
 diff --git a/sound/soc/Makefile b/sound/soc/Makefile
 index 0c5eac0..1470141 100644
 --- a/sound/soc/Makefile
@@ -405012,6 +405062,39 @@ index 0c5eac0..1470141 100644
  
  obj-$(CONFIG_SND_SOC)	+= snd-soc-core.o
  obj-$(CONFIG_SND_SOC)	+= codecs/
+diff --git a/sound/soc/atmel/atmel-pcm.c b/sound/soc/atmel/atmel-pcm.c
+index 9ef6b96..3e6628c 100644
+--- a/sound/soc/atmel/atmel-pcm.c
++++ b/sound/soc/atmel/atmel-pcm.c
+@@ -180,7 +180,7 @@ static int atmel_pcm_hw_params(struct snd_pcm_substream *substream,
+ 	snd_pcm_set_runtime_buffer(substream, &substream->dma_buffer);
+ 	runtime->dma_bytes = params_buffer_bytes(params);
+ 
+-	prtd->params = rtd->dai->cpu_dai->dma_data;
++	prtd->params = snd_soc_dai_get_dma_data(rtd->dai->cpu_dai, substream);
+ 	prtd->params->dma_intr_handler = atmel_pcm_dma_irq;
+ 
+ 	prtd->dma_buffer = runtime->dma_addr;
+diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
+index e588e63..0b59806 100644
+--- a/sound/soc/atmel/atmel_ssc_dai.c
++++ b/sound/soc/atmel/atmel_ssc_dai.c
+@@ -363,12 +363,12 @@ static int atmel_ssc_hw_params(struct snd_pcm_substream *substream,
+ 	ssc_p->dma_params[dir] = dma_params;
+ 
+ 	/*
+-	 * The cpu_dai->dma_data field is only used to communicate the
+-	 * appropriate DMA parameters to the pcm driver hw_params()
++	 * The snd_soc_pcm_stream->dma_data field is only used to communicate
++	 * the appropriate DMA parameters to the pcm driver hw_params()
+ 	 * function.  It should not be used for other purposes
+ 	 * as it is common to all substreams.
+ 	 */
+-	rtd->dai->cpu_dai->dma_data = dma_params;
++	snd_soc_dai_set_dma_data(rtd->dai->cpu_dai, substream, dma_params);
+ 
+ 	channels = params_channels(params);
+ 
 diff --git a/sound/soc/atmel/playpaq_wm8510.c b/sound/soc/atmel/playpaq_wm8510.c
 index 9eb610c..9df4c68 100644
 --- a/sound/soc/atmel/playpaq_wm8510.c
@@ -413589,7 +413672,7 @@ index 67414f6..7ccbe66 100644
  		index = 0;
  	} else if (machine_is_davinci_dm355_evm()) {
 diff --git a/sound/soc/davinci/davinci-i2s.c b/sound/soc/davinci/davinci-i2s.c
-index 4ae7070..6362ca0 100644
+index 4ae7070..4aad7ec 100644
 --- a/sound/soc/davinci/davinci-i2s.c
 +++ b/sound/soc/davinci/davinci-i2s.c
 @@ -97,12 +97,24 @@ enum {
@@ -413716,16 +413799,17 @@ index 4ae7070..6362ca0 100644
  	dev->clk = clk_get(&pdev->dev, NULL);
  	if (IS_ERR(dev->clk)) {
  		ret = -ENODEV;
-@@ -547,6 +585,7 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+@@ -547,6 +585,8 @@ static int davinci_i2s_probe(struct platform_device *pdev)
  	dev->dma_params[SNDRV_PCM_STREAM_CAPTURE].channel = res->start;
  
  	davinci_i2s_dai.private_data = dev;
-+	davinci_i2s_dai.dma_data = dev->dma_params;
++	davinci_i2s_dai.capture.dma_data = dev->dma_params;
++	davinci_i2s_dai.playback.dma_data = dev->dma_params;
  	ret = snd_soc_register_dai(&davinci_i2s_dai);
  	if (ret != 0)
  		goto err_free_mem;
 diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
-index 5d1f98a..0a302e1 100644
+index 5d1f98a..4442ac7 100644
 --- a/sound/soc/davinci/davinci-mcasp.c
 +++ b/sound/soc/davinci/davinci-mcasp.c
 @@ -714,16 +714,13 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
@@ -413765,11 +413849,12 @@ index 5d1f98a..0a302e1 100644
  	davinci_config_channel_size(dev, word_length);
  
  	return 0;
-@@ -907,6 +904,7 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
+@@ -907,6 +904,8 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
  
  	dma_data->channel = res->start;
  	davinci_mcasp_dai[pdata->op_mode].private_data = dev;
-+	davinci_mcasp_dai[pdata->op_mode].dma_data = dev->dma_params;
++	davinci_mcasp_dai[pdata->op_mode].capture.dma_data = dev->dma_params;
++	davinci_mcasp_dai[pdata->op_mode].playback.dma_data = dev->dma_params;
  	davinci_mcasp_dai[pdata->op_mode].dev = &pdev->dev;
  	ret = snd_soc_register_dai(&davinci_mcasp_dai[pdata->op_mode]);
  
@@ -413790,7 +413875,7 @@ index 9d179cc..582c924 100644
  	void __iomem *base;
  	int sample_rate;
 diff --git a/sound/soc/davinci/davinci-pcm.c b/sound/soc/davinci/davinci-pcm.c
-index c73a915..ad4d7f4 100644
+index c73a915..4e41a5d 100644
 --- a/sound/soc/davinci/davinci-pcm.c
 +++ b/sound/soc/davinci/davinci-pcm.c
 @@ -3,6 +3,7 @@
@@ -413801,7 +413886,7 @@ index c73a915..ad4d7f4 100644
   *
   * This program is free software; you can redistribute it and/or modify
   * it under the terms of the GNU General Public License version 2 as
-@@ -23,10 +24,29 @@
+@@ -23,10 +24,51 @@
  
  #include <asm/dma.h>
  #include <mach/edma.h>
@@ -413829,14 +413914,6 @@ index c73a915..ad4d7f4 100644
 +#endif
 +
 +static struct snd_pcm_hardware pcm_hardware_playback = {
- 	.info = (SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |
- 		 SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID |
- 		 SNDRV_PCM_INFO_PAUSE),
-@@ -48,102 +68,432 @@ static struct snd_pcm_hardware davinci_pcm_hardware = {
- 	.fifo_size = 0,
- };
- 
-+static struct snd_pcm_hardware pcm_hardware_capture = {
 +	.info = (SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |
 +		 SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID |
 +		 SNDRV_PCM_INFO_PAUSE),
@@ -413858,6 +413935,14 @@ index c73a915..ad4d7f4 100644
 +	.fifo_size = 0,
 +};
 +
++static struct snd_pcm_hardware pcm_hardware_capture = {
+ 	.info = (SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |
+ 		 SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID |
+ 		 SNDRV_PCM_INFO_PAUSE),
+@@ -48,102 +90,410 @@ static struct snd_pcm_hardware davinci_pcm_hardware = {
+ 	.fifo_size = 0,
+ };
+ 
 +/*
 + * How ping/pong works....
 + *
@@ -414036,7 +414121,10 @@ index c73a915..ad4d7f4 100644
 +exit1:
 +	return -ENOMEM;
 +}
-+
+ 
+-		spin_lock(&prtd->lock);
+-		davinci_pcm_enqueue_dma(substream);
+-		spin_unlock(&prtd->lock);
 +/*
 + * Only used with ping/pong.
 + * This is called after runtime->dma_addr, period_bytes and data_type are valid
@@ -414087,10 +414175,7 @@ index c73a915..ad4d7f4 100644
 +		link = prtd->ram_link;
 +		edma_set_dest(link, runtime->dma_addr, INCR, W32BIT);
 +	}
- 
--		spin_lock(&prtd->lock);
--		davinci_pcm_enqueue_dma(substream);
--		spin_unlock(&prtd->lock);
++
 +	if (!fifo_level) {
 +		count = ping_size / data_type;
 +		edma_set_transfer_params(prtd->asp_link[0], acnt, count,
@@ -414103,7 +414188,7 @@ index c73a915..ad4d7f4 100644
 +				count, fifo_level, ABSYNC);
 +		edma_set_transfer_params(prtd->asp_link[1], acnt, fifo_level,
 +				count, fifo_level, ABSYNC);
- 	}
++	}
 +
 +	link = prtd->ram_link;
 +	edma_set_src_index(link, ping_size, ram_src_cidx);
@@ -414136,7 +414221,7 @@ index c73a915..ad4d7f4 100644
 +		 */
 +		prtd->ram_params.link_bcntrld =
 +			EDMA_CHAN_SLOT(prtd->ram_link2) << 5;
-+	}
+ 	}
 +	return 0;
 +}
 +
@@ -414437,7 +414522,7 @@ index c73a915..ad4d7f4 100644
  	if (offset >= runtime->buffer_size)
  		offset = 0;
  
-@@ -236,14 +646,19 @@ static int davinci_pcm_open(struct snd_pcm_substream *substream)
+@@ -236,14 +646,21 @@ static int davinci_pcm_open(struct snd_pcm_substream *substream)
  {
  	struct snd_pcm_runtime *runtime = substream->runtime;
  	struct davinci_runtime_data *prtd;
@@ -414447,8 +414532,10 @@ index c73a915..ad4d7f4 100644
 -	struct davinci_pcm_dma_params *pa = rtd->dai->cpu_dai->private_data;
 -	struct davinci_pcm_dma_params *params = &pa[substream->stream];
 -	if (!params)
-+	struct davinci_pcm_dma_params *pa = rtd->dai->cpu_dai->dma_data;
++	struct davinci_pcm_dma_params *pa;
 +	struct davinci_pcm_dma_params *params;
++
++	pa = snd_soc_dai_get_dma_data(rtd->dai->cpu_dai, substream);
 +	if (!pa)
  		return -ENODEV;
 +	params = &pa[substream->stream];
@@ -414461,7 +414548,7 @@ index c73a915..ad4d7f4 100644
  	/* ensure that buffer size is a multiple of period size */
  	ret = snd_pcm_hw_constraint_integer(runtime,
  						SNDRV_PCM_HW_PARAM_PERIODS);
-@@ -256,6 +671,11 @@ static int davinci_pcm_open(struct snd_pcm_substream *substream)
+@@ -256,6 +673,11 @@ static int davinci_pcm_open(struct snd_pcm_substream *substream)
  
  	spin_lock_init(&prtd->lock);
  	prtd->params = params;
@@ -414473,7 +414560,7 @@ index c73a915..ad4d7f4 100644
  
  	runtime->private_data = prtd;
  
-@@ -273,10 +693,29 @@ static int davinci_pcm_close(struct snd_pcm_substream *substream)
+@@ -273,10 +695,29 @@ static int davinci_pcm_close(struct snd_pcm_substream *substream)
  	struct snd_pcm_runtime *runtime = substream->runtime;
  	struct davinci_runtime_data *prtd = runtime->private_data;
  
@@ -414507,7 +414594,7 @@ index c73a915..ad4d7f4 100644
  
  	kfree(prtd);
  
-@@ -318,11 +757,11 @@ static struct snd_pcm_ops davinci_pcm_ops = {
+@@ -318,11 +759,11 @@ static struct snd_pcm_ops davinci_pcm_ops = {
  	.mmap = 	davinci_pcm_mmap,
  };
  
@@ -414521,7 +414608,7 @@ index c73a915..ad4d7f4 100644
  
  	buf->dev.type = SNDRV_DMA_TYPE_DEV;
  	buf->dev.dev = pcm->card->dev;
-@@ -347,6 +786,7 @@ static void davinci_pcm_free(struct snd_pcm *pcm)
+@@ -347,6 +788,7 @@ static void davinci_pcm_free(struct snd_pcm *pcm)
  	int stream;
  
  	for (stream = 0; stream < 2; stream++) {
@@ -414529,7 +414616,7 @@ index c73a915..ad4d7f4 100644
  		substream = pcm->streams[stream].substream;
  		if (!substream)
  			continue;
-@@ -358,6 +798,11 @@ static void davinci_pcm_free(struct snd_pcm *pcm)
+@@ -358,6 +800,11 @@ static void davinci_pcm_free(struct snd_pcm *pcm)
  		dma_free_writecombine(pcm->card->dev, buf->bytes,
  				      buf->area, buf->addr);
  		buf->area = NULL;
@@ -414541,7 +414628,7 @@ index c73a915..ad4d7f4 100644
  	}
  }
  
-@@ -375,14 +820,16 @@ static int davinci_pcm_new(struct snd_card *card,
+@@ -375,14 +822,16 @@ static int davinci_pcm_new(struct snd_card *card,
  
  	if (dai->playback.channels_min) {
  		ret = davinci_pcm_preallocate_dma_buffer(pcm,
@@ -414907,6 +414994,22 @@ index c4ae3e0..3dbc7f7 100644
  		out_be32(&psc_dma->psc_regs->ac97_slots, psc_dma->slots);
  		break;
  	}
+diff --git a/sound/soc/imx/mx1_mx2-pcm.c b/sound/soc/imx/mx1_mx2-pcm.c
+index b838665..5a585cd 100644
+--- a/sound/soc/imx/mx1_mx2-pcm.c
++++ b/sound/soc/imx/mx1_mx2-pcm.c
+@@ -297,9 +297,10 @@ static int mx1_mx2_pcm_open(struct snd_pcm_substream *substream)
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+ 	struct mx1_mx2_runtime_data *prtd;
+ 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+-	struct mx1_mx2_pcm_dma_params *dma_data = rtd->dai->cpu_dai->dma_data;
++	struct mx1_mx2_pcm_dma_params *dma_data;
+ 	int ret;
+ 
++	dma_data = snd_soc_dai_get_dma_data(rtd->dai->cpu_dai, substream);
+ 	snd_soc_set_runtime_hwparams(substream, &mx1_mx2_pcm_hardware);
+ 
+ 	ret = snd_pcm_hw_constraint_integer(runtime,
 diff --git a/sound/soc/imx/mx27vis_wm8974.c b/sound/soc/imx/mx27vis_wm8974.c
 index e4dcb53..0267d2d 100644
 --- a/sound/soc/imx/mx27vis_wm8974.c
@@ -414920,6 +415023,63 @@ index e4dcb53..0267d2d 100644
  					25000000, pll_out);
  	if (ret < 0) {
  		printk(KERN_ERR "Error when setting PLL input\n");
+diff --git a/sound/soc/imx/mxc-ssi.c b/sound/soc/imx/mxc-ssi.c
+index ccdefe6..736b2cb 100644
+--- a/sound/soc/imx/mxc-ssi.c
++++ b/sound/soc/imx/mxc-ssi.c
+@@ -415,41 +415,44 @@ static int imx_ssi_startup(struct snd_pcm_substream *substream,
+ {
+ 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+ 	struct snd_soc_dai *cpu_dai = rtd->dai->cpu_dai;
++	struct mx1_mx2_pcm_dma_params *dma_data;
+ 
+ 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+ 		/* set up TX DMA params */
+ 		switch (cpu_dai->id) {
+ 		case IMX_DAI_SSI0:
+-			cpu_dai->dma_data = &imx_ssi1_pcm_stereo_out0;
++			dma_data = &imx_ssi1_pcm_stereo_out0;
+ 			break;
+ 		case IMX_DAI_SSI1:
+-			cpu_dai->dma_data = &imx_ssi1_pcm_stereo_out1;
++			dma_data = &imx_ssi1_pcm_stereo_out1;
+ 			break;
+ 		case IMX_DAI_SSI2:
+-			cpu_dai->dma_data = &imx_ssi2_pcm_stereo_out0;
++			dma_data = &imx_ssi2_pcm_stereo_out0;
+ 			break;
+ 		case IMX_DAI_SSI3:
+-			cpu_dai->dma_data = &imx_ssi2_pcm_stereo_out1;
++			dma_data = &imx_ssi2_pcm_stereo_out1;
+ 		}
+ 		pr_debug("%s: (playback)\n", __func__);
+ 	} else {
+ 		/* set up RX DMA params */
+ 		switch (cpu_dai->id) {
+ 		case IMX_DAI_SSI0:
+-			cpu_dai->dma_data = &imx_ssi1_pcm_stereo_in0;
++			dma_data = &imx_ssi1_pcm_stereo_in0;
+ 			break;
+ 		case IMX_DAI_SSI1:
+-			cpu_dai->dma_data = &imx_ssi1_pcm_stereo_in1;
++			dma_data = &imx_ssi1_pcm_stereo_in1;
+ 			break;
+ 		case IMX_DAI_SSI2:
+-			cpu_dai->dma_data = &imx_ssi2_pcm_stereo_in0;
++			dma_data = &imx_ssi2_pcm_stereo_in0;
+ 			break;
+ 		case IMX_DAI_SSI3:
+-			cpu_dai->dma_data = &imx_ssi2_pcm_stereo_in1;
++			dma_data = &imx_ssi2_pcm_stereo_in1;
+ 		}
+ 		pr_debug("%s: (capture)\n", __func__);
+ 	}
+ 
++	snd_soc_dai_set_dma_data(cpu_dai, substream, dma_data);
++
+ 	/*
+ 	 * we cant really change any SSI values after SSI is enabled
+ 	 * need to fix in software for max flexibility - lrg
 diff --git a/sound/soc/omap/Kconfig b/sound/soc/omap/Kconfig
 index 653a362..61952aa 100644
 --- a/sound/soc/omap/Kconfig
@@ -415380,7 +415540,7 @@ index 0000000..3583c42
 +MODULE_DESCRIPTION("ALSA SoC IGEP v2");
 +MODULE_LICENSE("GPL");
 diff --git a/sound/soc/omap/omap-mcbsp.c b/sound/soc/omap/omap-mcbsp.c
-index 3341f49..45be942 100644
+index 3341f49..4775e8c 100644
 --- a/sound/soc/omap/omap-mcbsp.c
 +++ b/sound/soc/omap/omap-mcbsp.c
 @@ -49,6 +49,8 @@ struct omap_mcbsp_data {
@@ -415401,7 +415561,18 @@ index 3341f49..45be942 100644
  
  	if (cpu_class_is_omap1()) {
  		dma = omap1_dma_reqs[bus_id][substream->stream];
-@@ -294,28 +296,19 @@ static int omap_mcbsp_dai_hw_params(struct snd_pcm_substream *substream,
+@@ -285,7 +287,9 @@ static int omap_mcbsp_dai_hw_params(struct snd_pcm_substream *substream,
+ 	omap_mcbsp_dai_dma_params[id][substream->stream].dma_req = dma;
+ 	omap_mcbsp_dai_dma_params[id][substream->stream].port_addr = port;
+ 	omap_mcbsp_dai_dma_params[id][substream->stream].sync_mode = sync_mode;
+-	cpu_dai->dma_data = &omap_mcbsp_dai_dma_params[id][substream->stream];
++	
++	snd_soc_dai_set_dma_data(cpu_dai, substream,
++		&omap_mcbsp_dai_dma_params[id][substream->stream]);
+ 
+ 	if (mcbsp_data->configured) {
+ 		/* McBSP already configured by another stream */
+@@ -294,28 +298,19 @@ static int omap_mcbsp_dai_hw_params(struct snd_pcm_substream *substream,
  
  	format = mcbsp_data->fmt & SND_SOC_DAIFMT_FORMAT_MASK;
  	wpf = channels = params_channels(params);
@@ -415441,7 +415612,7 @@ index 3341f49..45be942 100644
  	switch (params_format(params)) {
  	case SNDRV_PCM_FORMAT_S16_LE:
  		/* Set word lengths */
-@@ -330,15 +323,30 @@ static int omap_mcbsp_dai_hw_params(struct snd_pcm_substream *substream,
+@@ -330,15 +325,30 @@ static int omap_mcbsp_dai_hw_params(struct snd_pcm_substream *substream,
  		return -EINVAL;
  	}
  
@@ -415475,7 +415646,7 @@ index 3341f49..45be942 100644
  		regs->srgr1	|= FWID(0);
  		break;
  	}
-@@ -454,6 +462,7 @@ static int omap_mcbsp_dai_set_clkdiv(struct snd_soc_dai *cpu_dai,
+@@ -454,6 +464,7 @@ static int omap_mcbsp_dai_set_clkdiv(struct snd_soc_dai *cpu_dai,
  	if (div_id != OMAP_MCBSP_CLKGDV)
  		return -ENODEV;
  
@@ -415483,7 +415654,7 @@ index 3341f49..45be942 100644
  	regs->srgr1	|= CLKGDV(div - 1);
  
  	return 0;
-@@ -554,6 +563,8 @@ static int omap_mcbsp_dai_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
+@@ -554,6 +565,8 @@ static int omap_mcbsp_dai_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
  	struct omap_mcbsp_reg_cfg *regs = &mcbsp_data->regs;
  	int err = 0;
  
@@ -415492,7 +415663,7 @@ index 3341f49..45be942 100644
  	switch (clk_id) {
  	case OMAP_MCBSP_SYSCLK_CLK:
  		regs->srgr2	|= CLKSM;
-@@ -598,13 +609,13 @@ static struct snd_soc_dai_ops omap_mcbsp_dai_ops = {
+@@ -598,13 +611,13 @@ static struct snd_soc_dai_ops omap_mcbsp_dai_ops = {
  	.id = (link_id),					\
  	.playback = {						\
  		.channels_min = 1,				\
@@ -415508,6 +415679,23 @@ index 3341f49..45be942 100644
  		.rates = OMAP_MCBSP_RATES,			\
  		.formats = SNDRV_PCM_FMTBIT_S16_LE,		\
  	},							\
+diff --git a/sound/soc/omap/omap-pcm.c b/sound/soc/omap/omap-pcm.c
+index 6a829ee..448f3cc 100644
+--- a/sound/soc/omap/omap-pcm.c
++++ b/sound/soc/omap/omap-pcm.c
+@@ -99,9 +99,11 @@ static int omap_pcm_hw_params(struct snd_pcm_substream *substream,
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+ 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+ 	struct omap_runtime_data *prtd = runtime->private_data;
+-	struct omap_pcm_dma_data *dma_data = rtd->dai->cpu_dai->dma_data;
++	struct omap_pcm_dma_data *dma_data;
+ 	int err = 0;
+ 
++	dma_data = snd_soc_dai_get_dma_data(rtd->dai->cpu_dai, substream);
++
+ 	/* return if this is a bufferless transfer e.g.
+ 	 * codec <--> BT codec or GSM modem -- lg FIXME */
+ 	if (!dma_data)
 diff --git a/sound/soc/omap/omap3evm.c b/sound/soc/omap/omap3evm.c
 index 13aa380..f484dcd 100644
 --- a/sound/soc/omap/omap3evm.c
@@ -415663,10 +415851,37 @@ index 9f7c61e..4c8d99a 100644
  		return ret;
  
 diff --git a/sound/soc/pxa/pxa-ssp.c b/sound/soc/pxa/pxa-ssp.c
-index d11a6d7..e69397f 100644
+index d11a6d7..8ba9173 100644
 --- a/sound/soc/pxa/pxa-ssp.c
 +++ b/sound/soc/pxa/pxa-ssp.c
-@@ -135,10 +135,11 @@ static int pxa_ssp_suspend(struct snd_soc_dai *cpu_dai)
+@@ -103,10 +103,9 @@ static int pxa_ssp_startup(struct snd_pcm_substream *substream,
+ 		ssp_disable(&priv->dev);
+ 	}
+ 
+-	if (cpu_dai->dma_data) {
+-		kfree(cpu_dai->dma_data);
+-		cpu_dai->dma_data = NULL;
+-	}
++	kfree(snd_soc_dai_get_dma_data(dai, substream));
++	snd_soc_dai_set_dma_data(dai, substream, NULL);
++
+ 	return ret;
+ }
+ 
+@@ -122,10 +121,8 @@ static void pxa_ssp_shutdown(struct snd_pcm_substream *substream,
+ 		clk_disable(priv->dev.ssp->clk);
+ 	}
+ 
+-	if (cpu_dai->dma_data) {
+-		kfree(cpu_dai->dma_data);
+-		cpu_dai->dma_data = NULL;
+-	}
++	kfree(snd_soc_dai_get_dma_data(dai, substream));
++	snd_soc_dai_set_dma_data(dai, substream, NULL);
+ }
+ 
+ #ifdef CONFIG_PM
+@@ -135,10 +132,11 @@ static int pxa_ssp_suspend(struct snd_soc_dai *cpu_dai)
  	struct ssp_priv *priv = cpu_dai->private_data;
  
  	if (!cpu_dai->active)
@@ -415679,7 +415894,7 @@ index d11a6d7..e69397f 100644
  	return 0;
  }
  
-@@ -146,12 +147,13 @@ static int pxa_ssp_resume(struct snd_soc_dai *cpu_dai)
+@@ -146,12 +144,13 @@ static int pxa_ssp_resume(struct snd_soc_dai *cpu_dai)
  {
  	struct ssp_priv *priv = cpu_dai->private_data;
  
@@ -415697,7 +415912,7 @@ index d11a6d7..e69397f 100644
  
  	return 0;
  }
-@@ -305,8 +307,8 @@ static int pxa_ssp_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
+@@ -305,8 +304,8 @@ static int pxa_ssp_set_dai_clkdiv(struct snd_soc_dai *cpu_dai,
  /*
   * Configure the PLL frequency pxa27x and (afaik - pxa320 only)
   */
@@ -415708,7 +415923,34 @@ index d11a6d7..e69397f 100644
  {
  	struct ssp_priv *priv = cpu_dai->private_data;
  	struct ssp_device *ssp = priv->dev.ssp;
-@@ -760,13 +762,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -536,19 +535,23 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
+ 	u32 sspsp;
+ 	int width = snd_pcm_format_physical_width(params_format(params));
+ 	int ttsa = ssp_read_reg(ssp, SSTSA) & 0xf;
++	struct pxa2xx_pcm_dma_params *dma_data;
++	
++	dma_data = snd_soc_dai_get_dma_data(dai, substream);
+ 
+ 	/* generate correct DMA params */
+-	if (cpu_dai->dma_data)
+-		kfree(cpu_dai->dma_data);
++	kfree(dma_data);
+ 
+ 	/* Network mode with one active slot (ttsa == 1) can be used
+ 	 * to force 16-bit frame width on the wire (for S16_LE), even
+ 	 * with two channels. Use 16-bit DMA transfers for this case.
+ 	 */
+-	cpu_dai->dma_data = ssp_get_dma_params(ssp,
++	dma_data = ssp_get_dma_params(ssp,
+ 			((chn == 2) && (ttsa != 1)) || (width == 32),
+ 			substream->stream == SNDRV_PCM_STREAM_PLAYBACK);
+ 
++	snd_soc_dai_set_dma_data(dai, substream, dma_data);
++
+ 	/* we can only change the settings if the port is not in use */
+ 	if (ssp_read_reg(ssp, SSCR0) & SSCR0_SSE)
+ 		return 0;
+@@ -760,13 +763,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
@@ -415724,7 +415966,7 @@ index d11a6d7..e69397f 100644
  			.rates = PXA_SSP_RATES,
  			.formats = PXA_SSP_FORMATS,
  		 },
-@@ -780,13 +782,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -780,13 +783,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
@@ -415740,7 +415982,7 @@ index d11a6d7..e69397f 100644
  			.rates = PXA_SSP_RATES,
  			.formats = PXA_SSP_FORMATS,
  		 },
-@@ -801,13 +803,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -801,13 +804,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
@@ -415756,7 +415998,7 @@ index d11a6d7..e69397f 100644
  			.rates = PXA_SSP_RATES,
  			.formats = PXA_SSP_FORMATS,
  		 },
-@@ -822,13 +824,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
+@@ -822,13 +825,13 @@ struct snd_soc_dai pxa_ssp_dai[] = {
  		.resume = pxa_ssp_resume,
  		.playback = {
  			.channels_min = 1,
@@ -415772,6 +416014,23 @@ index d11a6d7..e69397f 100644
  			.rates = PXA_SSP_RATES,
  			.formats = PXA_SSP_FORMATS,
  		 },
+diff --git a/sound/soc/pxa/pxa2xx-pcm.c b/sound/soc/pxa/pxa2xx-pcm.c
+index d38e395..adc7e6f 100644
+--- a/sound/soc/pxa/pxa2xx-pcm.c
++++ b/sound/soc/pxa/pxa2xx-pcm.c
+@@ -25,9 +25,11 @@ static int pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+ 	struct pxa2xx_runtime_data *prtd = runtime->private_data;
+ 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+-	struct pxa2xx_pcm_dma_params *dma = rtd->dai->cpu_dai->dma_data;
++	struct pxa2xx_pcm_dma_params *dma;
+ 	int ret;
+ 
++	dma = snd_soc_dai_get_dma_data(rtd->dai->cpu_dai, substream);
++
+ 	/* return if this is a bufferless transfer e.g.
+ 	 * codec <--> BT codec or GSM modem -- lg FIXME */
+ 	if (!dma)
 diff --git a/sound/soc/pxa/raumfeld.c b/sound/soc/pxa/raumfeld.c
 new file mode 100644
 index 0000000..8d65a49
