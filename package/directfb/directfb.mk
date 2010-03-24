@@ -112,10 +112,16 @@ else
 DIRECTFB_JPEG:=--disable-jpeg
 endif
 
-ifeq ($(BR2_PACKAGE_DIRECTB_DITHER_RGB16),y)
+ifeq ($(BR2_PACKAGE_DIRECTFB_DITHER_RGB16),y)
 DIRECTFB_DITHER_RGB16:=--with-dither-rgb16=advanced
 else
 DIRECTFB_DITHER_RGB16:=--with-dither-rgb16=none
+endif
+
+ifeq ($(BR2_PACKAGE_DIRECTFB_SMOOTH_SCALING),y)
+DIRECTFB_SMOOTH_SCALING:=--with-smooth-scaling
+else
+DIRECTFB_SMOOTH_SCALING:=--without-smooth-scaling
 endif
 
 DIRECTFB_CONF_OPT = \
@@ -134,6 +140,7 @@ DIRECTFB_CONF_OPT = \
 	$(DIRECTFB_GIF) \
 	$(DIRECTFB_UNIQUE) \
 	$(DIRECTFB_DITHER_RGB16) \
+	$(DIRECTFB_SMOOTH_SCALING) \
 	--enable-linux-input \
 	--enable-zlib \
 	--enable-freetype \
