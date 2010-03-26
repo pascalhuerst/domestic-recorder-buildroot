@@ -105,9 +105,16 @@ config BR2_PACKAGE_DIRECTFB_PNG
 	depends on BR2_PACKAGE_DIRECTFB
 	select BR2_PACKAGE_LIBPNG
 
-config BR2_PACKAGE_DIRECTB_DITHER_RGB16
+config BR2_PACKAGE_DIRECTFB_DITHER_RGB16
 	bool "enable advanced dithering of RGB16 surfaces"
 	depends on BR2_PACKAGE_DIRECTFB
 	help
 	  Enable dithering when loading images to RGB16 surfaces.
 	  This increases the data section by 64 KBytes.
+
+config BR2_PACKAGE_DIRECTFB_SMOOTH_SCALING
+	bool "enable smooth software scaling code"
+	depends on BR2_PACKAGE_DIRECTFB
+	help
+	  Enable smooth software scaling code. This will increase the
+          library size by more than 100 KBytes.

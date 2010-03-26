@@ -15,7 +15,8 @@ LIBFAAD2_CONF_OPT = \
 	--enable-shared		\
 	--enable-static		\
 	--disable-explicit-deps \
-	--disable-gtk-doc --without-html-dir
+	--disable-gtk-doc --without-html-dir \
+	CFLAGS="-DFIXED_POINT"
 
 LIBFAAD2_DEPENDENCIES = uclibc
 
