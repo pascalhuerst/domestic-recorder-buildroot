@@ -12,7 +12,7 @@ STREAM_DECODER_INSTALL_TARGET = YES
 
 STREAM_DECODER_CONF_OPT = --disable-glibtest
 
-STREAM_DECODER_DEPENDENCIES = host-pkgconfig libsoup gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-ffmpeg
+STREAM_DECODER_DEPENDENCIES = host-pkgconfig libsoup gst-plugins-good gst-plugins-bad gst-plugins-ugly
 
 $(eval $(call AUTOTARGETS,package/raumfeld,stream-decoder))
 
