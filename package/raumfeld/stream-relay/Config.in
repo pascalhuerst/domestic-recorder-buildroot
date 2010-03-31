@@ -1,11 +1,9 @@
 config BR2_PACKAGE_RAUMFELD_STREAM_RELAY
 	bool "stream-relay"
-        select BR2_PACKAGE_FLAC
-        select BR2_PACKAGE_FFMPEG
-        select BR2_PACKAGE_LIBMMS
-        select BR2_PACKAGE_LIBVORBIS
 	select BR2_PACKAGE_LIBRAUMFELD
 	select BR2_PACKAGE_LIBRAUMFELDCPP
+        select BR2_PACKAGE_LIBMMS
+        select BR2_PACKAGE_LIBVORBIS
         select BR2_PACKAGE_TAGLIB
 	help
 	  raumfeld stream relay
