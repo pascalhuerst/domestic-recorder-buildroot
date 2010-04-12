@@ -53,15 +53,7 @@ fi
 
 # decide which images should be created ...
 
-case $target in
-	*-arm)
-                IMAGES="init flash final uboot"
-		;;
-
-        *-geode)
-                IMAGES="init flash final coreboot"
-                ;;
-esac
+IMAGES="init flash final"
 
 if ! test -z "$image"; then
     found=0
