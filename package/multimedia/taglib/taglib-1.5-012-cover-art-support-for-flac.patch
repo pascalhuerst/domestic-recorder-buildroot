@@ -1,0 +1,60 @@
+--- taglib-1.5/taglib/flac/flacfile.cpp	2008-01-31 06:19:03.000000000 +0100
++++ taglib-1.5/taglib/flac/flacfile.cpp	2010-04-14 16:41:37.000000000 +0200
+@@ -23,6 +23,7 @@
+  *   http://www.mozilla.org/MPL/                                           *
+  ***************************************************************************/
+ 
++#include <glib.h>
+ #include <tbytevector.h>
+ #include <tstring.h>
+ #include <tlist.h>
+@@ -41,7 +42,7 @@
+ namespace
+ {
+   enum { XiphIndex = 0, ID3v2Index = 1, ID3v1Index = 2 };
+-  enum { StreamInfo = 0, Padding, Application, SeekTable, VorbisComment, CueSheet };
++  enum { StreamInfo = 0, Padding, Application, SeekTable, VorbisComment, CueSheet, Picture };
+ }
+ 
+ class FLAC::File::FilePrivate
+@@ -77,6 +78,7 @@
+   Properties *properties;
+   ByteVector streamInfoData;
+   ByteVector xiphCommentData;
++  ByteVector picture;
+ 
+   long flacStart;
+   long streamStart;
+@@ -286,9 +288,21 @@
+     return;
+ 
+   if(d->hasXiphComment)
+-    d->tag.set(XiphIndex, new Ogg::XiphComment(xiphCommentData()));
++  {
++    Ogg::XiphComment *c = new Ogg::XiphComment(xiphCommentData());
++
++    if(!d->picture.isEmpty())
++    {
++      gchar* encodedPicture = g_base64_encode((const guchar*)d->picture.data(), d->picture.size());
++      c->addField("METADATA_BLOCK_PICTURE", encodedPicture);
++      g_free(encodedPicture);
++    }
++    d->tag.set(XiphIndex, c);
++  }
+   else
++  {
+     d->tag.set(XiphIndex, new Ogg::XiphComment);
++  }
+ 
+   if(readProperties)
+     d->properties = new Properties(streamInfoData(), streamLength(), propertiesStyle);
+@@ -381,6 +395,9 @@
+       d->xiphCommentData = readBlock(length);
+       d->hasXiphComment = true;
+     }
++    else if(blockType == Picture) {
++      d->picture = readBlock(length);
++    }
+ 
+     nextBlockOffset += length + 4;
+ 
