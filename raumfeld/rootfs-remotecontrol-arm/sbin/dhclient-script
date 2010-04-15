@@ -221,6 +221,16 @@ case "$reason" in
 
         fi
 
+        
+        if [ -f /tmp/old_ip_address ]; then
+          read inputline < /tmp/old_ip_address
+          if [ -n "$inputline" -a \
+             "$inputline" != "$new_ip_address" ]; then
+          echo "possbile network change!, resetting interface"
+          ifconfig $interface inet 0.0.0.0
+        fi
+
+
         if [ -z "$old_ip_address" -o "$old_ip_address" != "$new_ip_address" -o \
             "$reason" = "BOUND" -o "$reason" = "REBOOT" ]; then
             
