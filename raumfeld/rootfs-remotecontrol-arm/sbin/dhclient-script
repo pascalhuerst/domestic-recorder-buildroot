@@ -8,7 +8,8 @@
 # being mounted, which causes cosmetic errors on hosts that NFS mount /usr
 # Andrew Pollock, February 2005
 # Modified to work on point-to-point links. Andrew Pollock, June 2005
-# Modified to support passing the parameters called with to the hooks. Andrew Pollock, November 2005
+# Modified to support passing the parameters called with to the hooks.
+# Andrew Pollock, November 2005
 
 # The alias handling in here probably still sucks. -mdz
 
@@ -170,33 +171,31 @@ case "$reason" in
         # configured as required in order to send packets prior to
         # receiving an actual address. - dhclient-script(8)
         if [ -f /tmp/old_ip_address ]; then
-          read inputline < /tmp/old_ip_address
-          echo "using old ip"
-          echo $inputline
+            read inputline < /tmp/old_ip_address
+            echo "using old ip"
+            echo $inputline
 
-          route add -net 224.0.0.0 netmask 240.0.0.0 dev $interface
-          ifconfig $interface inet $inputline up
+            route add -net 224.0.0.0 netmask 240.0.0.0 dev $interface
+            ifconfig $interface inet $inputline up
 
-          #now set up routes
+            #now set up routes
 
-          if [ -f /tmp/old_routers ]; then
-            while read line
-            do
-              echo "adding router"
-              echo $line
-              route add default dev $interface gw $line
-            done < /tmp/old_routers             
-
-          else
-            echo "no old routers found!!!"
-          fi
-
+            if [ -f /tmp/old_routers ]; then
+		while read line
+		do
+		    echo "adding router"
+		    echo $line
+		    route add default dev $interface gw $line
+		done < /tmp/old_routers             
+            else
+		echo "no old routers found!!!"
+            fi
         else
-          if [ -n "$alias_ip_address" ]; then
-              # Bring down alias interface. Its routes will disappear too.
-              ifconfig $interface:0- inet 0.0.0.0
-          fi
-          ifconfig $interface inet 0.0.0.0 up
+            if [ -n "$alias_ip_address" ]; then
+                # Bring down alias interface. Its routes will disappear too.
+		ifconfig $interface:0- inet 0.0.0.0
+            fi
+            ifconfig $interface inet 0.0.0.0 up
         fi
         # We need to give the kernel some time to get the interface up.
         # sleep 1
