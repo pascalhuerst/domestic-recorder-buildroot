@@ -226,8 +226,9 @@ case "$reason" in
           read inputline < /tmp/old_ip_address
           if [ -n "$inputline" -a \
              "$inputline" != "$new_ip_address" ]; then
-          echo "possbile network change!, resetting interface"
-          ifconfig $interface inet 0.0.0.0
+            echo "possbile network change!, resetting interface"
+            ifconfig $interface inet 0.0.0.0
+          fi
         fi
 
 
