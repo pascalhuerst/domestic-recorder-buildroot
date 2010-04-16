@@ -1,5 +1,5 @@
 diff --git a/arch/arm/mach-pxa/pxa3xx.c b/arch/arm/mach-pxa/pxa3xx.c
-index 4d7c03e..304a0f0 100644
+index 4d7c03e..ad7f85e 100644
 --- a/arch/arm/mach-pxa/pxa3xx.c
 +++ b/arch/arm/mach-pxa/pxa3xx.c
 @@ -356,6 +356,15 @@ static void pxa3xx_cpu_pm_suspend(void)
@@ -11,7 +11,7 @@ index 4d7c03e..304a0f0 100644
 +	 * GPIO32 is TOUCH_INT */
 +	{
 +		#include <asm/mach-types.h>
-+		if (0 && machine_is_raumfeld_rc() && !!gpio_get_value(32))
++		if (machine_is_raumfeld_rc() && !!gpio_get_value(32))
 +			return;
 +	}
 +
