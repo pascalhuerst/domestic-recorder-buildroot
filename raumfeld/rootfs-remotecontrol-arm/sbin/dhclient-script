@@ -174,7 +174,8 @@ case "$reason" in
             read inputline < /tmp/old_ip_address
             echo "using old ip"
             echo $inputline
-
+          
+            ifconfig $interface inet 0.0.0.0 up
             route add -net 224.0.0.0 netmask 240.0.0.0 dev $interface
             ifconfig $interface inet $inputline up
 
