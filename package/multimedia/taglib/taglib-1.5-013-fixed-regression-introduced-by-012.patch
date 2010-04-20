@@ -1,0 +1,16 @@
+--- taglib-1.5/taglib/ogg/oggpage.cpp	2010-04-14 16:52:20.000000000 +0200
++++ taglib-1.5/taglib/ogg/oggpage.cpp	2010-04-20 09:56:02.000000000 +0200
+@@ -102,8 +102,13 @@
+   ContainsPacketFlags flags = DoesNotContainPacket;
+ 
+   if(index == d->firstPacketIndex)
++  {
+     flags = ContainsPacketFlags(flags | BeginsWithPacket);
+ 
++    if(index != lastPacketIndex)
++      flags = ContainsPacketFlags(flags | CompletePacket);
++  }
++
+   if(index == lastPacketIndex)
+     flags = ContainsPacketFlags(flags | EndsWithPacket);
+ 
