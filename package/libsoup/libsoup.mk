@@ -4,8 +4,8 @@
 #
 #############################################################
 
-LIBSOUP_MAJOR_VERSION:=2.26
-LIBSOUP_VERSION:=$(LIBSOUP_MAJOR_VERSION).3
+LIBSOUP_MAJOR_VERSION:=2.30
+LIBSOUP_VERSION:=$(LIBSOUP_MAJOR_VERSION).1
 LIBSOUP_SOURCE:=libsoup-$(LIBSOUP_VERSION).tar.bz2
 LIBSOUP_SITE:=http://ftp.gnome.org/pub/gnome/sources/libsoup/$(LIBSOUP_MAJOR_VERSION)
 LIBSOUP_AUTORECONF = NO
