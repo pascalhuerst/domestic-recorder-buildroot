@@ -50,7 +50,7 @@ LIBGLIB2_CONF_ENV =	\
 
 LIBGLIB2_CONF_OPT = --enable-shared --enable-static
 
-LIBGLIB2_DEPENDENCIES = uclibc gettext libintl host-pkgconfig host-libglib2
+LIBGLIB2_DEPENDENCIES = uclibc gettext libintl zlib host-pkgconfig host-libglib2
 
 ifneq ($(BR2_ENABLE_LOCALE),y)
 LIBGLIB2_DEPENDENCIES+=libiconv
