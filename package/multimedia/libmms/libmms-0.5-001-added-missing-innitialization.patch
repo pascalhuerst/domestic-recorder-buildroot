@@ -1,0 +1,25 @@
+--- libmms-0.5/src/mms.c	2009-11-03 10:18:02.000000000 +0100
++++ libmms-0.5/src/mms.c	2010-05-05 14:43:07.000000000 +0200
+@@ -798,6 +798,8 @@
+ 	  if (this->num_stream_ids < ASF_MAX_NUM_STREAMS) {
+ 	    this->streams[this->num_stream_ids].stream_type = type;
+ 	    this->streams[this->num_stream_ids].stream_id = stream_id;
++	    this->streams[this->num_stream_ids].bitrate = 0;
++	    this->streams[this->num_stream_ids].bitrate_pos = 0;
+ 	    this->num_stream_ids++;
+ 	  } else {
+ 	    lprintf ("too many streams, skipping\n");
+@@ -1018,9 +1020,11 @@
+       lprintf("disabling stream %d\n", this->stream_ids[i]);
+       this->scmd_body [ (i - 1) * 6 + 6 ] = 0x02;
+       this->scmd_body [ (i - 1) * 6 + 7 ] = 0x00;
+-      
++
+       /* forces the asf demuxer to not choose this stream */
+-      if (this->streams[i].bitrate_pos) {
++      if (this->streams[i].bitrate_pos &&
++          this->asf_header_len > (this->streams[i].bitrate_pos + 3))
++      {
+         this->asf_header[this->streams[i].bitrate_pos    ] = 0;
+         this->asf_header[this->streams[i].bitrate_pos + 1] = 0;
+         this->asf_header[this->streams[i].bitrate_pos + 2] = 0;
