@@ -67,5 +67,5 @@ host-shared-mime-info-dirclean:
 
 # update the shared-mime-info database in the target
 $(SHARED_MIME_INFO_HOOK_POST_INSTALL): host-shared-mime-info
-	$(SHARED_MIME_INFO_HOST_BINARY) $(STAGING_DIR)/usr/share/mime
+	$(HOST_MAKE_ENV) $(SHARED_MIME_INFO_HOST_BINARY) $(STAGING_DIR)/usr/share/mime
 	$(INSTALL) -D $(STAGING_DIR)/usr/share/mime/mime.cache $(TARGET_DIR)/usr/share/mime/mime.cache
