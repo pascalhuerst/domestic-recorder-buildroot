@@ -1,0 +1,17 @@
+diff -u taglib-extras-0.1.6-orig/taglib-extras.pc.cmake taglib-extras-0.1.6/taglib-extras.pc.cmake
+--- taglib-extras-0.1.6-orig/taglib-extras.pc.cmake	2009-03-10 23:15:46.000000000 +0100
++++ taglib-extras-0.1.6/taglib-extras.pc.cmake	2010-05-07 16:59:12.000000000 +0200
+@@ -1,11 +1,7 @@
+-prefix=${CMAKE_INSTALL_PREFIX}
+-exec_prefix=${CMAKE_INSTALL_PREFIX}
+-libdir=${LIB_INSTALL_DIR}
+-includedir=${INCLUDE_INSTALL_DIR}
+ 
+ Name: TagLib Extras
+ Description: Unofficial TagLib file type plugins maintained by the Amarok project
+ Requires:
+ Version: ${TAGLIB-EXTRAS_LIB_MAJOR_VERSION}.${TAGLIB-EXTRAS_LIB_MINOR_VERSION}.${TAGLIB-EXTRAS_LIB_PATCH_VERSION}
+-Libs: -L${LIB_INSTALL_DIR} -ltag-extras
+-Cflags: -I${INCLUDE_INSTALL_DIR}/taglib-extras
++Libs: -L/usr/lib -ltag-extras
++Cflags: -I/usr/include/taglib-extras
