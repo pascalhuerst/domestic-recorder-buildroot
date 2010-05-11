@@ -4,7 +4,7 @@
 #
 #############################################################
 
-GUPNP_IGD_VERSION:=0.1.3
+GUPNP_IGD_VERSION:=0.1.6
 GUPNP_IGD_SOURCE:=gupnp-igd-$(GUPNP_IGD_VERSION).tar.gz
 GUPNP_IGD_SITE:=http://www.gupnp.org/sources/gupnp-igd
 GUPNP_IGD_AUTORECONF = NO
