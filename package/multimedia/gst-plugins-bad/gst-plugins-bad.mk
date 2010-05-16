@@ -244,12 +244,6 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-selector
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SHAPEWIPE),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-shapewipe
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-shapewipe
-endif
-
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SIREN),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-siren
 else

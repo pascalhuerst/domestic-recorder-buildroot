@@ -237,6 +237,12 @@ else
 GST_PLUGINS_GOOD_CONF_OPT += --disable-rtsp
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_SHAPEWIPE),y)
+GST_PLUGINS_GOOD_CONF_OPT += --enable-shapewipe
+else
+GST_PLUGINS_GOOD_CONF_OPT += --disable-shapewipe
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_SMPTE),y)
 GST_PLUGINS_GOOD_CONF_OPT += --enable-smpte
 else
