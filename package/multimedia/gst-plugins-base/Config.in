@@ -68,6 +68,10 @@ config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_VOLUME
 
 comment "plugins with external dependencies (there may be more available)"
 
+config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_ALSA
+	bool "alsa"
+	select BR2_PACKAGE_ALSA_LIB
+
 config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_GIO
 	bool "gio (gio/gvfs source)"
 

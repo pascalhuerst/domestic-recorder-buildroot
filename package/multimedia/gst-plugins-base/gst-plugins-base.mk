@@ -33,6 +33,13 @@ else
 GST_PLUGINS_BASE_CONF_OPT += --disable-adder
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_ALSA),y)
+GST_PLUGINS_BASE_CONF_OPT += --enable-alsa
+GST_PLUGINS_BASE_DEPENDENCIES += alsa-lib
+else
+GST_PLUGINS_BASE_CONF_OPT += --disable-alsa
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_APP),y)
 GST_PLUGINS_BASE_CONF_OPT += --enable-app
 else
