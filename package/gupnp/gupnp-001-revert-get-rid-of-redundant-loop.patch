@@ -1,0 +1,96 @@
+From 6aec16d8c883a5fa7f354762543f9a1dd5d20df1 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Mon, 17 May 2010 16:22:31 +0200
+Subject: [PATCH] Revert "Get rid of redundant loop"
+
+This reverts commit 7ebd4453f6377ed3c721b3af253cbef423bab0cc.
+---
+ libgupnp/gupnp-service-proxy.c |   62 +++++++++++++++++++++------------------
+ 1 files changed, 33 insertions(+), 29 deletions(-)
+
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index 1e0b5f3..ea6e47d 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -1591,45 +1591,49 @@ static void emit_notification (GUPnPServiceProxy *proxy,
+         /* Iterate over all provided properties */
+         for (node = node->children; node; node = node->next) {
+                 xmlNode *var_node;
+-                NotifyData *data;
+-                GValue value = {0, };
+-                GList *l;
+ 
+-                /* variableName node */
+-                var_node = node->children;
+-
+-                if (var_node == NULL ||
+-                    strcmp ((char *) node->name, "property") != 0)
++                if (strcmp ((char *) node->name, "property") != 0)
+                         continue;
+ 
+-                data = g_hash_table_lookup (proxy->priv->notify_hash,
+-                                            var_node->name);
+-                if (data == NULL)
+-                        continue;
++                /* property */
++                for (var_node = node->children;
++                     var_node;
++                     var_node = var_node->next) {
++                        NotifyData *data;
++                        GValue value = {0, };
++                        GList *l;
+ 
+-                /* Make a GValue of the desired type */
+-                g_value_init (&value, data->type);
++                        data = g_hash_table_lookup (proxy->priv->notify_hash,
++                                                    var_node->name);
++                        if (data == NULL)
++                                continue;
+ 
+-                if (!gvalue_util_set_value_from_xml_node (&value, var_node)) {
+-                        g_value_unset (&value);
++                        /* Make a GValue of the desired type */
++                        g_value_init (&value, data->type);
+ 
+-                        continue;
+-                }
++                        if (!gvalue_util_set_value_from_xml_node (&value,
++                                                                  var_node)) {
++                                g_value_unset (&value);
++
++                                continue;
++                        }
+ 
+-                /* Call callbacks */
+-                for (l = data->callbacks; l; l = l->next) {
+-                        CallbackData *callback_data;
++                        /* Call callbacks */
++                        for (l = data->callbacks; l; l = l->next) {
++                                CallbackData *callback_data;
+ 
+-                        callback_data = l->data;
++                                callback_data = l->data;
+ 
+-                        callback_data->callback (proxy,
+-                                                 (const char *) var_node->name,
+-                                                 &value,
+-                                                 callback_data->user_data);
+-                }
++                                callback_data->callback
++                                        (proxy,
++                                         (const char *) var_node->name,
++                                         &value,
++                                         callback_data->user_data);
++                        }
+ 
+-                /* Cleanup */
+-                g_value_unset (&value);
++                        /* Cleanup */
++                        g_value_unset (&value);
++                }
+         }
+ }
+ 
+-- 
+1.7.0.4
+
