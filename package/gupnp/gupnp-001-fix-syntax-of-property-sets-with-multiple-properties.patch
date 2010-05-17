@@ -1,0 +1,44 @@
+From ac1dfcddcf6136257d712b014076f579336c3636 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Mon, 17 May 2010 17:03:05 +0200
+Subject: [PATCH] Fix syntax of property sets with multiple properties.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ libgupnp/gupnp-service.c |    9 ++++-----
+ 1 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/libgupnp/gupnp-service.c b/libgupnp/gupnp-service.c
+index dd524b4..d6b7d2c 100644
+--- a/libgupnp/gupnp-service.c
++++ b/libgupnp/gupnp-service.c
+@@ -1890,22 +1890,21 @@ create_property_set (GQueue *queue)
+         g_string_append (str,
+                          "<?xml version=\"1.0\"?>"
+                          "<e:propertyset xmlns:e="
+-                                "\"urn:schemas-upnp-org:event-1-0\">"
+-                         "<e:property>");
++                                "\"urn:schemas-upnp-org:event-1-0\">");
+ 
+         /* Add variables */
+         while ((data = g_queue_pop_head (queue))) {
++                xml_util_start_element (str, "e:property");
+                 xml_util_start_element (str, data->variable);
+                 gvalue_util_value_append_to_xml_string (&data->value, str);
+                 xml_util_end_element (str, data->variable);
++                xml_util_end_element (str, "e:property");
+ 
+                 /* Cleanup */
+                 notify_data_free (data);
+         }
+ 
+-        g_string_append (str,
+-                         "</e:property>"
+-                         "</e:propertyset>");
++        g_string_append (str, "</e:propertyset>");
+ 
+         /* Cleanup & return */
+         return g_string_free (str, FALSE);
+-- 
+1.7.0.4
+
