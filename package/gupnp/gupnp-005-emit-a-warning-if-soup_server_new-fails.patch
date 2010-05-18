@@ -1,0 +1,30 @@
+From 479a4fdb3b87a6c5814ed2aca64d806563073b9f Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Tue, 18 May 2010 13:42:01 +0200
+Subject: [PATCH] Emit a warning if soup_server_new() fails
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ libgupnp/gupnp-context.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/libgupnp/gupnp-context.c b/libgupnp/gupnp-context.c
+index 62aa4e9..7232d59 100644
+--- a/libgupnp/gupnp-context.c
++++ b/libgupnp/gupnp-context.c
+@@ -414,6 +414,12 @@ gupnp_context_get_server (GUPnPContext *context)
+                          NULL);
+                 g_object_unref (addr);
+ 
++                if (! context->priv->server) {
++                         g_warning ("soup_server_new() failed: %s\n",
++                                    g_strerror (errno));
++                         return NULL;
++                }
++
+                 soup_server_add_handler (context->priv->server, NULL,
+                                          default_server_handler, context,
+                                          NULL);
+-- 
+1.7.0.4
+
