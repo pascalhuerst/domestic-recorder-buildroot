@@ -1,0 +1,59 @@
+From bdd6d7ce5cc2cf748b9ba87817c729e0056fb9b0 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Wed, 19 May 2010 18:10:57 +0200
+Subject: [PATCH] Free the array allocated by xmlGetNsList()
+
+The array returned by xmlGetNsList() needs to be free'd. Also
+added a sanity check as xmlGetNsList() may return NULL.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ libgupnp-av/gupnp-didl-lite-object.c |   26 ++++++++++++++++----------
+ 1 files changed, 16 insertions(+), 10 deletions(-)
+
+diff --git a/libgupnp-av/gupnp-didl-lite-object.c b/libgupnp-av/gupnp-didl-lite-object.c
+index f8e77ec..339f5d9 100644
+--- a/libgupnp-av/gupnp-didl-lite-object.c
++++ b/libgupnp-av/gupnp-didl-lite-object.c
+@@ -282,22 +282,28 @@ gupnp_didl_lite_object_constructed (GObject *object)
+         GObjectClass               *object_class;
+         GUPnPDIDLLiteObjectPrivate *priv;
+         xmlNs                     **ns_list;
+-        short                       i;
+ 
+         priv = GUPNP_DIDL_LITE_OBJECT (object)->priv;
+ 
+         ns_list = xmlGetNsList (priv->xml_doc->doc,
+                                 xmlDocGetRootElement (priv->xml_doc->doc));
+-        for (i = 0; ns_list[i] != NULL; i++) {
+-                if (ns_list[i]->prefix == NULL)
+-                        continue;
+ 
+-                if (g_ascii_strcasecmp ((char *) ns_list[i]->prefix,
+-                                        (char *) "upnp") == 0)
+-                        priv->upnp_ns = ns_list[i];
+-                else if (g_ascii_strcasecmp ((char *) ns_list[i]->prefix,
+-                                             (char *) "dc") == 0)
+-                        priv->dc_ns = ns_list[i];
++        if (ns_list) {
++                short i;
++
++                for (i = 0; ns_list[i] != NULL; i++) {
++                        if (ns_list[i]->prefix == NULL)
++                                continue;
++
++                        if (g_ascii_strcasecmp ((char *) ns_list[i]->prefix,
++                                                (char *) "upnp") == 0)
++                                priv->upnp_ns = ns_list[i];
++                        else if (g_ascii_strcasecmp ((char *) ns_list[i]->prefix,
++                                                     (char *) "dc") == 0)
++                                priv->dc_ns = ns_list[i];
++                }
++
++                xmlFree (ns_list);
+         }
+ 
+         object_class = G_OBJECT_CLASS (gupnp_didl_lite_object_parent_class);
+-- 
+1.7.0.4
+
