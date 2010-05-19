@@ -1,3 +1,30 @@
+diff --git a/Documentation/ABI/testing/sysfs-class-power b/Documentation/ABI/testing/sysfs-class-power
+new file mode 100644
+index 0000000..f46ad66
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-class-power
+@@ -0,0 +1,21 @@
++What:		/sys/class/power/ds2760-battery.*/charge_now
++Date:		May 2010
++KernelVersion:	2.6.35
++Contact:	Daniel Mack <daniel@caiaq.de>
++Description:
++		This file is writeable and can be used to set the current
++		coloumb counter value inside the battery monitor chip. This
++		is needed for unavoidable corrections of aging batteries.
++		A userspace daemon can monitor the battery charging logic
++		and once the counter drops out of considerablebounds, take
++		appropriate action.
++
++What:		/sys/class/power/ds2760-battery.*/charge_full
++Date:		May 2010
++KernelVersion:	2.6.35
++Contact:	Daniel Mack <daniel@caiaq.de>
++Description:
++		This file is writeable and can be used to set the assumed
++		battery 'full level'. As batteries age, this value has to be
++		amended over time.
++
 diff --git a/arch/arm/mach-pxa/pxa3xx.c b/arch/arm/mach-pxa/pxa3xx.c
 index 4d7c03e..ad7f85e 100644
 --- a/arch/arm/mach-pxa/pxa3xx.c
@@ -91,28 +118,39 @@ index d12667b..7582a12 100644
  }
  
 diff --git a/drivers/power/ds2760_battery.c b/drivers/power/ds2760_battery.c
-index 3bf8d1f..88debdf 100644
+index 3bf8d1f..4d3b272 100644
 --- a/drivers/power/ds2760_battery.c
 +++ b/drivers/power/ds2760_battery.c
-@@ -78,6 +78,7 @@ MODULE_PARM_DESC(current_accum, "current accumulator value");
+@@ -304,6 +304,28 @@ static void ds2760_battery_write_rated_capacity(struct ds2760_device_info *di,
+ 	w1_ds2760_recall_eeprom(di->w1_dev, DS2760_EEPROM_BLOCK1);
+ }
  
- /* Some batteries have their rated capacity stored a N * 10 mAh, while
-  * others use an index into this table. */
-+#define RATED_CAPACITY_FACTOR 20
- static int rated_capacities[] = {
- 	0,
- 	920,	/* Samsung */
-@@ -170,7 +171,8 @@ static int ds2760_battery_read_status(struct ds2760_device_info *di)
- 		di->rated_capacity = rated_capacities[
- 			(unsigned int)di->raw[DS2760_RATED_CAPACITY]];
- 	else
--		di->rated_capacity = di->raw[DS2760_RATED_CAPACITY] * 10;
-+		di->rated_capacity = di->raw[DS2760_RATED_CAPACITY] *
-+						RATED_CAPACITY_FACTOR;
- 
- 	di->rated_capacity *= 1000; /* convert to µAh */
- 
-@@ -426,6 +428,54 @@ static int ds2760_battery_get_property(struct power_supply *psy,
++static void ds2760_battery_write_active_full(struct ds2760_device_info *di,
++					     int active_full)
++{
++	unsigned char tmp[2] = {
++		active_full >> 8,
++		active_full & 0xff
++	};
++
++	if (tmp[0] == di->raw[DS2760_ACTIVE_FULL] &&
++	    tmp[1] == di->raw[DS2760_ACTIVE_FULL + 1])
++		return;
++
++	w1_ds2760_write(di->w1_dev, tmp, DS2760_ACTIVE_FULL, sizeof(tmp));
++	w1_ds2760_store_eeprom(di->w1_dev, DS2760_EEPROM_BLOCK0);
++	w1_ds2760_recall_eeprom(di->w1_dev, DS2760_EEPROM_BLOCK0);
++
++	/* Write to the di->raw[] buffer directly - the DS2760_ACTIVE_FULL
++	 * values won't be read back by ds2760_battery_read_status() */
++	di->raw[DS2760_ACTIVE_FULL] = tmp[0];
++	di->raw[DS2760_ACTIVE_FULL + 1] = tmp[1];
++}
++
+ static void ds2760_battery_work(struct work_struct *work)
+ {
+ 	struct ds2760_device_info *di = container_of(work,
+@@ -426,6 +448,45 @@ static int ds2760_battery_get_property(struct power_supply *psy,
  	return 0;
  }
  
@@ -120,33 +158,24 @@ index 3bf8d1f..88debdf 100644
 +				       enum power_supply_property psp,
 +				       const union power_supply_propval *val)
 +{
-+	int ret = 0;
-+	unsigned char tmp;
 +	struct ds2760_device_info *di = to_ds2760_device_info(psy);
 +
 +	switch (psp) {
 +	case POWER_SUPPLY_PROP_CHARGE_FULL:
 +		/* the interface counts in uAh, convert the value */
-+		ds2760_battery_write_rated_capacity(di, (val->intval / 1000L) /
-+								RATED_CAPACITY_FACTOR);
++		ds2760_battery_write_active_full(di, val->intval / 1000L);
 +		break;
 +
 +	case POWER_SUPPLY_PROP_CHARGE_NOW:
-+		tmp = val->intval & 0xff;
-+		ret = w1_ds2760_write(di->w1_dev, &tmp, DS2760_CURRENT_ACCUM_LSB, 1);
-+		if (ret)
-+			break;
-+
-+		tmp = val->intval >> 8;
-+		ret = w1_ds2760_write(di->w1_dev, &tmp, DS2760_CURRENT_ACCUM_MSB, 1);
++		/* ds2760_battery_set_current_accum() does the conversion */
++		ds2760_battery_set_current_accum(di, val->intval);
 +		break;
 +
 +	default:
-+		ret = -EPERM;
-+		break;
++		return -EPERM;
 +	}
 +
-+	return ret;
++	return 0;
 +}
 +
 +static int ds2760_battery_property_is_writeable(struct power_supply *psy,
@@ -167,7 +196,7 @@ index 3bf8d1f..88debdf 100644
  static enum power_supply_property ds2760_battery_props[] = {
  	POWER_SUPPLY_PROP_STATUS,
  	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-@@ -460,6 +510,9 @@ static int ds2760_battery_probe(struct platform_device *pdev)
+@@ -460,6 +521,9 @@ static int ds2760_battery_probe(struct platform_device *pdev)
  	di->bat.properties	= ds2760_battery_props;
  	di->bat.num_properties	= ARRAY_SIZE(ds2760_battery_props);
  	di->bat.get_property	= ds2760_battery_get_property;
@@ -177,19 +206,6 @@ index 3bf8d1f..88debdf 100644
  	di->bat.set_charged	= ds2760_battery_set_charged;
  	di->bat.external_power_changed =
  				  ds2760_battery_external_power_changed;
-@@ -476,9 +529,10 @@ static int ds2760_battery_probe(struct platform_device *pdev)
- 
- 	ds2760_battery_write_status(di, status);
- 
--	/* set rated capacity from module param */
-+	/* set rated capacity from module param (given in 10 * mAh) */
- 	if (rated_capacity)
--		ds2760_battery_write_rated_capacity(di, rated_capacity);
-+		ds2760_battery_write_rated_capacity(di,
-+			(rated_capacity * 10) / RATED_CAPACITY_FACTOR);
- 
- 	/* set current accumulator if given as parameter.
- 	 * this should only be done for bootstrapping the value */
 diff --git a/drivers/power/pda_power.c b/drivers/power/pda_power.c
 index a232de6..0b27b9d 100644
 --- a/drivers/power/pda_power.c
@@ -217,8 +233,131 @@ index a232de6..0b27b9d 100644
  	return 0;
  }
  #else
+diff --git a/drivers/power/power_supply.h b/drivers/power/power_supply.h
+index f38ba48..018de2b 100644
+--- a/drivers/power/power_supply.h
++++ b/drivers/power/power_supply.h
+@@ -12,15 +12,12 @@
+ 
+ #ifdef CONFIG_SYSFS
+ 
+-extern int power_supply_create_attrs(struct power_supply *psy);
+-extern void power_supply_remove_attrs(struct power_supply *psy);
++extern void power_supply_init_attrs(struct device_type *dev_type);
+ extern int power_supply_uevent(struct device *dev, struct kobj_uevent_env *env);
+ 
+ #else
+ 
+-static inline int power_supply_create_attrs(struct power_supply *psy)
+-{ return 0; }
+-static inline void power_supply_remove_attrs(struct power_supply *psy) {}
++static inline void power_supply_init_attrs(struct device_type *dev_type) {}
+ #define power_supply_uevent NULL
+ 
+ #endif /* CONFIG_SYSFS */
+diff --git a/drivers/power/power_supply_core.c b/drivers/power/power_supply_core.c
+index cce75b4..91606bb 100644
+--- a/drivers/power/power_supply_core.c
++++ b/drivers/power/power_supply_core.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/types.h>
+ #include <linux/init.h>
++#include <linux/slab.h>
+ #include <linux/device.h>
+ #include <linux/err.h>
+ #include <linux/power_supply.h>
+@@ -22,6 +23,8 @@
+ struct class *power_supply_class;
+ EXPORT_SYMBOL_GPL(power_supply_class);
+ 
++static struct device_type power_supply_dev_type;
++
+ static int __power_supply_changed_work(struct device *dev, void *data)
+ {
+ 	struct power_supply *psy = (struct power_supply *)data;
+@@ -144,22 +147,39 @@ struct power_supply *power_supply_get_by_name(char *name)
+ }
+ EXPORT_SYMBOL_GPL(power_supply_get_by_name);
+ 
++static void power_supply_dev_release(struct device *dev)
++{
++	pr_debug("device: '%s': %s\n", dev_name(dev), __func__);
++	kfree(dev);
++}
++
+ int power_supply_register(struct device *parent, struct power_supply *psy)
+ {
+-	int rc = 0;
++	struct device *dev;
++	int rc;
+ 
+-	psy->dev = device_create(power_supply_class, parent, 0, psy,
+-				 "%s", psy->name);
+-	if (IS_ERR(psy->dev)) {
+-		rc = PTR_ERR(psy->dev);
+-		goto dev_create_failed;
+-	}
++	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
++	if (!dev)
++		return -ENOMEM;
+ 
+-	INIT_WORK(&psy->changed_work, power_supply_changed_work);
++	device_initialize(dev);
+ 
+-	rc = power_supply_create_attrs(psy);
++	dev->class = power_supply_class;
++	dev->type = &power_supply_dev_type;
++	dev->parent = parent;
++	dev->release = power_supply_dev_release;
++	dev_set_drvdata(dev, psy);
++	psy->dev = dev;
++
++	rc = kobject_set_name(&dev->kobj, "%s", psy->name);
++	if (rc)
++		goto kobject_set_name_failed;
++
++	rc = device_add(dev);
+ 	if (rc)
+-		goto create_attrs_failed;
++		goto device_add_failed;
++
++	INIT_WORK(&psy->changed_work, power_supply_changed_work);
+ 
+ 	rc = power_supply_create_triggers(psy);
+ 	if (rc)
+@@ -170,10 +190,10 @@ int power_supply_register(struct device *parent, struct power_supply *psy)
+ 	goto success;
+ 
+ create_triggers_failed:
+-	power_supply_remove_attrs(psy);
+-create_attrs_failed:
+ 	device_unregister(psy->dev);
+-dev_create_failed:
++kobject_set_name_failed:
++device_add_failed:
++	kfree(dev);
+ success:
+ 	return rc;
+ }
+@@ -183,7 +203,6 @@ void power_supply_unregister(struct power_supply *psy)
+ {
+ 	flush_scheduled_work();
+ 	power_supply_remove_triggers(psy);
+-	power_supply_remove_attrs(psy);
+ 	device_unregister(psy->dev);
+ }
+ EXPORT_SYMBOL_GPL(power_supply_unregister);
+@@ -196,6 +215,7 @@ static int __init power_supply_class_init(void)
+ 		return PTR_ERR(power_supply_class);
+ 
+ 	power_supply_class->dev_uevent = power_supply_uevent;
++	power_supply_init_attrs(&power_supply_dev_type);
+ 
+ 	return 0;
+ }
 diff --git a/drivers/power/power_supply_sysfs.c b/drivers/power/power_supply_sysfs.c
-index 5b6e352..5cfb410 100644
+index 5b6e352..6a779fe 100644
 --- a/drivers/power/power_supply_sysfs.c
 +++ b/drivers/power/power_supply_sysfs.c
 @@ -31,9 +31,9 @@
@@ -233,7 +372,43 @@ index 5b6e352..5cfb410 100644
  }
  
  static struct device_attribute power_supply_attrs[];
-@@ -91,6 +91,25 @@ static ssize_t power_supply_show_property(struct device *dev,
+@@ -41,6 +41,9 @@ static struct device_attribute power_supply_attrs[];
+ static ssize_t power_supply_show_property(struct device *dev,
+ 					  struct device_attribute *attr,
+ 					  char *buf) {
++	static char *type_text[] = {
++		"Battery", "UPS", "Mains", "USB"
++	};
+ 	static char *status_text[] = {
+ 		"Unknown", "Charging", "Discharging", "Not charging", "Full"
+ 	};
+@@ -58,12 +61,15 @@ static ssize_t power_supply_show_property(struct device *dev,
+ 	static char *capacity_level_text[] = {
+ 		"Unknown", "Critical", "Low", "Normal", "High", "Full"
+ 	};
+-	ssize_t ret;
++	ssize_t ret = 0;
+ 	struct power_supply *psy = dev_get_drvdata(dev);
+ 	const ptrdiff_t off = attr - power_supply_attrs;
+ 	union power_supply_propval value;
+ 
+-	ret = psy->get_property(psy, off, &value);
++	if (off == POWER_SUPPLY_PROP_TYPE)
++		value.intval = psy->type;
++	else
++		ret = psy->get_property(psy, off, &value);
+ 
+ 	if (ret < 0) {
+ 		if (ret == -ENODATA)
+@@ -85,12 +91,37 @@ static ssize_t power_supply_show_property(struct device *dev,
+ 		return sprintf(buf, "%s\n", technology_text[value.intval]);
+ 	else if (off == POWER_SUPPLY_PROP_CAPACITY_LEVEL)
+ 		return sprintf(buf, "%s\n", capacity_level_text[value.intval]);
++	else if (off == POWER_SUPPLY_PROP_TYPE)
++		return sprintf(buf, "%s\n", type_text[value.intval]);
+ 	else if (off >= POWER_SUPPLY_PROP_MODEL_NAME)
+ 		return sprintf(buf, "%s\n", value.strval);
+ 
  	return sprintf(buf, "%d\n", value.intval);
  }
  
@@ -253,27 +428,155 @@ index 5b6e352..5cfb410 100644
 +
 +	value.intval = long_val;
 +
-+	return psy->set_property(psy, off, &value);
++	ret = psy->set_property(psy, off, &value);
++	if (ret < 0)
++		return ret;
++
++	return count;
 +}
 +
  /* Must be in the same order as POWER_SUPPLY_PROP_* */
  static struct device_attribute power_supply_attrs[] = {
  	/* Properties of type `int' */
-@@ -164,6 +183,14 @@ int power_supply_create_attrs(struct power_supply *psy)
+@@ -132,67 +163,59 @@ static struct device_attribute power_supply_attrs[] = {
+ 	POWER_SUPPLY_ATTR(time_to_empty_avg),
+ 	POWER_SUPPLY_ATTR(time_to_full_now),
+ 	POWER_SUPPLY_ATTR(time_to_full_avg),
++	POWER_SUPPLY_ATTR(type),
+ 	/* Properties of type `const char *' */
+ 	POWER_SUPPLY_ATTR(model_name),
+ 	POWER_SUPPLY_ATTR(manufacturer),
+ 	POWER_SUPPLY_ATTR(serial_number),
+ };
+ 
+-static ssize_t power_supply_show_static_attrs(struct device *dev,
+-					      struct device_attribute *attr,
+-					      char *buf) {
+-	static char *type_text[] = { "Battery", "UPS", "Mains", "USB" };
++static struct attribute *
++__power_supply_attrs[ARRAY_SIZE(power_supply_attrs) + 1];
++
++static mode_t power_supply_attr_is_visible(struct kobject *kobj,
++					   struct attribute *attr,
++					   int attrno)
++{
++	struct device *dev = container_of(kobj, struct device, kobj);
+ 	struct power_supply *psy = dev_get_drvdata(dev);
++	int i;
+ 
+-	return sprintf(buf, "%s\n", type_text[psy->type]);
+-}
++	for (i = 0; i < psy->num_properties; i++) {
++		int property = psy->properties[i];
+ 
+-static struct device_attribute power_supply_static_attrs[] = {
+-	__ATTR(type, 0444, power_supply_show_static_attrs, NULL),
+-};
++		if (property == attrno) {
++			mode_t mode = S_IRUSR | S_IRGRP | S_IROTH;
+ 
+-int power_supply_create_attrs(struct power_supply *psy)
+-{
+-	int rc = 0;
+-	int i, j;
+-
+-	for (i = 0; i < ARRAY_SIZE(power_supply_static_attrs); i++) {
+-		rc = device_create_file(psy->dev,
+-			    &power_supply_static_attrs[i]);
+-		if (rc)
+-			goto statics_failed;
+-	}
++			if (psy->property_is_writeable &&
++			    psy->property_is_writeable(psy, property) > 0)
++				mode |= S_IWUSR;
+ 
+-	for (j = 0; j < psy->num_properties; j++) {
+-		rc = device_create_file(psy->dev,
+-			    &power_supply_attrs[psy->properties[j]]);
+-		if (rc)
+-			goto dynamics_failed;
++			return mode;
++		}
  	}
  
+-	goto succeed;
+-
+-dynamics_failed:
+-	while (j--)
+-		device_remove_file(psy->dev,
+-			   &power_supply_attrs[psy->properties[j]]);
+-statics_failed:
+-	while (i--)
+-		device_remove_file(psy->dev, &power_supply_static_attrs[i]);
+-succeed:
+-	return rc;
++	return 0;
+ }
+ 
+-void power_supply_remove_attrs(struct power_supply *psy)
++static struct attribute_group power_supply_attr_group = {
++	.attrs = __power_supply_attrs,
++	.is_visible = power_supply_attr_is_visible,
++};
++
++const struct attribute_group *power_supply_attr_groups[] = {
++	&power_supply_attr_group,
++	NULL,
++};
++
++void power_supply_init_attrs(struct device_type *dev_type)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < ARRAY_SIZE(power_supply_static_attrs); i++)
+-		device_remove_file(psy->dev, &power_supply_static_attrs[i]);
++	dev_type->groups = power_supply_attr_groups;
+ 
+-	for (i = 0; i < psy->num_properties; i++)
+-		device_remove_file(psy->dev,
+-			    &power_supply_attrs[psy->properties[i]]);
++	for (i = 0; i < ARRAY_SIZE(power_supply_attrs); i++)
++		__power_supply_attrs[i] = &power_supply_attrs[i].attr;
+ }
+ 
+ static char *kstruprdup(const char *str, gfp_t gfp)
+@@ -236,36 +259,6 @@ int power_supply_uevent(struct device *dev, struct kobj_uevent_env *env)
+ 	if (!prop_buf)
+ 		return -ENOMEM;
+ 
+-	for (j = 0; j < ARRAY_SIZE(power_supply_static_attrs); j++) {
+-		struct device_attribute *attr;
+-		char *line;
+-
+-		attr = &power_supply_static_attrs[j];
+-
+-		ret = power_supply_show_static_attrs(dev, attr, prop_buf);
+-		if (ret < 0)
+-			goto out;
+-
+-		line = strchr(prop_buf, '\n');
+-		if (line)
+-			*line = 0;
+-
+-		attrname = kstruprdup(attr->attr.name, GFP_KERNEL);
+-		if (!attrname) {
+-			ret = -ENOMEM;
+-			goto out;
+-		}
+-
+-		dev_dbg(dev, "Static prop %s=%s\n", attrname, prop_buf);
+-
+-		ret = add_uevent_var(env, "POWER_SUPPLY_%s=%s", attrname, prop_buf);
+-		kfree(attrname);
+-		if (ret)
+-			goto out;
+-	}
+-
+-	dev_dbg(dev, "%zd dynamic props\n", psy->num_properties);
+-
  	for (j = 0; j < psy->num_properties; j++) {
-+		mode_t mode = S_IRUSR | S_IRGRP | S_IROTH;
-+
-+		if (psy->property_is_writeable &&
-+		    psy->property_is_writeable(psy, psy->properties[j]) > 0)
-+			mode |= S_IWUSR;
-+
-+		power_supply_attrs[psy->properties[j]].attr.mode = mode;
-+
- 		rc = device_create_file(psy->dev,
- 			    &power_supply_attrs[psy->properties[j]]);
- 		if (rc)
+ 		struct device_attribute *attr;
+ 		char *line;
 diff --git a/drivers/video/Kconfig b/drivers/video/Kconfig
 index 6e16244..a754984 100644
 --- a/drivers/video/Kconfig
@@ -392944,10 +393247,18 @@ index d4cf7a2..c9e4d81 100644
  	char **supplied_to;
  	size_t num_supplicants;
 diff --git a/include/linux/power_supply.h b/include/linux/power_supply.h
-index ebd2b8f..f02f7fd 100644
+index ebd2b8f..30083a8 100644
 --- a/include/linux/power_supply.h
 +++ b/include/linux/power_supply.h
-@@ -144,6 +144,11 @@ struct power_supply {
+@@ -114,6 +114,7 @@ enum power_supply_property {
+ 	POWER_SUPPLY_PROP_TIME_TO_EMPTY_AVG,
+ 	POWER_SUPPLY_PROP_TIME_TO_FULL_NOW,
+ 	POWER_SUPPLY_PROP_TIME_TO_FULL_AVG,
++	POWER_SUPPLY_PROP_TYPE, /* use power_supply.type instead */
+ 	/* Properties of type `const char *' */
+ 	POWER_SUPPLY_PROP_MODEL_NAME,
+ 	POWER_SUPPLY_PROP_MANUFACTURER,
+@@ -144,6 +145,11 @@ struct power_supply {
  	int (*get_property)(struct power_supply *psy,
  			    enum power_supply_property psp,
  			    union power_supply_propval *val);
