@@ -1,0 +1,42 @@
+ libgupnp/gupnp-service-proxy.c |    3 ++-
+ libgupnp/gupnp-service.c       |    6 ++++--
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index 33e06f0..c548e2d 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -867,7 +867,8 @@ gupnp_service_proxy_begin_action_valist
+                 arg_type = va_arg (var_args, GType);
+                 g_value_init (&value, arg_type);
+ 
+-                G_VALUE_COLLECT (&value, var_args, 0, &collect_error);
++                G_VALUE_COLLECT (&value, var_args, G_VALUE_NOCOPY_CONTENTS,
++                                 &collect_error);
+                 if (!collect_error) {
+                         write_in_parameter (arg_name, &value, ret->msg_str);
+ 
+diff --git a/libgupnp/gupnp-service.c b/libgupnp/gupnp-service.c
+index d6b7d2c..30d29d6 100644
+--- a/libgupnp/gupnp-service.c
++++ b/libgupnp/gupnp-service.c
+@@ -547,7 +547,8 @@ gupnp_service_action_set_valist (GUPnPServiceAction *action,
+                 arg_type = va_arg (var_args, GType);
+                 g_value_init (&value, arg_type);
+ 
+-                G_VALUE_COLLECT (&value, var_args, 0, &collect_error);
++                G_VALUE_COLLECT (&value, var_args, G_VALUE_NOCOPY_CONTENTS,
++                                 &collect_error);
+                 if (!collect_error) {
+                         gupnp_service_action_set_value (action,
+                                                         arg_name, &value);
+@@ -1725,7 +1726,8 @@ gupnp_service_notify_valist (GUPnPService *service,
+                 var_type = va_arg (var_args, GType);
+                 g_value_init (&value, var_type);
+ 
+-                G_VALUE_COLLECT (&value, var_args, 0, &collect_error);
++                G_VALUE_COLLECT (&value, var_args, G_VALUE_NOCOPY_CONTENTS,
++                                 &collect_error);
+                 if (!collect_error) {
+                         gupnp_service_notify_value (service, var_name, &value);
+ 
