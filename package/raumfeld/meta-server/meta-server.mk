@@ -10,7 +10,7 @@ META_SERVER_BINARY:=$(META_SERVER_TARGET_DIR)/meta-server
 META_SERVER_CROSS_PREFIX:=$(BUILD_DIR)/..
 
 
-META_SERVER_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp sqlite taglib taglib-extras
+META_SERVER_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp iso-codes sqlite taglib taglib-extras
 
 ifeq ($(ARCH),arm)
 META_SERVER_CROSS = ARM
