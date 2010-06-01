@@ -47,4 +47,13 @@ rm -f  $1/usr/share/alsa/pcm/surround*.conf
 rm -rf $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/gdb
 rm -fr $1/usr/share/glib-2.0
-
+rm -f  $i/usr/share/locale/*/LC_MESSAGES/iso_639.mo
+rm -f  $i/usr/share/locale/*/LC_MESSAGES/iso_639_3.mo
+rm -f  $i/usr/share/locale/*/LC_MESSAGES/iso_3166_2.mo
+rm -f  $i/usr/share/locale/*/LC_MESSAGES/iso_4217.mo
+rm -f  $i/usr/share/locale/*/LC_MESSAGES/iso_15924.mo
+rm -f  $i/usr/share/xml/iso-codes/iso_639.xml
+rm -f  $i/usr/share/xml/iso-codes/iso_639_3.xml
+rm -f  $i/usr/share/xml/iso-codes/iso_3166_2.xml
+rm -f  $i/usr/share/xml/iso-codes/iso_4217.xml
+rm -f  $i/usr/share/xml/iso-codes/iso_15924.xml
