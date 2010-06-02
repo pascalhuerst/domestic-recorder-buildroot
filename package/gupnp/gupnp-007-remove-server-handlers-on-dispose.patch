@@ -1,4 +1,4 @@
-From e51100e19e47162f921147f44dd287da768837e9 Mon Sep 17 00:00:00 2001
+From b915ca8cffb55037d649a77d67deb3e112f794c0 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Wed, 2 Jun 2010 15:56:35 +0200
 Subject: [PATCH 2/2] Remove server handlers on dispose
@@ -12,10 +12,10 @@ Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
  1 files changed, 24 insertions(+), 0 deletions(-)
 
 diff --git a/libgupnp/gupnp-service.c b/libgupnp/gupnp-service.c
-index 40c6964..fbab06b 100644
+index 40c6964..9527707 100644
 --- a/libgupnp/gupnp-service.c
 +++ b/libgupnp/gupnp-service.c
-@@ -1511,6 +1511,11 @@ gupnp_service_dispose (GObject *object)
+@@ -1511,9 +1511,33 @@ gupnp_service_dispose (GObject *object)
  {
          GUPnPService *service;
          GObjectClass *object_class;
@@ -26,10 +26,6 @@ index 40c6964..fbab06b 100644
 +        char *path;
  
          service = GUPNP_SERVICE (object);
- 
-@@ -1535,6 +1540,25 @@ gupnp_service_dispose (GObject *object)
-         /* Cancel pending messages */
-         g_hash_table_remove_all (service->priv->subscriptions);
  
 +        /* Get server */
 +        info = GUPNP_SERVICE_INFO (service);
@@ -50,9 +46,9 @@ index 40c6964..fbab06b 100644
 +        g_free (path);
 +        g_free (url);
 +
-         /* Call super */
-         object_class = G_OBJECT_CLASS (gupnp_service_parent_class);
-         object_class->dispose (object);
+         if (service->priv->root_device) {
+                 GUPnPRootDevice **dev = &(service->priv->root_device);
+ 
 -- 
 1.7.0.4
 
