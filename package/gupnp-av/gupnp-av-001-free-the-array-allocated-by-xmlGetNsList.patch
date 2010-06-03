@@ -1,21 +1,19 @@
-From bdd6d7ce5cc2cf748b9ba87817c729e0056fb9b0 Mon Sep 17 00:00:00 2001
-From: Sven Neumann <s.neumann@raumfeld.com>
-Date: Wed, 19 May 2010 18:10:57 +0200
-Subject: [PATCH] Free the array allocated by xmlGetNsList()
+commit b728d5e51e8cf120f80503ce02c43f921fd296c1
+Author: Sven Neumann <s.neumann@raumfeld.com>
+Date:   Wed May 19 18:13:14 2010 +0200
 
-The array returned by xmlGetNsList() needs to be free'd. Also
-added a sanity check as xmlGetNsList() may return NULL.
-
-Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
----
- libgupnp-av/gupnp-didl-lite-object.c |   26 ++++++++++++++++----------
- 1 files changed, 16 insertions(+), 10 deletions(-)
+    Free the array allocated by xmlGetNsList()
+    
+    The array returned by xmlGetNsList() needs to be free'd. Also
+    added a sanity check as xmlGetNsList() may return NULL.
+    
+    Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
 
 diff --git a/libgupnp-av/gupnp-didl-lite-object.c b/libgupnp-av/gupnp-didl-lite-object.c
-index f8e77ec..339f5d9 100644
+index f8e77ec..1a7154f 100644
 --- a/libgupnp-av/gupnp-didl-lite-object.c
 +++ b/libgupnp-av/gupnp-didl-lite-object.c
-@@ -282,22 +282,28 @@ gupnp_didl_lite_object_constructed (GObject *object)
+@@ -282,22 +282,30 @@ gupnp_didl_lite_object_constructed (GObject *object)
          GObjectClass               *object_class;
          GUPnPDIDLLiteObjectPrivate *priv;
          xmlNs                     **ns_list;
@@ -39,14 +37,16 @@ index f8e77ec..339f5d9 100644
 +                short i;
 +
 +                for (i = 0; ns_list[i] != NULL; i++) {
-+                        if (ns_list[i]->prefix == NULL)
++                        const char *prefix;
++
++                        prefix = (const char *) ns_list[i]->prefix;
++
++                        if (prefix == NULL)
 +                                continue;
 +
-+                        if (g_ascii_strcasecmp ((char *) ns_list[i]->prefix,
-+                                                (char *) "upnp") == 0)
++                        if (g_ascii_strcasecmp (prefix, "upnp") == 0)
 +                                priv->upnp_ns = ns_list[i];
-+                        else if (g_ascii_strcasecmp ((char *) ns_list[i]->prefix,
-+                                                     (char *) "dc") == 0)
++                        else if (g_ascii_strcasecmp (prefix, "dc") == 0)
 +                                priv->dc_ns = ns_list[i];
 +                }
 +
@@ -54,6 +54,3 @@ index f8e77ec..339f5d9 100644
          }
  
          object_class = G_OBJECT_CLASS (gupnp_didl_lite_object_parent_class);
--- 
-1.7.0.4
-
