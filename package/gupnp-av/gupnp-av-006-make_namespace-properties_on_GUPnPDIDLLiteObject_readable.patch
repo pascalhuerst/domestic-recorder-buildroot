@@ -1,0 +1,47 @@
+Make namespace properties on GUPnPDIDLLiteObject readable
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ libgupnp-av/gupnp-didl-lite-object.c |   12 ++++++++++--
+ 1 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/libgupnp-av/gupnp-didl-lite-object.c b/libgupnp-av/gupnp-didl-lite-object.c
+index 890a9c7..a58ac8d 100644
+--- a/libgupnp-av/gupnp-didl-lite-object.c
++++ b/libgupnp-av/gupnp-didl-lite-object.c
+@@ -203,6 +203,14 @@ gupnp_didl_lite_object_get_property (GObject    *object,
+                         (value,
+                          gupnp_didl_lite_object_get_xml_node (didl_object));
+                 break;
++        case PROP_UPNP_NAMESPACE:
++                g_value_set_pointer (value,
++                                     didl_object->priv->upnp_ns);
++                break;
++        case PROP_DC_NAMESPACE:
++                g_value_set_pointer (value,
++                                     didl_object->priv->dc_ns);
++                break;
+         case PROP_ID:
+                 g_value_set_string
+                         (value,
+@@ -374,7 +382,7 @@ gupnp_didl_lite_object_class_init (GUPnPDIDLLiteObjectClass *klass)
+                                        "Pointer to the UPNP XML namespace "
+                                        "registered with the XML document "
+                                        "containing this object.",
+-                                       G_PARAM_WRITABLE |
++                                       G_PARAM_READWRITE |
+                                        G_PARAM_CONSTRUCT_ONLY |
+                                        G_PARAM_STATIC_NAME |
+                                        G_PARAM_STATIC_NICK |
+@@ -398,7 +406,7 @@ gupnp_didl_lite_object_class_init (GUPnPDIDLLiteObjectClass *klass)
+                                        "Pointer to the Dublin Core XML "
+                                        "namespace registered with the XML "
+                                        "document containing this object.",
+-                                       G_PARAM_WRITABLE |
++                                       G_PARAM_READWRITE |
+                                        G_PARAM_CONSTRUCT_ONLY |
+                                        G_PARAM_STATIC_NAME |
+                                        G_PARAM_STATIC_NICK |
+-- 
+1.7.1
+
