@@ -1,0 +1,86 @@
+commit 2056ed9318e254c4039f10d5896cd750d84185a1
+Author: Sven Neumann <s.neumann@raumfeld.com>
+Date:   Tue May 25 10:30:33 2010 +0200
+
+    Move namespaces lookup to a helper function
+    
+    Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+
+diff --git a/libgupnp-av/gupnp-didl-lite-object.c b/libgupnp-av/gupnp-didl-lite-object.c
+index 5a50f47..a43e669 100644
+--- a/libgupnp-av/gupnp-didl-lite-object.c
++++ b/libgupnp-av/gupnp-didl-lite-object.c
+@@ -285,41 +285,48 @@ gupnp_didl_lite_object_get_property (GObject    *object,
+ }
+ 
+ static void
+-gupnp_didl_lite_object_constructed (GObject *object)
++gupnp_didl_lite_object_lookup_namespaces (GUPnPDIDLLiteObjectPrivate *priv)
+ {
+-        GObjectClass               *object_class;
+-        GUPnPDIDLLiteObjectPrivate *priv;
+-
+-        priv = GUPNP_DIDL_LITE_OBJECT (object)->priv;
++        xmlNs **ns_list;
+ 
+-        if (! priv->upnp_ns || ! priv->dc_ns) {
+-                xmlNs **ns_list;
++        if (priv->upnp_ns && priv->dc_ns)
++                return;
+ 
+-                ns_list = xmlGetNsList (priv->xml_doc->doc,
+-                                        xmlDocGetRootElement (priv->xml_doc->doc));
++        ns_list = xmlGetNsList (priv->xml_doc->doc,
++                                xmlDocGetRootElement (priv->xml_doc->doc));
+ 
+-                if (ns_list) {
+-                        short i;
++        if (ns_list) {
++                short i;
+ 
+-                        for (i = 0; ns_list[i] != NULL; i++) {
+-                                const char *prefix;
++                for (i = 0; ns_list[i] != NULL; i++) {
++                        const char *prefix;
+ 
+-                                prefix = (const char *) ns_list[i]->prefix;
++                        prefix = (const char *) ns_list[i]->prefix;
+ 
+-                                if (prefix == NULL)
+-                                        continue;
++                        if (prefix == NULL)
++                                continue;
+ 
+-                                if (! priv->upnp_ns &&
+-                                    g_ascii_strcasecmp (prefix, "upnp") == 0)
+-                                        priv->upnp_ns = ns_list[i];
+-                                else if (! priv->dc_ns &&
+-                                         g_ascii_strcasecmp (prefix, "dc") == 0)
+-                                        priv->dc_ns = ns_list[i];
+-                        }
+-
+-                        xmlFree (ns_list);
++                        if (! priv->upnp_ns &&
++                            g_ascii_strcasecmp (prefix, "upnp") == 0)
++                                priv->upnp_ns = ns_list[i];
++                        else if (! priv->dc_ns &&
++                                 g_ascii_strcasecmp (prefix, "dc") == 0)
++                                priv->dc_ns = ns_list[i];
+                 }
++
++                xmlFree (ns_list);
+         }
++}
++
++static void
++gupnp_didl_lite_object_constructed (GObject *object)
++{
++        GObjectClass               *object_class;
++        GUPnPDIDLLiteObjectPrivate *priv;
++
++        priv = GUPNP_DIDL_LITE_OBJECT (object)->priv;
++
++        gupnp_didl_lite_object_lookup_namespaces (priv);
+ 
+         object_class = G_OBJECT_CLASS (gupnp_didl_lite_object_parent_class);
+         if (object_class->constructed != NULL)
