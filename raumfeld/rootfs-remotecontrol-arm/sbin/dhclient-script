@@ -172,7 +172,7 @@ case "$reason" in
         # receiving an actual address. - dhclient-script(8)
         if [ -f /tmp/old_ip_address ]; then
             read inputline < /tmp/old_ip_address
-            echo "using old ip"
+            echo "dhclient: using old ip"
             echo $inputline
 
             ifconfig $interface inet 0.0.0.0 up
@@ -184,12 +184,12 @@ case "$reason" in
             if [ -f /tmp/old_routers ]; then
 		while read line
 		do
-		    echo "adding router"
+		    echo "dhclient: adding router"
 		    echo $line
 		    route add default dev $interface gw $line
 		done < /tmp/old_routers
             else
-		echo "no old routers found!!!"
+		echo "dhclient: no old routers found!!!"
             fi
         else
             if [ -n "$alias_ip_address" ]; then
@@ -208,7 +208,7 @@ case "$reason" in
         if [ -n "$old_ip_address" -a -n "$alias_ip_address" -a \
              "$alias_ip_address" != "$old_ip_address" ]; then
             # Possible new alias. Remove old alias.
-            echo "resetting interface"
+            echo "dhclient: resetting interface"
             ifconfig $interface:0- inet 0.0.0.0
         fi
 
@@ -217,7 +217,7 @@ case "$reason" in
             # IP address changed.
             # Bringing down the interface will delete all routes,
             # and clear the ARP cache.
-            echo "resetting interface"
+            echo "dhclient: resetting interface"
             ifconfig $interface inet 0.0.0.0
         fi
 
@@ -225,7 +225,7 @@ case "$reason" in
             read inputline < /tmp/old_ip_address
             if [ -n "$inputline" -a \
                 "$inputline" != "$new_ip_address" ]; then
-                echo "possible network change!, resetting interface"
+                echo "dhclient: possible network change!, resetting interface"
                 ifconfig $interface inet 0.0.0.0
             fi
         fi
@@ -234,10 +234,10 @@ case "$reason" in
             "$reason" = "BOUND" -o "$reason" = "REBOOT" ]; then
 
             route add -net 224.0.0.0 netmask 240.0.0.0 dev $interface
-            echo "before ifconfig"
+            echo "dhclient: before ifconfig"
             ifconfig $interface inet $new_ip_address $new_subnet_arg \
                 $new_broadcast_arg $mtu_arg
-            echo "after ifconfig"
+            echo "dhclient: after ifconfig"
 
             echo $new_ip_address > /tmp/old_ip_address
 
@@ -247,7 +247,7 @@ case "$reason" in
 	    	    route add -host $router dev $interface
 	    	done
 	    fi
-            echo "route adds"
+            echo "dhclient: route adds"
             rm /tmp/old_routers
             for router in $new_routers; do
                 route add default dev $interface gw $router $metric_arg
@@ -263,7 +263,7 @@ case "$reason" in
         fi
 
 
-        echo "resolv confs"
+        echo "dhclient: resolv confs"
 
         make_resolv_conf
 
