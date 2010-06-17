@@ -1,0 +1,153 @@
+diff --git a/libgupnp/gupnp-context.c b/libgupnp/gupnp-context.c
+index 62aa4e9..268b198 100644
+--- a/libgupnp/gupnp-context.c
++++ b/libgupnp/gupnp-context.c
+@@ -157,6 +157,9 @@ gupnp_context_constructor (GType                  type,
+ 		soup_logger_attach (logger, context->priv->session);
+ 	}
+ 
++        soup_session_add_feature_by_type (context->priv->session,
++                                          SOUP_TYPE_CONTENT_DECODER);
++
+ 	return object;
+ }
+ 
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index c548e2d..1ca8584 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -700,6 +700,10 @@ begin_action_msg (GUPnPServiceProxy              *proxy,
+         /* Specify language */
+         http_request_set_accept_language (ret->msg);
+ 
++        /* Accept gzip encoding */
++        soup_message_headers_append (ret->msg->request_headers,
++				     "Accept-Encoding", "gzip");
++
+         /* Set up envelope */
+         ret->msg_str = xml_util_new_string ();
+ 
+diff --git a/libgupnp/gupnp-service.c b/libgupnp/gupnp-service.c
+index 0e1ea16..e5701ff 100644
+--- a/libgupnp/gupnp-service.c
++++ b/libgupnp/gupnp-service.c
+@@ -191,6 +191,7 @@ struct _GUPnPServiceAction {
+         char         *name;
+ 
+         SoupMessage  *msg;
++        gboolean      accept_gzip;
+ 
+         GUPnPXMLDoc  *doc;
+         xmlNode      *node;
+@@ -250,7 +251,6 @@ static void
+ finalize_action (GUPnPServiceAction *action)
+ {
+         SoupServer *server;
+-        char *response_body;
+ 
+         /* Embed action->response_str in a SOAP document */
+         g_string_prepend (action->response_str,
+@@ -271,13 +271,55 @@ finalize_action (GUPnPServiceAction *action)
+                          "</s:Body>"
+                          "</s:Envelope>");
+ 
+-        response_body = g_string_free (action->response_str, FALSE);
++        soup_message_headers_replace (action->msg->response_headers,
++                                      "Content-Type",
++                                      "text/xml; charset=\"utf-8\"");
++
++        if (action->accept_gzip && action->response_str->len > 1024) {
++                GZlibCompressor *compressor;
++                gsize converted = 0;
++
++                soup_message_headers_append (action->msg->response_headers,
++                                             "Content-Encoding", "gzip");
++
++                compressor =
++                  g_zlib_compressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP, -1);
++
++                while (converted < action->response_str->len) {
++                        GError *error = NULL;
++                        char buf[8192];
++                        gsize bytes_read = 0;
++                        gsize bytes_written = 0;
++
++                        if (! g_converter_convert (G_CONVERTER (compressor),
++                                                   action->response_str->str + converted,
++                                                   action->response_str->len - converted,
++                                                   buf, sizeof (buf),
++                                                   G_CONVERTER_INPUT_AT_END,
++                                                   &bytes_read, &bytes_written,
++                                                   &error)) {
++                                g_warning ("Error compressing response: %s",
++                                           error->message);
++                                g_error_free (error);
++                                break;
++                        }
++
++                        converted += bytes_read;
++
++                        soup_message_body_append (action->msg->response_body,
++                                                  SOUP_MEMORY_COPY,
++                                                  buf, bytes_written);
++                }
+ 
+-        soup_message_set_response (action->msg,
+-                                   "text/xml; charset=\"utf-8\"",
+-                                   SOUP_MEMORY_TAKE,
+-                                   response_body,
+-                                   strlen (response_body));
++                g_object_unref (compressor);
++                g_string_free (action->response_str, TRUE);
++        } else {
++                soup_message_body_append (action->msg->response_body,
++                                          SOUP_MEMORY_TAKE,
++                                          action->response_str->str,
++                                          action->response_str->len);
++                g_string_free (action->response_str, FALSE);
++        }
+ 
+         /* Server header on response */
+         soup_message_headers_append
+@@ -871,6 +913,7 @@ control_server_handler (SoupServer        *server,
+         xmlDoc *doc;
+         xmlNode *action_node;
+         const char *soap_action;
++        const char *accept_encoding;
+         char *action_name;
+         char *end;
+         GUPnPServiceAction *action;
+@@ -938,7 +981,7 @@ control_server_handler (SoupServer        *server,
+         }
+ 
+         /* Create action structure */
+-        action = g_slice_new (GUPnPServiceAction);
++        action = g_slice_new0 (GUPnPServiceAction);
+ 
+         action->ref_count    = 1;
+         action->name         = g_strdup (action_name);
+@@ -949,6 +992,24 @@ control_server_handler (SoupServer        *server,
+                                                         soap_action);
+         action->context      = g_object_ref (context);
+ 
++        /* Get accepted encodings */
++        accept_encoding = soup_message_headers_get_list (msg->request_headers,
++                                                         "Accept-Encoding");
++
++        if (accept_encoding) {
++                GSList *codings;
++
++                codings = soup_header_parse_quality_list (accept_encoding,
++                                                          NULL);
++                if (codings &&
++                    g_slist_find_custom (codings, "gzip",
++                                         (GCompareFunc) g_ascii_strcasecmp)) {
++                       action->accept_gzip = TRUE;
++                }
++
++                soup_header_free_list (codings);
++        }
++
+         /* Tell soup server that response is not ready yet */
+         soup_server_pause_message (server, msg);
+ 
