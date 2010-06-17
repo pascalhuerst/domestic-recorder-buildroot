@@ -1,0 +1,72 @@
+commit 555b52f9dc6b3abfacc0d592b3792140fcda559b
+Author: Sven Neumann <s.neumann@raumfeld.com>
+Date:   Thu Jun 17 10:31:27 2010 +0200
+
+    Turn warnings into messages
+    
+    Use g_message() instead of g_warning() to inform about invalid
+    or missing device descriptions and the like.
+    
+    Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+
+diff --git a/libgupnp/gupnp-control-point.c b/libgupnp/gupnp-control-point.c
+index 06a2dcb..63191d7 100644
+--- a/libgupnp/gupnp-control-point.c
++++ b/libgupnp/gupnp-control-point.c
+@@ -463,7 +463,7 @@ description_loaded (GUPnPControlPoint *control_point,
+                                         "root",
+                                         NULL);
+         if (element == NULL) {
+-                g_warning ("No 'root' element found in description document"
++                g_message ("No 'root' element found in description document"
+                            " '%s'. Ignoring device '%s'\n",
+                            description_url,
+                            udn);
+@@ -554,9 +554,9 @@ got_description_url (SoupSession           *session,
+                         /* If no proxy was created, make sure doc is freed. */
+                         g_object_unref (doc);
+                 } else
+-                        g_warning ("Failed to parse %s", data->description_url);
++                        g_message ("Failed to parse %s", data->description_url);
+         } else
+-                g_warning ("Failed to GET %s: %s",
++                g_message ("Failed to GET %s: %s",
+                            data->description_url,
+                            msg->reason_phrase);
+ 
+@@ -603,7 +603,7 @@ load_description (GUPnPControlPoint *control_point,
+                 data->message = soup_message_new (SOUP_METHOD_GET,
+                                                   description_url);
+                 if (data->message == NULL) {
+-                        g_warning ("Invalid description URL: %s",
++                        g_message ("Invalid description URL: %s",
+                                    description_url);
+ 
+                         g_slice_free (GetDescriptionURLData, data);
+@@ -646,7 +646,7 @@ parse_usn (const char *usn,
+ 
+         /* Verify we have a valid USN */
+         if (strncmp (usn, "uuid:", strlen ("uuid:"))) {
+-                g_warning ("Invalid USN: %s", usn);
++                g_message ("Invalid USN: %s", usn);
+ 
+                 return FALSE;
+         }
+@@ -700,7 +700,7 @@ parse_usn (const char *usn,
+         }
+ 
+         if (*udn == NULL)
+-                g_warning ("Invalid USN: %s", usn);
++                g_message ("Invalid USN: %s", usn);
+ 
+         for (i = 0; i < count; i++) {
+                 if ((bits[i] != *udn) &&
+@@ -725,7 +725,7 @@ gupnp_control_point_resource_available (GSSDPResourceBrowser *resource_browser,
+ 
+         /* Verify we have a location */
+         if (!locations) {
+-                g_warning ("No Location header for device with USN %s", usn);
++                g_message ("No Location header for device with USN %s", usn);
+                 return;
+         }
+ 
