@@ -28,7 +28,7 @@ index c548e2d..1ca8584 100644
          ret->msg_str = xml_util_new_string ();
  
 diff --git a/libgupnp/gupnp-service.c b/libgupnp/gupnp-service.c
-index 0e1ea16..e5701ff 100644
+index 0e1ea16..0c1b24c 100644
 --- a/libgupnp/gupnp-service.c
 +++ b/libgupnp/gupnp-service.c
 @@ -191,6 +191,7 @@ struct _GUPnPServiceAction {
@@ -47,7 +47,7 @@ index 0e1ea16..e5701ff 100644
  
          /* Embed action->response_str in a SOAP document */
          g_string_prepend (action->response_str,
-@@ -271,13 +271,55 @@ finalize_action (GUPnPServiceAction *action)
+@@ -271,13 +271,54 @@ finalize_action (GUPnPServiceAction *action)
                           "</s:Body>"
                           "</s:Envelope>");
  
@@ -63,12 +63,11 @@ index 0e1ea16..e5701ff 100644
 +                soup_message_headers_append (action->msg->response_headers,
 +                                             "Content-Encoding", "gzip");
 +
-+                compressor =
-+                  g_zlib_compressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP, -1);
++                compressor = g_zlib_compressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP, -1);
 +
 +                while (converted < action->response_str->len) {
 +                        GError *error = NULL;
-+                        char buf[8192];
++                        char buf[65536];
 +                        gsize bytes_read = 0;
 +                        gsize bytes_written = 0;
 +
@@ -109,7 +108,7 @@ index 0e1ea16..e5701ff 100644
  
          /* Server header on response */
          soup_message_headers_append
-@@ -871,6 +913,7 @@ control_server_handler (SoupServer        *server,
+@@ -871,6 +912,7 @@ control_server_handler (SoupServer        *server,
          xmlDoc *doc;
          xmlNode *action_node;
          const char *soap_action;
@@ -117,7 +116,7 @@ index 0e1ea16..e5701ff 100644
          char *action_name;
          char *end;
          GUPnPServiceAction *action;
-@@ -938,7 +981,7 @@ control_server_handler (SoupServer        *server,
+@@ -938,7 +980,7 @@ control_server_handler (SoupServer        *server,
          }
  
          /* Create action structure */
@@ -126,7 +125,7 @@ index 0e1ea16..e5701ff 100644
  
          action->ref_count    = 1;
          action->name         = g_strdup (action_name);
-@@ -949,6 +992,24 @@ control_server_handler (SoupServer        *server,
+@@ -949,6 +991,24 @@ control_server_handler (SoupServer        *server,
                                                          soap_action);
          action->context      = g_object_ref (context);
  
