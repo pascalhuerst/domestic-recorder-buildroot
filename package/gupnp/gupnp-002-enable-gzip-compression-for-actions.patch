@@ -28,7 +28,7 @@ index c548e2d..1ca8584 100644
          ret->msg_str = xml_util_new_string ();
  
 diff --git a/libgupnp/gupnp-service.c b/libgupnp/gupnp-service.c
-index 0e1ea16..0c1b24c 100644
+index 0e1ea16..85bf0ab 100644
 --- a/libgupnp/gupnp-service.c
 +++ b/libgupnp/gupnp-service.c
 @@ -191,6 +191,7 @@ struct _GUPnPServiceAction {
@@ -47,7 +47,7 @@ index 0e1ea16..0c1b24c 100644
  
          /* Embed action->response_str in a SOAP document */
          g_string_prepend (action->response_str,
-@@ -271,13 +271,54 @@ finalize_action (GUPnPServiceAction *action)
+@@ -271,13 +271,22 @@ finalize_action (GUPnPServiceAction *action)
                           "</s:Body>"
                           "</s:Envelope>");
  
@@ -55,48 +55,16 @@ index 0e1ea16..0c1b24c 100644
 +        soup_message_headers_replace (action->msg->response_headers,
 +                                      "Content-Type",
 +                                      "text/xml; charset=\"utf-8\"");
-+
-+        if (action->accept_gzip && action->response_str->len > 1024) {
-+                GZlibCompressor *compressor;
-+                gsize converted = 0;
-+
-+                soup_message_headers_append (action->msg->response_headers,
-+                                             "Content-Encoding", "gzip");
-+
-+                compressor = g_zlib_compressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP, -1);
-+
-+                while (converted < action->response_str->len) {
-+                        GError *error = NULL;
-+                        char buf[65536];
-+                        gsize bytes_read = 0;
-+                        gsize bytes_written = 0;
-+
-+                        if (! g_converter_convert (G_CONVERTER (compressor),
-+                                                   action->response_str->str + converted,
-+                                                   action->response_str->len - converted,
-+                                                   buf, sizeof (buf),
-+                                                   G_CONVERTER_INPUT_AT_END,
-+                                                   &bytes_read, &bytes_written,
-+                                                   &error)) {
-+                                g_warning ("Error compressing response: %s",
-+                                           error->message);
-+                                g_error_free (error);
-+                                break;
-+                        }
-+
-+                        converted += bytes_read;
-+
-+                        soup_message_body_append (action->msg->response_body,
-+                                                  SOUP_MEMORY_COPY,
-+                                                  buf, bytes_written);
-+                }
  
 -        soup_message_set_response (action->msg,
 -                                   "text/xml; charset=\"utf-8\"",
 -                                   SOUP_MEMORY_TAKE,
 -                                   response_body,
 -                                   strlen (response_body));
-+                g_object_unref (compressor);
++        if (action->accept_gzip && action->response_str->len > 1024) {
++                http_response_set_body_gzip (action->msg,
++                                             action->response_str->str,
++                                             action->response_str->len);
 +                g_string_free (action->response_str, TRUE);
 +        } else {
 +                soup_message_body_append (action->msg->response_body,
@@ -108,7 +76,7 @@ index 0e1ea16..0c1b24c 100644
  
          /* Server header on response */
          soup_message_headers_append
-@@ -871,6 +912,7 @@ control_server_handler (SoupServer        *server,
+@@ -871,6 +880,7 @@ control_server_handler (SoupServer        *server,
          xmlDoc *doc;
          xmlNode *action_node;
          const char *soap_action;
@@ -116,7 +84,7 @@ index 0e1ea16..0c1b24c 100644
          char *action_name;
          char *end;
          GUPnPServiceAction *action;
-@@ -938,7 +980,7 @@ control_server_handler (SoupServer        *server,
+@@ -938,7 +948,7 @@ control_server_handler (SoupServer        *server,
          }
  
          /* Create action structure */
@@ -125,7 +93,7 @@ index 0e1ea16..0c1b24c 100644
  
          action->ref_count    = 1;
          action->name         = g_strdup (action_name);
-@@ -949,6 +991,24 @@ control_server_handler (SoupServer        *server,
+@@ -949,6 +959,24 @@ control_server_handler (SoupServer        *server,
                                                          soap_action);
          action->context      = g_object_ref (context);
  
@@ -150,3 +118,80 @@ index 0e1ea16..0c1b24c 100644
          /* Tell soup server that response is not ready yet */
          soup_server_pause_message (server, msg);
  
+diff --git a/libgupnp/http-headers.c b/libgupnp/http-headers.c
+index 3e10e40..8bcfd16 100644
+--- a/libgupnp/http-headers.c
++++ b/libgupnp/http-headers.c
+@@ -349,3 +349,56 @@ http_response_set_content_range (SoupMessage  *msg,
+ 
+         g_free (content_range);
+ }
++
++/* Set Content-Encoding header to gzip and append compressed body */
++void
++http_response_set_body_gzip (SoupMessage *msg,
++                             const char  *body,
++                             const gsize  length)
++{
++        GZlibCompressor *compressor;
++        gboolean finished = FALSE;
++        gsize converted = 0;
++
++        soup_message_headers_append (msg->response_headers,
++                                     "Content-Encoding", "gzip");
++
++        compressor = g_zlib_compressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP, -1);
++
++        while (! finished) {
++                GError *error = NULL;
++                char buf[65536];
++                gsize bytes_read = 0;
++                gsize bytes_written = 0;
++
++                switch (g_converter_convert (G_CONVERTER (compressor),
++                                             body + converted,
++                                             length - converted,
++                                             buf, sizeof (buf),
++                                             G_CONVERTER_INPUT_AT_END,
++                                             &bytes_read, &bytes_written,
++                                             &error)) {
++                case G_CONVERTER_ERROR:
++                        g_warning ("Error compressing response: %s",
++                                   error->message);
++                        g_error_free (error);
++                        g_object_unref (compressor);
++                        return;
++                case G_CONVERTER_CONVERTED:
++                        converted += bytes_read;
++                        break;
++                case G_CONVERTER_FINISHED:
++                        finished = TRUE;
++                        break;
++                case G_CONVERTER_FLUSHED:
++                        break;
++                }
++
++                if (bytes_written)
++                        soup_message_body_append (msg->response_body,
++                                                  SOUP_MEMORY_COPY,
++                                                  buf, bytes_written);
++        }
++
++        g_object_unref (compressor);
++}
+diff --git a/libgupnp/http-headers.h b/libgupnp/http-headers.h
+index 6dbaa94..507adf5 100644
+--- a/libgupnp/http-headers.h
++++ b/libgupnp/http-headers.h
+@@ -54,6 +54,11 @@ http_response_set_content_range  (SoupMessage  *message,
+                                   gsize         length,
+                                   gsize         total);
+ 
++G_GNUC_INTERNAL void
++http_response_set_body_gzip      (SoupMessage   *msg,
++                                  const char    *body,
++                                  const gsize    length);
++
+ G_END_DECLS
+ 
+ #endif /* __HTTP_HEADERS_H__ */
