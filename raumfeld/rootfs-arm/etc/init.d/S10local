@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Mount all partitions listed in /etc/fstab
+mount -a
+
+# Set the MAC address of eth0
 eval $(fw_printenv ethaddr)
 test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
-
