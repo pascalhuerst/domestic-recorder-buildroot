@@ -4,7 +4,7 @@
 #
 #############################################################
 
-GUPNP_AV_VERSION:=0.5.6
+GUPNP_AV_VERSION:=0.5.7
 GUPNP_AV_SOURCE:=gupnp-av-$(GUPNP_AV_VERSION).tar.gz
 GUPNP_AV_SITE:=http://www.gupnp.org/sources/gupnp-av
 GUPNP_AV_AUTORECONF = NO
