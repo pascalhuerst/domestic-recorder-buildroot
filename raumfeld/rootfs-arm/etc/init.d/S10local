@@ -6,3 +6,6 @@ mount -a
 # Set the MAC address of eth0
 eval $(fw_printenv ethaddr)
 test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
+
+# Increase the kernel overcommit ratio
+sysctl -w vm.overcommit_ratio=80
