@@ -7,5 +7,5 @@ mount -a
 eval $(fw_printenv ethaddr)
 test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
 
-# Increase the kernel overcommit ratio
-sysctl -w vm.overcommit_ratio=80
+# Change the kernel memory overcommit policy to always overcommit
+sysctl -w vm.overcommit_memory=1
