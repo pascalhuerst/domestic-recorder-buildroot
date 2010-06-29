@@ -1,0 +1,10 @@
+#!/bin/sh
+
+UPDATES_SERVER=/usr/bin/raumfeld-updates-server
+UPDATES_IMAGE=$UM_MOUNTPOINT/raumfeld-updates.img
+
+test -x $UPDATES_SERVER || exit 0
+
+if [ -f $UPDATES_IMAGE ]; then 
+    $UPDATES_SERVER $UPDATES_IMAGE &
+fi
