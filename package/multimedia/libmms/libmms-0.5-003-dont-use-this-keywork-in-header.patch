@@ -1,0 +1,17 @@
+--- libmms-0.5/src/mmsx.h	2009-10-31 13:35:28.000000000 +0100
++++ libmms-0.5/src/mmsx.h	2010-06-29 11:34:14.000000000 +0200
+@@ -55,11 +55,11 @@
+ 
+ mms_off_t mmsx_get_current_pos (mmsx_t *instance);
+ 
+-uint32_t  mmsx_get_asf_header_len (mmsx_t *this);
++uint32_t  mmsx_get_asf_header_len (mmsx_t *pThis);
+ 
+-uint64_t  mmsx_get_asf_packet_len (mmsx_t *this);
++uint64_t  mmsx_get_asf_packet_len (mmsx_t *pThis);
+ 
+-int       mmsx_get_seekable (mmsx_t *this);
++int       mmsx_get_seekable (mmsx_t *pThis);
+ 
+ #ifdef __cplusplus
+ }
