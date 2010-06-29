@@ -1,0 +1,4 @@
+# Rules for usbmount
+
+KERNEL=="sd??", ACTION=="add",    RUN+="/usr/bin/raumfeld-usbmount add"
+KERNEL=="sd??", ACTION=="remove", RUN+="/usr/bin/raumfeld-usbmount remove"

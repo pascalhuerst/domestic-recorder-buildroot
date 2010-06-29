@@ -1,0 +1,57 @@
+#!/bin/sh
+
+# set -e
+# exec > /dev/null 2>&1
+
+# This file is free software; the copyright holder gives unlimited
+# permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+
+log()
+{
+    echo "usbmount -- $1" | logger
+}
+
+if test "$1" = add; then
+
+    log "handle mount of $DEVNAME"
+
+    DEV_UUID=`LD_PRELOAD=libpthread.so.0 blkid $DEVNAME -s UUID | awk -F"\"" '{print $2}'`
+
+    log "extracted uuid $DEV_UUID"
+
+    MOUNT_POINT="/media/$DEV_UUID"
+
+    log "creating mount point $MOUNT_POINT"
+
+    mkdir -p $MOUNT_POINT
+
+    log "starting usbmount add"
+
+    export MOUNTPOINTS=$MOUNT_POINT
+    export FS_MOUNTOPTIONS="-fstype=vfat,utf8=true"
+    export VERBOSE=y
+
+    /sbin/usbmount add
+
+elif test "$1" = remove; then
+
+    log "handle unmount of $DEVNAME"
+
+    MOUNT_POINT=`mount | grep $DEVNAME | awk '{print $3}'`
+    DEV_UUID=`echo $MOUNT_POINT | awk -F "/" '{print $3}'`
+
+    log "starting usbmount remove"
+
+    export MOUNTPOINTS=$MOUNT_POINT
+    export VERBOSE=y
+
+    /sbin/usbmount remove
+
+    log "removing mount point $MOUNT_POINT"
+
+    rmdir $MOUNT_POINT
+
+fi
+
+exit 0

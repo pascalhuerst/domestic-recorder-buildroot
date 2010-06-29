@@ -1,1 +1,0 @@
-KERNEL=="sd??", ACTION=="add", RUN+="/usr/bin/enable-rootkit.sh"

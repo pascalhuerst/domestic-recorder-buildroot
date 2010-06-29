@@ -1,0 +1,18 @@
+#!/bin/sh
+
+SSH_COOKIE="/etc/raumfeld/sshd_enabled"
+
+if [ -f $SSH_COOKIE ]; then
+    echo "the ssh cookie already exists, nothing to be done"
+    exit
+fi
+
+sshenable=48fab7623bce0c903d5fe53dd681bb163eba85ae
+secret=$UM_MOUNTPOINT/$sshenable
+
+if [ -f $secret ]; then 
+    echo "found the secret $secret"
+
+    touch $SSH_COOKIE
+    /etc/init.d/S50sshd start
+fi
