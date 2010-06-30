@@ -1,3 +1,0 @@
-KERNEL=="sd??", ACTION=="add", IMPORT="/lib/udev/vol_id --export $tempnode"
-KERNEL=="sd??", ACTION=="add", ENV{ID_FS_LABEL}=="SCREENSHOTS", RUN+="/usr/share/remote-control/scripts/mount-screenshots.sh"
-
