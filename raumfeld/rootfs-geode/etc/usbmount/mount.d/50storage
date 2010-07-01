@@ -1,9 +1,8 @@
 #!/bin/sh
 
-DEV_UUID=`LD_PRELOAD=libpthread.so.0 blkid $UM_DEVICE -s UUID | awk -F"\"" '{print $2}'`
-
-# Check for disk label
-label=`/lib/udev/vol_id --label $DEVPATH`
+# Check for disk UUID and label
+uuid=`/lib/udev/vol_id $UM_DEVICE --uuid`
+label=`/lib/udev/vol_id $UM_DEVICE --label`
 
 if test -z "$label"; then
   # If there's no label, use vendor and/or model
@@ -20,9 +19,9 @@ fi
 i=3
 while [ $i -gt 0 ]; do
     /usr/bin/raumfeld-prefs \
-        "set-value /Preferences/Storages Storage $DEV_UUID Path file://$UM_MOUNTPOINT" \
-        "set-value /Preferences/Storages Storage $DEV_UUID Online 1" \
-        "set-value /Preferences/Storages Storage $DEV_UUID Name $label" \
+        "set-value /Preferences/Storages Storage $uuid Path file://$UM_MOUNTPOINT" \
+        "set-value /Preferences/Storages Storage $uuid Online 1" \
+        "set-value /Preferences/Storages Storage $uuid Name $label" \
         "store" && break
     i=`expr $i - 1`
     echo "raumfeld-prefs failed. Trying $i more times."
