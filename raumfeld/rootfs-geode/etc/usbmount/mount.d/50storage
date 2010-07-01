@@ -9,8 +9,8 @@ if test -z "$label"; then
 
   if test -n "$UM_VENDOR"; then
     label="$UM_VENDOR $UM_MODEL"
-  elif test -n " $UM_MODEL"; then
-    label=" $UM_MODEL"
+  elif test -n "$UM_MODEL"; then
+    label="$UM_MODEL"
   else
     label="USB Storage"
   fi
