@@ -1,0 +1,12 @@
+--- wpa_supplicant-0.7.0-orig/wpa_supplicant/wpa_supplicant.c	2009-11-21 21:49:02.000000000 +0100
++++ wpa_supplicant-0.7.0/wpa_supplicant/wpa_supplicant.c	2010-07-06 12:19:16.000000000 +0200
+@@ -1479,7 +1479,8 @@
+ 	}
+ 	wpa_s->disconnected = 0;
+ 	wpa_s->reassociate = 1;
+-	wpa_supplicant_req_scan(wpa_s, 0, 0);
++	//wpa_supplicant_req_scan(wpa_s, 0, 0);
++	wpa_supplicant_associate(wpa_s, NULL, ssid);
+ 
+ 	if (ssid)
+ 		wpas_notify_network_selected(wpa_s, ssid);
