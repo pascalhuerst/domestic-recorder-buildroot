@@ -1,0 +1,71 @@
+From e3f35148e66e2e00ea8e91b04e909ba8ef1dc43b Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Tue, 22 Jun 2010 12:04:54 +0200
+Subject: [PATCH] Chain up in dispose() and finalize().
+
+---
+ libgssdp/gssdp-client.c           |    4 ++++
+ libgssdp/gssdp-resource-browser.c |    4 ++++
+ libgssdp/gssdp-resource-group.c   |    2 ++
+ 3 files changed, 10 insertions(+), 0 deletions(-)
+
+diff --git a/libgssdp/gssdp-client.c b/libgssdp/gssdp-client.c
+index 8cfd0b3..b5de2c3 100644
+--- a/libgssdp/gssdp-client.c
++++ b/libgssdp/gssdp-client.c
+@@ -268,6 +268,8 @@ gssdp_client_dispose (GObject *object)
+                 g_main_context_unref (client->priv->main_context);
+                 client->priv->main_context = NULL;
+         }
++
++        G_OBJECT_CLASS (gssdp_client_parent_class)->dispose (object);
+ }
+ 
+ static void
+@@ -280,6 +282,8 @@ gssdp_client_finalize (GObject *object)
+         g_free (client->priv->server_id);
+         g_free (client->priv->interface);
+         g_free (client->priv->host_ip);
++
++        G_OBJECT_CLASS (gssdp_client_parent_class)->finalize (object);
+ }
+ 
+ static void
+diff --git a/libgssdp/gssdp-resource-browser.c b/libgssdp/gssdp-resource-browser.c
+index 47a7514..819fe17 100644
+--- a/libgssdp/gssdp-resource-browser.c
++++ b/libgssdp/gssdp-resource-browser.c
+@@ -221,6 +221,8 @@ gssdp_resource_browser_dispose (GObject *object)
+         }
+ 
+         clear_cache (resource_browser);
++
++        G_OBJECT_CLASS (gssdp_resource_browser_parent_class)->dispose (object);
+ }
+ 
+ static void
+@@ -236,6 +238,8 @@ gssdp_resource_browser_finalize (GObject *object)
+         g_free (resource_browser->priv->target);
+ 
+         g_hash_table_destroy (resource_browser->priv->resources);
++
++        G_OBJECT_CLASS (gssdp_resource_browser_parent_class)->finalize (object);
+ }
+ 
+ static void
+diff --git a/libgssdp/gssdp-resource-group.c b/libgssdp/gssdp-resource-group.c
+index 9a98409..f20b384 100644
+--- a/libgssdp/gssdp-resource-group.c
++++ b/libgssdp/gssdp-resource-group.c
+@@ -264,6 +264,8 @@ gssdp_resource_group_dispose (GObject *object)
+                 g_object_unref (priv->client);
+                 priv->client = NULL;
+         }
++
++        G_OBJECT_CLASS (gssdp_resource_group_parent_class)->dispose (object);
+ }
+ 
+ static void
+-- 
+1.7.0.4
+
