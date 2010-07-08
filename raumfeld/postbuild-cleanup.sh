@@ -56,3 +56,6 @@ find $1/usr/share/locale -name iso_639_3.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_3166_2.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_4217.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_15924.mo -exec rm -f {} \;
+if test -d $1/usr/lib/directfb-1.4-0; then
+    find $1/usr/lib/directfb-1.4-0 -name '*.o' -exec rm -f {} \;
+fi
