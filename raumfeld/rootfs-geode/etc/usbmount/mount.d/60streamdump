@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Check for disk label
+label=`/lib/udev/vol_id $UM_DEVICE --label`
+
+if test "$label" = "STREAMDUMP"; then
+  mkdir -p /tmp/streamdump
+  mount --bind $UM_MOUNTPOINT /tmp/streamdump
+  mount -o remount,rw /tmp/streamdump
+fi

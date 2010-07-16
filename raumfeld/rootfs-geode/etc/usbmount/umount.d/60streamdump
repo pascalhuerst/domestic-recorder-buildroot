@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if test -d /tmp/streamdump; then
+  umount /tmp/streamdump
+  rmdir /tmp/streamdump
+fi
