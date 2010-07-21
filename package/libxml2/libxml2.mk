@@ -3,9 +3,10 @@
 # libxml2
 #
 #############################################################
-LIBXML2_VERSION = 2.7.3
+LIBXML2_VERSION = 2.7.7
 LIBXML2_SOURCE = libxml2-sources-$(LIBXML2_VERSION).tar.gz
 LIBXML2_SITE = ftp://xmlsoft.org/libxml2
+LIBXML2_LIBTOOL_PATCH = NO
 LIBXML2_INSTALL_STAGING = YES
 LIBXML2_INSTALL_TARGET = YES
 
@@ -15,8 +16,7 @@ endif
 
 LIBXML2_CONF_OPT = --with-gnu-ld --enable-shared \
 		--enable-static $(DISABLE_IPV6) \
-		--without-debugging --without-python \
-		--without-threads 
+		--without-python
 
 LIBXML2_DEPENDENCIES = uclibc
 
