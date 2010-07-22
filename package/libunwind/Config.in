@@ -1,0 +1,8 @@
+config BR2_PACKAGE_LIBUNWIND
+	bool "libunwind"
+	help
+	  libunwind is a portable and efficient C programming
+	  interface (API) to determine the call-chain of a program.
+	  Useful for exception handling, debugging and introspection.
+
+	  http://www.nongnu.org/libunwind/
