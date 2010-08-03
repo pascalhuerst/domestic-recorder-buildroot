@@ -60,3 +60,11 @@ find $1/usr/share/locale -name iso_15924.mo -exec rm -f {} \;
 if test -d $1/usr/lib/directfb-1.4-0; then
     find $1/usr/lib/directfb-1.4-0 -name '*.o' -exec rm -f {} \;
 fi
+
+if test -n "$TARGET_CROSS"; then
+    STRIPCMD=${TARGET_CROSS}strip
+    echo "Stripping binaries ..."
+    find $1/bin -type f -executable -not -name remote-control -exec $STRIPCMD {} \;
+    find $1/usr/bin -type f -executable -not -name remote-control -exec $STRIPCMD {} \;
+    find $1/usr/libexec -type f -executable -exec $STRIPCMD {} \;
+fi
