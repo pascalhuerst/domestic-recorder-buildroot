@@ -29,6 +29,7 @@ rm -fr $1/usr/lib/pkg-config
 rm -f  $1/usr/lib/*.la
 rm -f  $1/usr/lib/libvorbisenc*
 rm -fr $1/usr/lib/glib-2.0
+rm -f  $1/usr/lib/xml2Conf.sh
 rm -f  $1/usr/libexec/gvfsd-archive
 rm -f  $1/usr/libexec/gvfsd-burn
 rm -f  $1/usr/libexec/gvfsd-trash
