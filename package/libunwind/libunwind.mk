@@ -17,6 +17,8 @@ LIBUNWIND_CONF_OPT = --enable-debug-frame
 $(eval $(call AUTOTARGETS,package,libunwind))
 
 $(LIBUNWIND_DIR)/.stamp_downloaded:
+	$(Q)test -e $(DL_DIR)/$(LIBUNWIND_SOURCE) || \
+	$(WGET) -P $(DL_DIR) $(BR2_PRIMARY_SITE)/$(LIBUNWIND_SOURCE) || \
 	$(WGET) -O $(DL_DIR)/$(LIBUNWIND_SOURCE) "$(LIBUNWIND_URL)"
 	$(Q)mkdir -p $(LIBUNWIND_DIR)
 	$(Q)touch $@
