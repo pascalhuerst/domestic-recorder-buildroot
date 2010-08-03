@@ -21,8 +21,13 @@ LIBRAUMFELD_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
+ifeq ($(BR2_PACKAGE_LIBRAUMFELD_PROFILING),y)
+LIBRAUMFELD_CONF_OPT += --enable-profiling
+endif
+
 LIBRAUMFELD_DEPENDENCIES = \
-	host-pkgconfig host-libglib2 dbus-glib gupnp-av openssl libarchive
+	host-pkgconfig host-libglib2 \
+	dbus-glib gupnp-av openssl libarchive libunwind
 
 $(eval $(call AUTOTARGETS,package/raumfeld,libraumfeld))
 
