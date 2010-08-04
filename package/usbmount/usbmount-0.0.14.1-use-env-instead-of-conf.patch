@@ -25,7 +25,7 @@
 +# fi
 +
 +FILESYSTEMS="ext2 ext3 msdos vfat ntfs hfs hfsplus"
-+MOUNTOPTIONS="sync,noexec,nodev,noatime,ro"
++MOUNTOPTIONS="ro,noexec,nodev,noatime"
 +LOGFILE="/var/log/usbmount.log"
  
  umask 022
