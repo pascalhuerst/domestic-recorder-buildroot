@@ -69,7 +69,11 @@ if test -n "$2"; then
     find $1/usr/bin -type f -executable -not -name remote-control -exec $STRIPCMD {} \;
     find $1/usr/sbin -type f -executable -exec $STRIPCMD {} \;
     find $1/usr/libexec -type f -executable -exec $STRIPCMD {} \;
-    if test -d $1/usr/lib/usr/lib/gstreamer-0.10; then
+    find $1/usr/lib/udev -type f -executable -exec $STRIPCMD {} \;
+    if test -d $1/usr/lib/alsa-lib; then
+        find $1/usr/lib/alsa-lib -type f -executable -exec $STRIPCMD {} \;
+    fi
+    if test -d $1/usr/lib/gstreamer-0.10; then
         find $1/usr/lib/gstreamer-0.10 -type f -executable -exec $STRIPCMD {} \;
     fi
 fi
