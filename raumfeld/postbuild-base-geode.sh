@@ -11,4 +11,4 @@ cp -r raumfeld/rootfs-geode/* $1
 
 mkdir -p $1/data
 
-raumfeld/postbuild-cleanup.sh $1
+raumfeld/postbuild-cleanup.sh $*

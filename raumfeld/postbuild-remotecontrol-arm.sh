@@ -11,6 +11,6 @@ if [ -d raumfeld/rootfs-remotecontrol-arm ]; then
 fi
 
 echo "Creating the update mount-point ..."
-mkdir $1/update
+mkdir -p $1/update
 
-raumfeld/postbuild-cleanup.sh $1
+raumfeld/postbuild-cleanup.sh $*
