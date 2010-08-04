@@ -61,8 +61,10 @@ if test -d $1/usr/lib/directfb-1.4-0; then
     find $1/usr/lib/directfb-1.4-0 -name '*.o' -exec rm -f {} \;
 fi
 
-if test -n "$TARGET_CROSS"; then
-    STRIPCMD=${TARGET_CROSS}strip
+
+STRIPCMD=${STAGING_DIR}/usr/bin/${BR2_ARCH}/${BR2_GNU_TARGET_SUFFIX}-strip
+
+if test -x $STRIPCMD; then
     echo "Stripping binaries ..."
     find $1/bin -type f -executable -exec $STRIPCMD {} \;
     find $1/usr/bin -type f -executable -not -name remote-control -exec $STRIPCMD {} \;
