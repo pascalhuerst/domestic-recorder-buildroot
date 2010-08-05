@@ -13,4 +13,8 @@ fi
 echo "Creating the update mount-point ..."
 mkdir -p $1/update
 
+echo "Adding zImage for update ..."
+mkdir -p $1/tmp
+cp binaries/initramfs-arm/zImage $1/tmp/raumfeld-update.zImage
+
 raumfeld/postbuild-cleanup.sh $*

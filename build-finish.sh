@@ -74,6 +74,15 @@ fi
 # do post-processing for some targets ...
 
 case $target in
+
+	# copy the zImage for later use in the update image
+	initramfs-arm)
+		cp project_build_arm/uclibc/linux-/arch/arm/boot/zImage binaries/initramfs-arm
+		;;
+	initramfs-geode)
+		cp project_build_arm/uclibc/linux-/arch/x86/boot/zImage binaries/initramfs-i586
+		;;
+
 	# resize the root fs ext2 image so that genext2fs will find
 	# free inodes when building the deployment targets.
 	# this should probably be made part of br2 some day.
