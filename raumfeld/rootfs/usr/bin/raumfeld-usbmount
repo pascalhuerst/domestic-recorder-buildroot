@@ -29,9 +29,6 @@ if test "$1" = add; then
     log "starting usbmount add"
 
     export MOUNTPOINTS=$MOUNT_POINT
-    export FS_MOUNTOPTIONS="-fstype=vfat,utf8=true"
-    export VERBOSE=y
-
     /sbin/usbmount add
 
 elif test "$1" = remove; then
@@ -43,8 +40,6 @@ elif test "$1" = remove; then
     log "starting usbmount remove"
 
     export MOUNTPOINTS=$MOUNT_POINT
-    export VERBOSE=y
-
     /sbin/usbmount remove
 
     log "removing mount point $MOUNT_POINT"
