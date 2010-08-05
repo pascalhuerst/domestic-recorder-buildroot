@@ -24,5 +24,6 @@ source "package/raumfeld/meta-server/Config.in"
 source "package/raumfeld/stream-decoder/Config.in"
 source "package/raumfeld/stream-relay/Config.in"
 source "package/raumfeld/loopbacktest/Config.in"
+source "package/raumfeld/raumfeld-extract/Config.in"
 endmenu
 

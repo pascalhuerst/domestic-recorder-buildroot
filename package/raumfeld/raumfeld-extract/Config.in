@@ -1,0 +1,7 @@
+config BR2_PACKAGE_RAUMFELD_EXTRACT
+	bool "raumfeld-extract"
+        select BR2_PACKAGE_LIBARCHIVE
+	help
+	  raumfeld-extract is a utility to extract an update
+
+	  http://www.raumfeld.com/
