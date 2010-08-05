@@ -1,0 +1,12 @@
+--- kexec-2.0.2-orig/kexec/arch/arm/kexec-arm.c	2010-07-29 06:19:59.000000000 +0200
++++ kexec-2.0.2/kexec/arch/arm/kexec-arm.c	2010-08-05 17:06:40.000000000 +0200
+@@ -92,7 +92,8 @@
+ }
+ 
+ const struct arch_map_entry arches[] = {
+-	{ "arm", KEXEC_ARCH_ARM },
++	{ "arm",      KEXEC_ARCH_ARM },
++	{ "armv5tel", KEXEC_ARCH_ARM },
+ 	{ NULL, 0 },
+ };
+ 
