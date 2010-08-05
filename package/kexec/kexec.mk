@@ -3,9 +3,9 @@
 # kexec
 #
 #############################################################
-KEXEC_VERSION = 2.0.1
+KEXEC_VERSION = 2.0.2
 KEXEC_SOURCE = kexec-tools-$(KEXEC_VERSION).tar.bz2
-KEXEC_SITE = $(BR2_KERNEL_MIRROR)/linux/kernel/people/horms/kexec-tools/
+KEXEC_SITE = http://www.kernel.org/pub/linux/utils/kernel/kexec/
 # no install-strip/install-exec
 KEXEC_INSTALL_TARGET_OPT = DESTDIR=$(TARGET_DIR) install
 
