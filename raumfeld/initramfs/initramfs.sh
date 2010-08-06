@@ -2,7 +2,7 @@
 
 export PATH="/sbin:/usr/sbin:$PATH"
 
-echo "Booted to initramfs. Now switching over to imgrootfs."
+echo "Booted to initramfs."
 
 hw=`cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' '`
 
