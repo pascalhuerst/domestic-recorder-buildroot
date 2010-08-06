@@ -75,12 +75,12 @@ fi
 
 case $target in
 
-	# copy the zImage for later use in the update image
+	# copy the (b)zImage for later use in the update image
 	initramfs-arm)
 		cp project_build_arm/uclibc/linux-/arch/arm/boot/zImage binaries/initramfs-arm
 		;;
 	initramfs-geode)
-		cp project_build_arm/uclibc/linux-/arch/x86/boot/zImage binaries/initramfs-i586
+		cp project_build_i586/uclibc/linux-/arch/x86/boot/bzImage binaries/initramfs-i586
 		;;
 
 	# resize the root fs ext2 image so that genext2fs will find

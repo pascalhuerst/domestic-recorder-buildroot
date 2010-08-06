@@ -14,6 +14,6 @@ mkdir -p $1/data
 
 echo "Adding zImage for update ..."
 mkdir -p $1/tmp
-cp binaries/initramfs-i586/zImage $1/tmp/raumfeld-update.zImage
+cp binaries/initramfs-i586/bzImage $1/tmp/raumfeld-update.zImage
 
 raumfeld/postbuild-cleanup.sh $*
