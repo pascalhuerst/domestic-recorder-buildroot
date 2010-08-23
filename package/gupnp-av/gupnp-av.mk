@@ -4,9 +4,9 @@
 #
 #############################################################
 
-GUPNP_AV_VERSION:=0.5.7
+GUPNP_AV_VERSION:=0.5.9
 GUPNP_AV_SOURCE:=gupnp-av-$(GUPNP_AV_VERSION).tar.gz
-GUPNP_AV_SITE:=http://www.gupnp.org/sources/gupnp-av
+GUPNP_AV_SITE:=http://www.gupnp.org/sites/all/files/sources
 GUPNP_AV_AUTORECONF = NO
 GUPNP_AV_LIBTOOL_PATCH = NO
 GUPNP_AV_INSTALL_STAGING = YES
