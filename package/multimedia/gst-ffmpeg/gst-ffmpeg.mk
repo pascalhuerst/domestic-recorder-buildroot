@@ -43,7 +43,8 @@ GST_FFMPEG_CONF_OPT = \
 						--enable-cross-compile \
 						--cross-prefix=$(TARGET_CROSS) \
 						--disable-shared \
-						--enable-static"
+						--enable-static \
+            --disable-decoder=h264"
 
 $(DL_DIR)/$(GST_FFMPEG_SOURCE):
 	$(call DOWNLOAD,$(GST_FFMPEG_SITE),$(GST_FFMPEG_SOURCE))
