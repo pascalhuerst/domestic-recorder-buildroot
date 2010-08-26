@@ -8,6 +8,7 @@ test -d $1/etc/raumfeld/ || mkdir $1/etc/raumfeld/
 echo "Purging unwanted files ..."
 
 rm -fr $1/usr/include
+rm -f  $1/usr/bin/arm-linux-directfb-csource
 rm -f  $1/usr/bin/dbus-binding-tool
 rm -f  $1/usr/bin/faad
 rm -f  $1/usr/bin/flac
