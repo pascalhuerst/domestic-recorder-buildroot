@@ -1,0 +1,45 @@
+From 6fa670d74014b09667c711aa4b8de870de393d2a Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Wed, 25 Aug 2010 10:11:29 +0200
+Subject: [PATCH] linux_input: set DICAPS_KEYS for all input devices with key events
+
+All linux input devices that have the EV_KEY bit set get DICAPS_KEYS
+set in their DFBInputDeviceCapabilities.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ inputdrivers/linux_input/linux_input.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/inputdrivers/linux_input/linux_input.c b/inputdrivers/linux_input/linux_input.c
+index 87bb938..afc5d15 100644
+--- a/inputdrivers/linux_input/linux_input.c
++++ b/inputdrivers/linux_input/linux_input.c
+@@ -1047,6 +1047,8 @@ get_device_info( int              fd,
+      if (test_bit( EV_KEY, evbit )) {
+           int i;
+ 
++          info->desc.caps |= DICAPS_KEYS;
++
+           /* get keyboard bits */
+           ioctl( fd, EVIOCGBIT(EV_KEY, sizeof(keybit)), keybit );
+ 
+@@ -1118,7 +1120,6 @@ get_device_info( int              fd,
+      /* A Keyboard, do we have at least some letters? */
+      if (num_keys > 20) {
+           info->desc.type |= DIDTF_KEYBOARD;
+-          info->desc.caps |= DICAPS_KEYS;
+ 
+           info->desc.min_keycode = 0;
+           info->desc.max_keycode = 127;
+@@ -1127,7 +1128,6 @@ get_device_info( int              fd,
+      /* A Remote Control? */
+      if (num_ext_keys) {
+           info->desc.type |= DIDTF_REMOTE;
+-          info->desc.caps |= DICAPS_KEYS;
+      }
+ 
+      /* Buttons */
+-- 
+1.7.0.4
+

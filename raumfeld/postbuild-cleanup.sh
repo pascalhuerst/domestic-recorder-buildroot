@@ -8,6 +8,7 @@ test -d $1/etc/raumfeld/ || mkdir $1/etc/raumfeld/
 echo "Purging unwanted files ..."
 
 rm -fr $1/usr/include
+rm -f  $1/usr/bin/arm-linux-directfb-csource
 rm -f  $1/usr/bin/dbus-binding-tool
 rm -f  $1/usr/bin/faad
 rm -f  $1/usr/bin/flac
@@ -57,8 +58,8 @@ find $1/usr/share/locale -name iso_639_3.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_3166_2.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_4217.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_15924.mo -exec rm -f {} \;
-if test -d $1/usr/lib/directfb-1.4-0; then
-    find $1/usr/lib/directfb-1.4-0 -name '*.o' -exec rm -f {} \;
+if test -d $1/usr/lib/directfb-1.4-5; then
+    find $1/usr/lib/directfb-1.4-5 -name '*.o' -exec rm -f {} \;
 fi
 
 if test -n "$2"; then
