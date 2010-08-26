@@ -16,7 +16,6 @@ FFMPEG_CONF_OPT = \
 	--disable-postproc	\
 	--disable-swscale	\
 	--disable-vhook		\
-  --disable-decoder=h264
 
 ifeq ($(BR2_PACKAGE_FFMPEG_GPL),y)
 FFMPEG_CONF_OPT += --enable-gpl
