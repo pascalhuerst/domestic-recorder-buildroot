@@ -44,13 +44,15 @@ GST_FFMPEG_CONF_OPT = \
 						--cross-prefix=$(TARGET_CROSS) \
 						--disable-shared \
 						--enable-static \
-            --disable-decoder=h264"
+						--disable-encoders \
+						--disable-muxers"
 
 $(DL_DIR)/$(GST_FFMPEG_SOURCE):
 	$(call DOWNLOAD,$(GST_FFMPEG_SITE),$(GST_FFMPEG_SOURCE))
 
 $(GST_FFMPEG_DIR)/.unpacked: $(DL_DIR)/$(GST_FFMPEG_SOURCE)
 	$(BZCAT) $(DL_DIR)/$(GST_FFMPEG_SOURCE) | tar -C $(BUILD_DIR) $(TAR_OPTIONS) -
+	toolchain/patch-kernel.sh $(GST_FFMPEG_DIR) package/multimedia/gst-ffmpeg gst-ffmpeg*.patch
 	touch $@
 
 $(GST_FFMPEG_DIR)/.configured: $(GST_FFMPEG_DIR)/.unpacked
