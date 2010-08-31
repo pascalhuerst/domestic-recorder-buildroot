@@ -3,7 +3,7 @@
 #
 # This is what the user of this script has to provide:
 #
-# - a kernel image that contains a iniramfs which mounts the ext2
+# - a kernel image that contains a initramfs which mounts the ext2
 #   part of the resulting image and executes /init.sh ($kernel)
 # - the imgcreate utility and a path to it ($imgcreate)
 # - a minimal file system that contains everything you want
