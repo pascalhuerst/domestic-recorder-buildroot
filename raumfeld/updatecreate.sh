@@ -25,7 +25,7 @@ if [ ! -f "$kexec" ]; then
     exit 1
 fi
 
-# create a temporary tgz that contains the kexec kernel
+# create a temporary tgz that contains the kexec kernel at the beginning
 tmp=$(mktemp --tmpdir).tar
 tmpgz=$tmp.gz
 gunzip -c $targz > $tmp
@@ -33,10 +33,11 @@ tmpdir=$(mktemp --tmpdir -d)
 mkdir -p $tmpdir/tmp
 cp $kexec $tmpdir/tmp/raumfeld-update.zImage
 echo "chown -R root.root $tmpdir/tmp" > $tmpdir/.fakeroot
-echo "cp $kexec ./tmp/raumfeld-update.zImage" >> $tmpdir/.fakeroot
-echo "tar -C $tmpdir -f $tmp -r ./tmp/raumfeld-update.zImage" >> $tmpdir/.fakeroot
+echo "tar -C $tmpdir -f $tmpdir/new.tar -c ./tmp" >> $tmpdir/.fakeroot
 chmod a+x $tmpdir/.fakeroot
 fakeroot $tmpdir/.fakeroot
+tar -f $tmpdir/new.tar -A $tmp
+mv $tmpdir/new.tar $tmp
 rm -rf $tmpdir
 gzip --best $tmp
 
