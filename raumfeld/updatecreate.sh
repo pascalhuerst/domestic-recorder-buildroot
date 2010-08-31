@@ -1,14 +1,14 @@
 #!/bin/bash
 
 echo_usage() {
-	echo "Usage: $0 --target=<target> --targz=<tar.gz>"
+	echo "Usage: $0 --target=<target> --targz=<tar.gz> --kexec=<zimage>"
         exit 1
 }
 
 . ./getopt.inc
 getopt $*
 
-if [ -z "$target" ] || [ -z "$targz" ]; then
+if [ -z "$target" ] || [ -z "$targz" ] || [ -z "$kexec" ]; then
     echo_usage
 fi
 
@@ -20,8 +20,29 @@ if [ -z "$version" ]; then
     exit 1
 fi
 
-numfiles=$(tar -f $targz -zt | wc -l)
-shasum=$(sha256sum $targz | cut -f1 -d' ')
+if [ ! -f "$kexec" ]; then
+    echo "Cowardly refusing to build an update without a kexec kernel."
+    exit 1
+fi
+
+# create a temporary tgz that contains the kexec kernel
+tmp=$(mktemp --tmpdir).tar
+tmpgz=$tmp.gz
+gunzip -c $targz > $tmp
+tmpdir=$(mktemp --tmpdir -d)
+mkdir -p $tmpdir/tmp
+cp $kexec $tmpdir/tmp/raumfeld-update.zImage
+echo "chown -R root.root $tmpdir/tmp" > $tmpdir/.fakeroot
+echo "cp $kexec ./tmp/raumfeld-update.zImage" >> $tmpdir/.fakeroot
+echo "tar -C $tmpdir -f $tmp -r ./tmp/raumfeld-update.zImage" >> $tmpdir/.fakeroot
+chmod a+x $tmpdir/.fakeroot
+fakeroot $tmpdir/.fakeroot
+rm -rf $tmpdir
+gzip --best $tmp
+
+
+numfiles=$(tar -f $tmpgz -zt | wc -l)
+shasum=$(sha256sum $tmpgz | cut -f1 -d' ')
 privatekey=raumfeld/rsa-private.key
 
 # map target name to hardware ID
@@ -44,6 +65,7 @@ case $target in
 		;;
 esac
 
+
 # only one update per target for the time being.
 
 for hardwareid in $hardwareids; do
@@ -52,7 +74,7 @@ for hardwareid in $hardwareids; do
     rm -fr $update_dir
     mkdir -p $update_dir
 
-    cp $targz $update_dir/$shasum
+    cp $tmpgz $update_dir/$shasum
     openssl dgst -sha256 -sign $privatekey \
         -out $update_dir/$shasum.sign $update_dir/$shasum
 
@@ -67,3 +89,6 @@ __EOF__
     echo "Update $shasum ($version) created in $update_dir"
 done
 
+
+# remove the temporary targz that we created earlier
+rm $tmpgz

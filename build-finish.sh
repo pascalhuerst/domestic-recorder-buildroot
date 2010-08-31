@@ -92,6 +92,7 @@ case $target in
 
 	audioadapter-arm)
                 ROOTFS=binaries/uclibc/rootfs-audioadapter.arm.tar.gz
+                ZIMAGE=binaries/initramfs-arm/zImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -105,6 +106,7 @@ case $target in
 
 	remotecontrol-arm)
                 ROOTFS=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
+                ZIMAGE=binaries/initramfs-arm/zImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -118,6 +120,7 @@ case $target in
 
 	base-geode)
                 ROOTFS=binaries/uclibc/rootfs-base.i586.tar.gz
+                ZIMAGE=binaries/initramfs-geode/bzImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -138,5 +141,6 @@ if [ -n "$ROOTFS" ]; then
     # create  the update image
     raumfeld/updatecreate.sh \
 	--target=$target \
-	--targz=$ROOTFS
+	--targz=$ROOTFS \
+        --kexec=$ZIMAGE
 fi
