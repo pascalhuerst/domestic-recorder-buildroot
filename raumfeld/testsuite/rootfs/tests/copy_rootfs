@@ -5,7 +5,7 @@ set -e
 mount -t ubifs ubi:RootFS /mnt
 
 cd /mnt
-zcat /rootfs.tgz | tar -xvf - --exclude ./tmp
+zcat /rootfs.tgz | tar -xvf -
 
 cd /
 umount /mnt
