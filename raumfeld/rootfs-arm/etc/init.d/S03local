@@ -1,9 +1,5 @@
 #!/bin/sh
 
-# Create the /tmp directory.
-# This is important, as it is not part of the initially flashed filesystem.
-mkdir -p /tmp
-
 # Mount all partitions listed in /etc/fstab
 mount -a
 
