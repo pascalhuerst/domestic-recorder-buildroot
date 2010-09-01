@@ -1,0 +1,133 @@
+diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
+index 9faf91a..8c4f22a 100644
+--- a/arch/x86/kernel/tsc.c
++++ b/arch/x86/kernel/tsc.c
+@@ -392,7 +392,10 @@ success:
+ 	delta *= PIT_TICK_RATE;
+ 	do_div(delta, i*256*1000);
+ 	printk("Fast TSC calibration using PIT\n");
+-	return delta;
++	
++	/* HACK HACK */
++	return 498000;
++	//return delta;
+ }
+ 
+ /**
+diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
+index 81bf25e..87076f5 100644
+--- a/drivers/leds/Kconfig
++++ b/drivers/leds/Kconfig
+@@ -96,6 +96,16 @@ config LEDS_ALIX2
+ 	  This option enables support for the PCEngines ALIX.2 and ALIX.3 LEDs.
+ 	  You have to set leds-alix2.force=1 for boards with Award BIOS.
+ 
++config LEDS_ALIX2_BUTTON
++	bool "Input device support for button on ALIX boards"
++	depends on LEDS_ALIX2 && INPUT
++	select INPUT_POLLDEV
++	help
++	  This option enables support for a button connected to J15 of ALIX
++	  boards. No external pullup is required.
++	
++	  Only select that option if you modified your ALIX board like this.
++
+ config LEDS_H1940
+ 	tristate "LED Support for iPAQ H1940 device"
+ 	depends on ARCH_H1940
+diff --git a/drivers/leds/leds-alix2.c b/drivers/leds/leds-alix2.c
+index f59ffad..8fa1e7c 100644
+--- a/drivers/leds/leds-alix2.c
++++ b/drivers/leds/leds-alix2.c
+@@ -12,6 +12,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/string.h>
+ #include <linux/pci.h>
++#include <linux/input-polldev.h>
+ 
+ static int force = 0;
+ module_param(force, bool, 0444);
+@@ -20,6 +21,12 @@ MODULE_PARM_DESC(force, "Assume system has ALIX.2/ALIX.3 style LEDs");
+ #define MSR_LBAR_GPIO		0x5140000C
+ #define CS5535_GPIO_SIZE	256
+ 
++#ifdef CONFIG_LEDS_ALIX2_BUTTON
++static struct input_polled_dev *ipdev;
++static int alix_button_last;
++#define POLL_INTERVAL_DEFAULT 250
++#endif
++
+ static u32 gpio_base;
+ 
+ static struct pci_device_id divil_pci[] = {
+@@ -78,6 +85,20 @@ static struct alix_led alix_leds[] = {
+ 	},
+ };
+ 
++#ifdef CONFIG_LEDS_ALIX2_BUTTON
++static void alix_button_poll(struct input_polled_dev *ipdev)
++{
++	unsigned int val = !(inl(gpio_base + 0x30) & (1 << 1));
++
++	if (val == alix_button_last)
++		return;
++
++	input_report_key(ipdev->input, BTN_MISC, val);
++	input_sync(ipdev->input);
++	alix_button_last = val;
++}
++#endif
++
+ static int __init alix_led_probe(struct platform_device *pdev)
+ {
+ 	int i;
+@@ -89,6 +110,36 @@ static int __init alix_led_probe(struct platform_device *pdev)
+ 		if (ret < 0)
+ 			goto fail;
+ 	}
++
++
++#ifdef CONFIG_LEDS_ALIX2_BUTTON
++	/* enable button input */
++	outl(1 << 1, gpio_base + 0x20);
++
++	/* enable pullup on input pin */
++	outl(1 << 1, gpio_base + 0x18);
++
++	alix_button_last = 0;
++	ipdev = input_allocate_polled_device();
++	if (!ipdev)
++		goto fail;
++
++	ipdev->poll = alix_button_poll;
++	ipdev->poll_interval = POLL_INTERVAL_DEFAULT;
++	ipdev->input->name = "ALIX2 button";
++	ipdev->input->phys = "alix2/input0";
++	ipdev->input->id.bustype = BUS_HOST;
++
++	set_bit(EV_KEY, ipdev->input->evbit);
++	ipdev->input->keybit[BIT_WORD(BTN_MISC)] = BIT_MASK(BTN_MISC);
++
++	ret = input_register_polled_device(ipdev);
++	if (ret) {
++		input_free_polled_device(ipdev);
++		goto fail;
++	}
++#endif
++
+ 	return 0;
+ 
+ fail:
+diff --git a/drivers/net/wireless/ath/ath5k/attach.c b/drivers/net/wireless/ath/ath5k/attach.c
+index 31c0080..98a108c 100644
+--- a/drivers/net/wireless/ath/ath5k/attach.c
++++ b/drivers/net/wireless/ath/ath5k/attach.c
+@@ -123,7 +123,7 @@ int ath5k_hw_attach(struct ath5k_softc *sc)
+ 	ah->ah_cw_min = AR5K_TUNE_CWMIN;
+ 	ah->ah_limit_tx_retries = AR5K_INIT_TX_RETRY;
+ 	ah->ah_software_retry = false;
+-	ah->ah_ant_mode = AR5K_ANTMODE_DEFAULT;
++	ah->ah_ant_mode = AR5K_ANTMODE_SINGLE_AP;
+ 	ah->ah_noise_floor = -95;	/* until first NF calibration is run */
+ 	sc->ani_state.ani_mode = ATH5K_ANI_MODE_AUTO;
+ 	ah->ah_current_channel = &sc->channels[0];
