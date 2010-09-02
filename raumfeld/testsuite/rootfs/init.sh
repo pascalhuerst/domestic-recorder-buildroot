@@ -13,7 +13,6 @@ udevd --daemon
 
 if [ ! -z "$(grep Geode /proc/cpuinfo)" ]; then
 	# modules for GEODE
-	modprobe via-rhine
 	modprobe ath5k
 else
 	# modules for ARM
