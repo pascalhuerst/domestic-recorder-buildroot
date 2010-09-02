@@ -6,5 +6,5 @@ label=`/lib/udev/vol_id $UM_DEVICE --label`
 if test "$label" = "SCREENSHOTS"; then
   mkdir -p /tmp/screenshots
   mount --bind $UM_MOUNTPOINT /tmp/screenshots
-  mount -o remount,rw,flush /tmp/screenshots
+  mount -o remount,rw,sync /tmp/screenshots
 fi
