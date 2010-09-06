@@ -1,0 +1,28 @@
+From 6a37f476e3b877006e26d7d55e659e6c1039c096 Mon Sep 17 00:00:00 2001
+From: Jens Georg <mail@jensge.org>
+Date: Sat, 4 Sep 2010 16:37:50 +0200
+Subject: [PATCH 2/2] "genre" is in the upnp namespace, not dc
+
+For details, see section B.4.1 in ContentDirectory v2 spec.
+
+http://upnp.org/specs/av/UPnP-av-ContentDirectory-v2-Service.pdf
+---
+ libgupnp-av/gupnp-didl-lite-object.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/libgupnp-av/gupnp-didl-lite-object.c b/libgupnp-av/gupnp-didl-lite-object.c
+index 2b55e38..86c83f9 100644
+--- a/libgupnp-av/gupnp-didl-lite-object.c
++++ b/libgupnp-av/gupnp-didl-lite-object.c
+@@ -1617,7 +1617,7 @@ gupnp_didl_lite_object_set_genre (GUPnPDIDLLiteObject *object,
+         g_return_if_fail (GUPNP_IS_DIDL_LITE_OBJECT (object));
+ 
+         xml_util_set_child (object->priv->xml_node,
+-                            object->priv->dc_ns,
++                            object->priv->upnp_ns,
+                             object->priv->xml_doc->doc,
+                             "genre",
+                             genre);
+-- 
+1.7.0.4
+
