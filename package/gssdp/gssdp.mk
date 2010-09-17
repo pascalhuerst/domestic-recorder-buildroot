@@ -4,9 +4,9 @@
 #
 #############################################################
 
-GSSDP_VERSION:=0.7.2
+GSSDP_VERSION:=0.8.0
 GSSDP_SOURCE:=gssdp-$(GSSDP_VERSION).tar.gz
-GSSDP_SITE:=http://www.gupnp.org/sources/gssdp
+GSSDP_SITE:=http://www.gupnp.org/sites/all/files/sources
 GSSDP_AUTORECONF = NO
 GSSDP_LIBTOOL_PATCH = NO
 GSSDP_INSTALL_STAGING = YES
