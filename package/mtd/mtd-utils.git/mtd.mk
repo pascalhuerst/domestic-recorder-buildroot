@@ -20,10 +20,14 @@ MTD_NAME:=mtd-utils-a4e502d
 MKFS_JFFS2 := $(MTD_HOST_DIR)/mkfs.jffs2
 SUMTOOL := $(MTD_HOST_DIR)/sumtool
 
-$(DL_DIR)/$(MTD_SOURCE):
+$(MTD_DIR)/.stamp_downloaded:
+	$(Q)test -e $(DL_DIR)/$(MTD_SOURCE) || \
+	$(WGET) -P $(DL_DIR) $(BR2_PRIMARY_SITE)/$(MTD_SOURCE) || \
 	$(WGET) -O $(DL_DIR)/$(MTD_SOURCE) "$(MTD_URL)"
+	$(Q)mkdir -p $(MTD_DIR)
+	$(Q)touch $@
 
-$(MTD_HOST_DIR)/.unpacked: $(DL_DIR)/$(MTD_SOURCE)
+$(MTD_HOST_DIR)/.unpacked: $(MTD_DIR)/.stamp_downloaded
 	$(MTD_CAT) $(DL_DIR)/$(MTD_SOURCE) | tar -C $(TOOL_BUILD_DIR) $(TAR_OPTIONS) -
 	rm -rf $(MTD_HOST_DIR)
 	mv $(TOOL_BUILD_DIR)/$(MTD_NAME) $(MTD_HOST_DIR)
