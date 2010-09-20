@@ -7,8 +7,8 @@ diff -Naur gst-plugins-base-0 orig.10.25/gst/playback/gstdecodebin.c gst-plugins
  {
 +  const char *srcName = gst_element_get_name(srcelement);
 +
-+  if(strstr(srcName, "oggdemux") == srcName || 
-+     strstr(srcName, "qtdemux") == srcName)
++  if(g_str_has_prefix(srcName, "oggdemux") ||
++     g_str_has_prefix(srcName, "qtdemux"))
 +    {
 +      return FALSE;
 +    }
