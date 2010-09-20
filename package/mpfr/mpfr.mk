@@ -20,10 +20,9 @@ ifneq ($(MPFR_PATCH),)
 MPFR_PATCH_SOURCE:=$(DL_DIR)/$(MPFR_PATCH_FILE)
 
 $(MPFR_PATCH_SOURCE):
-	$(call DOWNLOAD,$(MPFR_SITE),$(MPFR_PATCH))
-ifeq ($(SPIDER),) # this breaks source-check/external-deps
-	mv $(DL_DIR)/$(MPFR_PATCH) $@
-endif
+	$(Q)test -e $(MPFR_PATCH_SOURCE) || \
+	$(WGET) -P $(DL_DIR) $(BR2_PRIMARY_SITE)/$(MPFR_PATCH_FILE) || \
+	$(WGET) -O $(MPFR_PATCH_SOURCE) "$(MPFR_SITE)/$(MPFR_PATCH)"
 endif
 
 $(DL_DIR)/$(MPFR_SOURCE):
