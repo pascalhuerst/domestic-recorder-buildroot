@@ -65,7 +65,7 @@ mtd-host-dirclean:
 # build mtd for use on the target system
 #
 #############################################################
-$(MTD_DIR)/.unpacked: $(DL_DIR)/$(MTD_SOURCE)
+$(MTD_DIR)/.unpacked: $(MTD_DIR)/.stamp_downloaded
 	$(MTD_CAT) $(DL_DIR)/$(MTD_SOURCE) | tar -C $(BUILD_DIR) $(TAR_OPTIONS) -
 	rm -rf $(MTD_DIR)
 	mv $(BUILD_DIR)/$(MTD_NAME) $(MTD_DIR)
