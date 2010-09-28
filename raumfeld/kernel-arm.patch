@@ -164,16 +164,62 @@ index ea7a8cc..91cfda6 100644
  	}
  	return logo;
  }
+diff --git a/include/linux/linux_logo.h b/include/linux/linux_logo.h
+index ca5bd91..58ac1b6 100644
+--- a/include/linux/linux_logo.h
++++ b/include/linux/linux_logo.h
+@@ -46,6 +46,7 @@ extern const struct linux_logo logo_superh_mono;
+ extern const struct linux_logo logo_superh_vga16;
+ extern const struct linux_logo logo_superh_clut224;
+ extern const struct linux_logo logo_m32r_clut224;
++extern const struct linux_logo logo_raumfeld_clut224;
+ extern const struct linux_logo logo_spe_clut224;
+ 
+ extern const struct linux_logo *fb_find_logo(int depth);
 diff --git a/drivers/video/logo/logo_raumfeld_clut224.ppm b/drivers/video/logo/logo_raumfeld_clut224.ppm
 new file mode 100644
 index 0000000..ba2afaf
 --- /dev/null
 +++ b/drivers/video/logo/logo_raumfeld_clut224.ppm
-@@ -0,0 +1,391684 @@
+@@ -0,0 +1,391718 @@
 +P3
 +# CREATOR: GIMP PNM Filter Version 1.1
 +480 272
 +255
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
++0
 +0
 +0
 +0
