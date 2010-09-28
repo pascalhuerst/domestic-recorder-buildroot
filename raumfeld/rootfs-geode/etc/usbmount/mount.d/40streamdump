@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Check if this is the master device
+grep "^ismaster=yes" /var/raumfeld-1.0/master-process.conf || exit 0
+
 # Check for disk label
 label=`/lib/udev/vol_id $UM_DEVICE --label`
 
