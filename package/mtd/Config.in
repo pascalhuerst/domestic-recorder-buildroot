@@ -13,6 +13,7 @@ choice
 
 config BR2_PACKAGE_MTD_UTILS
 	bool "Use MTD-utils release"
+	depends on BR2_LARGEFILE
 	help
 	  Build mtd/jffs utilities with Dataflash support
 
@@ -117,42 +118,34 @@ config BR2_PACKAGE_MTD_SUMTOOL
 config BR2_PACKAGE_MTD_UBIATTACH
 	bool "ubiattach"
 	default y
-	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
 config BR2_PACKAGE_MTD_UBICRC32
 	bool "ubicrc32"
 	default y
-	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
 config BR2_PACKAGE_MTD_UBIDETACH
 	bool "ubidetach"
 	default y
-	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
 config BR2_PACKAGE_MTD_UBIMKVOL
 	bool "ubimkvol"
 	default y
-	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
 config BR2_PACKAGE_MTD_UBINFO
 	bool "ubinfo"
 	default y
-	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
 config BR2_PACKAGE_MTD_UBIRMVOL
 	bool "ubirmvol"
 	default y
-	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
 config BR2_PACKAGE_MTD_UBIUPDATEVOL
 	bool "ubiupdatevol"
 	default y
-	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
 config BR2_PACKAGE_MTD_UBIFORMAT
 	bool "ubiformat"
 	default y
-	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
 endif
 
