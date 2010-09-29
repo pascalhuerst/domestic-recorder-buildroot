@@ -8,7 +8,8 @@ ROOT_SIZE=81MiB
 UPDATE_SIZE=39MiB
 
 # first, detach the volume attached by the kernel
-ubidetach /dev/ubi_ctrl -d $UBIDEV
+# (and don't fail if it isn't attached for whatever reason)
+ubidetach /dev/ubi_ctrl -d $UBIDEV || true
 
 # erase the whole thing
 ubiformat /dev/mtd3     
