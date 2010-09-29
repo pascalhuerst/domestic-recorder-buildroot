@@ -75,18 +75,9 @@ config BR2_PACKAGE_MTD_JFFS2DUMP
 	bool "jffs2dump"
 	default y
 
-config BR2_PACKAGE_MTD_JFFS3DUMP
-	bool "jffs3dump"
-	default y
-	depends on BR2_PACKAGE_MTD_20050122
-
 config BR2_PACKAGE_MTD_MKFSJFFS2
 	bool "mkfs.jffs2"
 	default y
-
-config BR2_PACKAGE_MTD_MKFSJFFS
-	bool "mkfs.jffs"
-	depends on BR2_PACKAGE_MTD_20050122 || BR2_PACKAGE_MTD_20061007 || BR2_PACKAGE_MTD_UTILS
 
 config BR2_PACKAGE_MTD_MTD_DEBUG
 	bool "mtd_debug"
@@ -99,7 +90,6 @@ config BR2_PACKAGE_MTD_NANDDUMP
 config BR2_PACKAGE_MTD_NANDTEST
 	bool "nandtest"
 	default y
-	depends on BR2_PACKAGE_MTD_UTILS_GIT
 
 config BR2_PACKAGE_MTD_NANDWRITE
 	bool "nandwrite"
