@@ -114,7 +114,7 @@ $(MTD_UBI_TARGETS): $(TARGET_DIR)/usr/sbin/% : $(MTD_DIR)/ubi-utils/%
 	cp -f $< $@
 	$(STRIPCMD) $@
 
-mtd: zlib lzo libuuid $(MTD_TARGETS) $(MTD_UBI_TARGETS)
+mtd: zlib lzo e2fsprogs $(MTD_TARGETS) $(MTD_UBI_TARGETS)
 
 mtd-source: $(DL_DIR)/$(MTD_SOURCE)
 

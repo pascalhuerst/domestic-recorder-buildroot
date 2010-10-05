@@ -2,7 +2,7 @@ menuconfig BR2_PACKAGE_MTD
 	bool "mtd/jffs2 utilities"
 	select BR2_PACKAGE_LZO
 	select BR2_PACKAGE_ZLIB
-	select BR2_PACKAGE_LIBUUID
+	select BR2_PACKAGE_E2FSPROGS_LIBUUID
 	help
 	  Build mtd/jffs utilities
 
