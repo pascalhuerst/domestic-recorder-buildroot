@@ -92,7 +92,7 @@ ifeq ($(BR2_PACKAGE_E2FSPROGS_FINDFS),y)
 	ln -sf e2label ${TARGET_DIR}/usr/sbin/findfs
 endif
 ifeq ($(BR2_PACKAGE_E2FSPROGS_LIBUUID),y)
-	install -D ${E2FSPROGS_SRCDIR}/lib/uuid/uuid.h ${STAGING_DIR}/usr/include/uuid/uuid.h
+	install -D ${E2FSPROGS_DIR}/lib/uuid/uuid.h ${STAGING_DIR}/usr/include/uuid/uuid.h
 endif
 	touch $@
 
