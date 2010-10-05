@@ -93,6 +93,7 @@ ifeq ($(BR2_PACKAGE_E2FSPROGS_FINDFS),y)
 endif
 ifeq ($(BR2_PACKAGE_E2FSPROGS_LIBUUID),y)
 	install -D ${E2FSPROGS_DIR}/lib/uuid/uuid.h ${STAGING_DIR}/usr/include/uuid/uuid.h
+	install -D ${E2FSPROGS_DIR}/lib/uuid/uuid.pc ${STAGING_DIR}/usr/lib/pkgconfig/uuid.pc
 endif
 	touch $@
 
