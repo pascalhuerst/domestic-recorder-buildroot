@@ -82,16 +82,15 @@ base-geode-coreboot)
 *-arm-uboot)
 	cp -a raumfeld/U-Boot/* $tmpdir/
 	;;
+audioadapter-arm-*)
+        IMG_PRIMARY_SITE=http://devel.internal/buildroot/dl
+        IMG_BACKUP_SITE=http://caiaq.de/download/raumfeld
+        test -f raumfeld/audiotest.wav || \
+            for site in $IMG_PRIMARY_SITE $IMG_BACKUP_SITE; \
+            do wget -P raumfeld $site/audiotest.wav && break; done
+        cp raumfeld/audiotest.wav $tmpdir/
+        ;;
 esac
-
-IMG_PRIMARY_SITE=http://devel.internal/buildroot/dl
-IMG_BACKUP_SITE=http://caiaq.de/download/raumfeld
-
-test -f raumfeld/audiotest.wav || \
-    for site in $IMG_PRIMARY_SITE $IMG_BACKUP_SITE; \
-        do wget -P raumfeld $site/audiotest.wav && break; done
-
-cp raumfeld/audiotest.wav $tmpdir/
 
 # sanity check to not create unbootable images
 if [ ! -f $tmpdir/$target.sh ]; then
