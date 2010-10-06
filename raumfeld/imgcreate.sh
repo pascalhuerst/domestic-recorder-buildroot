@@ -79,16 +79,24 @@ case $target in
 base-geode-coreboot)
 	cp -a raumfeld/testsuite/coreboot $tmpdir/
 	;;
+base-geode-flash)
+        DOWNLOAD_SITE=http://devel.internal/buildroot/dl
+        DOWNLOAD_FILE="Raumfeld Demo.mp3"
+        test -f "dl/$DOWNLOAD_FILE" || \
+            wget -P dl "$DOWNLOAD_SITE/$DOWNLOAD_FILE"
+        cp "dl/$DOWNLOAD_FILE" $tmpdir/
+	;;
 *-arm-uboot)
 	cp -a raumfeld/U-Boot/* $tmpdir/
 	;;
 audioadapter-arm-*)
-        IMG_PRIMARY_SITE=http://devel.internal/buildroot/dl
-        IMG_BACKUP_SITE=http://caiaq.de/download/raumfeld
-        test -f raumfeld/audiotest.wav || \
-            for site in $IMG_PRIMARY_SITE $IMG_BACKUP_SITE; \
-            do wget -P raumfeld $site/audiotest.wav && break; done
-        cp raumfeld/audiotest.wav $tmpdir/
+        DOWNLOAD_PRIMARY_SITE=http://devel.internal/buildroot/dl
+        DOWNLOAD_BACKUP_SITE=http://caiaq.de/download/raumfeld
+        DOWNLOAD_FILE="audiotest.wav"
+        test -f dl/$DOWNLOAD_FILE || \
+            for site in $DOWNLOAD_PRIMARY_SITE $DOWNLOAD_BACKUP_SITE; \
+            do wget -P dl $site/$DOWNLOAD_FILE && break; done
+        cp dl/$DOWNLOAD_FILE $tmpdir/
         ;;
 esac
 
