@@ -41,13 +41,12 @@ zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
 	/percent `cat /rootfs.tgz.numfiles` | \
 	dialog_progress "Copying files to harddisk. Please wait." $DIALOGOPTS
 
-if [ -f "Raumfeld Demo.mp3" ]; then
-    dialog_progress "Copying music to harddisk..." $DIALOGOPTS
+if [ -f "/Raumfeld Demo.mp3" ]; then
     mkdir -p -m 755 $TMPROOT/data
     mount -t ext3 ${DEV}3 $TMPROOT/data
     mkdir -p -m 755 $TMPROOT/data/Music
-    cp "Raumfeld Demo.mp3" $TMPROOT/data/Music
-    chown -R 99.99 $TMPROOT/data/Music
+    cp "/Raumfeld Demo.mp3" $TMPROOT/data/Music
+    chown -R 99:99 $TMPROOT/data/Music
     umount $TMPROOT/data
 fi
 
