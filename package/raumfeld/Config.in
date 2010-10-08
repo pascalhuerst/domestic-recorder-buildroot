@@ -25,5 +25,6 @@ source "package/raumfeld/stream-decoder/Config.in"
 source "package/raumfeld/stream-relay/Config.in"
 source "package/raumfeld/loopbacktest/Config.in"
 source "package/raumfeld/raumfeld-extract/Config.in"
+source "package/raumfeld/report-daemon/Config.in"
 endmenu
 

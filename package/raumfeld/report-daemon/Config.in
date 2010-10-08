@@ -1,0 +1,7 @@
+config BR2_PACKAGE_RAUMFELD_REPORT_DAEMON
+	bool "report-daemon"
+	select BR2_PACKAGE_LIBSOUP
+	help
+	  raumfeld report daemon
+
+	  http://www.raumfeld.com/
