@@ -42,7 +42,7 @@ stream-relay: $(STREAM_RELAY_DEPENDENCIES) $(TARGET_DIR)/$(STREAM_RELAY_BINARY)
 
 stream-relay-clean:
 	rm -rf $(STAGING_DIR)/$(STREAM_RELAY_TARGET_DIR)
-	rm -rf $(STAGING_DIR)/$(TARGET_DIR)
+	rm -rf $(TARGET_DIR)/$(STREAM_RELAY_TARGET_DIR)
 	-$(MAKE) -C $(STREAM_RELAY_DIR) clean CROSS=$(STREAM_RELAY_CROSS)
 
 stream-relay-dirclean:

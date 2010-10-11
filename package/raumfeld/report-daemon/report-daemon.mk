@@ -46,7 +46,7 @@ report-daemon: $(REPORT_DAEMON_DEPENDENCIES) $(TARGET_DIR)/$(REPORT_DAEMON_BINAR
 
 report-daemon-clean:
 	rm -rf $(STAGING_DIR)/$(REPORT_DAEMON_TARGET_DIR)
-	rm -rf $(STAGING_DIR)/$(TARGET_DIR)
+	rm -rf $(TARGET_DIR)/$(REPORT_DAEMON_TARGET_DIR)
 	-$(MAKE) -C $(REPORT_DAEMON_DIR) clean CROSS=$(REPORT_DAEMON_CROSS)
 
 report-daemon-dirclean:

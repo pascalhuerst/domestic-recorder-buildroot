@@ -42,7 +42,7 @@ master-process: $(MASTER_PROCESS_DEPENDENCIES) $(TARGET_DIR)/$(MASTER_PROCESS_BI
 
 master-process-clean:
 	rm -rf $(STAGING_DIR)/$(MASTER_PROCESS_TARGET_DIR)
-	rm -rf $(STAGING_DIR)/$(TARGET_DIR)
+	rm -rf $(TARGET_DIR)/$(MASTER_PROCESS_TARGET_DIR)
 	-$(MAKE) -C $(MASTER_PROCESS_DIR) clean CROSS=$(MASTER_PROCESS_CROSS)
 
 master-process-dirclean:

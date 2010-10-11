@@ -43,7 +43,7 @@ meta-server: $(META_SERVER_DEPENDENCIES) $(TARGET_DIR)/$(META_SERVER_BINARY)
 
 meta-server-clean:
 	rm -rf $(STAGING_DIR)/$(META_SERVER_TARGET_DIR)
-	rm -rf $(STAGING_DIR)/$(TARGET_DIR)
+	rm -rf $(TARGET_DIR)/$(META_SERVER_TARGET_DIR)
 	-$(MAKE) -C $(META_SERVER_DIR) clean CROSS=$(META_SERVER_CROSS)
 
 meta-server-dirclean:

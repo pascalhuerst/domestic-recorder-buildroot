@@ -46,7 +46,7 @@ config-service: $(CONFIG_SERVICE_DEPENDENCIES) $(TARGET_DIR)/$(CONFIG_SERVICE_BI
 
 config-service-clean:
 	rm -rf $(STAGING_DIR)/$(CONFIG_SERVICE_TARGET_DIR)
-	rm -rf $(STAGING_DIR)/$(TARGET_DIR)
+	rm -rf $(TARGET_DIR)/$(CONFIG_SERVICE_TARGET_DIR)
 	-$(MAKE) -C $(CONFIG_SERVICE_DIR) clean CROSS=$(CONFIG_SERVICE_CROSS)
 
 config-service-dirclean:

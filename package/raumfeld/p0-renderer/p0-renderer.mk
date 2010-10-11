@@ -42,7 +42,7 @@ p0-renderer: $(P0_RENDERER_DEPENDENCIES) $(TARGET_DIR)/$(P0_RENDERER_BINARY)
 
 p0-renderer-clean:
 	rm -rf $(STAGING_DIR)/$(P0_RENDERER_TARGET_DIR)
-	rm -rf $(STAGING_DIR)/$(TARGET_DIR)
+	rm -rf $(TARGET_DIR)/$(P0_RENDERER_TARGET_DIR)
 	-$(MAKE) -C $(P0_RENDERER_DIR) clean CROSS=$(P0_RENDERER_CROSS)
 
 p0-renderer-dirclean:
