@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/raumfeld/report-daemon/raumfeld-report-daemon
