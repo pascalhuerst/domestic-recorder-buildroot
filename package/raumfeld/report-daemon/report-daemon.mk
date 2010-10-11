@@ -5,7 +5,7 @@
 #############################################################
 REPORT_DAEMON_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 REPORT_DAEMON_DIR:=$(BUILD_DIR)/raumfeld-report-daemon-$(REPORT_DAEMON_VERSION)
-REPORT_DAEMON_TARGET_DIR:=raumfeld/raumfeld-report-daemon
+REPORT_DAEMON_TARGET_DIR:=raumfeld/report-daemon
 REPORT_DAEMON_BINARY:=$(REPORT_DAEMON_TARGET_DIR)/raumfeld-report-daemon
 REPORT_DAEMON_CROSS_PREFIX:=$(BUILD_DIR)/..
 
