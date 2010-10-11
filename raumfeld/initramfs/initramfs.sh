@@ -62,6 +62,24 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 
 	cd /mnt
 	raumfeld-extract-update $update $numfiles
+
+	case "$arch" in
+		arm)
+                        umount /update
+			umount /mnt
+			;;
+		geode)
+                        umount /mnt/boot
+                        umount /mnt
+			;;
+		*)
+			echo "unknown architecture '$arch'"
+			;;
+	esac
+
+	echo "Rebooting ..."
+        reboot
+
 else
 	echo "Image name $img"
 	echo "Waiting for USB device to appear ..."
