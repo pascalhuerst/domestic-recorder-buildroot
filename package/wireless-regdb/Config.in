@@ -1,0 +1,6 @@
+config BR2_PACKAGE_WIRELESS_REGDB
+	bool "wireless regulatory database"
+	help
+	  This installs the binary version of the regulatory database
+	  file for use with Central Regulatory Database Agent daemon.
+

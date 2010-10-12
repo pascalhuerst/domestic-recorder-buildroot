@@ -1,0 +1,11 @@
+config BR2_PACKAGE_CRDA
+	bool "central regulatory domain agent"
+	select BR2_PACKAGE_LIBNL
+	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_UDEV
+	select BR2_PACKAGE_WIRELESS_REGDB
+	help
+	  This is the Central Regulatory Domain Agent for Linux.
+	  In essence it is a udev helper for communication between
+	  the kernel and userspace.
+
