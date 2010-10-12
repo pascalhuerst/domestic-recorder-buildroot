@@ -72,6 +72,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 		geode)
                         umount /mnt/boot
                         umount /mnt
+                        sleep 5
 			;;
 		*)
 			echo "unknown architecture '$arch'"
