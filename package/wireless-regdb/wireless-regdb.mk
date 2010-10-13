@@ -22,14 +22,20 @@ $(WIRELESS_REGDB_DIR)/.unpacked: $(WIRELESS_REGDB_DIR)/.stamp_downloaded
 	touch $@
 
 $(TARGET_DIR)/usr/lib/crda/regulatory.bin: $(WIRELESS_REGDB_DIR)/.unpacked
-	$(MAKE) -C $(WIRELESS_REGDB_DIR) DESTDIR=$(TARGET_DIR) install
+	$(MAKE) -C $(WIRELESS_REGDB_DIR) DESTDIR=$(STAGING_DIR) install
+	$(call MESSAGE,"Installing to target")
+	$(INSTALL) -d $(TARGET_DIR)/usr/lib/crda/pubkeys
+	$(INSTALL) $(STAGING_DIR)/usr/lib/crda/regulatory.bin $(TARGET_DIR)/usr/lib/crda
+	$(INSTALL) $(STAGING_DIR)/usr/lib/crda/pubkeys/*.pem $(TARGET_DIR)/usr/lib/crda/pubkeys
 
 wireless-regdb: $(TARGET_DIR)/usr/lib/crda/regulatory.bin
 
 wireless-regdb-source: $(WIRELESS_REGDB_DIR)/.stamp_downloaded
 
 wireless-regdb-clean:
-	-$(MAKE) -C $(WIRELESS_REGDB_DIR) DESTDIR=$(TARGET_DIR) uninstall
+	rm -rf $(addprefix $(TARGET_DIR),/usr/lib/crda/pubkeys)
+	rm -f  $(addprefix $(TARGET_DIR),/usr/lib/crda/regulatory.bin)
+	-$(MAKE) -C $(WIRELESS_REGDB_DIR) DESTDIR=$(STAGING_DIR) uninstall
 	-$(MAKE) -C $(WIRELESS_REGDB_DIR) clean
 
 wireless-regdb-dirclean:
