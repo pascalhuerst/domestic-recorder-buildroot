@@ -30,7 +30,8 @@ CRDA_MAKE_ENV:=\
 	BUILDDIR=$(CRDA_DIR) \
 	UDEV_RULE_DIR=/etc/udev/rules.d \
 	CROSS=$(TARGET_CROSS) CC=$(TARGET_CC) \
-	USE_OPENSSL=1
+	USE_OPENSSL=1 \
+	PUBKEY_DIR=/usr/lib/crda/pubkeys
 
 $(CRDA_TARGET_BINARY): $(CRDA_DIR)/.unpacked
 	$(CRDA_MAKE_ENV) $(MAKE) -C $(CRDA_DIR) all_noverify
