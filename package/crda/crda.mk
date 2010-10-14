@@ -30,9 +30,10 @@ CRDA_MAKE_ENV:=\
 	BUILDDIR=$(CRDA_DIR) \
 	UDEV_RULE_DIR=/etc/udev/rules.d \
 	CROSS=$(TARGET_CROSS) CC=$(TARGET_CC) \
+	USE_OPENSSL=1
 
 $(CRDA_TARGET_BINARY): $(CRDA_DIR)/.unpacked
-	$(CRDA_MAKE_ENV) $(MAKE) -C $(CRDA_DIR) USE_OPENSSL=1 all_noverify
+	$(CRDA_MAKE_ENV) $(MAKE) -C $(CRDA_DIR) all_noverify
 	$(CRDA_MAKE_ENV) $(MAKE) -C $(CRDA_DIR) DESTDIR=$(STAGING_DIR) install
 	$(call MESSAGE,"Installing to target")
 	$(INSTALL) -m 0755 $(STAGING_DIR)/sbin/crda $(TARGET_DIR)/sbin
