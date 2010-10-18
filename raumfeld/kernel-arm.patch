@@ -392676,3 +392676,32 @@ index ca5bd91..58ac1b6 100644
  extern const struct linux_logo logo_spe_clut224;
  
  extern const struct linux_logo *fb_find_logo(int depth);
+diff --git a/drivers/input/evdev.c b/drivers/input/evdev.c
+index c908c5f..9ddafc3 100644
+--- a/drivers/input/evdev.c
++++ b/drivers/input/evdev.c
+@@ -669,6 +669,9 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
+ 
+ 		if ((_IOC_NR(cmd) & ~ABS_MAX) == _IOC_NR(EVIOCGABS(0))) {
+ 
++			if (!dev->absinfo)
++				return -EINVAL;
++
+ 			t = _IOC_NR(cmd) & ABS_MAX;
+ 			abs = dev->absinfo[t];
+ 
+@@ -680,10 +683,13 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
+ 		}
+ 	}
+ 
+-	if (_IOC_DIR(cmd) == _IOC_READ) {
++	if (_IOC_DIR(cmd) == _IOC_WRITE) {
+ 
+ 		if ((_IOC_NR(cmd) & ~ABS_MAX) == _IOC_NR(EVIOCSABS(0))) {
+ 
++			if (!dev->absinfo)
++				return -EINVAL;
++
+ 			t = _IOC_NR(cmd) & ABS_MAX;
+ 
+ 			if (copy_from_user(&abs, p, min_t(size_t,
