@@ -31,7 +31,8 @@ CRDA_MAKE_ENV:=\
 	UDEV_RULE_DIR=/etc/udev/rules.d \
 	CROSS=$(TARGET_CROSS) CC=$(TARGET_CC) \
 	USE_OPENSSL=1 \
-	PUBKEY_DIR=/usr/lib/crda/pubkeys
+	PUBKEY_DIR=$(STAGING_DIR)/usr/lib/crda/pubkeys \
+	RUNTIME_PUBKEY_DIR=/usr/lib/crda/pubkeys
 
 $(CRDA_TARGET_BINARY): $(CRDA_DIR)/.unpacked
 	$(CRDA_MAKE_ENV) $(MAKE) -C $(CRDA_DIR) all_noverify
@@ -42,7 +43,7 @@ $(CRDA_TARGET_BINARY): $(CRDA_DIR)/.unpacked
 	$(INSTALL) -d $(TARGET_DIR)/etc/udev/rules.d
 	$(INSTALL) $(STAGING_DIR)/etc/udev/rules.d/85-regulatory.rules $(TARGET_DIR)/etc/udev/rules.d
 
-crda: libnl openssl $(TARGET_DIR)/usr/sbin/crda
+crda: libnl openssl wireless-regdb $(TARGET_DIR)/usr/sbin/crda
 
 crda-source: $(CRDA_DIR)/.stamp_downloaded
 
