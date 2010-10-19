@@ -4,7 +4,7 @@
 #
 #############################################################
 
-WPA_SUPPLICANT_VERSION = 0.7.0
+WPA_SUPPLICANT_VERSION = 0.7.3
 WPA_SUPPLICANT_SOURCE = wpa_supplicant-$(WPA_SUPPLICANT_VERSION).tar.gz
 WPA_SUPPLICANT_SITE = http://hostap.epitest.fi/releases
 WPA_SUPPLICANT_LIBTOOL_PATCH = NO
@@ -66,10 +66,10 @@ ifneq ($(BR2_PACKAGE_WPA_SUPPLICANT_PASSPHRASE),y)
 endif
 ifeq ($(BR2_PACKAGE_DBUS),y)
 	$(INSTALL) -D \
-	  $(WPA_SUPPLICANT_DIR)/wpa_supplicant/dbus-wpa_supplicant.conf \
+	  $(WPA_SUPPLICANT_DIR)/wpa_supplicant/dbus/dbus-wpa_supplicant.conf \
 	  $(TARGET_DIR)/etc/dbus-1/system.d/wpa_supplicant.conf
 	$(INSTALL) -D \
-	  $(WPA_SUPPLICANT_DIR)/wpa_supplicant/dbus-wpa_supplicant.service \
+	  $(WPA_SUPPLICANT_DIR)/wpa_supplicant/dbus/$(WPA_SUPPLICANT_DBUS_SERVICE).service \
 	  $(TARGET_DIR)/usr/share/dbus-1/system-services/$(WPA_SUPPLICANT_DBUS_SERVICE).service
 endif
 
