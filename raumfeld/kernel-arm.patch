@@ -392651,19 +392651,6 @@ index 0000000..0428ed0
 +
 +#endif /* __PXA3XX_GCU_H__ */
 +
-diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
-index 7f0c329..6b1ac10 100644
---- a/include/linux/console_struct.h
-+++ b/include/linux/console_struct.h
-@@ -132,7 +132,7 @@ extern void vc_SAK(struct work_struct *work);
- #define CUR_HWMASK	0x0f
- #define CUR_SWMASK	0xfff0
- 
--#define CUR_DEFAULT CUR_UNDERLINE
-+#define CUR_DEFAULT CUR_NONE
- 
- #define CON_IS_VISIBLE(conp) (*conp->vc_display_fg == conp)
- 
 diff --git a/include/linux/linux_logo.h b/include/linux/linux_logo.h
 index ca5bd91..58ac1b6 100644
 --- a/include/linux/linux_logo.h
@@ -392705,3 +392692,16 @@ index c908c5f..9ddafc3 100644
  			t = _IOC_NR(cmd) & ABS_MAX;
  
  			if (copy_from_user(&abs, p, min_t(size_t,
+diff --git a/drivers/char/vt.c b/drivers/char/vt.c
+index 281aada..ea25389 100644
+--- a/drivers/char/vt.c
++++ b/drivers/char/vt.c
+@@ -163,7 +163,7 @@ static void set_palette(struct vc_data *vc);
+ static int printable;		/* Is console ready for printing? */
+ int default_utf8 = true;
+ module_param(default_utf8, int, S_IRUGO | S_IWUSR);
+-int global_cursor_default = -1;
++int global_cursor_default = 0;
+ module_param(global_cursor_default, int, S_IRUGO | S_IWUSR);
+ 
+ static int cur_default = CUR_DEFAULT;
