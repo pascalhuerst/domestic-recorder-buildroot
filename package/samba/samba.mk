@@ -34,8 +34,7 @@ SAMBA_CONF_ENV = \
 	samba_cv_CC_NEGATIVE_ENUM_VALUES=yes \
 	samba_cv_fpie=no \
 	samba_cv_have_longlong=yes \
-	libreplace_cv_HAVE_IPV6=$(if $(BR2_INET_IPV6),yes,no) \
-	$(if $(BR2_PACKAGE_SAMBA_AVAHI),AVAHI_LIBS=-pthread)
+	libreplace_cv_HAVE_IPV6=$(if $(BR2_INET_IPV6),yes,no)
 
 
 SAMBA_CONF_OPT = \
