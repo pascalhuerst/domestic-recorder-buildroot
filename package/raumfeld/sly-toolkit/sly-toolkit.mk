@@ -12,8 +12,7 @@ SLY_TOOLKIT_INSTALL_TARGET = YES
 
 SLY_TOOLKIT_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
-	ac_cv_path_GLIB_MKENUMS=$(HOST_DIR)/usr/bin/glib-mkenums \
-	ac_cv_path_DIRECTFB_CSOURCE=$(HOST_DIR)/usr/bin/directfb-csource
+	ac_cv_path_GLIB_MKENUMS=$(HOST_DIR)/usr/bin/glib-mkenums
 
 SLY_TOOLKIT_CONF_OPT = \
 	--enable-shared		\
@@ -21,7 +20,7 @@ SLY_TOOLKIT_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-SLY_TOOLKIT_DEPENDENCIES = host-pkgconfig host-libglib2 host-directfb libglib2 directfb
+SLY_TOOLKIT_DEPENDENCIES = host-pkgconfig host-libglib2 libglib2 directfb
 
 $(eval $(call AUTOTARGETS,package/raumfeld,sly-toolkit))
 
