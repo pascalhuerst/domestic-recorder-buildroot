@@ -10,9 +10,10 @@
 # either version 2.1 of the License, or (at your option) any
 # later version.
 
-AVAHI_VERSION = 0.6.23
+AVAHI_VERSION = 0.6.25
 AVAHI_SOURCE = avahi-$(AVAHI_VERSION).tar.gz
 AVAHI_SITE = http://www.avahi.org/download/
+AVAHI_LIBTOOL_PATCH = NO
 AVAHI_INSTALL_STAGING = YES
 AVAHI_INSTALL_TARGET = YES
 
