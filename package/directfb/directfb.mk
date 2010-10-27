@@ -4,7 +4,7 @@
 #
 #############################################################
 DIRECTFB_VERSION_MAJOR:=1.4
-DIRECTFB_VERSION:=1.4.5
+DIRECTFB_VERSION:=1.4.7
 DIRECTFB_SITE:=http://www.directfb.org/downloads/Core/DirectFB-$(DIRECTFB_VERSION_MAJOR)
 DIRECTFB_SOURCE:=DirectFB-$(DIRECTFB_VERSION).tar.gz
 DIRECTFB_AUTORECONF = NO
@@ -124,6 +124,13 @@ else
 DIRECTFB_SMOOTH_SCALING:=--without-smooth-scaling
 endif
 
+ifeq ($(BR2_PACKAGE_DIRECTFB_TOOLS),y)
+DIRECTFB_TOOLS:=--with-tools
+else
+DIRECTFB_TOOLS:=--without-tools
+endif
+
+
 DIRECTFB_CONF_OPT = \
 	--localstatedir=/var \
 	--with-gfxdrivers=$(DIRECTFB_GFX) \
@@ -141,6 +148,7 @@ DIRECTFB_CONF_OPT = \
 	$(DIRECTFB_UNIQUE) \
 	$(DIRECTFB_DITHER_RGB16) \
 	$(DIRECTFB_SMOOTH_SCALING) \
+	$(DIRECTFB_TOOLS) \
 	--enable-linux-input \
 	--enable-zlib \
 	--enable-freetype \

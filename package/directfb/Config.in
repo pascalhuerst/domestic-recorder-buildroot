@@ -118,3 +118,10 @@ config BR2_PACKAGE_DIRECTFB_SMOOTH_SCALING
 	help
 	  Enable smooth software scaling code. This will increase the
           library size by more than 100 KBytes.
+
+config BR2_PACKAGE_DIRECTFB_TOOLS
+	bool "build DirectFB tools"
+	depends on BR2_PACKAGE_DIRECTFB
+        depends on BR2_INSTALL_LIBSTDCPP
+	help
+          Build tools in addition to the DirectFB library
