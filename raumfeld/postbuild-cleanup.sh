@@ -33,6 +33,8 @@ rm -fr $1/usr/lib/glib-2.0
 rm -f  $1/usr/lib/xml2Conf.sh
 rm -f  $1/usr/libexec/gvfsd-archive
 rm -f  $1/usr/libexec/gvfsd-burn
+rm -f  $1/usr/libexec/gvfsd-computer
+rm -f  $1/usr/libexec/gvfsd-localtest
 rm -f  $1/usr/libexec/gvfsd-trash
 rm -fr $1/usr/share/aclocal
 rm -f  $1/usr/share/alsa/cards/[A-Z]*.conf
@@ -48,6 +50,7 @@ rm -f  $1/usr/share/alsa/pcm/surround*.conf
 rm -rf $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/gdb
 rm -fr $1/usr/share/glib-2.0
+rm -f  $1/usr/share/pkgconfig
 rm -f  $1/usr/share/xml/iso-codes/iso_639.xml
 rm -f  $1/usr/share/xml/iso-codes/iso_639_3.xml
 rm -f  $1/usr/share/xml/iso-codes/iso_3166_2.xml
@@ -60,6 +63,9 @@ find $1/usr/share/locale -name iso_4217.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_15924.mo -exec rm -f {} \;
 if test -d $1/usr/lib/directfb-1.4-5; then
     find $1/usr/lib/directfb-1.4-5 -name '*.o' -exec rm -f {} \;
+    rm -rf $1/usr/lib/directfb-1.4-5/interfaces/IDirectFBVideoProvider
+    rm -f $1/usr/lib/directfb-1.4-5/interfaces/IDirectFBImageProvider/libidirectfbimageprovider_dfiff.so
+    rm -f $1/usr/lib/directfb-1.4-5/interfaces/IDirectFBFont/libidirectfbfont_dgiff.so
 fi
 
 if test -n "$2"; then
