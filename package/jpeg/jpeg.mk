@@ -14,5 +14,5 @@ JPEG_LIBTOOL_PATCH = NO
 $(eval $(call AUTOTARGETS,package,jpeg))
 
 $(JPEG_HOOK_POST_INSTALL):
-	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,cjpeg djpeg jpegtrans rdjpgcom wrjpgcom)
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/$(BR2_ARCH)-linux-,cjpeg djpeg jpegtrans rdjpgcom wrjpgcom)
 	touch $@
