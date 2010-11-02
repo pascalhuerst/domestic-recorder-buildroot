@@ -1,0 +1,28 @@
+diff -ur directfb-1.4.9-orig/gfxdrivers/pxa3xx/pxa3xx.c directfb-1.4.9/gfxdrivers/pxa3xx/pxa3xx.c
+--- directfb-1.4.9-orig/gfxdrivers/pxa3xx/pxa3xx.c	2010-10-31 09:49:49.000000000 +0100
++++ directfb-1.4.9/gfxdrivers/pxa3xx/pxa3xx.c	2010-11-02 12:03:35.000000000 +0100
+@@ -192,6 +192,8 @@
+      /* Set device limitations. */
+      device_info->limits.surface_byteoffset_alignment = 8;
+      device_info->limits.surface_bytepitch_alignment  = 8;
++     device_info->limits.src_max.w = 2048;
++     device_info->limits.src_max.h = 2048;
+ 
+      /* Set device capabilities. */
+      device_info->caps.flags    = 0;
+diff -ur directfb-1.4.9-orig/src/core/gfxcard.c directfb-1.4.9/src/core/gfxcard.c
+--- directfb-1.4.9-orig/src/core/gfxcard.c	2010-10-31 09:56:05.000000000 +0100
++++ directfb-1.4.9/src/core/gfxcard.c	2010-11-02 12:09:50.000000000 +0100
+@@ -1789,8 +1789,10 @@
+           return;
+      }
+ 
+-     if (dfb_gfxcard_state_check( state, DFXL_BLIT ) &&
+-         dfb_gfxcard_state_acquire( state, DFXL_BLIT ))
++     if ( rect->x < card->limits.src_max.w &&
++          rect->y < card->limits.src_max.h &&
++          dfb_gfxcard_state_check( state, DFXL_BLIT ) &&
++          dfb_gfxcard_state_acquire( state, DFXL_BLIT ))
+      {
+           if (!D_FLAGS_IS_SET( card->caps.flags, CCF_CLIPPING ) &&
+               !D_FLAGS_IS_SET( card->caps.clip, DFXL_BLIT ))

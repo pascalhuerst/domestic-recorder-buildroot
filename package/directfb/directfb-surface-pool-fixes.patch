@@ -1,0 +1,76 @@
+diff --git a/src/core/surface_pool.c b/src/core/surface_pool.c
+index 18b493e..5e5f266 100644
+--- a/src/core/surface_pool.c
++++ b/src/core/surface_pool.c
+@@ -101,9 +101,7 @@ static void      remove_allocation( CoreSurfacePool       *pool,
+                                     CoreSurfaceBuffer     *buffer,
+                                     CoreSurfaceAllocation *allocation );
+ 
+-static DFBResult backup_allocation( CoreSurfacePool       *pool,
+-                                    CoreSurfaceBuffer     *buffer,
+-                                    CoreSurfaceAllocation *allocation );
++static DFBResult backup_allocation( CoreSurfaceAllocation *allocation );
+ 
+ /**********************************************************************************************************************/
+ 
+@@ -785,7 +783,7 @@ fixme_retry:
+                }
+ 
+                /* Ensure mucked out allocation is backed up in another pool */
+-               ret = backup_allocation( pool, buffer, allocation );
++               ret = backup_allocation( allocation );
+                if (ret) {
+                     D_WARN( "could not backup allocation (%s)", DirectFBErrorString(ret) );
+                     dfb_surface_unlock( alloc_surface );
+@@ -1173,6 +1171,10 @@ remove_allocation( CoreSurfacePool       *pool,
+      fusion_vector_remove( &buffer->allocs, index_buffer );
+      fusion_vector_remove( &pool->allocs,   index_pool );
+ 
++     /* Reset 'read' allocation pointer of buffer */
++     if (buffer->read == allocation)
++          buffer->read = NULL;
++
+      /* Update 'written' allocation pointer of buffer */
+      if (buffer->written == allocation) {
+           /* Reset pointer first */
+@@ -1189,30 +1191,30 @@ remove_allocation( CoreSurfacePool       *pool,
+                }
+           }
+      }
+-
+-     /* Reset 'read' allocation pointer of buffer */
+-     if (buffer->read == allocation)
+-          buffer->read = NULL;
+ }
+ 
+ static DFBResult
+-backup_allocation( CoreSurfacePool       *pool,
+-                   CoreSurfaceBuffer     *buffer,
+-                   CoreSurfaceAllocation *allocation )
++backup_allocation( CoreSurfaceAllocation *allocation )
+ {
+      DFBResult              ret = DFB_OK;
+      int                    i;
+      CoreSurfaceAllocation *backup = NULL;
++     CoreSurfacePool       *pool;
++     CoreSurfaceBuffer     *buffer;
+ 
+-     D_DEBUG_AT( Core_SurfacePool, "%s( %p, %p )\n", __FUNCTION__, pool, allocation );
++     D_DEBUG_AT( Core_SurfacePool, "%s( %p )\n", __FUNCTION__, allocation );
+ 
++     CORE_SURFACE_ALLOCATION_ASSERT( allocation );
++
++     pool = allocation->pool;
+      D_MAGIC_ASSERT( pool, CoreSurfacePool );
++
++     buffer = allocation->buffer;
+      D_MAGIC_ASSERT( buffer, CoreSurfaceBuffer );
+-     CORE_SURFACE_ALLOCATION_ASSERT( allocation );
++
+      D_MAGIC_ASSERT( buffer->surface, CoreSurface );
+      FUSION_SKIRMISH_ASSERT( &buffer->surface->lock );
+      FUSION_SKIRMISH_ASSERT( &pool->lock );
+-     D_ASSERT( pool == allocation->pool );
+ 
+      /* Check if allocation is the only up to date (requiring a backup) */
+      if (direct_serial_check( &allocation->serial, &buffer->serial )) {
