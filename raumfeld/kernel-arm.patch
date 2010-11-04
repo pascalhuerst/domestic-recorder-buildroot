@@ -392759,3 +392759,47 @@ index 281aada..ea25389 100644
 -- 
 1.7.1
 
+commit 8ae3df8a8c1fa4dd2174ad28a1878db342e0c4b4
+Author: Sven Neumann <s.neumann@raumfeld.com>
+Date:   Tue Nov 2 16:51:52 2010 +0100
+
+    raumfeld: increase size of framebuffer
+
+diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
+index bbf0b61..e362d24 100644
+--- a/arch/arm/mach-pxa/raumfeld.c
++++ b/arch/arm/mach-pxa/raumfeld.c
+@@ -586,7 +586,7 @@ static struct pxafb_mode_info sharp_lq043t3dx02_mode = {
+ static struct pxafb_mach_info raumfeld_sharp_lcd_info = {
+ 	.modes		= &sharp_lq043t3dx02_mode,
+ 	.num_modes	= 1,
+-	.video_mem_size = 0x400000,
++	.video_mem_size = 0x800000,
+ 	.lcd_conn	= LCD_COLOR_TFT_16BPP | LCD_PCLK_EDGE_FALL,
+ #ifdef CONFIG_PXA3XX_GCU
+ 	.acceleration_enabled = 1,
+commit 7e2f441754a74e0addc816083b0b20c9929c478c
+Author: Sven Neumann <s.neumann@raumfeld.com>
+Date:   Thu Nov 4 09:40:58 2010 +0100
+
+    config: make FORCE_MAX_ZONEORDER available for all platforms
+    
+    The config option FORCE_MAX_ZONEORDER was incorrectly enabled
+    only for ARCH_SHMOBILE. Make it available for all platforms.
+    Tested on PXA300.
+    
+    Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 9c26ba7..32d932a 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -1379,7 +1379,7 @@ config SPARSE_IRQ
+ source "mm/Kconfig"
+ 
+ config FORCE_MAX_ZONEORDER
+-	int "Maximum zone order" if ARCH_SHMOBILE
++	int "Maximum zone order"
+ 	range 11 64 if ARCH_SHMOBILE
+ 	default "9" if SA1111
+ 	default "11"
