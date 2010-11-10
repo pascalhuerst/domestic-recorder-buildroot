@@ -1,4 +1,4 @@
->From dbf8fd1d097420d02f0603155ca81fcc7e232a0a Mon Sep 17 00:00:00 2001
+From dbf8fd1d097420d02f0603155ca81fcc7e232a0a Mon Sep 17 00:00:00 2001
 From: Lionel Landwerlin <llandwerlin@gmail.com>
 Date: Sun, 7 Nov 2010 21:45:19 +0100
 Subject: [PATCH] Add -lm flag when nedded
@@ -13,7 +13,7 @@ diff --git a/configure.in b/configure.in
 index 78c842d..aa608d4 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -533,6 +533,20 @@ AM_CONDITIONAL(DIRECTFB_BUILD_PURE_VOODOO, test "$DIRECTFB_BUILD_PURE_VOODOO" =
+@@ -533,6 +533,16 @@ AM_CONDITIONAL(DIRECTFB_BUILD_PURE_VOODOO, test "$DIRECTFB_BUILD_PURE_VOODOO" =
  
  AC_SUBST(DEP_VOODOO)
  
@@ -25,10 +25,6 @@ index 78c842d..aa608d4 100644
 +    MEDIALIB="-lm",
 +    AC_MSG_ERROR([
 +*** DirectFB requires libm.]))
-+  if test "$enable_shared" = "yes"; then
-+    DYNLIB+=" $MEDIALIB"
-+    AC_SUBST(DYNLIB)
-+  fi
 +fi
 +AC_SUBST(MEDIALIB)
  
