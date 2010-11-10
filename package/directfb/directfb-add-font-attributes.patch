@@ -1,0 +1,69 @@
+commit d8fa3c7503f503dc1507152646156cb94aea5832
+Author: Sven Neumann <s.neumann@raumfeld.com>
+Date:   Wed Nov 10 14:30:40 2010 +0100
+
+    font: add font attributes to control the hinting algorithm
+    
+    Add font attributes to control the hinting algorithm used by the
+    FreeType font provider:
+    
+      DFFA_AUTOHINTING forces use of the auto-hinter over the font's
+      native hinter.
+    
+      DFFA_LIGHT selects a lighter hinting algorithm for non-monochrome
+      modes. It generates glyphs which are more fuzzy but better resemble
+      its original shape. It implies use of the auto-hinter.
+
+diff --git a/include/directfb.h b/include/directfb.h
+index 6b34abd..07ef0bc 100644
+--- a/include/directfb.h
++++ b/include/directfb.h
+@@ -1027,7 +1027,11 @@ typedef enum {
+      DFFA_NOBITMAP       = 0x00000020,  /* ignore bitmap strikes; for
+                                            bitmap-only fonts this flag is
+                                            ignored */
+-     DFFA_OUTLINED       = 0x00000040
++     DFFA_OUTLINED       = 0x00000040,
++     DFFA_AUTOHINTING    = 0x00000080,  /* prefer auto-hinter over the font's
++                                           native hinter */
++     DFFA_LIGHT          = 0x00000100,  /* use a lighter hinting algorithm for
++                                           non-monochrome modes */
+ } DFBFontAttributes;
+ 
+ /*
+diff --git a/interfaces/IDirectFBFont/idirectfbfont_ft2.c b/interfaces/IDirectFBFont/idirectfbfont_ft2.c
+index cb9b8d0..8551756 100644
+--- a/interfaces/IDirectFBFont/idirectfbfont_ft2.c
++++ b/interfaces/IDirectFBFont/idirectfbfont_ft2.c
+@@ -59,11 +59,18 @@
+ #include FT_GLYPH_H
+ 
+ #ifndef FT_LOAD_TARGET_MONO
+-    /* FT_LOAD_TARGET_MONO was added in FreeType-2.1.3, we have to use (less good)
+-       FT_LOAD_MONOCHROME with older versions. Make it an alias for code simplicity. */
++    /* FT_LOAD_TARGET_MONO was added in FreeType-2.1.3. We have to use
++       (less good) FT_LOAD_MONOCHROME with older versions. Make it an
++       alias for code simplicity. */
+     #define FT_LOAD_TARGET_MONO FT_LOAD_MONOCHROME
+ #endif
+ 
++#ifndef FT_LOAD_FORCE_AUTOHINT
++    #define FT_LOAD_FORCE_AUTOHINT 0
++#endif
++#ifndef FT_LOAD_TARGET_LIGHT
++    #define FT_LOAD_TARGET_LIGHT 0
++#endif
+ 
+ static DFBResult
+ Probe( IDirectFBFont_ProbeContext *ctx );
+@@ -882,6 +889,10 @@ Construct( IDirectFBFont               *thiz,
+                load_flags |= FT_LOAD_NO_HINTING;
+           if (desc->attributes & DFFA_NOBITMAP)
+                load_flags |= FT_LOAD_NO_BITMAP;
++          if (desc->attributes & DFFA_AUTOHINTING)
++               load_flags |= FT_LOAD_FORCE_AUTOHINT;
++          if (desc->attributes & DFFA_LIGHT)
++               load_flags |= FT_LOAD_TARGET_LIGHT;
+           if (desc->attributes & DFFA_NOCHARMAP)
+                disable_charmap = true;
+           if (desc->attributes & DFFA_NOKERNING)
