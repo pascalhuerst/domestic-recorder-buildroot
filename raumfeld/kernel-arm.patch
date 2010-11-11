@@ -392876,3 +392876,27 @@ index 24958a8..f3bff72 100644
  
  	lbs_deb_leave(LBS_DEB_NET);
  	return 0;
+commit 385163b478f4c2efd4ace1825a375aed683e6bb6
+Author: Sven Neumann <s.neumann@raumfeld.com>
+Date:   Thu Nov 11 16:08:44 2010 +0100
+
+    ds2760_battery: fix calculation of time_to_empty_now
+    
+    Current is negative while the battery is discharging, fix the check
+    introduced by commit b0525b48.
+    
+    Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+
+diff --git a/drivers/power/ds2760_battery.c b/drivers/power/ds2760_battery.c
+index 4d3b272..c8d26df 100644
+--- a/drivers/power/ds2760_battery.c
++++ b/drivers/power/ds2760_battery.c
+@@ -212,7 +212,7 @@ static int ds2760_battery_read_status(struct ds2760_device_info *di)
+ 	if (di->rem_capacity > 100)
+ 		di->rem_capacity = 100;
+ 
+-	if (di->current_uA >= 100L)
++	if (di->current_uA < -100L)
+ 		di->life_sec = -((di->accum_current_uAh - di->empty_uAh) * 36L)
+ 					/ (di->current_uA / 100L);
+ 	else
