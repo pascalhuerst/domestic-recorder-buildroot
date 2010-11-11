@@ -392803,3 +392803,76 @@ index 9c26ba7..32d932a 100644
  	range 11 64 if ARCH_SHMOBILE
  	default "9" if SA1111
  	default "11"
+commit 4f03080cae57c23b747e607d12104a7a6f6a118d
+Author: Daniel Drake <dsd@laptop.org>
+Date:   Sun Oct 31 17:47:03 2010 +0000
+
+    libertas: terminate scan when stopping interface
+    
+    There are currently no provisions in place to ensure that the scanning
+    task has been stopped when the interface is stopped or removed.
+    
+    This can result in a WARNING at net/wireless/core.c:643 and other badness
+    when you remove the module while a scan is happening.
+    
+    Terminate the scanning task during interface stop.
+    
+    Signed-off-by: Daniel Drake <dsd@laptop.org>
+
+diff --git a/drivers/net/wireless/libertas/cfg.c b/drivers/net/wireless/libertas/cfg.c
+index 3e82f16..bfa1787 100644
+--- a/drivers/net/wireless/libertas/cfg.c
++++ b/drivers/net/wireless/libertas/cfg.c
+@@ -685,8 +685,9 @@ static void lbs_scan_worker(struct work_struct *work)
+ 
+ 	if (priv->scan_channel < priv->scan_req->n_channels) {
+ 		cancel_delayed_work(&priv->scan_work);
+-		queue_delayed_work(priv->work_thread, &priv->scan_work,
+-			msecs_to_jiffies(300));
++		if (!priv->stopping)
++			queue_delayed_work(priv->work_thread, &priv->scan_work,
++				msecs_to_jiffies(300));
+ 	}
+ 
+ 	/* This is the final data we are about to send */
+diff --git a/drivers/net/wireless/libertas/dev.h b/drivers/net/wireless/libertas/dev.h
+index f062ed5..cb14c38 100644
+--- a/drivers/net/wireless/libertas/dev.h
++++ b/drivers/net/wireless/libertas/dev.h
+@@ -36,6 +36,7 @@ struct lbs_private {
+ 	/* CFG80211 */
+ 	struct wireless_dev *wdev;
+ 	bool wiphy_registered;
++	bool stopping;
+ 	struct cfg80211_scan_request *scan_req;
+ 	u8 assoc_bss[ETH_ALEN];
+ 	u8 disassoc_reason;
+diff --git a/drivers/net/wireless/libertas/main.c b/drivers/net/wireless/libertas/main.c
+index 24958a8..f3bff72 100644
+--- a/drivers/net/wireless/libertas/main.c
++++ b/drivers/net/wireless/libertas/main.c
+@@ -104,6 +104,7 @@ static int lbs_dev_open(struct net_device *dev)
+ 	lbs_deb_enter(LBS_DEB_NET);
+ 
+ 	spin_lock_irq(&priv->driver_lock);
++	priv->stopping = false;
+ 
+ 	if (priv->connect_status == LBS_CONNECTED)
+ 		netif_carrier_on(dev);
+@@ -131,10 +132,16 @@ static int lbs_eth_stop(struct net_device *dev)
+ 	lbs_deb_enter(LBS_DEB_NET);
+ 
+ 	spin_lock_irq(&priv->driver_lock);
++	priv->stopping = true;
+ 	netif_stop_queue(dev);
+ 	spin_unlock_irq(&priv->driver_lock);
+ 
+ 	schedule_work(&priv->mcast_work);
++	cancel_delayed_work_sync(&priv->scan_work);
++	if (priv->scan_req) {
++		cfg80211_scan_done(priv->scan_req, false);
++		priv->scan_req = NULL;
++	}
+ 
+ 	lbs_deb_leave(LBS_DEB_NET);
+ 	return 0;
