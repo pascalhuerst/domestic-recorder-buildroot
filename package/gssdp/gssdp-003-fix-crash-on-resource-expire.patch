@@ -1,0 +1,32 @@
+--- gssdp-0.8.0-orig/libgssdp/gssdp-resource-browser.c	2010-09-16 13:19:30.000000000 +0200
++++ gssdp-0.8.0/libgssdp/gssdp-resource-browser.c	2010-11-15 09:19:32.000000000 +0100
+@@ -581,16 +581,24 @@
+ resource_expire (gpointer user_data)
+ {
+         Resource *resource;
++        gchar *usn;
+ 
+         resource = user_data;
+-        
++
++        /*  steal the USN pointer from the resource as we need it for
++         *  the signal emission
++         */
++        usn = resource->usn;
++        resource->usn = NULL;
++
++        g_hash_table_remove (resource->resource_browser->priv->resources, usn);
++
++        /*  emit the signal after having removed the resource from the cache  */
+         g_signal_emit (resource->resource_browser,
+                        signals[RESOURCE_UNAVAILABLE],
+                        0,
+-                       resource->usn);
+-
+-        g_hash_table_remove (resource->resource_browser->priv->resources,
+-                             resource->usn);
++                       usn);
++        g_free (usn);
+ 
+         return FALSE;
+ }
