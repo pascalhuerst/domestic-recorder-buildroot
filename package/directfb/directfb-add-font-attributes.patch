@@ -1,4 +1,4 @@
-commit d8fa3c7503f503dc1507152646156cb94aea5832
+commit dea6852acbacce6c3522575a47c4f6a60b9249b9
 Author: Sven Neumann <s.neumann@raumfeld.com>
 Date:   Wed Nov 10 14:30:40 2010 +0100
 
@@ -10,15 +10,15 @@ Date:   Wed Nov 10 14:30:40 2010 +0100
       DFFA_AUTOHINTING forces use of the auto-hinter over the font's
       native hinter.
     
-      DFFA_LIGHT selects a lighter hinting algorithm for non-monochrome
-      modes. It generates glyphs which are more fuzzy but better resemble
-      its original shape. It implies use of the auto-hinter.
+      DFFA_SOFTHINTING selects a lighter hinting algorithm. It
+      generates glyphs which are more fuzzy but better resemble
+      their original shape. It implies use of the auto-hinter.
 
 diff --git a/include/directfb.h b/include/directfb.h
-index 6b34abd..07ef0bc 100644
+index 6b34abd..5a4df60 100644
 --- a/include/directfb.h
 +++ b/include/directfb.h
-@@ -1027,7 +1027,11 @@ typedef enum {
+@@ -1027,7 +1027,13 @@ typedef enum {
       DFFA_NOBITMAP       = 0x00000020,  /* ignore bitmap strikes; for
                                             bitmap-only fonts this flag is
                                             ignored */
@@ -26,15 +26,24 @@ index 6b34abd..07ef0bc 100644
 +     DFFA_OUTLINED       = 0x00000040,
 +     DFFA_AUTOHINTING    = 0x00000080,  /* prefer auto-hinter over the font's
 +                                           native hinter */
-+     DFFA_LIGHT          = 0x00000100,  /* use a lighter hinting algorithm for
-+                                           non-monochrome modes */
++     DFFA_SOFTHINTING    = 0x00000100   /* use a lighter hinting algorithm
++                                           that produces glyphs that are more
++                                           fuzzy but better resemble the
++                                           original shape */
  } DFBFontAttributes;
  
  /*
 diff --git a/interfaces/IDirectFBFont/idirectfbfont_ft2.c b/interfaces/IDirectFBFont/idirectfbfont_ft2.c
-index cb9b8d0..8551756 100644
+index cb9b8d0..2cbbe93 100644
 --- a/interfaces/IDirectFBFont/idirectfbfont_ft2.c
 +++ b/interfaces/IDirectFBFont/idirectfbfont_ft2.c
+@@ -1,5 +1,5 @@
+ /*
+-   (c) Copyright 2001-2009  The world wide DirectFB Open Source Community (directfb.org)
++   (c) Copyright 2001-2010  The world wide DirectFB Open Source Community (directfb.org)
+    (c) Copyright 2000-2004  Convergence (integrated media) GmbH
+ 
+    All rights reserved.
 @@ -59,11 +59,18 @@
  #include FT_GLYPH_H
  
@@ -62,7 +71,7 @@ index cb9b8d0..8551756 100644
                 load_flags |= FT_LOAD_NO_BITMAP;
 +          if (desc->attributes & DFFA_AUTOHINTING)
 +               load_flags |= FT_LOAD_FORCE_AUTOHINT;
-+          if (desc->attributes & DFFA_LIGHT)
++          if (desc->attributes & DFFA_SOFTHINTING)
 +               load_flags |= FT_LOAD_TARGET_LIGHT;
            if (desc->attributes & DFFA_NOCHARMAP)
                 disable_charmap = true;
