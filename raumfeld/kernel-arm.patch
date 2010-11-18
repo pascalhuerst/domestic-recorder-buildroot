@@ -1,7 +1,7 @@
-From 501debb5366f1bd7beb4618e63ee26d06e51921b Mon Sep 17 00:00:00 2001
+From 29daa824214cc9bf65dd5bd1cd7b026698b7678d Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Tue, 30 Jun 2009 13:15:22 +0200
-Subject: [PATCH 1/5] video: add driver for PXA3xx 2D graphics accelerator
+Subject: [PATCH 1/9] video: add driver for PXA3xx 2D graphics accelerator
 
 This adds a driver for the the 2D graphics accelerator found on PXA3xx
 processors. Only resource mapping, interrupt handling and a simple ioctl
@@ -81,12 +81,12 @@ index 485e8ed..9260a89 100644
  obj-$(CONFIG_FB_AU1100)		  += au1100fb.o
 diff --git a/drivers/video/pxa3xx-gcu.c b/drivers/video/pxa3xx-gcu.c
 new file mode 100644
-index 0000000..b81168d
+index 0000000..04d333f
 --- /dev/null
 +++ b/drivers/video/pxa3xx-gcu.c
 @@ -0,0 +1,772 @@
 +/*
-+ *  pxa3xx-gc.c - Linux kernel module for PXA3xx graphics controllers
++ *  pxa3xx-gcu.c - Linux kernel module for PXA3xx graphics controllers
 + *
 + *  This driver needs a DirectFB counterpart in user space, communication
 + *  is handled via mmap()ed memory areas and an ioctl.
@@ -904,10 +904,10 @@ index 0000000..0428ed0
 -- 
 1.7.1
 
-From a2591c3c147e5e3508ccaaa95401a42689553e4b Mon Sep 17 00:00:00 2001
+From 39aaa5d30e09c56f50f85d2753eebe9b9d728679 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Fri, 27 Nov 2009 12:38:55 +0100
-Subject: [PATCH 2/5] ARM: pxa/raumfeld: enable PXA3XX_GCU driver
+Subject: [PATCH 2/9] ARM: pxa/raumfeld: enable PXA3XX_GCU driver
 
 ---
  arch/arm/mach-pxa/raumfeld.c |    5 +++++
@@ -939,10 +939,10 @@ index 67e04f4..bbf0b61 100644
 -- 
 1.7.1
 
-From 7d11a0bd1ba4007a9cc8d14bb2e6646b7264f862 Mon Sep 17 00:00:00 2001
+From 41f96205edd499a8982e0856194bc9a909ec5f57 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Fri, 16 Apr 2010 15:16:36 +0200
-Subject: [PATCH 3/5] raumfeld: remote control sleep hack
+Subject: [PATCH 3/9] raumfeld: remote control sleep hack
 
 Signed-off-by: Daniel Mack <daniel@caiaq.de>
 ---
@@ -972,10 +972,10 @@ index fa00148..9a3fb62 100644
 -- 
 1.7.1
 
-From 053a618f2aa244cdfd62eaefc8016db5c6fd3d57 Mon Sep 17 00:00:00 2001
+From 241c4516310f288e7dde763c9fdb53f6ac4d31af Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Thu, 23 Sep 2010 17:03:37 +0200
-Subject: [PATCH 4/5] raumfeld: add boot logo
+Subject: [PATCH 4/9] raumfeld: add boot logo
 
 This is the Raumfeld boot logo change extracted from kernel-arm.patch.
 ---
@@ -392733,10 +392733,10 @@ index ca5bd91..58ac1b6 100644
 -- 
 1.7.1
 
-From c54229ef88cc81c0c11563bde6a1422170769177 Mon Sep 17 00:00:00 2001
+From df790fad703651b2fb4270153d9e215b5d74ccfa Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Fri, 22 Oct 2010 09:13:49 +0200
-Subject: [PATCH 5/5] vt: change global_cursor_default to 0 (cursor hidden)
+Subject: [PATCH 5/9] vt: change global_cursor_default to 0 (cursor hidden)
 
 Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
 ---
@@ -392759,14 +392759,17 @@ index 281aada..ea25389 100644
 -- 
 1.7.1
 
-commit 8ae3df8a8c1fa4dd2174ad28a1878db342e0c4b4
-Author: Sven Neumann <s.neumann@raumfeld.com>
-Date:   Tue Nov 2 16:51:52 2010 +0100
+From 19a9b407ccf4f2b2373ed923f6830de0de01d52a Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Tue, 2 Nov 2010 16:51:52 +0100
+Subject: [PATCH 6/9] raumfeld: increase size of framebuffer
 
-    raumfeld: increase size of framebuffer
+---
+ arch/arm/mach-pxa/raumfeld.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
 diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
-index bbf0b61..e362d24 100644
+index bbf0b61..9020e31 100644
 --- a/arch/arm/mach-pxa/raumfeld.c
 +++ b/arch/arm/mach-pxa/raumfeld.c
 @@ -586,7 +586,7 @@ static struct pxafb_mode_info sharp_lq043t3dx02_mode = {
@@ -392774,21 +392777,26 @@ index bbf0b61..e362d24 100644
  	.modes		= &sharp_lq043t3dx02_mode,
  	.num_modes	= 1,
 -	.video_mem_size = 0x400000,
-+	.video_mem_size = 0x800000,
++	.video_mem_size = 0x1000000,
  	.lcd_conn	= LCD_COLOR_TFT_16BPP | LCD_PCLK_EDGE_FALL,
  #ifdef CONFIG_PXA3XX_GCU
  	.acceleration_enabled = 1,
-commit 7e2f441754a74e0addc816083b0b20c9929c478c
-Author: Sven Neumann <s.neumann@raumfeld.com>
-Date:   Thu Nov 4 09:40:58 2010 +0100
+-- 
+1.7.1
 
-    config: make FORCE_MAX_ZONEORDER available for all platforms
-    
-    The config option FORCE_MAX_ZONEORDER was incorrectly enabled
-    only for ARCH_SHMOBILE. Make it available for all platforms.
-    Tested on PXA300.
-    
-    Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+From 69486c54b7c466abffd9673e178cc1547efbacf7 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Thu, 4 Nov 2010 09:40:58 +0100
+Subject: [PATCH 7/9] config: make FORCE_MAX_ZONEORDER available for all platforms
+
+The config option FORCE_MAX_ZONEORDER was incorrectly enabled
+only for ARCH_SHMOBILE. Make it available for all platforms.
+Tested on PXA300.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ arch/arm/Kconfig |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 9c26ba7..32d932a 100644
@@ -392803,21 +392811,28 @@ index 9c26ba7..32d932a 100644
  	range 11 64 if ARCH_SHMOBILE
  	default "9" if SA1111
  	default "11"
-commit 4f03080cae57c23b747e607d12104a7a6f6a118d
-Author: Daniel Drake <dsd@laptop.org>
-Date:   Sun Oct 31 17:47:03 2010 +0000
+-- 
+1.7.1
 
-    libertas: terminate scan when stopping interface
-    
-    There are currently no provisions in place to ensure that the scanning
-    task has been stopped when the interface is stopped or removed.
-    
-    This can result in a WARNING at net/wireless/core.c:643 and other badness
-    when you remove the module while a scan is happening.
-    
-    Terminate the scanning task during interface stop.
-    
-    Signed-off-by: Daniel Drake <dsd@laptop.org>
+From fd7a49fc5e901bf90292e0661aa79e295e0e5841 Mon Sep 17 00:00:00 2001
+From: Daniel Drake <dsd@laptop.org>
+Date: Sun, 31 Oct 2010 17:47:03 +0000
+Subject: [PATCH 8/9] libertas: terminate scan when stopping interface
+
+There are currently no provisions in place to ensure that the scanning
+task has been stopped when the interface is stopped or removed.
+
+This can result in a WARNING at net/wireless/core.c:643 and other badness
+when you remove the module while a scan is happening.
+
+Terminate the scanning task during interface stop.
+
+Signed-off-by: Daniel Drake <dsd@laptop.org>
+---
+ drivers/net/wireless/libertas/cfg.c  |    5 +++--
+ drivers/net/wireless/libertas/dev.h  |    1 +
+ drivers/net/wireless/libertas/main.c |    7 +++++++
+ 3 files changed, 11 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/wireless/libertas/cfg.c b/drivers/net/wireless/libertas/cfg.c
 index 3e82f16..bfa1787 100644
@@ -392876,16 +392891,28 @@ index 24958a8..f3bff72 100644
  
  	lbs_deb_leave(LBS_DEB_NET);
  	return 0;
-commit 385163b478f4c2efd4ace1825a375aed683e6bb6
-Author: Sven Neumann <s.neumann@raumfeld.com>
-Date:   Thu Nov 11 16:08:44 2010 +0100
+-- 
+1.7.1
 
-    ds2760_battery: fix calculation of time_to_empty_now
-    
-    Current is negative while the battery is discharging, fix the check
-    introduced by commit b0525b48.
-    
-    Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+From fb3c6df5e39383224cb0fdc798cf9ff035c9d203 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Thu, 11 Nov 2010 16:08:44 +0100
+Subject: [PATCH 9/9] ds2760_battery: fix calculation of time_to_empty_now
+
+A check against division by zero was modified in commit b0525b48.
+Since this change time_to_empty_now is always reported as zero
+while the battery is discharging and as a negative value while
+the battery is charging. This is because current is negative while
+the battery is discharging.
+
+Fix the check introduced by commit b0525b48 so that time_to_empty_now
+is reported correctly during discharge and as zero while charging.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+Acked-by: Daniel Mack <daniel@caiaq.de>
+---
+ drivers/power/ds2760_battery.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/power/ds2760_battery.c b/drivers/power/ds2760_battery.c
 index 4d3b272..c8d26df 100644
@@ -392900,3 +392927,6 @@ index 4d3b272..c8d26df 100644
  		di->life_sec = -((di->accum_current_uAh - di->empty_uAh) * 36L)
  					/ (di->current_uA / 100L);
  	else
+-- 
+1.7.1
+
