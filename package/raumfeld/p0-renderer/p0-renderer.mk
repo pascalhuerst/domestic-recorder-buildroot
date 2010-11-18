@@ -9,7 +9,7 @@ P0_RENDERER_TARGET_DIR:=raumfeld/p0-renderer
 P0_RENDERER_BINARY:=$(P0_RENDERER_TARGET_DIR)/p0-renderer
 P0_RENDERER_CROSS_PREFIX:=$(BUILD_DIR)/..
 
-P0_RENDERER_DEPENDENCIES = host-pkgconfig host-libglib2 host-dbus-glib alsa-lib dbus-glib flac liboil libraumfeld
+P0_RENDERER_DEPENDENCIES = host-pkgconfig host-libglib2 host-dbus-glib alsa-lib dbus-glib flac libraumfeld
 
 ifeq ($(ARCH),arm)
 P0_RENDERER_CROSS = ARM
