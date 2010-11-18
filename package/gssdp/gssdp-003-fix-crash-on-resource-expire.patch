@@ -1,23 +1,37 @@
---- gssdp-0.8.0-orig/libgssdp/gssdp-resource-browser.c	2010-09-16 13:19:30.000000000 +0200
-+++ gssdp-0.8.0/libgssdp/gssdp-resource-browser.c	2010-11-15 09:19:32.000000000 +0100
-@@ -581,16 +581,24 @@
+commit b834cfca29cbe1945938178581eece67d51d030b
+Author: Sven Neumann <s.neumann@raumfeld.com>
+Date:   Mon Nov 15 09:58:40 2010 +0100
+
+    Fix potential crash in resource_expire()
+    
+    GSSDPResourceBrowser emits "resource-unavailable" before it has removed
+    the resource from its cache. Now if the application changes the cache
+    in response to this signal emission the code will crash.
+    
+    Fix this potential crash by emitting the signal after the resource
+    has been removed from the cache.
+
+diff --git a/libgssdp/gssdp-resource-browser.c b/libgssdp/gssdp-resource-browser.c
+index 43816fe..fb54dbd 100644
+--- a/libgssdp/gssdp-resource-browser.c
++++ b/libgssdp/gssdp-resource-browser.c
+@@ -581,16 +581,23 @@ static gboolean
  resource_expire (gpointer user_data)
  {
          Resource *resource;
-+        gchar *usn;
++        char *usn;
  
          resource = user_data;
 -        
 +
-+        /*  steal the USN pointer from the resource as we need it for
-+         *  the signal emission
++        /* Steal the USN pointer from the resource as we need it for the signal
++         * emission.
 +         */
 +        usn = resource->usn;
 +        resource->usn = NULL;
 +
 +        g_hash_table_remove (resource->resource_browser->priv->resources, usn);
 +
-+        /*  emit the signal after having removed the resource from the cache  */
          g_signal_emit (resource->resource_browser,
                         signals[RESOURCE_UNAVAILABLE],
                         0,
