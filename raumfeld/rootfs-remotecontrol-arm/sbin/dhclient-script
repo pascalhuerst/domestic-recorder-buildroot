@@ -234,10 +234,10 @@ case "$reason" in
             "$reason" = "BOUND" -o "$reason" = "REBOOT" ]; then
 
             route add -net 224.0.0.0 netmask 240.0.0.0 dev $interface
-            echo "dhclient: before ifconfig"
+
+            echo "ifconfig $interface inet $new_ip_address $new_subnet_arg $new_broadcast_arg $mtu_arg"
             ifconfig $interface inet $new_ip_address $new_subnet_arg \
                 $new_broadcast_arg $mtu_arg
-            echo "dhclient: after ifconfig"
 
             echo $new_ip_address > /tmp/old_ip_address
 
