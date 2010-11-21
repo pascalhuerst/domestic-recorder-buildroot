@@ -392930,3 +392930,27 @@ index 4d3b272..c8d26df 100644
 -- 
 1.7.1
 
+commit 9dbfb20bc32fdff08399444e0005abfd1db3bc36
+Author: Sven Neumann <s.neumann@raumfeld.com>
+Date:   Sun Nov 21 14:55:34 2010 +0100
+
+    libertas: fix invalid access
+    
+    card->priv must not be accessed after lbs_remove_card() was called
+    as lbs_remove_card() frees card->priv via free_netdev().
+    
+    Reported-by: Daniel Drake <dsd@laptop.org>
+    Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+
+diff --git a/drivers/net/wireless/libertas/if_sdio.c b/drivers/net/wireless/libertas/if_sdio.c
+index 87b6349..842df2d 100644
+--- a/drivers/net/wireless/libertas/if_sdio.c
++++ b/drivers/net/wireless/libertas/if_sdio.c
+@@ -1185,7 +1185,6 @@ static void if_sdio_remove(struct sdio_func *func)
+ 	lbs_deb_sdio("call remove card\n");
+ 	lbs_stop_card(card->priv);
+ 	lbs_remove_card(card->priv);
+-	card->priv->surpriseremoved = 1;
+ 
+ 	flush_workqueue(card->workqueue);
+ 	destroy_workqueue(card->workqueue);
