@@ -1,7 +1,7 @@
 From 29daa824214cc9bf65dd5bd1cd7b026698b7678d Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Tue, 30 Jun 2009 13:15:22 +0200
-Subject: [PATCH 1/9] video: add driver for PXA3xx 2D graphics accelerator
+Subject: [PATCH 01/11] video: add driver for PXA3xx 2D graphics accelerator
 
 This adds a driver for the the 2D graphics accelerator found on PXA3xx
 processors. Only resource mapping, interrupt handling and a simple ioctl
@@ -907,7 +907,7 @@ index 0000000..0428ed0
 From 39aaa5d30e09c56f50f85d2753eebe9b9d728679 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Fri, 27 Nov 2009 12:38:55 +0100
-Subject: [PATCH 2/9] ARM: pxa/raumfeld: enable PXA3XX_GCU driver
+Subject: [PATCH 02/11] ARM: pxa/raumfeld: enable PXA3XX_GCU driver
 
 ---
  arch/arm/mach-pxa/raumfeld.c |    5 +++++
@@ -942,7 +942,7 @@ index 67e04f4..bbf0b61 100644
 From 41f96205edd499a8982e0856194bc9a909ec5f57 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Fri, 16 Apr 2010 15:16:36 +0200
-Subject: [PATCH 3/9] raumfeld: remote control sleep hack
+Subject: [PATCH 03/11] raumfeld: remote control sleep hack
 
 Signed-off-by: Daniel Mack <daniel@caiaq.de>
 ---
@@ -975,7 +975,7 @@ index fa00148..9a3fb62 100644
 From 241c4516310f288e7dde763c9fdb53f6ac4d31af Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Thu, 23 Sep 2010 17:03:37 +0200
-Subject: [PATCH 4/9] raumfeld: add boot logo
+Subject: [PATCH 04/11] raumfeld: add boot logo
 
 This is the Raumfeld boot logo change extracted from kernel-arm.patch.
 ---
@@ -392736,7 +392736,7 @@ index ca5bd91..58ac1b6 100644
 From df790fad703651b2fb4270153d9e215b5d74ccfa Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Fri, 22 Oct 2010 09:13:49 +0200
-Subject: [PATCH 5/9] vt: change global_cursor_default to 0 (cursor hidden)
+Subject: [PATCH 05/11] vt: change global_cursor_default to 0 (cursor hidden)
 
 Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
 ---
@@ -392762,7 +392762,7 @@ index 281aada..ea25389 100644
 From 19a9b407ccf4f2b2373ed923f6830de0de01d52a Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Tue, 2 Nov 2010 16:51:52 +0100
-Subject: [PATCH 6/9] raumfeld: increase size of framebuffer
+Subject: [PATCH 06/11] raumfeld: increase size of framebuffer
 
 ---
  arch/arm/mach-pxa/raumfeld.c |    2 +-
@@ -392787,7 +392787,7 @@ index bbf0b61..9020e31 100644
 From 69486c54b7c466abffd9673e178cc1547efbacf7 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Thu, 4 Nov 2010 09:40:58 +0100
-Subject: [PATCH 7/9] config: make FORCE_MAX_ZONEORDER available for all platforms
+Subject: [PATCH 07/11] config: make FORCE_MAX_ZONEORDER available for all platforms
 
 The config option FORCE_MAX_ZONEORDER was incorrectly enabled
 only for ARCH_SHMOBILE. Make it available for all platforms.
@@ -392817,7 +392817,7 @@ index 9c26ba7..32d932a 100644
 From fd7a49fc5e901bf90292e0661aa79e295e0e5841 Mon Sep 17 00:00:00 2001
 From: Daniel Drake <dsd@laptop.org>
 Date: Sun, 31 Oct 2010 17:47:03 +0000
-Subject: [PATCH 8/9] libertas: terminate scan when stopping interface
+Subject: [PATCH 08/11] libertas: terminate scan when stopping interface
 
 There are currently no provisions in place to ensure that the scanning
 task has been stopped when the interface is stopped or removed.
@@ -392897,7 +392897,7 @@ index 24958a8..f3bff72 100644
 From fb3c6df5e39383224cb0fdc798cf9ff035c9d203 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Thu, 11 Nov 2010 16:08:44 +0100
-Subject: [PATCH 9/9] ds2760_battery: fix calculation of time_to_empty_now
+Subject: [PATCH 09/11] ds2760_battery: fix calculation of time_to_empty_now
 
 A check against division by zero was modified in commit b0525b48.
 Since this change time_to_empty_now is always reported as zero
@@ -392930,17 +392930,57 @@ index 4d3b272..c8d26df 100644
 -- 
 1.7.1
 
-commit 9dbfb20bc32fdff08399444e0005abfd1db3bc36
-Author: Sven Neumann <s.neumann@raumfeld.com>
-Date:   Sun Nov 21 14:55:34 2010 +0100
+From 90e27755ebbef844f1b63b7c81cfc4f727349825 Mon Sep 17 00:00:00 2001
+From: Daniel Drake <dsd@laptop.org>
+Date: Wed, 24 Nov 2010 16:00:49 +0000
+Subject: [PATCH 10/11] libertas: fix memory corruption in lbs_remove_card()
 
-    libertas: fix invalid access
-    
-    card->priv must not be accessed after lbs_remove_card() was called
-    as lbs_remove_card() frees card->priv via free_netdev().
-    
-    Reported-by: Daniel Drake <dsd@laptop.org>
-    Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+"priv" is stored at the end of the wiphy structure, which is freed
+during the call to lbs_cfg_free(). It must not be touched afterwards.
+
+Remove the unnecessary NULL assignment causing this memory corruption.
+
+Signed-off-by: Daniel Drake <dsd@laptop.org>
+---
+ drivers/net/wireless/libertas/main.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/libertas/main.c b/drivers/net/wireless/libertas/main.c
+index f3bff72..66fbc23 100644
+--- a/drivers/net/wireless/libertas/main.c
++++ b/drivers/net/wireless/libertas/main.c
+@@ -915,8 +915,6 @@ void lbs_remove_card(struct lbs_private *priv)
+ 
+ 	lbs_free_adapter(priv);
+ 	lbs_cfg_free(priv);
+-
+-	priv->dev = NULL;
+ 	free_netdev(dev);
+ 
+ 	lbs_deb_leave(LBS_DEB_MAIN);
+-- 
+1.7.1
+
+From 9b08618742926ffb933d9a8202e43ce9aa2a47c4 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Wed, 24 Nov 2010 16:02:00 +0000
+Subject: [PATCH 11/11] libertas: fix invalid access
+
+card->priv must not be accessed after lbs_remove_card() was called
+as lbs_remove_card() frees card->priv via free_netdev().
+
+For libertas_sdio this is a regression introduced by 23b149c1890f9.
+The correct fix to the issue described there is simply to remove the
+assignment. This flag is set at the appropriate time inside
+lbs_remove_card anyway.
+
+Reported-by: Daniel Drake <dsd@laptop.org>
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+Signed-off-by: Daniel Drake <dsd@laptop.org>
+---
+ drivers/net/wireless/libertas/if_sdio.c |    1 -
+ drivers/net/wireless/libertas/if_spi.c  |    1 -
+ 2 files changed, 0 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/wireless/libertas/if_sdio.c b/drivers/net/wireless/libertas/if_sdio.c
 index 87b6349..842df2d 100644
@@ -392954,3 +392994,18 @@ index 87b6349..842df2d 100644
  
  	flush_workqueue(card->workqueue);
  	destroy_workqueue(card->workqueue);
+diff --git a/drivers/net/wireless/libertas/if_spi.c b/drivers/net/wireless/libertas/if_spi.c
+index fe3f080..12fb12f 100644
+--- a/drivers/net/wireless/libertas/if_spi.c
++++ b/drivers/net/wireless/libertas/if_spi.c
+@@ -1059,7 +1059,6 @@ static int __devexit libertas_spi_remove(struct spi_device *spi)
+ 	lbs_stop_card(priv);
+ 	lbs_remove_card(priv); /* will call free_netdev */
+ 
+-	priv->surpriseremoved = 1;
+ 	free_irq(spi->irq, card);
+ 	if_spi_terminate_spi_thread(card);
+ 	if (card->pdata->teardown)
+-- 
+1.7.1
+
