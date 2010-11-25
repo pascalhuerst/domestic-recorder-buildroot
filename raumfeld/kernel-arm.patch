@@ -1,6 +1,6 @@
-From 29daa824214cc9bf65dd5bd1cd7b026698b7678d Mon Sep 17 00:00:00 2001
+From c2d8cf687f4d7946d876e091a16585371644d1f1 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
-Date: Tue, 30 Jun 2009 13:15:22 +0200
+Date: Thu, 4 Nov 2010 14:44:00 -0400
 Subject: [PATCH 01/11] video: add driver for PXA3xx 2D graphics accelerator
 
 This adds a driver for the the 2D graphics accelerator found on PXA3xx
@@ -8,35 +8,47 @@ processors. Only resource mapping, interrupt handling and a simple ioctl
 handler is done by the kernel part, the rest of the logic is implemented
 in DirectFB userspace.
 
-Graphic applications benefit for line drawing, blend, and rectangle and
-triangle filling operations.
+Graphic applications greatly benefit for line drawing, blend, and
+rectangle and triangle filling operations.
 
-Measurements on a PXA303 using the df_dok benchmarking tool follow,
+Benchmarks done on a PXA303 using the df_dok benchmarking tool follow,
 where the value in square brackets show the CPU usage during that test.
 
-Without accelerator:
+Without accelerator (benchmarking 256x252 on 480x262 RGB16 (16bit)):
 
-  Fill Rectangle                                 3.007 secs (  175.922 MPixel/sec) [100.3%]
-  Fill Rectangles [10]                           3.178 secs (  182.696 MPixel/sec) [100.0%]
-  Fill Triangles                                 3.023 secs (   99.232 MPixel/sec) [100.3%]
-  Blit                                           3.082 secs (   39.770 MPixel/sec) [100.0%]
-  Blit 180                                       3.115 secs (   28.994 MPixel/sec) [100.3%]
-  Blit with format conversion                    3.078 secs (   18.863 MPixel/sec) [100.0%]
+  Anti-aliased Text                              3.016 secs (   65.649 KChars/sec) [ 99.6%]
+  Fill Rectangle                                 3.021 secs (  175.107 MPixel/sec) [ 98.0%]
+  Fill Rectangle (blend)                         3.582 secs (    3.602 MPixel/sec) [ 99.7%]
+  Fill Rectangles [10]                           3.177 secs (  182.753 MPixel/sec) [ 98.1%]
+  Fill Rectangles [10] (blend)                  18.020 secs (    3.580 MPixel/sec) [ 98.7%]
+  Fill Spans                                     3.019 secs (  145.306 MPixel/sec) [ 98.0%]
+  Fill Spans (blend)                             3.616 secs (    3.568 MPixel/sec) [ 99.4%]
+  Blit                                           3.074 secs (   39.874 MPixel/sec) [ 98.0%]
+  Blit 180                                       3.020 secs (   32.042 MPixel/sec) [ 98.0%]
+  Blit with format conversion                    3.005 secs (   19.321 MPixel/sec) [ 99.6%]
+  Blit from 32bit (blend)                        4.792 secs (    2.692 MPixel/sec) [ 98.7%]
 
 With accelerator:
 
-  Fill Rectangle                                 4.377 secs (*  88.433 MPixel/sec) [  5.9%]
-  Fill Rectangles [10]                           5.176 secs (*  87.245 MPixel/sec) [  0.5%]
-  Fill Triangles                                 3.025 secs (   87.437 MPixel/sec) [ 46.6%]
-  Blit                                          12.177 secs (*  22.250 MPixel/sec) [  1.3%]
-  Blit 180                                       8.421 secs (*  32.175 MPixel/sec) [  4.9%]
-  Blit with format conversion                    8.216 secs (*  40.045 MPixel/sec) [  2.5%]
+  Anti-aliased Text                              3.056 secs (*  36.518 KChars/sec) [ 21.3%]
+  Fill Rectangle                                 3.015 secs (* 115.543 MPixel/sec) [  8.9%]
+  Fill Rectangle (blend)                         3.180 secs (*  20.286 MPixel/sec) [  1.8%]
+  Fill Rectangles [10]                           3.251 secs (* 119.062 MPixel/sec) [  1.2%]
+  Fill Rectangles [10] (blend)                   6.293 secs (*  20.502 MPixel/sec) [  0.3%]
+  Fill Spans                                     3.051 secs (*  97.264 MPixel/sec) [ 35.7%]
+  Fill Spans (blend)                             3.377 secs (*  15.282 MPixel/sec) [ 17.8%]
+  Blit                                           3.046 secs (*  27.533 MPixel/sec) [  2.6%]
+  Blit 180                                       3.098 secs (*  27.070 MPixel/sec) [  2.2%]
+  Blit with format conversion                    3.131 secs (*  39.148 MPixel/sec) [  2.8%]
+  Blit from 32bit (blend)                        3.346 secs (*  11.568 MPixel/sec) [  0.8%]
 
 Signed-off-by: Daniel Mack <daniel@caiaq.de>
+Tested-by: Sven Neumann <s.neumann@raumfeld.com>
+Cc: Eric Miao <eric.y.miao@gmail.com>
 Cc: Denis Oliver Kropp <dok@directfb.org>
 Cc: Sven Neumann <s.neumann@raumfeld.com>
 Cc: Haojian Zhuang <haojian.zhuang@gmail.com>
-Cc: Eric Miao <eric.y.miao@gmail.com>
+Signed-off-by: Eric Miao <eric.y.miao@gmail.com>
 ---
  drivers/video/Kconfig      |   10 +
  drivers/video/Makefile     |    1 +
@@ -81,12 +93,12 @@ index 485e8ed..9260a89 100644
  obj-$(CONFIG_FB_AU1100)		  += au1100fb.o
 diff --git a/drivers/video/pxa3xx-gcu.c b/drivers/video/pxa3xx-gcu.c
 new file mode 100644
-index 0000000..04d333f
+index 0000000..b81168d
 --- /dev/null
 +++ b/drivers/video/pxa3xx-gcu.c
 @@ -0,0 +1,772 @@
 +/*
-+ *  pxa3xx-gcu.c - Linux kernel module for PXA3xx graphics controllers
++ *  pxa3xx-gc.c - Linux kernel module for PXA3xx graphics controllers
 + *
 + *  This driver needs a DirectFB counterpart in user space, communication
 + *  is handled via mmap()ed memory areas and an ioctl.
@@ -904,7 +916,7 @@ index 0000000..0428ed0
 -- 
 1.7.1
 
-From 39aaa5d30e09c56f50f85d2753eebe9b9d728679 Mon Sep 17 00:00:00 2001
+From cc8c51307f1f7672ef2679a9630796e16713462e Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Fri, 27 Nov 2009 12:38:55 +0100
 Subject: [PATCH 02/11] ARM: pxa/raumfeld: enable PXA3XX_GCU driver
@@ -939,7 +951,7 @@ index 67e04f4..bbf0b61 100644
 -- 
 1.7.1
 
-From 41f96205edd499a8982e0856194bc9a909ec5f57 Mon Sep 17 00:00:00 2001
+From 5b03cb89449304e474575e4bd093c8748fd24c6a Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Fri, 16 Apr 2010 15:16:36 +0200
 Subject: [PATCH 03/11] raumfeld: remote control sleep hack
@@ -972,7 +984,7 @@ index fa00148..9a3fb62 100644
 -- 
 1.7.1
 
-From 241c4516310f288e7dde763c9fdb53f6ac4d31af Mon Sep 17 00:00:00 2001
+From f6bacd559e3194f2a5dcf77ad3c37a3223175161 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Thu, 23 Sep 2010 17:03:37 +0200
 Subject: [PATCH 04/11] raumfeld: add boot logo
@@ -392733,7 +392745,7 @@ index ca5bd91..58ac1b6 100644
 -- 
 1.7.1
 
-From df790fad703651b2fb4270153d9e215b5d74ccfa Mon Sep 17 00:00:00 2001
+From 323a489710ee42467bf615e31300aaacd1006d25 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Fri, 22 Oct 2010 09:13:49 +0200
 Subject: [PATCH 05/11] vt: change global_cursor_default to 0 (cursor hidden)
@@ -392759,7 +392771,7 @@ index 281aada..ea25389 100644
 -- 
 1.7.1
 
-From 19a9b407ccf4f2b2373ed923f6830de0de01d52a Mon Sep 17 00:00:00 2001
+From cba71da77499dc706799a6bfa464cad3355ec2e2 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Tue, 2 Nov 2010 16:51:52 +0100
 Subject: [PATCH 06/11] raumfeld: increase size of framebuffer
@@ -392784,7 +392796,7 @@ index bbf0b61..9020e31 100644
 -- 
 1.7.1
 
-From 69486c54b7c466abffd9673e178cc1547efbacf7 Mon Sep 17 00:00:00 2001
+From 7bf201e17dfc7207a9954d7b7279b8d9c53f3ad0 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Thu, 4 Nov 2010 09:40:58 +0100
 Subject: [PATCH 07/11] config: make FORCE_MAX_ZONEORDER available for all platforms
@@ -392814,7 +392826,7 @@ index 9c26ba7..32d932a 100644
 -- 
 1.7.1
 
-From fd7a49fc5e901bf90292e0661aa79e295e0e5841 Mon Sep 17 00:00:00 2001
+From a7cc5aa792b1dde15ad7d6c396330bc72b080402 Mon Sep 17 00:00:00 2001
 From: Daniel Drake <dsd@laptop.org>
 Date: Sun, 31 Oct 2010 17:47:03 +0000
 Subject: [PATCH 08/11] libertas: terminate scan when stopping interface
@@ -392894,7 +392906,7 @@ index 24958a8..f3bff72 100644
 -- 
 1.7.1
 
-From fb3c6df5e39383224cb0fdc798cf9ff035c9d203 Mon Sep 17 00:00:00 2001
+From 8515a05b89fef2e54f133b7a104879a9de972b9e Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Thu, 11 Nov 2010 16:08:44 +0100
 Subject: [PATCH 09/11] ds2760_battery: fix calculation of time_to_empty_now
@@ -392930,7 +392942,7 @@ index 4d3b272..c8d26df 100644
 -- 
 1.7.1
 
-From 90e27755ebbef844f1b63b7c81cfc4f727349825 Mon Sep 17 00:00:00 2001
+From 48bc5cf87803e7b9c9fbc5413fa5ffb1dc9ab019 Mon Sep 17 00:00:00 2001
 From: Daniel Drake <dsd@laptop.org>
 Date: Wed, 24 Nov 2010 16:00:49 +0000
 Subject: [PATCH 10/11] libertas: fix memory corruption in lbs_remove_card()
@@ -392961,7 +392973,7 @@ index f3bff72..66fbc23 100644
 -- 
 1.7.1
 
-From 9b08618742926ffb933d9a8202e43ce9aa2a47c4 Mon Sep 17 00:00:00 2001
+From d36c2b007827dab5728e3a1efd45c552f615a855 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Wed, 24 Nov 2010 16:02:00 +0000
 Subject: [PATCH 11/11] libertas: fix invalid access
