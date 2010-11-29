@@ -63,6 +63,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	cd /mnt
 	raumfeld-extract-update $update $numfiles
 	cd /
+        sync
 
 	case "$arch" in
 		arm)
