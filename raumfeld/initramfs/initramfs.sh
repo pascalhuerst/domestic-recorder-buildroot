@@ -71,6 +71,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 			umount /mnt
 			;;
 		geode)
+                        sleep 5
                         umount /mnt/boot
                         umount /mnt
                         sleep 5
