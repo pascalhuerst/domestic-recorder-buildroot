@@ -1,0 +1,43 @@
+commit 56ee0b8a3e6c57900cb426a8ec0043ad4b7bdba1
+Author: Sven Neumann <s.neumann@raumfeld.com>
+Date:   Thu Dec 2 12:42:08 2010 +0100
+
+    jpeg: correctly setup iDCT scale factors for libjpeg version >= 7
+    
+    Previously the code selected scale factors that resulted in an image
+    smaller or equal the desired size. Now the code select scale factors
+    that create an image equal or larger than the desired size.
+
+diff --git a/interfaces/IDirectFBImageProvider/idirectfbimageprovider_jpeg.c b/interfaces/IDirectFBImageProvider/idirectfbimageprovider_jpeg.c
+index 5591387..bf04e12 100644
+--- a/interfaces/IDirectFBImageProvider/idirectfbimageprovider_jpeg.c
++++ b/interfaces/IDirectFBImageProvider/idirectfbimageprovider_jpeg.c
+@@ -463,16 +463,21 @@ IDirectFBImageProvider_JPEG_RenderTo( IDirectFBImageProvider *thiz,
+           }
+           else if (rect.x == 0 && rect.y == 0) {
+ #if JPEG_LIB_VERSION >= 70
+-               cinfo.scale_num = 16;
+-               while (cinfo.scale_num > 1) {
++            /*  The supported scaling ratios in libjpeg 7 and 8
++             *  are N/8 with all N from 1 to 16.
++             */
++               cinfo.scale_num = 1;
++               jpeg_calc_output_dimensions (&cinfo);
++               while (cinfo.scale_num < 16
++                      && cinfo.output_width < rect.w
++                      && cinfo.output_height < rect.h) {
++                    ++cinfo.scale_num;
+                     jpeg_calc_output_dimensions (&cinfo);
+-                    if (cinfo.output_width <= rect.w
+-                        || cinfo.output_height <= rect.h)
+-                         break;
+-                    --cinfo.scale_num;
+                }
+-               jpeg_calc_output_dimensions (&cinfo);
+ #else
++               /*  The supported scaling ratios in libjpeg 6
++                *  are 1/1, 1/2, 1/4, and 1/8
++                */
+                while (cinfo.scale_denom < 8
+                       && ((cinfo.output_width >> 1) >= rect.w)
+                       && ((cinfo.output_height >> 1) >= rect.h)) {
