@@ -4,7 +4,7 @@
 #
 #############################################################
 
-GSSDP_VERSION:=0.8.0
+GSSDP_VERSION:=0.8.2
 GSSDP_SOURCE:=gssdp-$(GSSDP_VERSION).tar.gz
 GSSDP_SITE:=http://www.gupnp.org/sites/all/files/sources
 GSSDP_AUTORECONF = NO
