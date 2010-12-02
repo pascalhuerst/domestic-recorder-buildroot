@@ -4,7 +4,7 @@
 #
 #############################################################
 
-GUPNP_VERSION:=0.14.0
+GUPNP_VERSION:=0.14.1
 GUPNP_SOURCE:=gupnp-$(GUPNP_VERSION).tar.gz
 GUPNP_SITE:=http://www.gupnp.org/sites/all/files/sources
 GUPNP_AUTORECONF = NO
