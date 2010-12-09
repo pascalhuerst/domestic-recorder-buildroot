@@ -393094,3 +393094,83 @@ index 51a96f5..8bf88fa4 100644
  		tsfdesc += 8;
  	}
  	ret = 0;
+From f217fc87cc647174056e798903e50708d747063d Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Tue, 7 Dec 2010 22:43:05 +0100
+Subject: [PATCH 1/2] libertas: fix potential NULL-pointer dereference
+
+The code wants to check if there's a channel and it is not disabled,
+but it used to check if channel is not NULL and accessed the channel
+struct if this check failed.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ drivers/net/wireless/libertas/cfg.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/net/wireless/libertas/cfg.c b/drivers/net/wireless/libertas/cfg.c
+index 373930a..113f4f2 100644
+--- a/drivers/net/wireless/libertas/cfg.c
++++ b/drivers/net/wireless/libertas/cfg.c
+@@ -619,7 +619,7 @@ static int lbs_ret_scan(struct lbs_private *priv, unsigned long dummy,
+ 				     print_ssid(ssid_buf, ssid, ssid_len),
+ 				     LBS_SCAN_RSSI_TO_MBM(rssi)/100);
+ 
+-			if (channel ||
++			if (channel &&
+ 			    !(channel->flags & IEEE80211_CHAN_DISABLED))
+ 				cfg80211_inform_bss(wiphy, channel,
+ 					bssid, le64_to_cpu(*(__le64 *)tsfdesc),
+-- 
+1.7.1
+
+From d63f6f65758cd72a928ce0fd0276688967a3cd68 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Thu, 9 Dec 2010 11:22:12 +0100
+Subject: [PATCH 2/2] cfg80211: update information elements in cached BSS struct
+
+When a cached BSS struct is updated because a new beacon was received,
+the code replaces the cached information elements by the IEs from the
+new beacon. However it did not update the pub.information_elements
+and pub.len_information_elements fields leaving them either pointing
+to the old beacon IEs or in an inconsistent state where the data is
+replaced by the new beacon IEs but len_information_elements still has
+its value from the first beacon.
+
+Fix this by updating the information elements fields if they are
+pointing to beacon IEs.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ net/wireless/scan.c |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+index 503ebb8..629bfaa 100644
+--- a/net/wireless/scan.c
++++ b/net/wireless/scan.c
+@@ -465,6 +465,9 @@ cfg80211_bss_update(struct cfg80211_registered_device *dev,
+ 			size_t used = dev->wiphy.bss_priv_size + sizeof(*res);
+ 			size_t ielen = res->pub.len_beacon_ies;
+ 
++                        int information_elements_is_beacon_ies =
++                                (found->pub.information_elements == found->pub.beacon_ies);
++
+ 			if (found->pub.beacon_ies &&
+ 			    !found->beacon_ies_allocated &&
+ 			    ksize(found) >= used + ielen) {
+@@ -487,6 +490,11 @@ cfg80211_bss_update(struct cfg80211_registered_device *dev,
+ 					found->pub.len_beacon_ies = ielen;
+ 				}
+ 			}
++
++                        if (information_elements_is_beacon_ies) {
++                                found->pub.information_elements = found->pub.beacon_ies;
++                                found->pub.len_information_elements = found->pub.len_beacon_ies;
++                        }
+ 		}
+ 
+ 		kref_put(&res->ref, bss_release);
+-- 
+1.7.1
+
