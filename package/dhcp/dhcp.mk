@@ -16,8 +16,6 @@ DHCP_CONF_OPT = \
 	--with-relay-pid-file=/var/run/dhcrelay.pid \
 	--disable-dhcpv6
 
-DHCP_INSTALL_STAGING = YES
-
 ifeq ($(BR2_PACKAGE_DHCP_SERVER),y)
 define DHCP_INSTALL_SERVER
 	mkdir -p $(TARGET_DIR)/var/lib
