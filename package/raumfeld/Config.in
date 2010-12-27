@@ -2,7 +2,7 @@ menu "Raumfeld software"
 
 config BR2_PACKAGE_RAUMFELD_REPOSITORY
 	string "raumfeld bazaar repository"
-	default "sftp://bzr.internal/bzr"
+	default "sftp://rf-bzr.teufel.local/bzr"
 	help
 	  location of the raumfeld bazaar repository 
 
