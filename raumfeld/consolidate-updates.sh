@@ -1,6 +1,6 @@
 #!/bin/sh
 
-update_ssh="devel.internal:/var/www/devel/updates"
+update_ssh="rf-devel.teufel.local:/var/www/devel/updates"
 
 if test -n "${UPDATE_SSH}"; then
   update_ssh=${UPDATE_SSH}

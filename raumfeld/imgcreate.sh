@@ -80,7 +80,7 @@ base-geode-coreboot)
 	cp -a raumfeld/testsuite/coreboot $tmpdir/
 	;;
 base-geode-flash)
-        DOWNLOAD_SITE=http://devel.internal/buildroot/dl
+        DOWNLOAD_SITE=http://rf-devel.teufel.local/buildroot/dl
         DOWNLOAD_FILE="Raumfeld Demo.mp3"
         test -f "dl/$DOWNLOAD_FILE" || \
             wget -P dl "$DOWNLOAD_SITE/$DOWNLOAD_FILE"
@@ -90,7 +90,7 @@ base-geode-flash)
 	cp -a raumfeld/U-Boot/* $tmpdir/
 	;;
 audioadapter-arm-*)
-        DOWNLOAD_PRIMARY_SITE=http://devel.internal/buildroot/dl
+        DOWNLOAD_PRIMARY_SITE=http://rf-devel.teufel.local/buildroot/dl
         DOWNLOAD_BACKUP_SITE=http://caiaq.de/download/raumfeld
         DOWNLOAD_FILE="audiotest.wav"
         test -f dl/$DOWNLOAD_FILE || \
