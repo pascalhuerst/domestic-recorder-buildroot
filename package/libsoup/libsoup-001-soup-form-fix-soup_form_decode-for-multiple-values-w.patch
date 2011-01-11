@@ -1,0 +1,31 @@
+From e1a658c9a60a20a52c83fea68480d95c966ccb95 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Tue, 11 Jan 2011 10:17:19 +0100
+Subject: [PATCH] soup-form: fix soup_form_decode() for multiple values with the same key
+
+If multiple values in an urlencoded dataset use the same key, the
+resulting value in the hash-table created by soup_form_decode() used
+to point to memory that is already freed. That is because
+g_hash_table_insert() frees the passed key which happens to point
+to the memory that contains the new value. Fix this by using
+g_hash_table_replace() instead.
+---
+ libsoup/soup-form.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/libsoup/soup-form.c b/libsoup/soup-form.c
+index 59bfd28..9e52793 100644
+--- a/libsoup/soup-form.c
++++ b/libsoup/soup-form.c
+@@ -105,7 +105,7 @@ soup_form_decode (const char *encoded_form)
+ 			continue;
+ 		}
+ 
+-		g_hash_table_insert (form_data_set, name, value);
++		g_hash_table_replace (form_data_set, name, value);
+ 	}
+ 	g_free (pairs);
+ 
+-- 
+1.7.1
+
