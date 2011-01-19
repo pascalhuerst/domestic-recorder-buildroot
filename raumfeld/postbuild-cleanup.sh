@@ -57,6 +57,7 @@ rm -f  $1/usr/share/xml/iso-codes/iso_639_3.xml
 rm -f  $1/usr/share/xml/iso-codes/iso_3166_2.xml
 rm -f  $1/usr/share/xml/iso-codes/iso_4217.xml
 rm -f  $1/usr/share/xml/iso-codes/iso_15924.xml
+find $1/usr/share/locale -name e2fsprogs.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_639.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_639_3.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_3166_2.mo -exec rm -f {} \;
