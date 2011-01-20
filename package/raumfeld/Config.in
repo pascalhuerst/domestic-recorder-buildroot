@@ -26,5 +26,6 @@ source "package/raumfeld/stream-relay/Config.in"
 source "package/raumfeld/loopbacktest/Config.in"
 source "package/raumfeld/raumfeld-extract/Config.in"
 source "package/raumfeld/report-daemon/Config.in"
+source "package/raumfeld/web-service/Config.in"
 endmenu
 
