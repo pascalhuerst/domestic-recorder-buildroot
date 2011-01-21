@@ -9,7 +9,7 @@ WEB_SERVICE_TARGET_DIR:=raumfeld/web-service
 WEB_SERVICE_BINARY:=$(WEB_SERVICE_TARGET_DIR)/web-service
 WEB_SERVICE_CROSS_PREFIX:=$(BUILD_DIR)/..
 
-WEB_SERVICE_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp avahi
+WEB_SERVICE_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp
 
 ifeq ($(ARCH),arm)
 WEB_SERVICE_CROSS = ARM

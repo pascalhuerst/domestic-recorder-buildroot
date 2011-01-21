@@ -2,7 +2,6 @@ config BR2_PACKAGE_RAUMFELD_WEB_SERVICE
 	bool "web-service"
 	select BR2_PACKAGE_LIBRAUMFELD
 	select BR2_PACKAGE_LIBRAUMFELDCPP
-        select BR2_PACKAGE_AVAHI
 	help
 	  raumfeld web-service
 
