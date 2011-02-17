@@ -1,0 +1,43 @@
+From 70fe79aa703a0fbb4c2c501924ff3267b2a9663d Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Thu, 17 Feb 2011 16:37:37 +0100
+Subject: [PATCH] Add missing quote in action response
+
+The action response document was missing an opening quote
+sign in the namespace declaration of the <actionResponse>
+element.
+
+Fix it by adding the missing quote and also tweak the code
+a bit to output well-formed XML in case that the service-type
+is not set.
+---
+ libgupnp/gupnp-service.c |    5 ++---
+ 1 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/libgupnp/gupnp-service.c b/libgupnp/gupnp-service.c
+index ee0c5a1..5dffeeb 100644
+--- a/libgupnp/gupnp-service.c
++++ b/libgupnp/gupnp-service.c
+@@ -797,17 +797,16 @@ new_action_response_str (const char   *action_name,
+ 
+         g_string_append (str, "<u:");
+         g_string_append (str, action_name);
+-        g_string_append (str, "Response xmlns:u=");
++        g_string_append (str, "Response xmlns:u=\"");
+ 
+         if (service_type != NULL) {
+                 g_string_append (str, service_type);
+-                g_string_append_c (str, '"');
+         } else {
+                 g_warning ("No serviceType defined. Control may not work "
+                            "correctly.");
+         }
+ 
+-        g_string_append_c (str, '>');
++        g_string_append (str, "\">");
+ 
+         return str;
+ }
+-- 
+1.7.3.4
+
