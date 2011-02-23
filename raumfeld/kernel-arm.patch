@@ -392906,42 +392906,6 @@ index 24958a8..f3bff72 100644
 -- 
 1.7.1
 
-From 8515a05b89fef2e54f133b7a104879a9de972b9e Mon Sep 17 00:00:00 2001
-From: Sven Neumann <s.neumann@raumfeld.com>
-Date: Thu, 11 Nov 2010 16:08:44 +0100
-Subject: [PATCH 09/14] ds2760_battery: fix calculation of time_to_empty_now
-
-A check against division by zero was modified in commit b0525b48.
-Since this change time_to_empty_now is always reported as zero
-while the battery is discharging and as a negative value while
-the battery is charging. This is because current is negative while
-the battery is discharging.
-
-Fix the check introduced by commit b0525b48 so that time_to_empty_now
-is reported correctly during discharge and as zero while charging.
-
-Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
-Acked-by: Daniel Mack <daniel@caiaq.de>
----
- drivers/power/ds2760_battery.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/power/ds2760_battery.c b/drivers/power/ds2760_battery.c
-index 4d3b272..c8d26df 100644
---- a/drivers/power/ds2760_battery.c
-+++ b/drivers/power/ds2760_battery.c
-@@ -212,7 +212,7 @@ static int ds2760_battery_read_status(struct ds2760_device_info *di)
- 	if (di->rem_capacity > 100)
- 		di->rem_capacity = 100;
- 
--	if (di->current_uA >= 100L)
-+	if (di->current_uA < -100L)
- 		di->life_sec = -((di->accum_current_uAh - di->empty_uAh) * 36L)
- 					/ (di->current_uA / 100L);
- 	else
--- 
-1.7.1
-
 From 48bc5cf87803e7b9c9fbc5413fa5ffb1dc9ab019 Mon Sep 17 00:00:00 2001
 From: Daniel Drake <dsd@laptop.org>
 Date: Wed, 24 Nov 2010 16:00:49 +0000
