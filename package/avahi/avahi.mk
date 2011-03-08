@@ -10,7 +10,7 @@
 # either version 2.1 of the License, or (at your option) any
 # later version.
 
-AVAHI_VERSION = 0.6.25
+AVAHI_VERSION = 0.6.28
 AVAHI_SOURCE = avahi-$(AVAHI_VERSION).tar.gz
 AVAHI_SITE = http://www.avahi.org/download/
 AVAHI_LIBTOOL_PATCH = NO
@@ -70,11 +70,13 @@ AVAHI_CONF_ENV = ac_cv_func_strtod=yes \
 		ac_cv_func_working_mktime=yes \
 		jm_cv_func_working_re_compile_pattern=yes \
 		ac_use_included_regex=no \
-		avahi_cv_sys_cxx_works=yes
+		avahi_cv_sys_cxx_works=yes \
+		CPPFLAGS=-DDISABLE_SYSTEMD
 
 AVAHI_CONF_OPT = --localstatedir=/var \
 		--disable-qt3 \
 		--disable-qt4 \
+		--disable-gtk3 \
 		--disable-gdbm \
 		--disable-python-dbus \
 		--disable-pygtk \
