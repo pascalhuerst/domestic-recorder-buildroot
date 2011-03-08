@@ -4,8 +4,8 @@
 #
 #############################################################
 
-SQLITE_VERSION = 3.7.4
-SQLITE_PACKAGE_VERSION = 3070400
+SQLITE_VERSION = 3.7.5
+SQLITE_PACKAGE_VERSION = 3070500
 SQLITE_SOURCE = sqlite-autoconf-$(SQLITE_PACKAGE_VERSION).tar.gz
 SQLITE_SITE = http://www.sqlite.org
 SQLITE_INSTALL_STAGING = YES
