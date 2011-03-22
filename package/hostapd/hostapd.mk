@@ -3,7 +3,7 @@
 # hostpapd
 #
 #############################################################
-HOSTAPD_VERSION = 0.6.9
+HOSTAPD_VERSION = 0.7.3
 HOSTAPD_SOURCE = hostapd-$(HOSTAPD_VERSION).tar.gz
 HOSTAPD_SITE = http://hostap.epitest.fi/releases
 
