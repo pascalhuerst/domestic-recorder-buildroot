@@ -25,6 +25,9 @@ $(HOSTAPD_DIR)/.source: $(DL_DIR)/$(HOSTAPD_SOURCE)
 # hostpad has no configure script, we just copy a inlude file for make
 $(HOSTAPD_DIR)/.configured: $(HOSTAPD_DIR)/.source
 	cp -dPf package/hostapd/hostapd.config $(HOSTAPD_CONFIG)
+ifeq ($(BR2_PACKAGE_HOSTAPD_WPS),y)
+	echo "CONFIG_WPS=y" >>$(HOSTAPD_CONFIG)
+endif
 ifeq ($(BR2_PACKAGE_MADWIFI),y)
 	echo "CONFIG_DRIVER_MADWIFI=y" >>$(HOSTAPD_CONFIG)
 	echo "CFLAGS += -I/$(MADWIFI_DIR)" >>$(HOSTAPD_CONFIG)
