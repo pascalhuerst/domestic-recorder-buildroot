@@ -23,3 +23,8 @@ config BR2_PACKAGE_WPA_SUPPLICANT_PASSPHRASE
 	help
 	  Install wpa_passphrase command line utility
 
+config BR2_PACKAGE_WPA_SUPPLICANT_WPS
+	bool "Enable support for WPS"
+	depends on BR2_PACKAGE_WPA_SUPPLICANT
+	help
+	  Enable support for Wi-Fi Protected Setup (WPS)
