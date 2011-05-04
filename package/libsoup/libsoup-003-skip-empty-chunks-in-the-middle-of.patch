@@ -1,0 +1,37 @@
+From ef4bce0e2c8e0e9817a2b2aa207b0e0aba57e76b Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Wed, 4 May 2011 15:43:37 +0200
+Subject: [PATCH] soup-message-body: skip empty chunks in the middle of the chunk list
+
+If a chunk with zero length appears in the middle of the chunk list,
+soup_message_body_get_chunk() will return that chunk causing io_write()
+in soup-message-io.c to go into an infinite loop.
+
+The fix is to skip empty chunks that appear in the middle of the
+chunk list. An empty chunk at the end of the chunks list (the marker
+added by soup_message_body_complete) is not affected by this change
+and will still be returned.
+---
+ libsoup/soup-message-body.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/libsoup/soup-message-body.c b/libsoup/soup-message-body.c
+index 689acf8..ff07ff0 100644
+--- a/libsoup/soup-message-body.c
++++ b/libsoup/soup-message-body.c
+@@ -626,6 +626,12 @@ soup_message_body_get_chunk (SoupMessageBody *body, goffset offset)
+ 	for (iter = priv->chunks; iter; iter = iter->next) {
+ 		chunk = iter->data;
+ 
++		/* Skip empty chunks appearing in the middle of the
++		 * chunk list.
++		 */
++		if (!chunk->length && iter->next)
++			continue;
++
+ 		if (offset < chunk->length || offset == 0)
+ 			break;
+ 
+-- 
+1.7.1
+
