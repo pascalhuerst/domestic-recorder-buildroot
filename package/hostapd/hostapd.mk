@@ -10,6 +10,8 @@ HOSTAPD_SITE = http://hostap.epitest.fi/releases
 HOSTAPD_DIR:=$(BUILD_DIR)/hostapd-$(HOSTAPD_VERSION)
 HOSTAPD_BINARY:=hostapd
 HOSTAPD_TARGET_BINARY:=usr/bin/hostapd
+HOSTAPD_CLI_BINARY:=hostapd_cli
+HOSTAPD_CLI_TARGET_BINARY:=usr/bin/hostapd_cli
 
 HOSTAPD_CONFIG = $(HOSTAPD_DIR)/hostapd/.config
 
@@ -40,14 +42,19 @@ $(HOSTAPD_DIR)/hostapd/$(HOSTAPD_BINARY): $(HOSTAPD_DIR)/.configured
 
 $(TARGET_DIR)/$(HOSTAPD_TARGET_BINARY): $(HOSTAPD_DIR)/hostapd/$(HOSTAPD_BINARY)
 	cp -dPf $(HOSTAPD_DIR)/hostapd/$(HOSTAPD_BINARY) $(TARGET_DIR)/$(HOSTAPD_TARGET_BINARY)
+	$(STRIPCMD) $(STRIP_STRIP_ALL) $(TARGET_DIR)/$(HOSTAPD_TARGET_BINARY)
+ifeq ($(BR2_PACKAGE_HOSTAPD_CLI),y)
+	cp -dPf $(HOSTAPD_DIR)/hostapd/$(HOSTAPD_CLI_BINARY) $(TARGET_DIR)/$(HOSTAPD_CLI_TARGET_BINARY)
+	$(STRIPCMD) $(STRIP_STRIP_ALL) $(TARGET_DIR)/$(HOSTAPD_CLI_TARGET_BINARY)
+endif
 	touch $@
 
 hostapd: $(HOSTAPD_DEPENDENCIES) $(TARGET_DIR)/$(HOSTAPD_TARGET_BINARY)
 hostapd-source: $(DL_DIR)/$(HOSTAPD_SOURCE)
 
 hostapd-clean:
-	$(MAKE) prefix=$(TARGET_DIR)/usr -C $(HOSTAPD_DIR) uninstall
-	-$(MAKE) -C $(HOSTAPD_DIR) clean
+	rm -f $(TARGET_DIR)/$(HOSTAPD_TARGET_BINARY)
+	rm -f $(TARGET_DIR)/$(HOSTAPD_CLI_TARGET_BINARY)
 
 hostapd-dirclean:
 	rm -rf $(HOSTAPD_DIR)
@@ -61,20 +68,3 @@ hostapd-dirclean:
 ifeq ($(BR2_PACKAGE_HOSTAPD),y)
 TARGETS+=hostapd
 endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

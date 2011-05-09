@@ -11,6 +11,12 @@ config BR2_PACKAGE_HOSTAPD
 
           http://hostap.epitest.fi/
 
+config BR2_PACKAGE_HOSTAPD_CLI
+	bool "Install hostapd_cli binary"
+	depends on BR2_PACKAGE_HOSTAPD
+	help
+	  Install binary for command-line control of hostapd.
+
 config BR2_PACKAGE_HOSTAPD_WPS
 	bool "Enable support for WPS"
 	depends on BR2_PACKAGE_HOSTAPD
