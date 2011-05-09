@@ -1,7 +1,7 @@
 From c2d8cf687f4d7946d876e091a16585371644d1f1 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Thu, 4 Nov 2010 14:44:00 -0400
-Subject: [PATCH 01/16] video: add driver for PXA3xx 2D graphics accelerator
+Subject: [PATCH 01/22] video: add driver for PXA3xx 2D graphics accelerator
 
 This adds a driver for the the 2D graphics accelerator found on PXA3xx
 processors. Only resource mapping, interrupt handling and a simple ioctl
@@ -919,7 +919,7 @@ index 0000000..0428ed0
 From cc8c51307f1f7672ef2679a9630796e16713462e Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Fri, 27 Nov 2009 12:38:55 +0100
-Subject: [PATCH 02/16] ARM: pxa/raumfeld: enable PXA3XX_GCU driver
+Subject: [PATCH 02/22] ARM: pxa/raumfeld: enable PXA3XX_GCU driver
 
 ---
  arch/arm/mach-pxa/raumfeld.c |    5 +++++
@@ -954,7 +954,7 @@ index 67e04f4..bbf0b61 100644
 From 5b03cb89449304e474575e4bd093c8748fd24c6a Mon Sep 17 00:00:00 2001
 From: Daniel Mack <daniel@caiaq.de>
 Date: Fri, 16 Apr 2010 15:16:36 +0200
-Subject: [PATCH 03/16] raumfeld: remote control sleep hack
+Subject: [PATCH 03/22] raumfeld: remote control sleep hack
 
 Signed-off-by: Daniel Mack <daniel@caiaq.de>
 ---
@@ -987,7 +987,7 @@ index fa00148..9a3fb62 100644
 From f6bacd559e3194f2a5dcf77ad3c37a3223175161 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Thu, 23 Sep 2010 17:03:37 +0200
-Subject: [PATCH 04/16] raumfeld: add boot logo
+Subject: [PATCH 04/22] raumfeld: add boot logo
 
 This is the Raumfeld boot logo change extracted from kernel-arm.patch.
 ---
@@ -392748,7 +392748,7 @@ index ca5bd91..58ac1b6 100644
 From 323a489710ee42467bf615e31300aaacd1006d25 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Fri, 22 Oct 2010 09:13:49 +0200
-Subject: [PATCH 05/16] vt: change global_cursor_default to 0 (cursor hidden)
+Subject: [PATCH 05/22] vt: change global_cursor_default to 0 (cursor hidden)
 
 Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
 ---
@@ -392774,7 +392774,7 @@ index 281aada..ea25389 100644
 From cba71da77499dc706799a6bfa464cad3355ec2e2 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Tue, 2 Nov 2010 16:51:52 +0100
-Subject: [PATCH 06/16] raumfeld: increase size of framebuffer
+Subject: [PATCH 06/22] raumfeld: increase size of framebuffer
 
 ---
  arch/arm/mach-pxa/raumfeld.c |    2 +-
@@ -392799,7 +392799,7 @@ index bbf0b61..9020e31 100644
 From 7bf201e17dfc7207a9954d7b7279b8d9c53f3ad0 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Thu, 4 Nov 2010 09:40:58 +0100
-Subject: [PATCH 07/16] config: make FORCE_MAX_ZONEORDER available for all platforms
+Subject: [PATCH 07/22] config: make FORCE_MAX_ZONEORDER available for all platforms
 
 The config option FORCE_MAX_ZONEORDER was incorrectly enabled
 only for ARCH_SHMOBILE. Make it available for all platforms.
@@ -392829,7 +392829,7 @@ index 9c26ba7..32d932a 100644
 From a7cc5aa792b1dde15ad7d6c396330bc72b080402 Mon Sep 17 00:00:00 2001
 From: Daniel Drake <dsd@laptop.org>
 Date: Sun, 31 Oct 2010 17:47:03 +0000
-Subject: [PATCH 08/16] libertas: terminate scan when stopping interface
+Subject: [PATCH 08/22] libertas: terminate scan when stopping interface
 
 There are currently no provisions in place to ensure that the scanning
 task has been stopped when the interface is stopped or removed.
@@ -392909,7 +392909,7 @@ index 24958a8..f3bff72 100644
 From 48bc5cf87803e7b9c9fbc5413fa5ffb1dc9ab019 Mon Sep 17 00:00:00 2001
 From: Daniel Drake <dsd@laptop.org>
 Date: Wed, 24 Nov 2010 16:00:49 +0000
-Subject: [PATCH 10/16] libertas: fix memory corruption in lbs_remove_card()
+Subject: [PATCH 10/22] libertas: fix memory corruption in lbs_remove_card()
 
 "priv" is stored at the end of the wiphy structure, which is freed
 during the call to lbs_cfg_free(). It must not be touched afterwards.
@@ -392940,7 +392940,7 @@ index f3bff72..66fbc23 100644
 From d36c2b007827dab5728e3a1efd45c552f615a855 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Wed, 24 Nov 2010 16:02:00 +0000
-Subject: [PATCH 11/16] libertas: fix invalid access
+Subject: [PATCH 11/22] libertas: fix invalid access
 
 card->priv must not be accessed after lbs_remove_card() was called
 as lbs_remove_card() frees card->priv via free_netdev().
@@ -392988,7 +392988,7 @@ index fe3f080..12fb12f 100644
 From dc6757fe5c74506fb90934033c735006bb262401 Mon Sep 17 00:00:00 2001
 From: Dan Williams <dcbw@redhat.com>
 Date: Thu, 29 Jul 2010 23:12:53 -0700
-Subject: [PATCH 12/16] libertas: better scan response debugging
+Subject: [PATCH 12/22] libertas: better scan response debugging
 
 Make it a bit easier to debug scan results in the future.
 
@@ -393066,7 +393066,7 @@ index bfa1787..6bb5399 100644
 From d48a1f81367d256f7026c9e1bd9a55dae5136071 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Tue, 7 Dec 2010 22:43:05 +0100
-Subject: [PATCH 13/16] libertas: fix potential NULL-pointer dereference
+Subject: [PATCH 13/22] libertas: fix potential NULL-pointer dereference
 
 The code wants to check if there's a channel and it is not disabled,
 but it used to check if channel is not NULL and accessed the channel
@@ -393096,7 +393096,7 @@ index 6bb5399..4798d67 100644
 From 8777f9a652a89314c7982cf4ec76ea4bca02636f Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Thu, 9 Dec 2010 11:22:12 +0100
-Subject: [PATCH 14/16] cfg80211: update information elements in cached BSS struct
+Subject: [PATCH 14/22] cfg80211: update information elements in cached BSS struct
 
 When a cached BSS struct is updated because a new beacon was received,
 the code replaces the cached information elements by the IEs from the
@@ -393149,7 +393149,7 @@ index 5ca8c71..7fefed0 100644
 From d796d970afd7b28adf17af637fc0c63f2b1a9ef4 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Wed, 5 Jan 2011 14:09:02 +0100
-Subject: [PATCH 15/16] raumfeld: adapt to upcoming hardware change
+Subject: [PATCH 15/22] raumfeld: adapt to upcoming hardware change
 
 The backlight control is going to change back to PWM in the
 upcoming Raumfeld Controller hardware revision.
@@ -393190,7 +393190,7 @@ index 9020e31..e59e070 100644
 From 92cf2d9e498ad6733826ba52bad6fc7502dcf8c0 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <s.neumann@raumfeld.com>
 Date: Tue, 29 Mar 2011 16:58:47 +0200
-Subject: [PATCH 16/16] ARM: pxa: raumfeld: display initialisation fixes
+Subject: [PATCH 16/22] ARM: pxa: raumfeld: display initialisation fixes
 
 The display requires some milliseconds between GPIO_TFT_VA_EN
 and GPIO_DISPLAY_ENABLE. Reorder initialisation to comply with
@@ -393261,6 +393261,2008 @@ index e59e070..5214730 100644
 +	set_pxa_fb_info(&raumfeld_sharp_lcd_info);
  	platform_device_register(&pxa3xx_device_gcu);
  }
+ 
+-- 
+1.7.1
+
+From 877cda88751030ab6ee8594dffaa862a57a28ad0 Mon Sep 17 00:00:00 2001
+From: Johannes Stezenbach <js@sig21.net>
+Date: Mon, 14 Feb 2011 15:14:32 +0100
+Subject: [PATCH 17/22] ASoC: add STA32X codec driver
+
+Signed-off-by: Johannes Stezenbach <js@sig21.net>
+---
+ sound/soc/codecs/Kconfig  |    4 +
+ sound/soc/codecs/Makefile |    2 +
+ sound/soc/codecs/sta32x.c |  828 +++++++++++++++++++++++++++++++++++++++++++++
+ sound/soc/codecs/sta32x.h |  223 ++++++++++++
+ 4 files changed, 1057 insertions(+), 0 deletions(-)
+ create mode 100644 sound/soc/codecs/sta32x.c
+ create mode 100644 sound/soc/codecs/sta32x.h
+
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 83f5c67..6bb042d 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -30,6 +30,7 @@ config SND_SOC_ALL_CODECS
+ 	select SND_SOC_PCM3008
+ 	select SND_SOC_SPDIF
+ 	select SND_SOC_SSM2602 if I2C
++	select SND_SOC_STA32X if I2C
+ 	select SND_SOC_STAC9766 if SND_SOC_AC97_BUS
+ 	select SND_SOC_TLV320AIC23 if I2C
+ 	select SND_SOC_TLV320AIC26 if SPI_MASTER
+@@ -159,6 +160,9 @@ config SND_SOC_SPDIF
+ config SND_SOC_SSM2602
+ 	tristate
+ 
++config SND_SOC_STA32X
++	tristate
++
+ config SND_SOC_STAC9766
+ 	tristate
+ 
+diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
+index 5352409..a64e269 100644
+--- a/sound/soc/codecs/Makefile
++++ b/sound/soc/codecs/Makefile
+@@ -17,6 +17,7 @@ snd-soc-l3-objs := l3.o
+ snd-soc-pcm3008-objs := pcm3008.o
+ snd-soc-spdif-objs := spdif_transciever.o
+ snd-soc-ssm2602-objs := ssm2602.o
++snd-soc-sta32x-objs := sta32x.o
+ snd-soc-stac9766-objs := stac9766.o
+ snd-soc-tlv320aic23-objs := tlv320aic23.o
+ snd-soc-tlv320aic26-objs := tlv320aic26.o
+@@ -86,6 +87,7 @@ obj-$(CONFIG_SND_SOC_JZ4740_CODEC)	+= snd-soc-jz4740-codec.o
+ obj-$(CONFIG_SND_SOC_PCM3008)	+= snd-soc-pcm3008.o
+ obj-$(CONFIG_SND_SOC_SPDIF)	+= snd-soc-spdif.o
+ obj-$(CONFIG_SND_SOC_SSM2602)	+= snd-soc-ssm2602.o
++obj-$(CONFIG_SND_SOC_STA32X)	+= snd-soc-sta32x.o
+ obj-$(CONFIG_SND_SOC_STAC9766)	+= snd-soc-stac9766.o
+ obj-$(CONFIG_SND_SOC_TLV320AIC23)	+= snd-soc-tlv320aic23.o
+ obj-$(CONFIG_SND_SOC_TLV320AIC26)	+= snd-soc-tlv320aic26.o
+diff --git a/sound/soc/codecs/sta32x.c b/sound/soc/codecs/sta32x.c
+new file mode 100644
+index 0000000..db44e3f
+--- /dev/null
++++ b/sound/soc/codecs/sta32x.c
+@@ -0,0 +1,828 @@
++/*
++ * Codec driver for ST STA32x 2.1-channel high-efficiency digital audio system
++ *
++ * Copyright: 2011 Raumfeld GmbH
++ * Author: Johannes Stezenbach <js@sig21.net>
++ *
++ * based on code from:
++ *	Wolfson Microelectronics PLC.
++ *	  Mark Brown <broonie@opensource.wolfsonmicro.com>
++ *	Freescale Semiconductor, Inc.
++ *	  Timur Tabi <timur@freescale.com>
++ *
++ * This program is free software; you can redistribute  it and/or modify it
++ * under  the terms of  the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the  License, or (at your
++ * option) any later version.
++ */
++
++#define DEBUG
++#define pr_fmt(fmt) KBUILD_MODNAME ":%s:%d: " fmt, __func__, __LINE__
++
++#include <linux/module.h>
++#include <linux/moduleparam.h>
++#include <linux/init.h>
++#include <linux/delay.h>
++#include <linux/pm.h>
++#include <linux/i2c.h>
++#include <linux/platform_device.h>
++#include <linux/regulator/consumer.h>
++#include <linux/slab.h>
++#include <sound/core.h>
++#include <sound/pcm.h>
++#include <sound/pcm_params.h>
++#include <sound/soc.h>
++#include <sound/soc-dapm.h>
++#include <sound/initval.h>
++#include <sound/tlv.h>
++
++#include "sta32x.h"
++
++
++#define STA32X_NUM_RATES 7
++#define STA32X_RATES (SNDRV_PCM_RATE_32000 | \
++		      SNDRV_PCM_RATE_44100 | \
++		      SNDRV_PCM_RATE_48000 | \
++		      SNDRV_PCM_RATE_88200 | \
++		      SNDRV_PCM_RATE_96000 | \
++		      SNDRV_PCM_RATE_176400 | \
++		      SNDRV_PCM_RATE_192000)
++
++/*
++ * The codec isn't really big-endian or little-endian, since the I2S
++ * interface requires data to be sent serially with the MSbit first.
++ * However, to support BE and LE I2S devices, we specify both here.  That
++ * way, ALSA will always match the bit patterns.
++ */
++#define STA32X_FORMATS \
++	(SNDRV_PCM_FMTBIT_S16_LE  | SNDRV_PCM_FMTBIT_S16_BE  | \
++	 SNDRV_PCM_FMTBIT_S18_3LE | SNDRV_PCM_FMTBIT_S18_3BE | \
++	 SNDRV_PCM_FMTBIT_S20_3LE | SNDRV_PCM_FMTBIT_S20_3BE | \
++	 SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S24_3BE | \
++	 SNDRV_PCM_FMTBIT_S24_LE  | SNDRV_PCM_FMTBIT_S24_BE  | \
++	 SNDRV_PCM_FMTBIT_S32_LE  | SNDRV_PCM_FMTBIT_S32_BE)
++
++
++/* global pointer, struct i2c_device has not private data field */
++static struct snd_soc_codec *sta32x_codec;
++
++/* regulator power supply names */
++static const char *sta32x_supply_names[] = {
++	"Vdda",	/* analog supply, 3.3VV */
++	"Vdd3",	/* digital supply, 3.3V */
++	"Vcc"	/* power amp spply, 10V - 36V */
++};
++
++
++/* codec private data */
++struct sta32x_priv {
++	struct snd_soc_codec codec;
++	u16 reg_cache[STA32X_REGISTER_COUNT];
++	struct regulator_bulk_data supplies[ARRAY_SIZE(sta32x_supply_names)];
++
++	unsigned int mclk;
++	unsigned int format;
++};
++
++
++static const DECLARE_TLV_DB_SCALE(mvol_tlv, -12700, 50, 1);
++static const DECLARE_TLV_DB_SCALE(chvol_tlv, -7950, 50, 1);
++static const DECLARE_TLV_DB_SCALE(tone_tlv, -120, 200, 0);
++
++static const char *sta32x_drc_ac[] = {
++	"Anti-Clipping", "Dynamic Range Compression" };
++static const char *sta32x_auto_eq_mode[] = {
++	"User", "Preset", "Loudness" };
++static const char *sta32x_auto_gc_mode[] = {
++	"User", "AC no clipping", "AC limited clipping (10%)",
++	"DRC nighttime listening mode" };
++static const char *sta32x_auto_xo_mode[] = {
++	"User", "80Hz", "100Hz", "120Hz", "140Hz", "160Hz", "180Hz", "200Hz",
++	"220Hz", "240Hz", "260Hz", "280Hz", "300Hz", "320Hz", "340Hz", "360Hz" };
++static const char *sta32x_preset_eq_mode[] = {
++	"Flat", "Rock", "Soft Rock", "Jazz", "Classical", "Dance", "Pop", "Soft",
++	"Hard", "Party", "Vocal", "Hip-Hop", "Dialog", "Bass-boost #1",
++	"Bass-boost #2", "Bass-boost #3", "Loudness 1", "Loudness 2",
++	"Loudness 3", "Loudness 4", "Loudness 5", "Loudness 6", "Loudness 7",
++	"Loudness 8", "Loudness 9", "Loudness 10", "Loudness 11", "Loudness 12",
++	"Loudness 13", "Loudness 14", "Loudness 15", "Loudness 16" };
++static const char *sta32x_limiter_select[] = {
++	"Limiter Disabled", "Limiter #1", "Limiter #2" };
++#if 0
++static const char *sta32x_pwm_output_mapping[] = {
++	"Channel 1", "Channel 2", "Channel 3" };
++#endif
++static const char *sta32x_limiter_attack_rate[] = {
++	"3.1584", "2.7072", "2.2560", "1.8048", "1.3536", "0.9024",
++	"0.4512", "0.2256", "0.1504", "0.1123", "0.0902", "0.0752",
++	"0.0645", "0.0564", "0.0501", "0.0451" };
++static const char *sta32x_limiter_release_rate[] = {
++	"0.5116", "0.1370", "0.0744", "0.0499", "0.0360", "0.0299",
++	"0.0264", "0.0208", "0.0198", "0.0172", "0.0147", "0.0137",
++	"0.0134", "0.0117", "0.0110", "0.0104" };
++static const char *sta32x_limiter_ac_attack_thr[] = {
++	"-12dB", "-10dB", "-8dB", "-6dB", "-4dB", "-2dB", "0dB", "+2dB",
++	"+3dB", "+4dB", "+5dB", "+6dB", "+7dB", "+8dB", "+9dB", "+10dB" };
++static const char *sta32x_limiter_ac_release_thr[] = {
++	"-inf", "-29dB", "-20dB", "-16dB", "-14dB", "-12dB", "-10dB", "-8dB",
++	"-7dB", "-6dB", "-5dB", "-4dB", "-3dB", "-2dB", "-1dB", "0dB" };
++static const char *sta32x_limiter_drc_attack_thr[] = {
++	"-31dB", "-29dB", "-27dB", "-25dB", "-23dB", "-21dB", "-19dB", "-17dB",
++	"-16dB", "-15dB", "-14dB", "-13dB", "-12dB", "-10dB", "-7dB", "-4dB" };
++static const char *sta32x_limiter_drc_release_thr[] = {
++	"-inf", "-38dB", "-36dB", "-33dB", "-31dB", "-30dB", "-28dB", "-26dB",
++	"-24dB", "-22dB", "-20dB", "-18dB", "-15dB", "-12dB", "-9dB", "-6dB" };
++
++
++static const struct soc_enum sta32x_drc_ac_enum =
++	SOC_ENUM_SINGLE(STA32X_CONFD, STA32X_CONFD_DRC_SHIFT,
++			2, sta32x_drc_ac);
++static const struct soc_enum sta32x_auto_eq_enum =
++	SOC_ENUM_SINGLE(STA32X_AUTO1, STA32X_AUTO1_AMEQ_SHIFT,
++			3, sta32x_auto_eq_mode);
++static const struct soc_enum sta32x_auto_gc_enum =
++	SOC_ENUM_SINGLE(STA32X_AUTO1, STA32X_AUTO1_AMGC_SHIFT,
++			4, sta32x_auto_gc_mode);
++static const struct soc_enum sta32x_auto_xo_enum =
++	SOC_ENUM_SINGLE(STA32X_AUTO2, STA32X_AUTO2_XO_SHIFT,
++			16, sta32x_auto_xo_mode);
++static const struct soc_enum sta32x_preset_eq_enum =
++	SOC_ENUM_SINGLE(STA32X_AUTO3, STA32X_AUTO3_PEQ_SHIFT,
++			32, sta32x_preset_eq_mode);
++static const struct soc_enum sta32x_limiter_ch1_enum =
++	SOC_ENUM_SINGLE(STA32X_C1CFG, STA32X_CxCFG_LS_SHIFT,
++			3, sta32x_limiter_select);
++static const struct soc_enum sta32x_limiter_ch2_enum =
++	SOC_ENUM_SINGLE(STA32X_C2CFG, STA32X_CxCFG_LS_SHIFT,
++			3, sta32x_limiter_select);
++static const struct soc_enum sta32x_limiter_ch3_enum =
++	SOC_ENUM_SINGLE(STA32X_C3CFG, STA32X_CxCFG_LS_SHIFT,
++			3, sta32x_limiter_select);
++#if 0
++static const struct soc_enum sta32x_pwm_out_ch1_enum =
++	SOC_ENUM_SINGLE(STA32X_C1CFG, STA32X_CxCFG_OM_SHIFT,
++			2, sta32x_pwm_output_mapping);
++static const struct soc_enum sta32x_pwm_out_ch2_enum =
++	SOC_ENUM_SINGLE(STA32X_C2CFG, STA32X_CxCFG_OM_SHIFT,
++			2, sta32x_pwm_output_mapping);
++static const struct soc_enum sta32x_pwm_out_ch3_enum =
++	SOC_ENUM_SINGLE(STA32X_C3CFG, STA32X_CxCFG_OM_SHIFT,
++			2, sta32x_pwm_output_mapping);
++#endif
++static const struct soc_enum sta32x_limiter1_attack_rate_enum =
++	SOC_ENUM_SINGLE(STA32X_L1AR, STA32X_LxA_SHIFT,
++			16, sta32x_limiter_attack_rate);
++static const struct soc_enum sta32x_limiter2_attack_rate_enum =
++	SOC_ENUM_SINGLE(STA32X_L2AR, STA32X_LxA_SHIFT,
++			16, sta32x_limiter_attack_rate);
++static const struct soc_enum sta32x_limiter1_release_rate_enum =
++	SOC_ENUM_SINGLE(STA32X_L1AR, STA32X_LxR_SHIFT,
++			16, sta32x_limiter_release_rate);
++static const struct soc_enum sta32x_limiter2_release_rate_enum =
++	SOC_ENUM_SINGLE(STA32X_L2AR, STA32X_LxR_SHIFT,
++			16, sta32x_limiter_release_rate);
++/* depending on mode, the attack/release thresholds have
++ * two different enum definitions; provide both
++ */
++static const struct soc_enum sta32x_limiter1_ac_attack_thr_enum =
++	SOC_ENUM_SINGLE(STA32X_L1ATRT, STA32X_LxA_SHIFT,
++			16, sta32x_limiter_ac_attack_thr);
++static const struct soc_enum sta32x_limiter2_ac_attack_thr_enum =
++	SOC_ENUM_SINGLE(STA32X_L2ATRT, STA32X_LxA_SHIFT,
++			16, sta32x_limiter_ac_attack_thr);
++static const struct soc_enum sta32x_limiter1_ac_release_thr_enum =
++	SOC_ENUM_SINGLE(STA32X_L1ATRT, STA32X_LxR_SHIFT,
++			16, sta32x_limiter_ac_release_thr);
++static const struct soc_enum sta32x_limiter2_ac_release_thr_enum =
++	SOC_ENUM_SINGLE(STA32X_L2ATRT, STA32X_LxR_SHIFT,
++			16, sta32x_limiter_ac_release_thr);
++static const struct soc_enum sta32x_limiter1_drc_attack_thr_enum =
++	SOC_ENUM_SINGLE(STA32X_L1ATRT, STA32X_LxA_SHIFT,
++			16, sta32x_limiter_drc_attack_thr);
++static const struct soc_enum sta32x_limiter2_drc_attack_thr_enum =
++	SOC_ENUM_SINGLE(STA32X_L2ATRT, STA32X_LxA_SHIFT,
++			16, sta32x_limiter_drc_attack_thr);
++static const struct soc_enum sta32x_limiter1_drc_release_thr_enum =
++	SOC_ENUM_SINGLE(STA32X_L1ATRT, STA32X_LxR_SHIFT,
++			16, sta32x_limiter_drc_release_thr);
++static const struct soc_enum sta32x_limiter2_drc_release_thr_enum =
++	SOC_ENUM_SINGLE(STA32X_L2ATRT, STA32X_LxR_SHIFT,
++			16, sta32x_limiter_drc_release_thr);
++
++static const struct snd_kcontrol_new sta32x_snd_controls[] = {
++SOC_SINGLE_TLV("Master Volume", STA32X_MVOL, 0, 0xff, 1, mvol_tlv),
++SOC_SINGLE("Master Mute", STA32X_MMUTE, 0, 1, 0),
++SOC_SINGLE("Ch1 Mute", STA32X_MMUTE, 1, 1, 0),
++SOC_SINGLE("Ch2 Mute", STA32X_MMUTE, 2, 1, 0),
++SOC_SINGLE("Ch3 Mute", STA32X_MMUTE, 3, 1, 0),
++SOC_SINGLE_TLV("Ch1 Volume", STA32X_C1VOL, 0, 0xff, 1, chvol_tlv),
++SOC_SINGLE_TLV("Ch2 Volume", STA32X_C2VOL, 0, 0xff, 1, chvol_tlv),
++SOC_SINGLE_TLV("Ch3 Volume", STA32X_C3VOL, 0, 0xff, 1, chvol_tlv),
++SOC_SINGLE("De-emphasis Filter Switch", STA32X_CONFD, STA32X_CONFD_DEMP_SHIFT, 1, 0),
++SOC_ENUM("Compressor/Limiter Switch", sta32x_drc_ac_enum),
++SOC_SINGLE("Miami Mode Switch", STA32X_CONFD, STA32X_CONFD_MME_SHIFT, 1, 0),
++SOC_SINGLE("Zero Cross Switch", STA32X_CONFE, STA32X_CONFE_ZCE_SHIFT, 1, 0),
++SOC_SINGLE("Soft Ramp Switch", STA32X_CONFE, STA32X_CONFE_SVE_SHIFT, 1, 0),
++SOC_SINGLE("Auto-Mute Switch", STA32X_CONFF, STA32X_CONFF_IDE_SHIFT, 1, 0),
++SOC_ENUM("Automode EQ", sta32x_auto_eq_enum),
++SOC_ENUM("Automode GC", sta32x_auto_gc_enum),
++SOC_ENUM("Automode XO", sta32x_auto_xo_enum),
++SOC_ENUM("Preset EQ", sta32x_preset_eq_enum),
++SOC_SINGLE("Ch1 Tone Control Bypass Switch", STA32X_C1CFG, STA32X_CxCFG_TCB_SHIFT, 1, 0),
++SOC_SINGLE("Ch2 Tone Control Bypass Switch", STA32X_C2CFG, STA32X_CxCFG_TCB_SHIFT, 1, 0),
++SOC_SINGLE("Ch1 EQ Bypass Switch", STA32X_C1CFG, STA32X_CxCFG_EQBP_SHIFT, 1, 0),
++SOC_SINGLE("Ch2 EQ Bypass Switch", STA32X_C2CFG, STA32X_CxCFG_EQBP_SHIFT, 1, 0),
++SOC_SINGLE("Ch1 Master Volume Bypass Switch", STA32X_C1CFG, STA32X_CxCFG_VBP_SHIFT, 1, 0),
++SOC_SINGLE("Ch2 Master Volume Bypass Switch", STA32X_C1CFG, STA32X_CxCFG_VBP_SHIFT, 1, 0),
++SOC_SINGLE("Ch3 Master Volume Bypass Switch", STA32X_C1CFG, STA32X_CxCFG_VBP_SHIFT, 1, 0),
++SOC_ENUM("Ch1 Limiter Select", sta32x_limiter_ch1_enum),
++SOC_ENUM("Ch2 Limiter Select", sta32x_limiter_ch2_enum),
++SOC_ENUM("Ch3 Limiter Select", sta32x_limiter_ch3_enum),
++#if 0
++SOC_ENUM("Ch1 PWM Output Mapping", sta32x_pwm_out_ch1_enum),
++SOC_ENUM("Ch2 PWM Output Mapping", sta32x_pwm_out_ch2_enum),
++SOC_ENUM("Ch3 PWM Output Mapping", sta32x_pwm_out_ch3_enum),
++#endif
++SOC_SINGLE_TLV("Bass Tone Control", STA32X_TONE, STA32X_TONE_BTC_SHIFT, 15, 0, tone_tlv),
++SOC_SINGLE_TLV("Treble Tone Control", STA32X_TONE, STA32X_TONE_TTC_SHIFT, 15, 0, tone_tlv),
++SOC_ENUM("Limiter1 Attack Rate (dB/ms)", sta32x_limiter1_attack_rate_enum),
++SOC_ENUM("Limiter2 Attack Rate (dB/ms)", sta32x_limiter2_attack_rate_enum),
++SOC_ENUM("Limiter1 Release Rate (dB/ms)", sta32x_limiter1_release_rate_enum),
++SOC_ENUM("Limiter2 Release Rate (dB/ms)", sta32x_limiter1_release_rate_enum),
++SOC_ENUM("Limiter1 Attack Threshold (AC Mode)", sta32x_limiter1_ac_attack_thr_enum),
++SOC_ENUM("Limiter2 Attack Threshold (AC Mode)", sta32x_limiter2_ac_attack_thr_enum),
++SOC_ENUM("Limiter1 Release Threshold (AC Mode)", sta32x_limiter1_ac_release_thr_enum),
++SOC_ENUM("Limiter2 Release Threshold (AC Mode)", sta32x_limiter2_ac_release_thr_enum),
++SOC_ENUM("Limiter1 Attack Threshold (DRC Mode)", sta32x_limiter1_drc_attack_thr_enum),
++SOC_ENUM("Limiter2 Attack Threshold (DRC Mode)", sta32x_limiter2_drc_attack_thr_enum),
++SOC_ENUM("Limiter1 Release Threshold (DRC Mode)", sta32x_limiter1_drc_release_thr_enum),
++SOC_ENUM("Limiter2 Release Threshold (DRC Mode)", sta32x_limiter2_drc_release_thr_enum),
++};
++
++static const struct snd_soc_dapm_widget sta32x_dapm_widgets[] = {
++SND_SOC_DAPM_DAC("DAC", "Playback", SND_SOC_NOPM, 0, 0),
++SND_SOC_DAPM_OUTPUT("LEFT"),
++SND_SOC_DAPM_OUTPUT("RIGHT"),
++SND_SOC_DAPM_OUTPUT("SUB"),
++};
++
++static const struct snd_soc_dapm_route intercon[] = {
++	{ "LEFT", NULL, "DAC" },
++	{ "RIGHT", NULL, "DAC" },
++	{ "SUB", NULL, "DAC" },
++};
++
++/* MCLK interpolation ratio per fs */
++static struct {
++	int fs;
++	int ir;
++} interpolation_ratios[] = {
++	{ 32000, 0 },
++	{ 44100, 0 },
++	{ 48000, 0 },
++	{ 88200, 1 },
++	{ 96000, 1 },
++	{ 176400, 2 },
++	{ 192000, 2 },
++};
++
++/* MCLK to fs clock ratios */
++static struct {
++	int ratio;
++	int mcs;
++} mclk_ratios[3][7] = {
++	{ { 768, 0 }, { 512, 1 }, { 384, 2 }, { 256, 3 },
++	  { 128, 4 }, { 576, 5 }, { 0, 0 } },
++	{ { 384, 2 }, { 256, 3 }, { 192, 4 }, { 128, 5 }, {64, 0 }, { 0, 0 } },
++	{ { 384, 2 }, { 256, 3 }, { 192, 4 }, { 128, 5 }, {64, 0 }, { 0, 0 } },
++};
++
++
++/**
++ * sta32x_set_dai_sysclk - configure MCLK
++ * @codec_dai: the codec DAI
++ * @clk_id: the clock ID (ignored)
++ * @freq: the MCLK input frequency
++ * @dir: the clock direction (ignored)
++ *
++ * The value of MCLK is used to determine which sample rates are supported
++ * by the STA32X, based on the mclk_ratios table.
++ *
++ * This function must be called by the machine driver's 'startup' function,
++ * otherwise the list of supported sample rates will not be available in
++ * time for ALSA.
++ *
++ * For setups with variable MCLKs, pass 0 as 'freq' argument. This will cause
++ * theoretically possible sample rates to be enabled. Call it again with a
++ * proper value set one the external clock is set (most probably you would do
++ * that from a machine's driver 'hw_param' hook.
++ */
++static int sta32x_set_dai_sysclk(struct snd_soc_dai *codec_dai,
++		int clk_id, unsigned int freq, int dir)
++{
++	struct snd_soc_codec *codec = codec_dai->codec;
++	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
++	int i, j, ir, fs;
++	unsigned int rates = 0;
++	unsigned int rate_min = -1;
++	unsigned int rate_max = 0;
++
++	pr_debug("mclk=%u\n", freq);
++	sta32x->mclk = freq;
++
++	if (sta32x->mclk) {
++		for (i = 0; i < ARRAY_SIZE(interpolation_ratios); i++) {
++			ir = interpolation_ratios[i].ir;
++			fs = interpolation_ratios[i].fs;
++			for (j = 0; mclk_ratios[ir][j].ratio; j++) {
++				if (mclk_ratios[ir][j].ratio * fs == freq) {
++					rates |= snd_pcm_rate_to_rate_bit(fs);
++					if (fs < rate_min)
++						rate_min = fs;
++					if (fs > rate_max)
++						rate_max = fs;
++				}
++			}
++		}
++		/* FIXME: soc should support a rate list */
++		rates &= ~SNDRV_PCM_RATE_KNOT;
++
++		if (!rates) {
++			dev_err(codec->dev, "could not find a valid sample rate\n");
++			return -EINVAL;
++		}
++	} else {
++		/* enable all possible rates */
++		rates = STA32X_RATES;
++		rate_min = 32000;
++		rate_max = 192000;
++	}
++
++	codec_dai->playback.rates = rates;
++	codec_dai->playback.rate_min = rate_min;
++	codec_dai->playback.rate_max = rate_max;
++	return 0;
++}
++
++/**
++ * sta32x_set_dai_fmt - configure the codec for the selected audio format
++ * @codec_dai: the codec DAI
++ * @fmt: a SND_SOC_DAIFMT_x value indicating the data format
++ *
++ * This function takes a bitmask of SND_SOC_DAIFMT_x bits and programs the
++ * codec accordingly.
++ */
++static int sta32x_set_dai_fmt(struct snd_soc_dai *codec_dai,
++			      unsigned int fmt)
++{
++	struct snd_soc_codec *codec = codec_dai->codec;
++	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
++	u8 confb = snd_soc_read(codec, STA32X_CONFB);
++
++	pr_debug("\n");
++	confb &= ~(STA32X_CONFB_C1IM | STA32X_CONFB_C2IM);
++
++	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
++	case SND_SOC_DAIFMT_CBS_CFS:
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
++	case SND_SOC_DAIFMT_I2S:
++	case SND_SOC_DAIFMT_RIGHT_J:
++	case SND_SOC_DAIFMT_LEFT_J:
++		sta32x->format = fmt & SND_SOC_DAIFMT_FORMAT_MASK;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
++	case SND_SOC_DAIFMT_NB_NF:
++		confb |= STA32X_CONFB_C2IM;
++		break;
++	case SND_SOC_DAIFMT_NB_IF:
++		confb |= STA32X_CONFB_C1IM;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	snd_soc_write(codec, STA32X_CONFB, confb);
++	return 0;
++}
++
++/**
++ * sta32x_hw_params - program the STA32X with the given hardware parameters.
++ * @substream: the audio stream
++ * @params: the hardware parameters to set
++ * @dai: the SOC DAI (ignored)
++ *
++ * This function programs the hardware with the values provided.
++ * Specifically, the sample rate and the data format.
++ */
++static int sta32x_hw_params(struct snd_pcm_substream *substream,
++			    struct snd_pcm_hw_params *params,
++			    struct snd_soc_dai *dai)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct snd_soc_device *socdev = rtd->socdev;
++	struct snd_soc_codec *codec = socdev->card->codec;
++	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
++	unsigned int rate;
++	int i, mcs = -1, ir = -1;
++	u8 confa, confb;
++
++	rate = params_rate(params);
++	pr_debug("rate: %u\n", rate);
++	for (i = 0; i < ARRAY_SIZE(interpolation_ratios); i++)
++		if (interpolation_ratios[i].fs == rate)
++			ir = interpolation_ratios[i].ir;
++	if (ir < 0)
++		return -EINVAL;
++	for (i = 0; mclk_ratios[ir][i].ratio; i++)
++		if (mclk_ratios[ir][i].ratio * rate == sta32x->mclk)
++			mcs = mclk_ratios[ir][i].mcs;
++	if (mcs < 0)
++		return -EINVAL;
++
++	confa = snd_soc_read(codec, STA32X_CONFA);
++	confa &= ~(STA32X_CONFA_MCS_MASK | STA32X_CONFA_IR_MASK);
++	confa |= (ir << STA32X_CONFA_IR_SHIFT) | (mcs << STA32X_CONFA_MCS_SHIFT);
++
++	confb = snd_soc_read(codec, STA32X_CONFB);
++	confb &= ~(STA32X_CONFB_SAI_MASK | STA32X_CONFB_SAIFB);
++	switch (params_format(params)) {
++	case SNDRV_PCM_FORMAT_S24_LE:
++	case SNDRV_PCM_FORMAT_S24_BE:
++	case SNDRV_PCM_FORMAT_S24_3LE:
++	case SNDRV_PCM_FORMAT_S24_3BE:
++		pr_debug("24bit\n");
++	case SNDRV_PCM_FORMAT_S32_LE:
++	case SNDRV_PCM_FORMAT_S32_BE:
++		pr_debug("24bit or 32bit\n");
++		if (sta32x->format == SND_SOC_DAIFMT_I2S)
++			confb |= 0x0;
++		else if (sta32x->format == SND_SOC_DAIFMT_LEFT_J)
++			confb |= 0x1;
++		else if (sta32x->format == SND_SOC_DAIFMT_RIGHT_J)
++			confb |= 0x2;
++		break;
++	case SNDRV_PCM_FORMAT_S20_3LE:
++	case SNDRV_PCM_FORMAT_S20_3BE:
++		pr_debug("20bit\n");
++		if (sta32x->format == SND_SOC_DAIFMT_I2S)
++			confb |= 0x4;
++		else if (sta32x->format == SND_SOC_DAIFMT_LEFT_J)
++			confb |= 0x5;
++		else if (sta32x->format == SND_SOC_DAIFMT_RIGHT_J)
++			confb |= 0x6;
++		break;
++	case SNDRV_PCM_FORMAT_S18_3LE:
++	case SNDRV_PCM_FORMAT_S18_3BE:
++		pr_debug("18bit\n");
++		if (sta32x->format == SND_SOC_DAIFMT_I2S)
++			confb |= 0x8;
++		else if (sta32x->format == SND_SOC_DAIFMT_LEFT_J)
++			confb |= 0x9;
++		else if (sta32x->format == SND_SOC_DAIFMT_RIGHT_J)
++			confb |= 0xa;
++		break;
++	case SNDRV_PCM_FORMAT_S16_LE:
++	case SNDRV_PCM_FORMAT_S16_BE:
++		pr_debug("16bit\n");
++		if (sta32x->format == SND_SOC_DAIFMT_I2S)
++			confb |= 0x0;
++		else if (sta32x->format == SND_SOC_DAIFMT_LEFT_J)
++			confb |= 0xd;
++		else if (sta32x->format == SND_SOC_DAIFMT_RIGHT_J)
++			confb |= 0xe;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	snd_soc_write(codec, STA32X_CONFA, confa);
++	snd_soc_write(codec, STA32X_CONFB, confb);
++	return 0;
++}
++
++/**
++ * sta32x_set_bias_level - DAPM callback
++ * @codec: the codec device
++ * @level: DAPM power level
++ *
++ * This is called by ALSA to put the codec into low power mode
++ * or to wake it up.  If the codec is powered off completely
++ * all registers must be restored after power on.
++ */
++static int sta32x_set_bias_level(struct snd_soc_codec *codec,
++				 enum snd_soc_bias_level level)
++{
++	struct sta32x_priv *sta32x = snd_soc_codec_get_drvdata(codec);
++	int ret, i;
++
++	pr_debug("level = %d\n", level);
++	switch (level) {
++	case SND_SOC_BIAS_ON:
++		break;
++
++	case SND_SOC_BIAS_PREPARE:
++		/* Full power on */
++		snd_soc_update_bits(codec, STA32X_CONFF,
++				    STA32X_CONFF_PWDN | STA32X_CONFF_EAPD,
++				    STA32X_CONFF_PWDN | STA32X_CONFF_EAPD);
++		break;
++
++	case SND_SOC_BIAS_STANDBY:
++		if (codec->bias_level == SND_SOC_BIAS_OFF) {
++			ret = regulator_bulk_enable(ARRAY_SIZE(sta32x->supplies),
++						    sta32x->supplies);
++			if (ret != 0) {
++				dev_err(codec->dev,
++					"Failed to enable supplies: %d\n", ret);
++				return ret;
++			}
++
++			/* Sync back default/cached values */
++			for (i = 0; i < STA32X_REGISTER_COUNT; i++)
++				snd_soc_write(codec, i, sta32x->reg_cache[i]);
++		}
++
++		/* Power up to mute */
++		//FIXME
++		snd_soc_update_bits(codec, STA32X_CONFF,
++				    STA32X_CONFF_PWDN | STA32X_CONFF_EAPD,
++				    STA32X_CONFF_PWDN | STA32X_CONFF_EAPD);
++
++		break;
++
++	case SND_SOC_BIAS_OFF:
++		/* The chip runs through the power down sequence for us. */
++		snd_soc_update_bits(codec, STA32X_CONFF,
++				    STA32X_CONFF_PWDN | STA32X_CONFF_EAPD,
++				    STA32X_CONFF_PWDN);
++		msleep(300);
++
++		regulator_bulk_disable(ARRAY_SIZE(sta32x->supplies),
++				       sta32x->supplies);
++		break;
++	}
++	codec->bias_level = level;
++	return 0;
++}
++
++static struct snd_soc_dai_ops sta32x_dai_ops = {
++	.hw_params	= sta32x_hw_params,
++	.set_sysclk	= sta32x_set_dai_sysclk,
++	.set_fmt	= sta32x_set_dai_fmt,
++};
++
++struct snd_soc_dai sta32x_dai = {
++	.name = "STA32X",
++	.playback = {
++		.stream_name = "Playback",
++		.channels_min = 2,
++		.channels_max = 2,
++		.rates = STA32X_RATES,
++		.formats = STA32X_FORMATS,
++	},
++	.ops = &sta32x_dai_ops,
++};
++EXPORT_SYMBOL_GPL(sta32x_dai);
++
++#ifdef CONFIG_PM
++static int sta32x_suspend(struct platform_device *pdev, pm_message_t state)
++{
++	struct snd_soc_device *socdev = platform_get_drvdata(pdev);
++	struct snd_soc_codec *codec = socdev->card->codec;
++
++	sta32x_set_bias_level(codec, SND_SOC_BIAS_OFF);
++	return 0;
++}
++
++static int sta32x_resume(struct platform_device *pdev)
++{
++	struct snd_soc_device *socdev = platform_get_drvdata(pdev);
++	struct snd_soc_codec *codec = socdev->card->codec;
++
++	sta32x_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
++
++	return 0;
++}
++#else
++#define sta32x_suspend NULL
++#define sta32x_resume NULL
++#endif
++
++static int sta32x_probe(struct platform_device *pdev)
++{
++	struct snd_soc_device *socdev = platform_get_drvdata(pdev);
++	struct snd_soc_codec *codec;
++	int ret = 0;
++
++	if (sta32x_codec == NULL) {
++		dev_err(&pdev->dev, "Codec device not registered\n");
++		return -ENODEV;
++	}
++
++	socdev->card->codec = sta32x_codec;
++	codec = sta32x_codec;
++
++	/* register pcms */
++	ret = snd_soc_new_pcms(socdev, SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1);
++	if (ret < 0) {
++		dev_err(codec->dev, "failed to create pcms: %d\n", ret);
++		goto pcm_err;
++	}
++
++	snd_soc_add_controls(codec, sta32x_snd_controls,
++			     ARRAY_SIZE(sta32x_snd_controls));
++
++	snd_soc_dapm_new_controls(codec, sta32x_dapm_widgets,
++				  ARRAY_SIZE(sta32x_dapm_widgets));
++	snd_soc_dapm_add_routes(codec, intercon, ARRAY_SIZE(intercon));
++
++	return ret;
++
++pcm_err:
++	return ret;
++}
++
++static int sta32x_remove(struct platform_device *pdev)
++{
++	struct snd_soc_device *socdev = platform_get_drvdata(pdev);
++
++	snd_soc_free_pcms(socdev);
++	snd_soc_dapm_free(socdev);
++
++	return 0;
++}
++
++struct snd_soc_codec_device soc_codec_dev_sta32x = {
++	.probe =	sta32x_probe,
++	.remove =	sta32x_remove,
++	.suspend =	sta32x_suspend,
++	.resume =	sta32x_resume,
++};
++EXPORT_SYMBOL_GPL(soc_codec_dev_sta32x);
++
++static __devinit int sta32x_i2c_probe(struct i2c_client *i2c,
++				      const struct i2c_device_id *id)
++{
++	struct sta32x_priv *sta32x;
++	struct snd_soc_codec *codec;
++	int i, ret;
++
++	if (sta32x_codec) {
++		dev_err(&i2c->dev, "Another STA32X is registered\n");
++		return -EINVAL;
++	}
++
++	sta32x = kzalloc(sizeof(struct sta32x_priv), GFP_KERNEL);
++	if (!sta32x)
++		return -ENOMEM;
++
++	codec = &sta32x->codec;
++	codec->hw_write = (hw_write_t)i2c_master_send;
++
++	i2c_set_clientdata(i2c, sta32x);
++	codec->control_data = i2c;
++	codec->dev = &i2c->dev;
++
++	mutex_init(&codec->mutex);
++	INIT_LIST_HEAD(&codec->dapm_widgets);
++	INIT_LIST_HEAD(&codec->dapm_paths);
++
++	snd_soc_codec_set_drvdata(codec, sta32x);
++	codec->name = "STA32X";
++	codec->owner = THIS_MODULE;
++	codec->bias_level = SND_SOC_BIAS_OFF;
++	codec->set_bias_level = sta32x_set_bias_level;
++	codec->dai = &sta32x_dai;
++	codec->num_dai = 1;
++	codec->reg_cache_size = STA32X_REGISTER_COUNT;
++	codec->reg_cache = &sta32x->reg_cache;
++
++	ret = snd_soc_codec_set_cache_io(codec, 8, 8, SND_SOC_I2C);
++	if (ret != 0) {
++		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
++		goto err;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(sta32x->supplies); i++)
++		sta32x->supplies[i].supply = sta32x_supply_names[i];
++
++	ret = regulator_bulk_get(codec->dev, ARRAY_SIZE(sta32x->supplies),
++				 sta32x->supplies);
++	if (ret != 0) {
++		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
++		goto err;
++	}
++
++	ret = regulator_bulk_enable(ARRAY_SIZE(sta32x->supplies),
++				    sta32x->supplies);
++	if (ret != 0) {
++		dev_err(codec->dev, "Failed to enable supplies: %d\n", ret);
++		goto err_get;
++	}
++
++	/* read reg reset values into cache */
++	for (i = 0; i < STA32X_REGISTER_COUNT; i++)
++		sta32x->reg_cache[i] = codec->hw_read(codec, i);
++
++	/* FIXME enable thermal warning adjustment and recovery  */
++	sta32x->reg_cache[STA32X_CONFA] &= ~(STA32X_CONFA_TWAB | STA32X_CONFA_TWRB);
++	/* FIXME select 2.1 mode  */
++	sta32x->reg_cache[STA32X_CONFF] &= ~STA32X_CONFF_OCFG_MASK;
++	sta32x->reg_cache[STA32X_CONFF] |= 1 << STA32X_CONFF_OCFG_SHIFT;
++	/* FIXME channel to output mapping */
++	sta32x->reg_cache[STA32X_C1CFG] &= ~STA32X_CxCFG_OM_MASK;
++	sta32x->reg_cache[STA32X_C1CFG] |= 0 << STA32X_CxCFG_OM_SHIFT;
++	sta32x->reg_cache[STA32X_C2CFG] &= ~STA32X_CxCFG_OM_MASK;
++	sta32x->reg_cache[STA32X_C2CFG] |= 1 << STA32X_CxCFG_OM_SHIFT;
++	sta32x->reg_cache[STA32X_C3CFG] &= ~STA32X_CxCFG_OM_MASK;
++	sta32x->reg_cache[STA32X_C3CFG] |= 2 << STA32X_CxCFG_OM_SHIFT;
++
++	sta32x_dai.dev = codec->dev;
++
++	sta32x_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
++
++	/* Bias level configuration will have done an extra enable */
++	regulator_bulk_disable(ARRAY_SIZE(sta32x->supplies), sta32x->supplies);
++
++	sta32x_codec = codec;
++
++	ret = snd_soc_register_codec(codec);
++	if (ret != 0) {
++		dev_err(codec->dev, "Failed to register codec: %d\n", ret);
++		goto err_enable;
++	}
++
++	ret = snd_soc_register_dai(&sta32x_dai);
++	if (ret != 0) {
++		dev_err(codec->dev, "Failed to register DAI: %d\n", ret);
++		goto err_codec;
++	}
++
++	return 0;
++
++err_codec:
++	snd_soc_unregister_codec(codec);
++err_enable:
++	regulator_bulk_disable(ARRAY_SIZE(sta32x->supplies), sta32x->supplies);
++err_get:
++	regulator_bulk_free(ARRAY_SIZE(sta32x->supplies), sta32x->supplies);
++err:
++	kfree(sta32x);
++	return ret;
++}
++
++static __devexit int sta32x_i2c_remove(struct i2c_client *client)
++{
++	struct sta32x_priv *sta32x = i2c_get_clientdata(client);
++
++	sta32x_set_bias_level(&sta32x->codec, SND_SOC_BIAS_OFF);
++	regulator_bulk_free(ARRAY_SIZE(sta32x->supplies), sta32x->supplies);
++	snd_soc_unregister_dai(&sta32x_dai);
++	snd_soc_unregister_codec(&sta32x->codec);
++	kfree(sta32x);
++	sta32x_codec = NULL;
++	return 0;
++}
++
++static const struct i2c_device_id sta32x_i2c_id[] = {
++	{ "sta32x", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, sta32x_i2c_id);
++
++static struct i2c_driver sta32x_i2c_driver = {
++	.driver = {
++		.name = "sta32x",
++		.owner = THIS_MODULE,
++	},
++	.probe =    sta32x_i2c_probe,
++	.remove =   __devexit_p(sta32x_i2c_remove),
++	.id_table = sta32x_i2c_id,
++};
++
++static int __init sta32x_init(void)
++{
++	pr_info("STA32X ALSA SoC Codec Driver\n");
++
++	return i2c_add_driver(&sta32x_i2c_driver);
++}
++module_init(sta32x_init);
++
++static void __exit sta32x_exit(void)
++{
++	i2c_del_driver(&sta32x_i2c_driver);
++}
++module_exit(sta32x_exit);
++
++MODULE_DESCRIPTION("ASoC STA32X driver");
++MODULE_AUTHOR("Johannes Stezenbach <js@sig21.net>");
++MODULE_LICENSE("GPL");
+diff --git a/sound/soc/codecs/sta32x.h b/sound/soc/codecs/sta32x.h
+new file mode 100644
+index 0000000..38802d3
+--- /dev/null
++++ b/sound/soc/codecs/sta32x.h
+@@ -0,0 +1,223 @@
++/*
++ * Codec driver for ST STA32x 2.1-channel high-efficiency digital audio system
++ *
++ * Copyright: 2011 Raumfeld GmbH
++ * Author: Johannes Stezenbach <js@sig21.net>
++ *
++ * based on code from:
++ *	Wolfson Microelectronics PLC.
++ *	Mark Brown <broonie@opensource.wolfsonmicro.com>
++ *
++ * This program is free software; you can redistribute  it and/or modify it
++ * under  the terms of  the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the  License, or (at your
++ * option) any later version.
++ */
++#ifndef _STA_32X_H
++#define _STA_32X_H
++
++/* STA326 register addresses */
++
++#define STA32X_REGISTER_COUNT	0x2d
++
++#define STA32X_CONFA	0x00
++#define STA32X_CONFB    0x01
++#define STA32X_CONFC    0x02
++#define STA32X_CONFD    0x03
++#define STA32X_CONFE    0x04
++#define STA32X_CONFF    0x05
++#define STA32X_MMUTE    0x06
++#define STA32X_MVOL     0x07
++#define STA32X_C1VOL    0x08
++#define STA32X_C2VOL    0x09
++#define STA32X_C3VOL    0x0a
++#define STA32X_AUTO1    0x0b
++#define STA32X_AUTO2    0x0c
++#define STA32X_AUTO3    0x0d
++#define STA32X_C1CFG    0x0e
++#define STA32X_C2CFG    0x0f
++#define STA32X_C3CFG    0x10
++#define STA32X_TONE     0x11
++#define STA32X_L1AR     0x12
++#define STA32X_L1ATRT   0x13
++#define STA32X_L2AR     0x14
++#define STA32X_L2ATRT   0x15
++#define STA32X_CFADDR2  0x16
++#define STA32X_B1CF1    0x17
++#define STA32X_B1CF2    0x18
++#define STA32X_B1CF3    0x19
++#define STA32X_B2CF1    0x1a
++#define STA32X_B2CF2    0x1b
++#define STA32X_B2CF3    0x1c
++#define STA32X_A1CF1    0x1d
++#define STA32X_A1CF2    0x1e
++#define STA32X_A1CF3    0x1f
++#define STA32X_A2CF1    0x20
++#define STA32X_A2CF2    0x21
++#define STA32X_A2CF3    0x22
++#define STA32X_B0CF1    0x23
++#define STA32X_B0CF2    0x24
++#define STA32X_B0CF3    0x25
++#define STA32X_CFUD     0x26
++#define STA32X_MPCC1    0x27
++#define STA32X_MPCC2    0x28
++/* Reserved 0x29 */
++/* Reserved 0x2a */
++#define STA32X_Reserved 0x2a
++#define STA32X_FDRC1    0x2b
++#define STA32X_FDRC2    0x2c
++/* Reserved 0x2d */
++
++
++/* STA326 register field definitions */
++
++/* 0x00 CONFA */
++#define STA32X_CONFA_MCS_MASK	0x03
++#define STA32X_CONFA_MCS_SHIFT	0
++#define STA32X_CONFA_IR_MASK	0x18
++#define STA32X_CONFA_IR_SHIFT	3
++#define STA32X_CONFA_TWRB	0x20
++#define STA32X_CONFA_TWAB	0x40
++#define STA32X_CONFA_FDRB	0x80
++
++/* 0x01 CONFB */
++#define STA32X_CONFB_SAI_MASK	0x0f
++#define STA32X_CONFB_SAI_SHIFT	0
++#define STA32X_CONFB_SAIFB	0x10
++#define STA32X_CONFB_DSCKE	0x20
++#define STA32X_CONFB_C1IM	0x40
++#define STA32X_CONFB_C2IM	0x80
++
++/* 0x02 CONFC */
++#define STA32X_CONFC_OM_MASK	0x03
++#define STA32X_CONFC_OM_SHIFT	0
++#define STA32X_CONFC_CSZ_MASK	0x7c
++#define STA32X_CONFC_CSZ_SHIFT	2
++
++/* 0x03 CONFD */
++#define STA32X_CONFD_HPB	0x01
++#define STA32X_CONFD_HPB_SHIFT	0
++#define STA32X_CONFD_DEMP	0x02
++#define STA32X_CONFD_DEMP_SHIFT	1
++#define STA32X_CONFD_DSPB	0x04
++#define STA32X_CONFD_DSPB_SHIFT	2
++#define STA32X_CONFD_PSL	0x08
++#define STA32X_CONFD_PSL_SHIFT	3
++#define STA32X_CONFD_BQL	0x10
++#define STA32X_CONFD_BQL_SHIFT	4
++#define STA32X_CONFD_DRC	0x20
++#define STA32X_CONFD_DRC_SHIFT	5
++#define STA32X_CONFD_ZDE	0x40
++#define STA32X_CONFD_ZDE_SHIFT	6
++#define STA32X_CONFD_MME	0x80
++#define STA32X_CONFD_MME_SHIFT	7
++
++/* 0x04 CONFE */
++#define STA32X_CONFE_MPCV	0x01
++#define STA32X_CONFE_MPCV_SHIFT	0
++#define STA32X_CONFE_MPC	0x02
++#define STA32X_CONFE_MPC_SHIFT	1
++#define STA32X_CONFE_AME	0x08
++#define STA32X_CONFE_AME_SHIFT	3
++#define STA32X_CONFE_PWMS	0x10
++#define STA32X_CONFE_PWMS_SHIFT	4
++#define STA32X_CONFE_ZCE	0x40
++#define STA32X_CONFE_ZCE_SHIFT	6
++#define STA32X_CONFE_SVE	0x80
++#define STA32X_CONFE_SVE_SHIFT	7
++
++/* 0x05 CONFF */
++#define STA32X_CONFF_OCFG_MASK	0x03
++#define STA32X_CONFF_OCFG_SHIFT	0
++#define STA32X_CONFF_IDE	0x04
++#define STA32X_CONFF_IDE_SHIFT	3
++#define STA32X_CONFF_BCLE	0x08
++#define STA32X_CONFF_ECLE	0x20
++#define STA32X_CONFF_PWDN	0x40
++#define STA32X_CONFF_EAPD	0x80
++
++/* 0x06 MMUTE */
++#define STA32X_MMUTE_MMUTE	0x01
++
++/* 0x0b AUTO1 */
++#define STA32X_AUTO1_AMEQ_MASK	0x03
++#define STA32X_AUTO1_AMEQ_SHIFT	0
++#define STA32X_AUTO1_AMV_MASK	0xc0
++#define STA32X_AUTO1_AMV_SHIFT	2
++#define STA32X_AUTO1_AMGC_MASK	0x30
++#define STA32X_AUTO1_AMGC_SHIFT	4
++#define STA32X_AUTO1_AMPS	0x80
++
++/* 0x0c AUTO2 */
++#define STA32X_AUTO2_AMAME	0x01
++#define STA32X_AUTO2_AMAM_MASK	0x0e
++#define STA32X_AUTO2_AMAM_SHIFT	1
++#define STA32X_AUTO2_XO_MASK	0xf0
++#define STA32X_AUTO2_XO_SHIFT	4
++
++/* 0x0d AUTO3 */
++#define STA32X_AUTO3_PEQ_MASK	0x1f
++#define STA32X_AUTO3_PEQ_SHIFT	0
++
++/* 0x0e 0x0f 0x10 CxCFG */
++#define STA32X_CxCFG_TCB	0x01	/* only C1 and C2 */
++#define STA32X_CxCFG_TCB_SHIFT	0
++#define STA32X_CxCFG_EQBP	0x02	/* only C1 and C2 */
++#define STA32X_CxCFG_EQBP_SHIFT	1
++#define STA32X_CxCFG_VBP	0x03
++#define STA32X_CxCFG_VBP_SHIFT	2
++#define STA32X_CxCFG_BO		0x04
++#define STA32X_CxCFG_LS_MASK	0x30
++#define STA32X_CxCFG_LS_SHIFT	4
++#define STA32X_CxCFG_OM_MASK	0xc0
++#define STA32X_CxCFG_OM_SHIFT	6
++
++/* 0x11 TONE */
++#define STA32X_TONE_BTC_SHIFT	0
++#define STA32X_TONE_TTC_SHIFT	4
++
++/* 0x12 0x13 0x14 0x15 limiter attack/release */
++#define STA32X_LxA_SHIFT	0
++#define STA32X_LxR_SHIFT	4
++
++/* 0x26 CFUD */
++#define STA32X_CFUD_W1		0x01
++#define STA32X_CFUD_WA		0x02
++#define STA32X_CFUD_R1		0x04
++#define STA32X_CFUD_RA		0x08
++
++
++/* biquad filter coefficient table offsets */
++#define STA32X_C1_BQ_BASE	0
++#define STA32X_C2_BQ_BASE	20
++#define STA32X_CH_BQ_NUM	4
++#define STA32X_BQ_NUM_COEF	5
++#define STA32X_XO_HP_BQ_BASE	40
++#define STA32X_XO_LP_BQ_BASE	45
++#define STA32X_C1_PRESCALE	50
++#define STA32X_C2_PRESCALE	51
++#define STA32X_C1_POSTSCALE	52
++#define STA32X_C2_POSTSCALE	53
++#define STA32X_C3_POSTSCALE	54
++#define STA32X_TW_POSTSCALE	55
++#define STA32X_C1_MIX1		56
++#define STA32X_C1_MIX2		57
++#define STA32X_C2_MIX1		58
++#define STA32X_C2_MIX2		59
++#define STA32X_C3_MIX1		60
++#define STA32X_C3_MIX2		61
++
++/*
++ * The ASoC codec DAI structure for the STA32X.  Assign this structure to
++ * the .codec_dai field of your machine driver's snd_soc_dai_link structure.
++ */
++extern struct snd_soc_dai sta32x_dai;
++
++/*
++ * The ASoC codec device structure for the STA32X.  Assign this structure
++ * to the .codec_dev field of your machine driver's snd_soc_device
++ * structure.
++ */
++extern struct snd_soc_codec_device soc_codec_dev_sta32x;
++
++#endif /* _STA_32X_H */
+-- 
+1.7.1
+
+From be6b25dab2979bb146347d9fbc9df2dc3ddb5856 Mon Sep 17 00:00:00 2001
+From: Johannes Stezenbach <js@sig21.net>
+Date: Tue, 15 Feb 2011 15:46:06 +0100
+Subject: [PATCH 18/22] pxa/raumfeld: clean up codec variable naming
+
+No functional change, just make it extensible to support
+other codecs by using the codec name in variable
+names instead of generic terms like "audio".
+
+Signed-off-by: Johannes Stezenbach <js@sig21.net>
+---
+ arch/arm/mach-pxa/raumfeld.c |   44 +++++++++++++++++++++--------------------
+ 1 files changed, 23 insertions(+), 21 deletions(-)
+
+diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
+index 5214730..0e31b8c 100644
+--- a/arch/arm/mach-pxa/raumfeld.c
++++ b/arch/arm/mach-pxa/raumfeld.c
+@@ -841,69 +841,71 @@ static void __init raumfeld_power_init(void)
+ 		platform_device_register(&raumfeld_power_supply);
+ }
+ 
+-/* Fixed regulator for AUDIO_VA, 0-0048 maps to the cs4270 codec device */
++/* Fixed regulator for cs4270 AUDIO_VA
++ * 0-0048 maps to the cs4270 codec devname (derived from i2c bus num + addr)
++ */
+ 
+-static struct regulator_consumer_supply audio_va_consumer_supply =
++static struct regulator_consumer_supply cs4270_va_consumer_supply =
+ 	REGULATOR_SUPPLY("va", "0-0048");
+ 
+-struct regulator_init_data audio_va_initdata = {
+-	.consumer_supplies = &audio_va_consumer_supply,
++struct regulator_init_data cs4270_va_initdata = {
++	.consumer_supplies = &cs4270_va_consumer_supply,
+ 	.num_consumer_supplies = 1,
+ 	.constraints = {
+ 		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+ 	},
+ };
+ 
+-static struct fixed_voltage_config audio_va_config = {
++static struct fixed_voltage_config cs4270_va_config = {
+ 	.supply_name		= "audio_va",
+ 	.microvolts		= 5000000,
+ 	.gpio			= GPIO_AUDIO_VA_ENABLE,
+ 	.enable_high		= 1,
+ 	.enabled_at_boot	= 0,
+-	.init_data		= &audio_va_initdata,
++	.init_data		= &cs4270_va_initdata,
+ };
+ 
+-static struct platform_device audio_va_device = {
++static struct platform_device cs4270_va_device = {
+ 	.name	= "reg-fixed-voltage",
+ 	.id	= 0,
+ 	.dev	= {
+-		.platform_data = &audio_va_config,
++		.platform_data = &cs4270_va_config,
+ 	},
+ };
+ 
+-/* Dummy supplies for Codec's VD/VLC */
++/* Dummy supplies for cs4270 codec's VD/VLC */
+ 
+-static struct regulator_consumer_supply audio_dummy_supplies[] = {
++static struct regulator_consumer_supply cs4270_dummy_supplies[] = {
+ 	REGULATOR_SUPPLY("vd", "0-0048"),
+ 	REGULATOR_SUPPLY("vlc", "0-0048"),
+ };
+ 
+-struct regulator_init_data audio_dummy_initdata = {
+-	.consumer_supplies = audio_dummy_supplies,
+-	.num_consumer_supplies = ARRAY_SIZE(audio_dummy_supplies),
++struct regulator_init_data cs4270_dummy_initdata = {
++	.consumer_supplies = cs4270_dummy_supplies,
++	.num_consumer_supplies = ARRAY_SIZE(cs4270_dummy_supplies),
+ 	.constraints = {
+ 		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+ 	},
+ };
+ 
+-static struct fixed_voltage_config audio_dummy_config = {
++static struct fixed_voltage_config cs4270_dummy_config = {
+ 	.supply_name		= "audio_vd",
+ 	.microvolts		= 3300000,
+ 	.gpio			= -1,
+-	.init_data		= &audio_dummy_initdata,
++	.init_data		= &cs4270_dummy_initdata,
+ };
+ 
+-static struct platform_device audio_supply_dummy_device = {
++static struct platform_device cs4270_supply_dummy_device = {
+ 	.name	= "reg-fixed-voltage",
+ 	.id	= 1,
+ 	.dev	= {
+-		.platform_data = &audio_dummy_config,
++		.platform_data = &cs4270_dummy_config,
+ 	},
+ };
+ 
+-static struct platform_device *audio_regulator_devices[] = {
+-	&audio_va_device,
+-	&audio_supply_dummy_device,
++static struct platform_device *cs4270_regulator_devices[] = {
++	&cs4270_va_device,
++	&cs4270_supply_dummy_device,
+ };
+ 
+ /**
+@@ -991,7 +993,7 @@ static void __init raumfeld_audio_init(void)
+ 	else
+ 		gpio_direction_output(GPIO_MCLK_RESET, 1);
+ 
+-	platform_add_devices(ARRAY_AND_SIZE(audio_regulator_devices));
++	platform_add_devices(ARRAY_AND_SIZE(cs4270_regulator_devices));
+ }
+ 
+ static void __init raumfeld_common_init(void)
+-- 
+1.7.1
+
+From 0704becde473257a8a391c3d91ad41092e5903ac Mon Sep 17 00:00:00 2001
+From: Johannes Stezenbach <js@sig21.net>
+Date: Mon, 28 Mar 2011 17:01:26 +0200
+Subject: [PATCH 19/22] pxa/raumfeld: add ASoC sta32x codec platform support
+
+Signed-off-by: Johannes Stezenbach <js@sig21.net>
+---
+ arch/arm/mach-pxa/raumfeld.c |   87 +++++++++++++++++++-
+ sound/soc/pxa/Kconfig        |    1 +
+ sound/soc/pxa/raumfeld.c     |  182 +++++++++++++++++++++++++++++++++++++++--
+ 3 files changed, 258 insertions(+), 12 deletions(-)
+
+diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
+index 0e31b8c..f52d304 100644
+--- a/arch/arm/mach-pxa/raumfeld.c
++++ b/arch/arm/mach-pxa/raumfeld.c
+@@ -908,6 +908,73 @@ static struct platform_device *cs4270_regulator_devices[] = {
+ 	&cs4270_supply_dummy_device,
+ };
+ 
++/* Fixed regulator for sta32x Vdda supply
++ * 0-001a maps to the sta32x codec devname (derived from i2c bus num + addr)
++ */
++
++static struct regulator_consumer_supply sta32x_va_consumer_supply =
++	REGULATOR_SUPPLY("Vdda", "0-001a");
++
++struct regulator_init_data sta32x_va_initdata = {
++	.consumer_supplies = &sta32x_va_consumer_supply,
++	.num_consumer_supplies = 1,
++	.constraints = {
++		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
++	},
++};
++
++static struct fixed_voltage_config sta32x_va_config = {
++	.supply_name		= "audio_va",
++	.microvolts		= 3300000,
++	.gpio			= GPIO_AUDIO_VA_ENABLE,
++	.enable_high		= 1,
++	.enabled_at_boot	= 0,
++	.init_data		= &sta32x_va_initdata,
++};
++
++static struct platform_device sta32x_va_device = {
++	.name	= "reg-fixed-voltage",
++	.id	= 0,
++	.dev	= {
++		.platform_data = &sta32x_va_config,
++	},
++};
++
++/* Dummy supplies for sta32x codec's Vdd3/Vcc */
++
++static struct regulator_consumer_supply sta32x_dummy_supplies[] = {
++	REGULATOR_SUPPLY("Vdd3", "0-001a"),
++	REGULATOR_SUPPLY("Vcc", "0-001a"),
++};
++
++struct regulator_init_data sta32x_dummy_initdata = {
++	.consumer_supplies = sta32x_dummy_supplies,
++	.num_consumer_supplies = ARRAY_SIZE(sta32x_dummy_supplies),
++	.constraints = {
++		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
++	},
++};
++
++static struct fixed_voltage_config sta32x_dummy_config = {
++	.supply_name		= "audio_vd",
++	.microvolts		= 3300000,
++	.gpio			= -1,
++	.init_data		= &sta32x_dummy_initdata,
++};
++
++static struct platform_device sta32x_supply_dummy_device = {
++	.name	= "reg-fixed-voltage",
++	.id	= 1,
++	.dev	= {
++		.platform_data = &sta32x_dummy_config,
++	},
++};
++
++static struct platform_device *sta32x_regulator_devices[] = {
++	&sta32x_va_device,
++	&sta32x_supply_dummy_device,
++};
++
+ /**
+  * Regulator support via MAX8660
+  */
+@@ -954,6 +1021,11 @@ static struct i2c_board_info raumfeld_connector_i2c_board_info __initdata = {
+ 	.addr	= 0x48,
+ };
+ 
++static struct i2c_board_info raumfeld_ddx_i2c_board_info __initdata = {
++	.type	= "sta32x",
++	.addr	= 0x1a,
++};
++
+ static struct eeti_ts_platform_data eeti_ts_pdata = {
+ 	.irq_active_high = 1,
+ };
+@@ -993,7 +1065,10 @@ static void __init raumfeld_audio_init(void)
+ 	else
+ 		gpio_direction_output(GPIO_MCLK_RESET, 1);
+ 
+-	platform_add_devices(ARRAY_AND_SIZE(cs4270_regulator_devices));
++	if ((system_rev & 0xff00) == 0x0400)
++		platform_add_devices(ARRAY_AND_SIZE(sta32x_regulator_devices));
++	else
++		platform_add_devices(ARRAY_AND_SIZE(cs4270_regulator_devices));
+ }
+ 
+ static void __init raumfeld_common_init(void)
+@@ -1066,7 +1141,10 @@ static void __init raumfeld_connector_init(void)
+ {
+ 	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_connector_pin_config));
+ 	spi_register_board_info(ARRAY_AND_SIZE(connector_spi_devices));
+-	i2c_register_board_info(0, &raumfeld_connector_i2c_board_info, 1);
++	if ((system_rev & 0xff00) == 0x0400)
++		i2c_register_board_info(0, &raumfeld_ddx_i2c_board_info, 1);
++	else
++		i2c_register_board_info(0, &raumfeld_connector_i2c_board_info, 1);
+ 
+ 	platform_device_register(&smc91x_device);
+ 
+@@ -1078,7 +1156,10 @@ static void __init raumfeld_speaker_init(void)
+ {
+ 	pxa3xx_mfp_config(ARRAY_AND_SIZE(raumfeld_speaker_pin_config));
+ 	spi_register_board_info(ARRAY_AND_SIZE(speaker_spi_devices));
+-	i2c_register_board_info(0, &raumfeld_connector_i2c_board_info, 1);
++	if ((system_rev & 0xff00) == 0x0400)
++		i2c_register_board_info(0, &raumfeld_ddx_i2c_board_info, 1);
++	else
++		i2c_register_board_info(0, &raumfeld_connector_i2c_board_info, 1);
+ 
+ 	platform_device_register(&smc91x_device);
+ 	platform_device_register(&rotary_encoder_device);
+diff --git a/sound/soc/pxa/Kconfig b/sound/soc/pxa/Kconfig
+index e30c832..905db84 100644
+--- a/sound/soc/pxa/Kconfig
++++ b/sound/soc/pxa/Kconfig
+@@ -133,6 +133,7 @@ config SND_SOC_RAUMFELD
+ 	select SND_PXA_SOC_SSP
+ 	select SND_SOC_CS4270
+ 	select SND_SOC_AK4104
++	select SND_SOC_STA32X
+ 	help
+ 	  Say Y if you want to add support for SoC audio on Raumfeld devices
+ 
+diff --git a/sound/soc/pxa/raumfeld.c b/sound/soc/pxa/raumfeld.c
+index 7e3f416..f6f5137 100644
+--- a/sound/soc/pxa/raumfeld.c
++++ b/sound/soc/pxa/raumfeld.c
+@@ -21,16 +21,19 @@
+ #include <linux/delay.h>
+ #include <linux/gpio.h>
+ #include <sound/pcm.h>
++#include <sound/pcm_params.h>
+ #include <sound/soc.h>
+ #include <sound/soc-dapm.h>
+ 
+ #include <asm/mach-types.h>
+ 
+ #include "../codecs/cs4270.h"
++#include "../codecs/sta32x.h"
+ #include "../codecs/ak4104.h"
+ #include "pxa2xx-pcm.h"
+ #include "pxa-ssp.h"
+ 
++
+ #define GPIO_SPDIF_RESET	(38)
+ #define GPIO_MCLK_RESET		(111)
+ #define GPIO_CODEC_RESET	(120)
+@@ -185,6 +188,153 @@ static struct snd_soc_card snd_soc_line_raumfeld = {
+ };
+ 
+ 
++/* STA32X */
++static int raumfeld_sta32x_startup(struct snd_pcm_substream *substream)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct snd_soc_dai *codec_dai = rtd->dai->codec_dai;
++
++	/* FIXME: currently only fixed MCLK of 12.288MHz is available */
++	snd_pcm_hw_constraint_mask64(substream->runtime,
++				     SNDRV_PCM_HW_PARAM_RATE,
++				     SNDRV_PCM_RATE_32000 |
++				     SNDRV_PCM_RATE_48000 |
++				     SNDRV_PCM_RATE_96000 |
++				     SNDRV_PCM_RATE_192000);
++
++	/* PXA DMA cannot do zero extend for 24bit samples,
++	 * thus only 16bit (two samples packet into 32bit word)
++	 * or 32bit samples are possible
++	 */
++	snd_pcm_hw_constraint_mask64(substream->runtime,
++				     SNDRV_PCM_HW_PARAM_FORMAT,
++				     SNDRV_PCM_FMTBIT_S16_LE  | SNDRV_PCM_FMTBIT_S16_BE |
++				     SNDRV_PCM_FMTBIT_S32_LE  | SNDRV_PCM_FMTBIT_S32_BE);
++
++	/* FIXME: we have a fixed MBLK, set it here so ALSA knows
++	 * the supported sample rates and can resample if necessary
++	 */
++	return snd_soc_dai_set_sysclk(codec_dai, 0, 12288000, 0);
++}
++
++static void raumfeld_sta32x_shutdown(struct snd_pcm_substream *substream)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct snd_soc_dai *codec_dai = rtd->dai->codec_dai;
++
++	/* set freq to 0 to enable all possible codec sample rates */
++	snd_soc_dai_set_sysclk(codec_dai, 0, 0, 0);
++}
++
++static int raumfeld_sta32x_hw_params(struct snd_pcm_substream *substream,
++				     struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct snd_soc_dai *codec_dai = rtd->dai->codec_dai;
++	struct snd_soc_dai *cpu_dai = rtd->dai->cpu_dai;
++	unsigned int fmt, clk = 0;
++	int ret = 0;
++
++	// FIXME: currently only fixed MCLK of 12.288MHz is available
++	switch (params_rate(params)) {
++	case 32000:
++	case 48000:
++	case 96000:
++	case 192000:
++		clk = 12288000;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (params_format(params)) {
++	case SNDRV_PCM_FORMAT_S32_LE:
++	case SNDRV_PCM_FORMAT_S32_BE:
++		/* this enables network mode for 2 * 32bit samples */
++		ret = snd_soc_dai_set_tdm_slot(cpu_dai, 3, 0, 2, 32);
++		if (ret < 0)
++			return ret;
++		break;
++	case SNDRV_PCM_FORMAT_S16_LE:
++	case SNDRV_PCM_FORMAT_S16_BE:
++		/* this disables network mode */
++		ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0, 0, 0, 16);
++		if (ret < 0)
++			return ret;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	fmt = SND_SOC_DAIFMT_I2S |
++	      SND_SOC_DAIFMT_NB_NF |
++	      SND_SOC_DAIFMT_CBS_CFS;
++
++	/* setup the CODEC DAI */
++	ret = snd_soc_dai_set_fmt(codec_dai, fmt);
++	if (ret < 0)
++		return ret;
++
++	ret = snd_soc_dai_set_sysclk(codec_dai, 0, clk, 0);
++	if (ret < 0)
++		return ret;
++
++	/* setup the CPU DAI */
++	ret = snd_soc_dai_set_pll(cpu_dai, 0, 0, 0, clk);
++	if (ret < 0)
++		return ret;
++
++	ret = snd_soc_dai_set_fmt(cpu_dai, fmt);
++	if (ret < 0)
++		return ret;
++
++	ret = snd_soc_dai_set_clkdiv(cpu_dai, PXA_SSP_DIV_SCR, 4);
++	if (ret < 0)
++		return ret;
++
++	ret = snd_soc_dai_set_sysclk(cpu_dai, PXA_SSP_CLK_EXT, clk, 1);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static struct snd_soc_ops raumfeld_sta32x_ops = {
++	.startup = raumfeld_sta32x_startup,
++	.shutdown = raumfeld_sta32x_shutdown,
++	.hw_params = raumfeld_sta32x_hw_params,
++};
++
++static int raumfeld_ddx_suspend(struct platform_device *pdev, pm_message_t state)
++{
++	raumfeld_enable_audio(false);
++	return 0;
++}
++
++static int raumfeld_ddx_resume(struct platform_device *pdev)
++{
++	raumfeld_enable_audio(true);
++	return 0;
++}
++
++static struct snd_soc_dai_link raumfeld_ddx_dai = {
++	.name		= "STA32X",
++	.stream_name	= "STA32X",
++	.cpu_dai	= &pxa_ssp_dai[PXA_DAI_SSP1],
++	.codec_dai	= &sta32x_dai,
++	.ops		= &raumfeld_sta32x_ops,
++};
++
++static struct snd_soc_card snd_soc_ddx_raumfeld = {
++	.name		= "Raumfeld DDX",
++	.platform	= &pxa2xx_soc_platform,
++	.dai_link	= &raumfeld_ddx_dai,
++	.suspend_post	= raumfeld_ddx_suspend,
++	.resume_pre	= raumfeld_ddx_resume,
++	.num_links	= 1,
++};
++
++
+ /* AK4104 */
+ 
+ static int raumfeld_ak4104_hw_params(struct snd_pcm_substream *substream,
+@@ -268,6 +418,11 @@ static struct snd_soc_device raumfeld_line_devdata = {
+ 	.codec_dev = &soc_codec_device_cs4270,
+ };
+ 
++static struct snd_soc_device raumfeld_ddx_devdata = {
++	.card = &snd_soc_ddx_raumfeld,
++	.codec_dev = &soc_codec_dev_sta32x,
++};
++
+ static struct snd_soc_device raumfeld_spdif_devdata = {
+ 	.card = &snd_soc_spdif_raumfeld,
+ 	.codec_dev = &soc_codec_device_ak4104,
+@@ -284,22 +439,30 @@ static int __init raumfeld_audio_init(void)
+ 	    !machine_is_raumfeld_connector())
+ 		return 0;
+ 
+-	max9486_client = i2c_new_device(i2c_get_adapter(0),
+-					&max9486_hwmon_info);
++	if ((system_rev & 0xff00) != 0x0400) {
++		max9486_client = i2c_new_device(i2c_get_adapter(0),
++						&max9486_hwmon_info);
+ 
+-	if (!max9486_client)
+-		return -ENOMEM;
++		if (!max9486_client)
++			return -ENOMEM;
+ 
+-	set_max9485_clk(MAX9485_MCLK_FREQ_122880);
++		set_max9485_clk(MAX9485_MCLK_FREQ_122880);
++	}
+ 
+ 	/* LINE */
+ 	raumfeld_audio_line_device = platform_device_alloc("soc-audio", 0);
+ 	if (!raumfeld_audio_line_device)
+ 		return -ENOMEM;
+ 
+-	platform_set_drvdata(raumfeld_audio_line_device,
+-			     &raumfeld_line_devdata);
+-	raumfeld_line_devdata.dev = &raumfeld_audio_line_device->dev;
++	if ((system_rev & 0xff00) == 0x0400) {
++		platform_set_drvdata(raumfeld_audio_line_device,
++				     &raumfeld_ddx_devdata);
++		raumfeld_ddx_devdata.dev = &raumfeld_audio_line_device->dev;
++	} else {
++		platform_set_drvdata(raumfeld_audio_line_device,
++				     &raumfeld_line_devdata);
++		raumfeld_line_devdata.dev = &raumfeld_audio_line_device->dev;
++	}
+ 	ret = platform_device_add(raumfeld_audio_line_device);
+ 	if (ret)
+ 		platform_device_put(raumfeld_audio_line_device);
+@@ -338,7 +501,8 @@ static void __exit raumfeld_audio_exit(void)
+ 	if (machine_is_raumfeld_connector())
+ 		platform_device_unregister(raumfeld_audio_spdif_device);
+ 
+-	i2c_unregister_device(max9486_client);
++	if ((system_rev & 0xff00) != 0x0400)
++		i2c_unregister_device(max9486_client);
+ 
+ 	gpio_free(GPIO_MCLK_RESET);
+ 	gpio_free(GPIO_CODEC_RESET);
+-- 
+1.7.1
+
+From ee443bd449ff03a42c7fe8e614bbab4578f2ea50 Mon Sep 17 00:00:00 2001
+From: Johannes Stezenbach <js@sig21.net>
+Date: Fri, 29 Apr 2011 15:34:06 +0200
+Subject: [PATCH 20/22] ASoC: WM8782 ADC Codec Driver
+
+Signed-off-by: Johannes Stezenbach <js@sig21.net>
+---
+ sound/soc/codecs/Kconfig  |    4 ++
+ sound/soc/codecs/Makefile |    2 +
+ sound/soc/codecs/wm8782.c |  109 +++++++++++++++++++++++++++++++++++++++++++++
+ sound/soc/codecs/wm8782.h |   20 ++++++++
+ 4 files changed, 135 insertions(+), 0 deletions(-)
+ create mode 100644 sound/soc/codecs/wm8782.c
+ create mode 100644 sound/soc/codecs/wm8782.h
+
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 6bb042d..746c417 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -55,6 +55,7 @@ config SND_SOC_ALL_CODECS
+ 	select SND_SOC_WM8750 if SND_SOC_I2C_AND_SPI
+ 	select SND_SOC_WM8753 if SND_SOC_I2C_AND_SPI
+ 	select SND_SOC_WM8776 if SND_SOC_I2C_AND_SPI
++	select SND_SOC_WM8782
+ 	select SND_SOC_WM8900 if I2C
+ 	select SND_SOC_WM8903 if I2C
+ 	select SND_SOC_WM8904 if I2C
+@@ -231,6 +232,9 @@ config SND_SOC_WM8753
+ config SND_SOC_WM8776
+ 	tristate
+ 
++config SND_SOC_WM8782
++	tristate
++
+ config SND_SOC_WM8900
+ 	tristate
+ 
+diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
+index a64e269..fccb12b 100644
+--- a/sound/soc/codecs/Makefile
++++ b/sound/soc/codecs/Makefile
+@@ -40,6 +40,7 @@ snd-soc-wm8741-objs := wm8741.o
+ snd-soc-wm8750-objs := wm8750.o
+ snd-soc-wm8753-objs := wm8753.o
+ snd-soc-wm8776-objs := wm8776.o
++snd-soc-wm8782-objs := wm8782.o
+ snd-soc-wm8900-objs := wm8900.o
+ snd-soc-wm8903-objs := wm8903.o
+ snd-soc-wm8904-objs := wm8904.o
+@@ -110,6 +111,7 @@ obj-$(CONFIG_SND_SOC_WM8741)	+= snd-soc-wm8741.o
+ obj-$(CONFIG_SND_SOC_WM8750)	+= snd-soc-wm8750.o
+ obj-$(CONFIG_SND_SOC_WM8753)	+= snd-soc-wm8753.o
+ obj-$(CONFIG_SND_SOC_WM8776)	+= snd-soc-wm8776.o
++obj-$(CONFIG_SND_SOC_WM8782)	+= snd-soc-wm8782.o
+ obj-$(CONFIG_SND_SOC_WM8900)	+= snd-soc-wm8900.o
+ obj-$(CONFIG_SND_SOC_WM8903)	+= snd-soc-wm8903.o
+ obj-$(CONFIG_SND_SOC_WM8904)	+= snd-soc-wm8904.o
+diff --git a/sound/soc/codecs/wm8782.c b/sound/soc/codecs/wm8782.c
+new file mode 100644
+index 0000000..5f81cf7
+--- /dev/null
++++ b/sound/soc/codecs/wm8782.c
+@@ -0,0 +1,109 @@
++/*
++ * sound/soc/codecs/wm8782.c
++ * simple, strap-pin configured 24bit 2ch ADC
++ *
++ * Copyright: 2011 Raumfeld GmbH
++ * Author: Johannes Stezenbach <js@sig21.net>
++ *
++ * based on ad73311.c
++ * Copyright:	Analog Device Inc.
++ * Author:	Cliff Cai <cliff.cai@analog.com>
++ *
++ * This program is free software; you can redistribute  it and/or modify it
++ * under  the terms of  the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the  License, or (at your
++ * option) any later version.
++ */
++
++#include <linux/init.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/device.h>
++#include <sound/core.h>
++#include <sound/pcm.h>
++#include <sound/ac97_codec.h>
++#include <sound/initval.h>
++#include <sound/soc.h>
++
++#include "wm8782.h"
++
++struct snd_soc_dai wm8782_dai = {
++	.name = "WM8782",
++	.capture = {
++		.stream_name = "Capture",
++		.channels_min = 2,
++		.channels_max = 2,
++		.rates = SNDRV_PCM_RATE_48000,
++		.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE,
++	},
++};
++EXPORT_SYMBOL_GPL(wm8782_dai);
++
++static int wm8782_soc_probe(struct platform_device *pdev)
++{
++	struct snd_soc_device *socdev = platform_get_drvdata(pdev);
++	struct snd_soc_codec *codec;
++	int ret = 0;
++
++	codec = kzalloc(sizeof(struct snd_soc_codec), GFP_KERNEL);
++	if (codec == NULL)
++		return -ENOMEM;
++	mutex_init(&codec->mutex);
++	codec->name = "WM8782";
++	codec->owner = THIS_MODULE;
++	codec->dai = &wm8782_dai;
++	codec->num_dai = 1;
++	socdev->card->codec = codec;
++	INIT_LIST_HEAD(&codec->dapm_widgets);
++	INIT_LIST_HEAD(&codec->dapm_paths);
++
++	/* register pcms */
++	ret = snd_soc_new_pcms(socdev, SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1);
++	if (ret < 0) {
++		printk(KERN_ERR "wm8782: failed to create pcms\n");
++		goto pcm_err;
++	}
++
++	return ret;
++
++pcm_err:
++	kfree(socdev->card->codec);
++	socdev->card->codec = NULL;
++	return ret;
++}
++
++static int wm8782_soc_remove(struct platform_device *pdev)
++{
++	struct snd_soc_device *socdev = platform_get_drvdata(pdev);
++	struct snd_soc_codec *codec = socdev->card->codec;
++
++	if (codec) {
++		snd_soc_free_pcms(socdev);
++		kfree(codec);
++	}
++	return 0;
++}
++
++struct snd_soc_codec_device soc_codec_dev_wm8782 = {
++	.probe = wm8782_soc_probe,
++	.remove = wm8782_soc_remove,
++};
++EXPORT_SYMBOL_GPL(soc_codec_dev_wm8782);
++
++static int __init wm8782_init(void)
++{
++	pr_info("WM8782 ALSA SoC Codec Driver\n");
++	return snd_soc_register_dai(&wm8782_dai);
++}
++module_init(wm8782_init);
++
++static void __exit wm8782_exit(void)
++{
++	snd_soc_unregister_dai(&wm8782_dai);
++}
++module_exit(wm8782_exit);
++
++MODULE_DESCRIPTION("ASoC wm8782 driver");
++MODULE_AUTHOR("Johannes Stezenbach");
++MODULE_LICENSE("GPL");
+diff --git a/sound/soc/codecs/wm8782.h b/sound/soc/codecs/wm8782.h
+new file mode 100644
+index 0000000..78b689b
+--- /dev/null
++++ b/sound/soc/codecs/wm8782.h
+@@ -0,0 +1,20 @@
++/*
++ * sound/soc/codecs/wm8782.h
++ * simple, strap-pin configured 24bit 2ch ADC
++ *
++ * Copyright: 2011 Raumfeld GmbH
++ * Author: Johannes Stezenbach <js@sig21.net>
++ *
++ * This program is free software; you can redistribute  it and/or modify it
++ * under  the terms of  the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the  License, or (at your
++ * option) any later version.
++ */
++
++#ifndef __WM8782_H__
++#define __WM8782_H__
++
++extern struct snd_soc_dai wm8782_dai;
++extern struct snd_soc_codec_device soc_codec_dev_wm8782;
++
++#endif
+-- 
+1.7.1
+
+From c24b4bcbaff402ab5ec75a112f2d68f0504e03a2 Mon Sep 17 00:00:00 2001
+From: Johannes Stezenbach <js@sig21.net>
+Date: Fri, 29 Apr 2011 15:37:19 +0200
+Subject: [PATCH 21/22] PXA: ASoC: allow SSP sharing
+
+Allow pxa_ssp_request() to succeed if the SSP channel is
+already used. This allows the same SSP to be used for
+both ADC and DAC in ASoC configurations where a different
+codec driver is used for capture and playback.
+
+Signed-off-by: Johannes Stezenbach <js@sig21.net>
+---
+ arch/arm/plat-pxa/ssp.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/arch/arm/plat-pxa/ssp.c b/arch/arm/plat-pxa/ssp.c
+index c6357e5..e95a5a7 100644
+--- a/arch/arm/plat-pxa/ssp.c
++++ b/arch/arm/plat-pxa/ssp.c
+@@ -44,7 +44,7 @@ struct ssp_device *pxa_ssp_request(int port, const char *label)
+ 	mutex_lock(&ssp_lock);
+ 
+ 	list_for_each_entry(ssp, &ssp_list, node) {
+-		if (ssp->port_id == port && ssp->use_count == 0) {
++		if (ssp->port_id == port /* && ssp->use_count == 0 */) {
+ 			ssp->use_count++;
+ 			ssp->label = label;
+ 			break;
+-- 
+1.7.1
+
+From 1a2e9369ba5f19878d86e765a8376a6e4672e92c Mon Sep 17 00:00:00 2001
+From: Johannes Stezenbach <js@sig21.net>
+Date: Fri, 29 Apr 2011 15:39:02 +0200
+Subject: [PATCH 22/22] ASoC: Raumfeld: add WM8782 ADC to STA32x DDX board
+
+Signed-off-by: Johannes Stezenbach <js@sig21.net>
+---
+ sound/soc/pxa/Kconfig    |    1 +
+ sound/soc/pxa/raumfeld.c |   70 ++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 68 insertions(+), 3 deletions(-)
+
+diff --git a/sound/soc/pxa/Kconfig b/sound/soc/pxa/Kconfig
+index 905db84..9f9b80c 100644
+--- a/sound/soc/pxa/Kconfig
++++ b/sound/soc/pxa/Kconfig
+@@ -134,6 +134,7 @@ config SND_SOC_RAUMFELD
+ 	select SND_SOC_CS4270
+ 	select SND_SOC_AK4104
+ 	select SND_SOC_STA32X
++	select SND_SOC_WM8782
+ 	help
+ 	  Say Y if you want to add support for SoC audio on Raumfeld devices
+ 
+diff --git a/sound/soc/pxa/raumfeld.c b/sound/soc/pxa/raumfeld.c
+index f6f5137..c43fd93 100644
+--- a/sound/soc/pxa/raumfeld.c
++++ b/sound/soc/pxa/raumfeld.c
+@@ -30,6 +30,7 @@
+ #include "../codecs/cs4270.h"
+ #include "../codecs/sta32x.h"
+ #include "../codecs/ak4104.h"
++#include "../codecs/wm8782.h"
+ #include "pxa2xx-pcm.h"
+ #include "pxa-ssp.h"
+ 
+@@ -305,6 +306,60 @@ static struct snd_soc_ops raumfeld_sta32x_ops = {
+ 	.hw_params = raumfeld_sta32x_hw_params,
+ };
+ 
++/* WM8782 */
++static int raumfeld_wm8782_hw_params(struct snd_pcm_substream *substream,
++				     struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct snd_soc_dai *cpu_dai = rtd->dai->cpu_dai;
++	unsigned int fmt, clk = 0;
++	int ret = 0;
++
++	// FIXME: currently only fixed MCLK of 12.288MHz is available
++	switch (params_rate(params)) {
++	case 48000:
++		clk = 12288000;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (params_format(params)) {
++	case SNDRV_PCM_FORMAT_S16_LE:
++	case SNDRV_PCM_FORMAT_S16_BE:
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	fmt = SND_SOC_DAIFMT_I2S |
++	      SND_SOC_DAIFMT_NB_NF |
++	      SND_SOC_DAIFMT_CBS_CFS;
++
++	/* setup the CPU DAI */
++	ret = snd_soc_dai_set_pll(cpu_dai, 0, 0, 0, clk);
++	if (ret < 0)
++		return ret;
++
++	ret = snd_soc_dai_set_fmt(cpu_dai, fmt);
++	if (ret < 0)
++		return ret;
++
++	ret = snd_soc_dai_set_clkdiv(cpu_dai, PXA_SSP_DIV_SCR, 4);
++	if (ret < 0)
++		return ret;
++
++	ret = snd_soc_dai_set_sysclk(cpu_dai, PXA_SSP_CLK_EXT, clk, 1);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static struct snd_soc_ops raumfeld_wm8782_ops = {
++	.hw_params = raumfeld_wm8782_hw_params,
++};
++
+ static int raumfeld_ddx_suspend(struct platform_device *pdev, pm_message_t state)
+ {
+ 	raumfeld_enable_audio(false);
+@@ -317,21 +372,30 @@ static int raumfeld_ddx_resume(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static struct snd_soc_dai_link raumfeld_ddx_dai = {
++static struct snd_soc_dai_link raumfeld_ddx_dai[] = {
++{
+ 	.name		= "STA32X",
+ 	.stream_name	= "STA32X",
+ 	.cpu_dai	= &pxa_ssp_dai[PXA_DAI_SSP1],
+ 	.codec_dai	= &sta32x_dai,
+ 	.ops		= &raumfeld_sta32x_ops,
++},
++{
++	.name		= "WM8782",
++	.stream_name	= "WM8782",
++	.cpu_dai	= &pxa_ssp_dai[PXA_DAI_SSP1],
++	.codec_dai	= &wm8782_dai,
++	.ops		= &raumfeld_wm8782_ops,
++},
+ };
+ 
+ static struct snd_soc_card snd_soc_ddx_raumfeld = {
+ 	.name		= "Raumfeld DDX",
+ 	.platform	= &pxa2xx_soc_platform,
+-	.dai_link	= &raumfeld_ddx_dai,
++	.dai_link	= raumfeld_ddx_dai,
++	.num_links	= ARRAY_SIZE(raumfeld_ddx_dai),
+ 	.suspend_post	= raumfeld_ddx_suspend,
+ 	.resume_pre	= raumfeld_ddx_resume,
+-	.num_links	= 1,
+ };
+ 
  
 -- 
 1.7.1
