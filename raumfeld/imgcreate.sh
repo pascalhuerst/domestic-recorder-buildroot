@@ -29,6 +29,25 @@ __EOF__
 	exit 1
 }
 
+add_raumfeld_demo() {
+        DOWNLOAD_SITE=http://rf-devel.teufel.local/buildroot/dl
+        DOWNLOAD_FILE="Raumfeld Demo.mp3"
+        test -f "dl/$DOWNLOAD_FILE" || \
+            wget -P dl "$DOWNLOAD_SITE/$DOWNLOAD_FILE"
+        cp "dl/$DOWNLOAD_FILE" $tmpdir/
+}
+
+add_audiotest_wav() {
+        DOWNLOAD_PRIMARY_SITE=http://rf-devel.teufel.local/buildroot/dl
+        DOWNLOAD_BACKUP_SITE=http://caiaq.de/download/raumfeld
+        DOWNLOAD_FILE="audiotest.wav"
+        test -f dl/$DOWNLOAD_FILE || \
+            for site in $DOWNLOAD_PRIMARY_SITE $DOWNLOAD_BACKUP_SITE; \
+            do wget -P dl $site/$DOWNLOAD_FILE && break; done
+        cp dl/$DOWNLOAD_FILE $tmpdir/
+}
+
+
 ./buildlog.sh $*
 
 . ./getopt.inc
@@ -79,24 +98,17 @@ case $target in
 base-geode-coreboot)
 	cp -a raumfeld/testsuite/coreboot $tmpdir/
 	;;
+base-geode-init)
+        add_raumfeld_demo()
+        ;;
 base-geode-flash)
-        DOWNLOAD_SITE=http://rf-devel.teufel.local/buildroot/dl
-        DOWNLOAD_FILE="Raumfeld Demo.mp3"
-        test -f "dl/$DOWNLOAD_FILE" || \
-            wget -P dl "$DOWNLOAD_SITE/$DOWNLOAD_FILE"
-        cp "dl/$DOWNLOAD_FILE" $tmpdir/
+        add_raumfeld_demo()
 	;;
 *-arm-uboot)
 	cp -a raumfeld/U-Boot/* $tmpdir/
 	;;
 audioadapter-arm-*)
-        DOWNLOAD_PRIMARY_SITE=http://rf-devel.teufel.local/buildroot/dl
-        DOWNLOAD_BACKUP_SITE=http://caiaq.de/download/raumfeld
-        DOWNLOAD_FILE="audiotest.wav"
-        test -f dl/$DOWNLOAD_FILE || \
-            for site in $DOWNLOAD_PRIMARY_SITE $DOWNLOAD_BACKUP_SITE; \
-            do wget -P dl $site/$DOWNLOAD_FILE && break; done
-        cp dl/$DOWNLOAD_FILE $tmpdir/
+        add_audiotest_wav()
         ;;
 esac
 
