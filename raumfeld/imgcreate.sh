@@ -99,16 +99,16 @@ base-geode-coreboot)
 	cp -a raumfeld/testsuite/coreboot $tmpdir/
 	;;
 base-geode-init)
-        add_raumfeld_demo()
+        add_raumfeld_demo
         ;;
 base-geode-flash)
-        add_raumfeld_demo()
+        add_raumfeld_demo
 	;;
 *-arm-uboot)
 	cp -a raumfeld/U-Boot/* $tmpdir/
 	;;
 audioadapter-arm-*)
-        add_audiotest_wav()
+        add_audiotest_wav
         ;;
 esac
 
