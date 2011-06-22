@@ -366,6 +366,10 @@ ifeq ($(BR2_TARGET_ROOTFS_INITRAMFS),y)
 	echo "# CONFIG_INITRAMFS_COMPRESSION_NONE is not set" >> $(LINUX26_DIR)/.config
 	echo "# CONFIG_INITRAMFS_COMPRESSION_BZIP2 is not set" >> $(LINUX26_DIR)/.config
 	echo "# CONFIG_INITRAMFS_COMPRESSION_LZMA is not set" >> $(LINUX26_DIR)/.config
+	echo "# CONFIG_INITRAMFS_COMPRESSION_XZ is not set" >> $(LINUX26_DIR)/.config
+	echo "# CONFIG_INITRAMFS_COMPRESSION_LZO is not set" >> $(LINUX26_DIR)/.config
+	echo "# CONFIG_XZ_DEC_TEST is not set" >> $(LINUX26_DIR)/.config
+
 	echo "CONFIG_INITRAMFS_SOURCE=\"$(INITRAMFS_TARGET)\"" >> \
 		$(LINUX26_DIR)/.config
 	echo "CONFIG_INITRAMFS_ROOT_UID=0" >> $(LINUX26_DIR)/.config
