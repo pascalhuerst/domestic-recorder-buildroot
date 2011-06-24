@@ -16,12 +16,6 @@
 #	/dev/zero, /dev/null -- that's needed to boot and run this script.
 #
 
-# old kernels don't use udev
-case $(uname -r) in
-    2.6*|2.7*)	;;
-    *)		exit 0;;
-esac
-
 # Check for missing binaries
 UDEV_BIN=/sbin/udevd
 test -x $UDEV_BIN || exit 5
