@@ -1,7 +1,6 @@
 #!/bin/bash
 
-targets="devel-arm devel-geode			\
-         initramfs-arm imgrootfs-arm		\
+targets="initramfs-arm imgrootfs-arm		\
          initramfs-geode imgrootfs-geode	\
          audioadapter-arm remotecontrol-arm	\
          base-geode"
