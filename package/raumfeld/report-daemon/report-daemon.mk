@@ -9,7 +9,7 @@ REPORT_DAEMON_TARGET_DIR:=raumfeld/report-daemon
 REPORT_DAEMON_BINARY:=$(REPORT_DAEMON_TARGET_DIR)/raumfeld-report-daemon
 REPORT_DAEMON_CROSS_PREFIX:=$(BUILD_DIR)/..
 
-REPORT_DAEMON_DEPENDENCIES = host-pkgconfig libsoup
+REPORT_DAEMON_DEPENDENCIES = host-pkg-config libsoup
 
 ifeq ($(ARCH),arm)
 REPORT_DAEMON_CROSS = ARM

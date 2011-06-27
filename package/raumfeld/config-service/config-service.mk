@@ -9,7 +9,7 @@ CONFIG_SERVICE_TARGET_DIR:=raumfeld/config-service
 CONFIG_SERVICE_BINARY:=$(CONFIG_SERVICE_TARGET_DIR)/config-service
 CONFIG_SERVICE_CROSS_PREFIX:=$(BUILD_DIR)/..
 
-CONFIG_SERVICE_DEPENDENCIES = host-pkgconfig libraumfeld libraumfeldcpp
+CONFIG_SERVICE_DEPENDENCIES = host-pkg-config libraumfeld libraumfeldcpp
 
 ifeq ($(ARCH),arm)
 CONFIG_SERVICE_CROSS = ARM

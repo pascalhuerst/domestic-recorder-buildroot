@@ -22,7 +22,7 @@ GSSDP_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-GSSDP_DEPENDENCIES = host-pkgconfig host-libglib2 libsoup
+GSSDP_DEPENDENCIES = host-pkg-config host-libglib2 libsoup
 
 $(eval $(call AUTOTARGETS,package,gssdp))
 

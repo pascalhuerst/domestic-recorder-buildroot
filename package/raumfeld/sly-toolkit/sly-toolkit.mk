@@ -20,7 +20,7 @@ SLY_TOOLKIT_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-SLY_TOOLKIT_DEPENDENCIES = host-pkgconfig host-libglib2 libglib2 directfb
+SLY_TOOLKIT_DEPENDENCIES = host-pkg-config host-libglib2 libglib2 directfb
 
 $(eval $(call AUTOTARGETS,package/raumfeld,sly-toolkit))
 

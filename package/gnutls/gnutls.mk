@@ -12,7 +12,7 @@ GNUTLS_LIBTOOL_PATCH = NO
 GNUTLS_INSTALL_STAGING = YES
 GNUTLS_INSTALL_TARGET = YES
 
-GNUTLS_DEPENDENCIES = host-pkgconfig libglib2 libgcrypt
+GNUTLS_DEPENDENCIES = host-pkg-config libglib2 libgcrypt
 
 GNUTLS_CONF_OPT = \
 	--with-libgcrypt-prefix=$(STAGING_DIR)/usr
