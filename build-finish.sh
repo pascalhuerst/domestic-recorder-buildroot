@@ -1,7 +1,6 @@
 #!/bin/bash
 
-targets="devel-arm devel-geode                  \
-         initramfs-arm imgrootfs-arm            \
+targets="initramfs-arm imgrootfs-arm            \
          initramfs-geode imgrootfs-geode        \
          audioadapter-arm remotecontrol-arm     \
          base-geode"
@@ -74,60 +73,37 @@ fi
 # do post-processing for some targets ...
 
 case $target in
-
-	# copy the ARM zImage for later use in the update image
-	initramfs-arm)
-		cp project_build_arm/uclibc/linux-/arch/arm/boot/zImage binaries/initramfs-arm
+	imgrootfs-*)
+		# resize the root fs ext2 image so that genext2fs will
+		# find free inodes when building the deployment targets.
+		# this should probably be made part of br2 some day.
+		/sbin/resize2fs output/images/rootfs.ext2 64M
 		;;
 
-	# resize the root fs ext2 image so that genext2fs will find
-	# free inodes when building the deployment targets.
-	# this should probably be made part of br2 some day.
-	imgrootfs-arm)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.arm.ext2 64M
-		;;
-	imgrootfs-geode)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.i586.ext2 64M
-		;;
-
-	audioadapter-arm)
-                ROOTFS=binaries/uclibc/rootfs-audioadapter.arm.tar.gz
-                ZIMAGE=binaries/initramfs-arm/zImage
+	audioadapter-arm|remotecontrol-arm)
+                ROOTFS=output/images/rootfs.tar.gz
+                KERNEL=output/images/uImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=arm \
-				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
+				--base-rootfs-img=output/images/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
-				--kernel=binaries/initramfs-arm/uImage \
-			        --version=$version
-		done
-		;;
-
-	remotecontrol-arm)
-                ROOTFS=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
-                ZIMAGE=binaries/initramfs-arm/zImage
-		for t in $IMAGES; do
-			raumfeld/imgcreate.sh \
-				--target=$target-$t \
-				--platform=arm \
-				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
-				--target-rootfs-tgz=$ROOTFS \
-				--kernel=binaries/initramfs-arm/uImage \
+				--kernel=$KERNEL \
 			        --version=$version
 		done
 		;;
 
 	base-geode)
-                ROOTFS=binaries/uclibc/rootfs-base.i586.tar.gz
-                ZIMAGE=binaries/initramfs-geode/bzImage
+                ROOTFS=output/images/rootfs.tar.gz
+                KERNEL=output/images/bzImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=geode \
-				--base-rootfs-img=binaries/uclibc/imgrootfs.i586.ext2 \
+				--base-rootfs-img=output/images/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
-				--kernel=binaries/initramfs-geode/bzImage \
+				--kernel=$KERNEL \
 				--version=$version
 		done
                 ;;
@@ -142,5 +118,5 @@ if [ -n "$ROOTFS" ]; then
     raumfeld/updatecreate.sh \
 	--target=$target \
 	--targz=$ROOTFS \
-        --kexec=$ZIMAGE
+        --kexec=$KERNEL
 fi

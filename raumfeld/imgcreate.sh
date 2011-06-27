@@ -74,8 +74,8 @@ imgcreate=raumfeld/imgtool/imgcreate
 imginfo=raumfeld/imgtool/imginfo
 resize2fs=/sbin/resize2fs
 
-# ext2_img has to be created in binaries/ temporarily. will be removed later.
-ext2_img=binaries/$target.ext2
+# ext2_img is created in output/images temporarily; will be removed later
+ext2_img=output/images/$target.ext2
 
 target_img=binaries/$target-$version.img
 
@@ -137,6 +137,7 @@ echo "Bootstrap image for target $target" > $tmpdir/desc
 date >> $tmpdir/desc
 echo "Host $(hostname)" >> $tmpdir/desc
 
+mkdir -p binaries
 $imgcreate $kernel $tmpdir/desc $ext2_img $target_img
 
 
