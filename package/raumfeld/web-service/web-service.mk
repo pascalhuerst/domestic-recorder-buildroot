@@ -25,7 +25,7 @@ $(WEB_SERVICE_DIR)/.bzr:
 	if ! test -d $(WEB_SERVICE_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p web-service-$(WEB_SERVICE_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/web-service/$(WEB_SERVICE_VERSION) web-service-$(WEB_SERVICE_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/web-service/$(WEB_SERVICE_VERSION) web-service-$(WEB_SERVICE_VERSION)) \
 	fi
 	touch -c $@
 

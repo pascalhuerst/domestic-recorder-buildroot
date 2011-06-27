@@ -26,7 +26,7 @@ $(META_SERVER_DIR)/.bzr:
 	if ! test -d $(META_SERVER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p meta-server-$(META_SERVER_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/meta-server/$(META_SERVER_VERSION) meta-server-$(META_SERVER_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/meta-server/$(META_SERVER_VERSION) meta-server-$(META_SERVER_VERSION)) \
 	fi
 	touch -c $@
 

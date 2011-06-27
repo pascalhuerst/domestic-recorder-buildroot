@@ -29,7 +29,7 @@ $(REPORT_DAEMON_DIR)/.bzr:
 	if ! test -d $(REPORT_DAEMON_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p raumfeld-report-daemon-$(REPORT_DAEMON_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld-report-daemon/$(REPORT_DAEMON_VERSION) raumfeld-report-daemon-$(REPORT_DAEMON_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld-report-daemon/$(REPORT_DAEMON_VERSION) raumfeld-report-daemon-$(REPORT_DAEMON_VERSION)) \
 	fi
 	touch -c $@
 

@@ -26,7 +26,7 @@ $(P0_TIMESERVER_DIR)/.bzr:
 	if ! test -d $(P0_TIMESERVER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p p0-timeserver-$(P0_TIMESERVER_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-timeserver/$(P0_TIMESERVER_VERSION) p0-timeserver-$(P0_TIMESERVER_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-timeserver/$(P0_TIMESERVER_VERSION) p0-timeserver-$(P0_TIMESERVER_VERSION)) \
 	fi
 	touch -c $@
 

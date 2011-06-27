@@ -25,7 +25,7 @@ $(STREAM_RELAY_DIR)/.bzr:
 	if ! test -d $(STREAM_RELAY_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p stream-relay-$(STREAM_RELAY_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/stream-relay/$(STREAM_RELAY_VERSION) stream-relay-$(STREAM_RELAY_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/stream-relay/$(STREAM_RELAY_VERSION) stream-relay-$(STREAM_RELAY_VERSION)) \
 	fi
 	touch -c $@
 

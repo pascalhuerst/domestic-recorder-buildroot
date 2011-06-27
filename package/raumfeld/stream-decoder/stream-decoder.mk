@@ -19,7 +19,7 @@ $(eval $(call AUTOTARGETS,package/raumfeld,stream-decoder))
 $(STREAM_DECODER_DIR)/.bzr:
 	if ! test -d $(STREAM_DECODER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/stream-decoder/$(STREAM_DECODER_VERSION) stream-decoder-$(STREAM_DECODER_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/stream-decoder/$(STREAM_DECODER_VERSION) stream-decoder-$(STREAM_DECODER_VERSION)) \
 	fi
 
 $(STREAM_DECODER_DIR)/.stamp_downloaded: $(STREAM_DECODER_DIR)/.bzr

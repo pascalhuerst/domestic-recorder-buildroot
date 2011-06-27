@@ -29,7 +29,7 @@ $(CONFIG_SERVICE_DIR)/.bzr:
 	if ! test -d $(CONFIG_SERVICE_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p config-service-$(CONFIG_SERVICE_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/config-service/$(CONFIG_SERVICE_VERSION) config-service-$(CONFIG_SERVICE_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/config-service/$(CONFIG_SERVICE_VERSION) config-service-$(CONFIG_SERVICE_VERSION)) \
 	fi
 	touch -c $@
 

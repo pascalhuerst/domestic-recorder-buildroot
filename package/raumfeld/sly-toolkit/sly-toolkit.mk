@@ -27,7 +27,7 @@ $(eval $(call AUTOTARGETS,package/raumfeld,sly-toolkit))
 $(SLY_TOOLKIT_DIR)/.bzr:
 	if ! test -d $(SLY_TOOLKIT_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/sly-toolkit/$(SLY_TOOLKIT_VERSION) sly-toolkit-$(SLY_TOOLKIT_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/sly-toolkit/$(SLY_TOOLKIT_VERSION) sly-toolkit-$(SLY_TOOLKIT_VERSION)) \
 	fi
 
 $(SLY_TOOLKIT_DIR)/.stamp_downloaded: $(SLY_TOOLKIT_DIR)/.bzr

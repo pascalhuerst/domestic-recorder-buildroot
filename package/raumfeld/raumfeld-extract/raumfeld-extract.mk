@@ -16,7 +16,7 @@ $(eval $(call AUTOTARGETS,package/raumfeld,raumfeld-extract))
 $(RAUMFELD_EXTRACT_DIR)/.bzr:
 	if ! test -d $(RAUMFELD_EXTRACT_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld-extract/$(RAUMFELD_EXTRACT_VERSION) raumfeld-extract-$(RAUMFELD_EXTRACT_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld-extract/$(RAUMFELD_EXTRACT_VERSION) raumfeld-extract-$(RAUMFELD_EXTRACT_VERSION)) \
 	fi
 
 $(RAUMFELD_EXTRACT_DIR)/.stamp_downloaded: $(RAUMFELD_EXTRACT_DIR)/.bzr
