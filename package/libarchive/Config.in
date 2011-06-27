@@ -15,12 +15,12 @@ config BR2_PACKAGE_LIBARCHIVE_BSDTAR
 	depends on BR2_PACKAGE_LIBARCHIVE
 	help
 	  The 'bsdtar' program is a full-featured 'tar'
-          replacement built on libarchive.
+	  replacement built on libarchive.
 
 config BR2_PACKAGE_LIBARCHIVE_BSDCPIO
 	bool "bsdcpio"
 	depends on BR2_PACKAGE_LIBARCHIVE
 	help
 	  The 'bsdcpio' program is a different interface to
-          essentially the same functionality as 'bsdtar'.
+	  essentially the same functionality as 'bsdtar'.
 

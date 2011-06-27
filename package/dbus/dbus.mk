@@ -3,20 +3,13 @@
 # dbus
 #
 #############################################################
-DBUS_VERSION = 1.2.12
+DBUS_VERSION = 1.4.10
 DBUS_SOURCE = dbus-$(DBUS_VERSION).tar.gz
 DBUS_SITE = http://dbus.freedesktop.org/releases/dbus/
 DBUS_INSTALL_STAGING = YES
 DBUS_INSTALL_TARGET = YES
-ifeq ($(BR2_ENABLE_DEBUG),y)
-# install-exec doesn't install the config file
-DBUS_INSTALL_TARGET_OPT = DESTDIR=$(TARGET_DIR) install
-else
-# install-strip uses host strip
-DBUS_INSTALL_TARGET_OPT = DESTDIR=$(TARGET_DIR) install-strip STRIPPROG="$(STRIPCMD)"
-endif
 
-DBUS_DEPENDENCIES = uclibc host-pkgconfig
+DBUS_DEPENDENCIES = host-pkg-config
 
 DBUS_CONF_ENV = ac_cv_have_abstract_sockets=yes
 DBUS_CONF_OPT = --program-prefix="" \
@@ -48,41 +41,31 @@ else
 DBUS_CONF_OPT += --without-x
 endif
 
-$(eval $(call AUTOTARGETS,package,dbus))
+# fix rebuild (dbus makefile errors out if /var/lib/dbus is a symlink)
+define DBUS_REMOVE_VAR_LIB_DBUS
+	rm -rf $(TARGET_DIR)/var/lib/dbus
+endef
 
-# fix rebuild if /var/lib is a symlink to /tmp
-$(DBUS_HOOK_POST_BUILD): $(DBUS_TARGET_BUILD)
-	rm -rf /tmp/dbus
-	touch $@
+DBUS_POST_BUILD_HOOKS += DBUS_REMOVE_VAR_LIB_DBUS
 
-$(DBUS_HOOK_POST_INSTALL): $(DBUS_TARGET_INSTALL_TARGET)
+define DBUS_REMOVE_DEVFILES
 	rm -rf $(TARGET_DIR)/usr/lib/dbus-1.0
+endef
+
+ifneq ($(BR2_HAVE_DEVFILES),y)
+DBUS_POST_INSTALL_TARGET_HOOKS += DBUS_REMOVE_DEVFILES
+endif
+
+define DBUS_INSTALL_TARGET_FIXUP
 	rm -rf $(TARGET_DIR)/var/lib/dbus
 	ln -sf /tmp/dbus $(TARGET_DIR)/var/lib/dbus
-	$(INSTALL) -m 0755 package/dbus/S30dbus $(TARGET_DIR)/etc/init.d
-	touch $@
+	$(INSTALL) -m 0755 -D package/dbus/S30dbus $(TARGET_DIR)/etc/init.d/S30dbus
+endef
 
-# dbus for the host
-DBUS_HOST_DIR:=$(BUILD_DIR)/dbus-$(DBUS_VERSION)-host
-DBUS_HOST_INTROSPECT:=$(DBUS_HOST_DIR)/introspect.xml
+DBUS_POST_INSTALL_TARGET_HOOKS += DBUS_INSTALL_TARGET_FIXUP
 
-$(DL_DIR)/$(DBUS_SOURCE):
-	$(call DOWNLOAD,$(DBUS_SITE),$(DBUS_SOURCE))
-
-$(STAMP_DIR)/host_dbus_unpacked: $(DL_DIR)/$(DBUS_SOURCE)
-	mkdir -p $(DBUS_HOST_DIR)
-	$(INFLATE$(suffix $(DBUS_SOURCE))) $< | \
-		$(TAR) $(TAR_STRIP_COMPONENTS)=1 -C $(DBUS_HOST_DIR) $(TAR_OPTIONS) -
-	touch $@
-
-$(STAMP_DIR)/host_dbus_configured: $(STAMP_DIR)/host_dbus_unpacked $(STAMP_DIR)/host_expat_installed $(STAMP_DIR)/host_pkgconfig_installed
-	(cd $(DBUS_HOST_DIR); rm -rf config.cache; \
-		$(HOST_CONFIGURE_OPTS) \
-		CFLAGS="$(HOST_CFLAGS)" \
-		LDFLAGS="$(HOST_LDFLAGS)" \
-		./configure \
-		--prefix="$(HOST_DIR)/usr" \
-		--sysconfdir="$(HOST_DIR)/etc" \
+HOST_DBUS_DEPENDENCIES = host-pkg-config host-expat
+HOST_DBUS_CONF_OPT = \
 		--with-dbus-user=dbus \
 		--disable-tests \
 		--disable-asserts \
@@ -93,28 +76,15 @@ $(STAMP_DIR)/host_dbus_configured: $(STAMP_DIR)/host_dbus_unpacked $(STAMP_DIR)/
 		--disable-static \
 		--enable-dnotify \
 		--without-x \
-		--with-xml=expat \
-	)
-	touch $@
+		--with-xml=expat
 
-$(STAMP_DIR)/host_dbus_compiled: $(STAMP_DIR)/host_dbus_configured
-	$(HOST_MAKE_ENV) $(MAKE) -C $(DBUS_HOST_DIR)
-	touch $@
+# dbus for the host
+DBUS_HOST_INTROSPECT=$(HOST_DBUS_DIR)/introspect.xml
 
-$(STAMP_DIR)/host_dbus_installed: $(STAMP_DIR)/host_dbus_compiled
-	$(MAKE) -C $(DBUS_HOST_DIR) install
+HOST_DBUS_GEN_INTROSPECT = \
 	$(HOST_DIR)/usr/bin/dbus-daemon --introspect > $(DBUS_HOST_INTROSPECT)
-	touch $@
 
-host-dbus: $(STAMP_DIR)/host_dbus_installed
+HOST_DBUS_POST_INSTALL_HOOKS += HOST_DBUS_GEN_INTROSPECT
 
-host-dbus-source: dbus-source
-
-host-dbus-clean:
-	rm -f $(addprefix $(STAMP_DIR)/host_dbus_,unpacked configured compiled installed)
-	rm -f $(DBUS_HOST_INTROSPECT)
-	-$(MAKE) -C $(DBUS_HOST_DIR) uninstall
-	-$(MAKE) -C $(DBUS_HOST_DIR) clean
-
-host-dbus-dirclean:
-	rm -rf $(DBUS_HOST_DIR)
+$(eval $(call AUTOTARGETS,package,dbus))
+$(eval $(call AUTOTARGETS,package,dbus,host))

@@ -21,7 +21,7 @@ $(SFDISK_DIR)/.patched: $(DL_DIR)/$(SFDISK_SOURCE)
 $(SFDISK_DIR)/sfdisk: $(SFDISK_DIR)/.patched
 	$(MAKE) \
 		CROSS=$(TARGET_CROSS) DEBUG=false OPTIMIZATION="$(TARGET_CFLAGS)" \
-		-C $(SFDISK_DIR)
+		DOLFS=$(if $(BR2_LARGEFILE),true,false) -C $(SFDISK_DIR)
 	-$(STRIPCMD) $(SFDISK_DIR)/sfdisk
 	touch -c $(SFDISK_DIR)/sfdisk
 
@@ -29,7 +29,7 @@ $(TARGET_DIR)/sbin/sfdisk: $(SFDISK_DIR)/sfdisk
 	cp $(SFDISK_DIR)/sfdisk $(TARGET_DIR)/sbin/sfdisk
 	touch -c $(TARGET_DIR)/sbin/sfdisk
 
-sfdisk: uclibc $(TARGET_DIR)/sbin/sfdisk
+sfdisk: $(TARGET_DIR)/sbin/sfdisk
 
 sfdisk-source: $(DL_DIR)/$(SFDISK_SOURCE)
 

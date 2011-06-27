@@ -4,23 +4,15 @@
 #
 #############################################################
 
-LIGHTTPD_VERSION = 1.4.23
-LIGHTTPD_SOURCE = lighttpd-$(LIGHTTPD_VERSION).tar.bz2
-LIGHTTPD_SITE = http://www.lighttpd.net/download
-LIGHTTPD_LIBTOOL_PATCH = NO
-LIGHTTPD_DEPENDENCIES = uclibc
-
-ifneq ($(BR2_LARGEFILE),y)
-LIGHTTPD_LFS:=$(DISABLE_LARGEFILE) --disable-lfs
-endif
-
+LIGHTTPD_VERSION = 1.4.28
+LIGHTTPD_SITE = http://download.lighttpd.net/lighttpd/releases-1.4.x
+LIGHTTPD_DEPENDENCIES = host-pkg-config
 LIGHTTPD_CONF_OPT = \
 	--libdir=/usr/lib/lighttpd \
 	--libexecdir=/usr/lib \
 	--localstatedir=/var \
 	--program-prefix="" \
-	$(DISABLE_IPV6) \
-	$(LIGHTTPD_LFS)
+	$(if $(BR2_LARGEFILE),,--disable-lfs)
 
 ifeq ($(BR2_PACKAGE_LIGHTTPD_OPENSSL),y)
 LIGHTTPD_DEPENDENCIES += openssl
@@ -44,18 +36,24 @@ LIGHTTPD_CONF_OPT += --without-bzip2
 endif
 
 ifeq ($(BR2_PACKAGE_LIGHTTPD_PCRE),y)
-LIGHTTPD_CONF_ENV = PCRE_LIB="-lpcre"
+LIGHTTPD_CONF_ENV = PCRECONFIG=$(STAGING_DIR)/usr/bin/pcre-config
 LIGHTTPD_DEPENDENCIES += pcre
 LIGHTTPD_CONF_OPT += --with-pcre
 else
 LIGHTTPD_CONF_OPT += --without-pcre
 endif
 
-$(eval $(call AUTOTARGETS,package,lighttpd))
+ifeq ($(BR2_PACKAGE_LIGHTTPD_WEBDAV),y)
+LIGHTTPD_DEPENDENCIES += libxml2 sqlite
+LIGHTTPD_CONF_OPT += --with-webdav-props --with-webdav-locks
+else
+LIGHTTPD_CONF_OPT += --without-webdav-props --without-webdav-locks
+endif
 
-$(LIGHTTPD_TARGET_UNINSTALL):
-	$(call MESSAGE,"Uninstalling")
+define LIGHTTPD_UNINSTALL_TARGET_CMDS
 	rm -f $(TARGET_DIR)/usr/sbin/lighttpd
 	rm -f $(TARGET_DIR)/usr/sbin/lighttpd-angel
 	rm -rf $(TARGET_DIR)/usr/lib/lighttpd
-	rm -f $(LIGHTTPD_TARGET_INSTALL_TARGET) $(LIGHTTPD_HOOK_POST_INSTALL)
+endef
+
+$(eval $(call AUTOTARGETS,package,lighttpd))

@@ -5,3 +5,4 @@ config BR2_PACKAGE_NETSNMP
 	  SNMP v3 using both IPv4 and IPv6.
 
 	  http://net-snmp.sourceforge.net/
+

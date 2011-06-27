@@ -11,8 +11,7 @@ MICROPERL_SITE=ftp://ftp.cpan.org/pub/CPAN/src/5.0
 MICROPERL_DIR=$(BUILD_DIR)/perl-$(MICROPERL_VERSION)
 
 MICROPERL_MODS_DIR=/usr/lib/perl$(MICROPERL_MAJ)/$(MICROPERL_VERSION)
-MICROPERL_MODS=$(subst ",,$(BR2_PACKAGE_MICROPERL_MODULES))
-# ")
+MICROPERL_MODS=$(call qstrip,$(BR2_PACKAGE_MICROPERL_MODULES))
 ifeq ($(BR2_PACKAGE_AUTOMAKE),y)
 MICROPERL_MODS+=File/Basename.pm Errno.pm Config.pm IO/File.pm Symbol.pm \
 	SelectSaver.pm IO/Seekable.pm IO/Handle.pm IO.pm XSLoader.pm \
@@ -23,16 +22,23 @@ $(DL_DIR)/$(MICROPERL_SOURCE):
 
 $(MICROPERL_DIR)/.source: $(DL_DIR)/$(MICROPERL_SOURCE)
 	$(MICROPERL_CAT) $(DL_DIR)/$(MICROPERL_SOURCE) | tar -C $(BUILD_DIR) $(TAR_OPTIONS) -
+	# makedepend contains bashisms
+	$(SED) 's~sh ./makedepend~bash ./makedepend~' \
+		$(MICROPERL_DIR)/Makefile.SH \
+		$(MICROPERL_DIR)/x2p/Makefile.SH \
+		$(MICROPERL_DIR)/pod/Makefile.SH
 	chmod -R u+w $(MICROPERL_DIR)
 	touch $@
 
 $(MICROPERL_DIR)/.host_configured: $(MICROPERL_DIR)/.source
 	# we need to build a perl for the host just for Errno.pm
-	(cd $(MICROPERL_DIR); ./Configure -Dcc=$(HOSTCC) -de  )
+	(cd $(MICROPERL_DIR); ./Configure -Dcc="$(HOSTCC)" -de  )
 	touch $@
 
 
 $(MICROPERL_DIR)/.host_configured_and_fixed: $(MICROPERL_DIR)/.host_configured
+	$(SED) 's/^.*<command-line>.*//g' $(MICROPERL_DIR)/Makefile
+	$(SED) 's/^.*<command-line>.*//g' $(MICROPERL_DIR)/x2p/Makefile
 	$(SED) 's/^.*<command-line>.*//g' $(MICROPERL_DIR)/makefile
 	$(SED) 's/^.*<command-line>.*//g' $(MICROPERL_DIR)/x2p/makefile
 	touch $@
@@ -42,7 +48,6 @@ $(MICROPERL_DIR)/.host_make: $(MICROPERL_DIR)/.host_configured_and_fixed
 	touch $@
 
 $(MICROPERL_DIR)/.host_make_fixed: $(MICROPERL_DIR)/.host_make
-	$(SED) 's#^.*<asm/page.h>.*##g' $(MICROPERL_DIR)/ext/IPC/SysV/SysV.c
 	$(MAKE) -C $(MICROPERL_DIR) test	|| echo "An error is expected on make test"
 	touch $@
 
@@ -63,7 +68,7 @@ $(MICROPERL_DIR)/.configured: $(MICROPERL_DIR)/.host_make_fixed
 	touch $@
 
 $(MICROPERL_DIR)/microperl: $(MICROPERL_DIR)/.configured
-	$(MAKE) -f $(MICROPERL_DIR)/Makefile.micro CC=$(TARGET_CC) \
+	$(MAKE) -f $(MICROPERL_DIR)/Makefile.micro CC="$(TARGET_CC)" \
 		OPTIMIZE="$(TARGET_CFLAGS)" -C $(MICROPERL_DIR)
 ifeq ($(BR2_PACKAGE_AUTOMAKE),y)
 	#(cd $(@D); \
@@ -88,7 +93,7 @@ ifneq ($(BR2_STRIP_none),y)
 endif
 	(cd $(TARGET_DIR)/usr/bin; rm -f perl; ln -s microperl perl;)
 
-microperl: uclibc $(TARGET_DIR)/usr/bin/microperl
+microperl: $(TARGET_DIR)/usr/bin/microperl
 
 microperl-source: $(DL_DIR)/$(MICROPERL_SOURCE)
 

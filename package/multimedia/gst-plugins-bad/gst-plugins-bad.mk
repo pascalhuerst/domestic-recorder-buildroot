@@ -3,35 +3,31 @@
 # gst-plugins-bad
 #
 #############################################################
-GST_PLUGINS_BAD_VERSION = 0.10.18
+GST_PLUGINS_BAD_VERSION = 0.10.21
 GST_PLUGINS_BAD_SOURCE = gst-plugins-bad-$(GST_PLUGINS_BAD_VERSION).tar.bz2
 GST_PLUGINS_BAD_SITE = http://gstreamer.freedesktop.org/src/gst-plugins-bad
-GST_PLUGINS_BAD_LIBTOOL_PATCH = NO
 
 GST_PLUGINS_BAD_CONF_OPT = \
-		$(DISABLE_NLS) \
-		$(DISABLE_LARGEFILE) \
-		--disable-apexsink \
 		--disable-examples
 
-GST_PLUGINS_BAD_DEPENDENCIES = gst-plugins-base gstreamer liboil
+GST_PLUGINS_BAD_DEPENDENCIES = gst-plugins-base gstreamer
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_ADPCMDEC),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-adpcmdec
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_AACPARSE),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-aacparse
 else
-GST_PLUGINS_BAD_CONF_OPT += --disable-adpcmdec
+GST_PLUGINS_BAD_CONF_OPT += --disable-aacparse
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_ADPCMENC),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-adpcmenc
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_AIFFPARSE),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-aiffparse
 else
-GST_PLUGINS_BAD_CONF_OPT += --disable-adpcmenc
+GST_PLUGINS_BAD_CONF_OPT += --disable-aiffparse
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_AIFF),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-aiff
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_AMRPARSE),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-amrparse
 else
-GST_PLUGINS_BAD_CONF_OPT += --disable-aiff
+GST_PLUGINS_BAD_CONF_OPT += --disable-amrparse
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_ASFMUX),y)
@@ -40,10 +36,11 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-asfmux
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_AUDIOPARSERS),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-audioparsers
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_APEXSINK),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-apexsink
+GST_PLUGINS_BAD_DEPENDENCIES += openssl
 else
-GST_PLUGINS_BAD_CONF_OPT += --disable-audioparsers
+GST_PLUGINS_BAD_CONF_OPT += --disable-apexsink
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_AUTOCONVERT),y)
@@ -52,16 +49,22 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-autoconvert
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_BAYER),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-bayer
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-bayer
-endif
-
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_CAMERABIN),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-camerabin
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-camerabin
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_LEGACYRESAMPLE),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-legacyresample
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-legacyresample
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_BAYER),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-bayer
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-bayer
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_CDXAPARSE),y)
@@ -70,10 +73,11 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-cdxaparse
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DATAURISRC),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-dataurisrc
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_CDAUDIO),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-cdaudio
+GST_PLUGINS_BAD_DEPENDENCIES += libcdaudio
 else
-GST_PLUGINS_BAD_CONF_OPT += --disable-dataurisrc
+GST_PLUGINS_BAD_CONF_OPT += --disable-cdaudio
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DCCP),y)
@@ -92,6 +96,13 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DTMF),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-dtmf
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-dtmf
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DVDNAV),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-dvdnav
+GST_PLUGINS_BAD_DEPENDENCIES += libdvdnav
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-dvdnav
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DVDSPU),y)
@@ -130,24 +141,6 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-hdvparse
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_ID3TAG),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-id3tag
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-id3tag
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_JPEGFORMAT),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-jpegformat
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-jpegformat
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_LEGACYRESAMPLE),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-legacyresample
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-legacyresample
-endif
-
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_LIBRFB),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-librfb
 else
@@ -170,12 +163,6 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_MPEGTSMUX),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-mpegtsmux
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-mpegtsmux
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_MPEGPSMUX),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-mpegpsmux
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-mpegpsmux
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_MPEG4VIDEOPARSE),y)
@@ -220,12 +207,6 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-pcapparse
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_PNM),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-pnm
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-pnm
-endif
-
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_QTMUX),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-qtmux
 else
@@ -242,6 +223,12 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_REAL),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-real
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-real
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_RTPMANAGER),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-rtpmanager
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-rtpmanager
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_RTPMUX),y)
@@ -266,6 +253,12 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SELECTOR),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-selector
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-selector
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SHAPEWIPE),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-shapewipe
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-shapewipe
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SIREN),y)
@@ -304,12 +297,6 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-valve
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_VIDEOMEASURE),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-videomeasure
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-videomeasure
-endif
-
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_VIDEOSIGNAL),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-videosignal
 else
@@ -320,6 +307,12 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_VMNC),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-vmnc
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-vmnc
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_XDGMIME),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-xdgmime
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-xdgmime
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DIRECTFB),y)
@@ -335,24 +328,10 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-dvb
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FAAD2),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-faad
-GST_PLUGINS_BAD_DEPENDENCIES += libfaad2
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-faad
-endif
-
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FBDEV),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-fbdev
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-fbdev
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_ID3TAG),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-id3tag
-GST_PLUGINS_BAD_DEPENDENCIES += libid3tag
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-id3tag
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_NEON),y)
@@ -369,10 +348,18 @@ GST_PLUGINS_BAD_CONF_OPT += --disable-oss4
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SDL),y)
+GST_PLUGINS_BAD_CONF_ENV += ac_cv_path_SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl-config
 GST_PLUGINS_BAD_CONF_OPT += --enable-sdl
 GST_PLUGINS_BAD_DEPENDENCIES += sdl
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-sdl
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_TREMOR),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-ivorbis
+GST_PLUGINS_BAD_DEPENDENCIES += tremor
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-ivorbis
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_VCD),y)

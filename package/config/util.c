@@ -12,15 +12,18 @@
 struct file *file_lookup(const char *name)
 {
 	struct file *file;
+	const char *file_name = sym_expand_string_value(name);
 
 	for (file = file_list; file; file = file->next) {
-		if (!strcmp(name, file->name))
+		if (!strcmp(name, file->name)) {
+			free((void *)file_name);
 			return file;
+		}
 	}
 
 	file = malloc(sizeof(*file));
 	memset(file, 0, sizeof(*file));
-	file->name = strdup(name);
+	file->name = file_name;
 	file->next = file_list;
 	file_list = file;
 	return file;
@@ -32,12 +35,12 @@ static char* br2_symbol_printer(const char * const in)
 	char *ret;
 	if (len < 1)
 		return NULL;
-	ret = malloc(len);
+	ret = malloc(len+1);
 	if (!ret) {
 		printf("Out of memory!");
 		exit(1);
 	}
-	memset(ret, 0, len);
+	memset(ret, 0, len+1);
 	i = j = 0;
 	if (strncmp("BR2_", in, 4) == 0)
 		i += 4;
@@ -50,9 +53,11 @@ static char* br2_symbol_printer(const char * const in)
 	return ret;
 }
 
-/* write dependencies of the infividual config-symbols */
+/* write dependencies of the individual config-symbols */
 static int write_make_deps(const char *name)
 {
+	char *str;
+	char dir[PATH_MAX+1], buf[PATH_MAX+1], buf2[PATH_MAX+1];
 	struct menu *menu;
 	struct symbol *sym;
 	struct property *prop, *p;
@@ -61,7 +66,16 @@ static int write_make_deps(const char *name)
 	FILE *out;
 	if (!name)
 		name = ".auto.deps";
-	out = fopen(name_tmp, "w");
+
+	strcpy(dir, conf_get_configname());
+	str = strrchr(dir, '/');
+	if (str)
+		str[1] = 0;
+	else
+		dir[0] = 0;
+
+	sprintf(buf, "%s%s", dir, name_tmp);
+	out = fopen(buf, "w");
 	if (!out)
 		return 1;
 	fprintf(out, "# ATTENTION! This does not handle 'depends', just 'select'! \n"
@@ -120,7 +134,8 @@ next:
 		}
 	}
 	fclose(out);
-	rename(name_tmp, name);
+	sprintf(buf2, "%s%s", dir, name);
+	rename(buf, buf2);
 	printf(_("#\n"
 		 "# make dependencies written to %s\n"
 		 "# ATTENTION buildroot devels!\n"
@@ -132,6 +147,8 @@ next:
 /* write a dependency file as used by kbuild to track dependencies */
 int file_write_dep(const char *name)
 {
+	char *str;
+	char buf[PATH_MAX+1], buf2[PATH_MAX+1], dir[PATH_MAX+1];
 	struct symbol *sym, *env_sym;
 	struct expr *e;
 	struct file *file;
@@ -139,7 +156,16 @@ int file_write_dep(const char *name)
 
 	if (!name)
 		name = ".kconfig.d";
-	out = fopen("..config.tmp", "w");
+
+	strcpy(dir, conf_get_configname());
+	str = strrchr(dir, '/');
+	if (str)
+		str[1] = 0;
+	else
+		dir[0] = 0;
+
+	sprintf(buf, "%s..config.tmp", dir);
+	out = fopen(buf, "w");
 	if (!out)
 		return 1;
 	fprintf(out, "deps_config := \\\n");
@@ -170,17 +196,19 @@ int file_write_dep(const char *name)
 
 	fprintf(out, "\n$(deps_config): ;\n");
 	fclose(out);
-	rename("..config.tmp", name);
+	sprintf(buf2, "%s%s", dir, name);
+	rename(buf, buf2);
 	return write_make_deps(NULL);
 }
 
 
-/* Allocate initial growable sting */
+/* Allocate initial growable string */
 struct gstr str_new(void)
 {
 	struct gstr gs;
 	gs.s = malloc(sizeof(char) * 64);
 	gs.len = 64;
+	gs.max_width = 0;
 	strcpy(gs.s, "\0");
 	return gs;
 }
@@ -191,6 +219,7 @@ struct gstr str_assign(const char *s)
 	struct gstr gs;
 	gs.s = strdup(s);
 	gs.len = strlen(s) + 1;
+	gs.max_width = 0;
 	return gs;
 }
 
