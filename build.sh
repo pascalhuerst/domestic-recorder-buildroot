@@ -62,12 +62,6 @@ if [ "$found" != "1" ]; then
 fi
 
 
-# cleanup from previous builds
-
-eval `grep BR2_ARCH .config`
-rm -fr build_$BR2_ARCH project_build_$BR2_ARCH toolchain_build_$BR2_ARCH
-
-
 # update the raumfeld-version
 
 git_version=$(git describe --tags --abbrev=0)
