@@ -18,20 +18,6 @@ diff -ur taglib-1.5-orig/ConfigureChecks.cmake taglib-1.5/ConfigureChecks.cmake
  SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
  FIND_PACKAGE(CppUnit)
  IF (NOT CPPUNIT_FOUND AND BUILD_TESTS)
-diff -ur taglib-1.5-orig/configure.in taglib-1.5/configure.in
---- taglib-1.5-orig/configure.in	2008-02-13 00:53:05.000000000 +0100
-+++ taglib-1.5/configure.in	2009-04-22 19:39:16.000000000 +0200
-@@ -90,6 +90,10 @@
- dnl KDE_NEED_FLEX dnl __kdevelop__
- dnl AC_PROG_YACC dnl __kdevelop__
- 
-+PKG_CHECK_MODULES(GIO, gio-2.0)
-+all_libraries="$all_libraries $GIO_LIBS"
-+all_includes="$all_includes $GIO_CFLAGS"
-+
- dnl KDE_CHECK_EXTRA_LIBS
- all_libraries="$all_libraries $USER_LDFLAGS"
- all_includes="$all_includes $USER_INCLUDES"
 diff -ur taglib-1.5-orig/taglib/CMakeLists.txt taglib-1.5/taglib/CMakeLists.txt
 --- taglib-1.5-orig/taglib/CMakeLists.txt	2008-02-12 05:15:20.000000000 +0100
 +++ taglib-1.5/taglib/CMakeLists.txt	2009-04-22 19:39:16.000000000 +0200
