@@ -7,8 +7,7 @@ META_SERVER_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 META_SERVER_DIR:=$(BUILD_DIR)/meta-server-$(META_SERVER_VERSION)
 META_SERVER_TARGET_DIR:=raumfeld/meta-server
 META_SERVER_BINARY:=$(META_SERVER_TARGET_DIR)/meta-server
-META_SERVER_CROSS_PREFIX:=$(BUILD_DIR)/..
-
+META_SERVER_CROSS_PREFIX:=$(BASE_DIR)
 
 META_SERVER_DEPENDENCIES = host-pkg-config libraumfeld libraumfeldcpp iso-codes sqlite taglib taglib-extras
 
@@ -26,7 +25,8 @@ $(META_SERVER_DIR)/.bzr:
 	if ! test -d $(META_SERVER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p meta-server-$(META_SERVER_VERSION); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/meta-server/$(META_SERVER_VERSION) meta-server-$(META_SERVER_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/meta-server/$(META_SERVER_VERSION) meta-server-$(META_SERVER_VERSION); \
+		cd meta-server-trunk && patch -p0 < ../../../package/raumfeld/meta-server/meta-server-buildroot.patch) \
 	fi
 	touch -c $@
 
