@@ -7,7 +7,7 @@ STREAM_RELAY_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 STREAM_RELAY_DIR:=$(BUILD_DIR)/stream-relay-$(STREAM_RELAY_VERSION)
 STREAM_RELAY_TARGET_DIR:=raumfeld/stream-relay
 STREAM_RELAY_BINARY:=$(STREAM_RELAY_TARGET_DIR)/stream-relay
-STREAM_RELAY_CROSS_PREFIX:=$(BUILD_DIR)/..
+STREAM_RELAY_CROSS_PREFIX:=$(BASE_DIR)
 
 STREAM_RELAY_DEPENDENCIES = host-pkg-config libraumfeld libraumfeldcpp libmms libvorbis taglib
 
@@ -25,7 +25,8 @@ $(STREAM_RELAY_DIR)/.bzr:
 	if ! test -d $(STREAM_RELAY_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p stream-relay-$(STREAM_RELAY_VERSION); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/stream-relay/$(STREAM_RELAY_VERSION) stream-relay-$(STREAM_RELAY_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/stream-relay/$(STREAM_RELAY_VERSION) stream-relay-$(STREAM_RELAY_VERSION); \
+		cd stream-relay-trunk && patch -p0 < ../../../package/raumfeld/stream-relay/stream-relay-buildroot.patch) \
 	fi
 	touch -c $@
 

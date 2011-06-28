@@ -1,0 +1,26 @@
+=== modified file 'Makefile'
+--- Makefile	2011-04-27 10:45:17 +0000
++++ Makefile	2011-06-28 15:19:20 +0000
+@@ -24,15 +24,15 @@
+ 
+ ifdef ARCH
+ 
+-CC =  $(CROSS_STAGING_DIR)/usr/bin/$(ARCH)-linux-gcc
+-CXX = $(CROSS_STAGING_DIR)/usr/bin/$(ARCH)-linux-g++
+-LD =  $(CROSS_STAGING_DIR)/usr/bin/$(ARCH)-linux-gcc
+-
+ CROSS_PREFIX      = $(HOME)/buildroot
+-CROSS_STAGING_DIR = $(CROSS_PREFIX)/build_$(ARCH)/staging_dir
+-CROSS_HOST_DIR    = $(CROSS_PREFIX)/build_$(ARCH)/host_dir
++CROSS_STAGING_DIR = $(CROSS_PREFIX)/staging
++CROSS_HOST_DIR    = $(CROSS_PREFIX)/host
+ CROSS_INSTALL_DIR = $(HOME)/root.$(ARCH)/raumfeld/$(APP)
+ 
++CC =  $(CROSS_HOST_DIR)/usr/bin/$(ARCH)-linux-gcc
++CXX = $(CROSS_HOST_DIR)/usr/bin/$(ARCH)-linux-g++
++LD =  $(CROSS_HOST_DIR)/usr/bin/$(ARCH)-linux-gcc
++
+ PKG_CONFIG             = $(CROSS_HOST_DIR)/usr/bin/pkg-config
+ PKG_CONFIG_SYSROOT_DIR = $(CROSS_STAGING_DIR)
+ PKG_CONFIG_PATH        = $(CROSS_STAGING_DIR)/usr/lib/pkgconfig
+
