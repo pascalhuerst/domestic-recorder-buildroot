@@ -7,7 +7,7 @@ WEB_SERVICE_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 WEB_SERVICE_DIR:=$(BUILD_DIR)/web-service-$(WEB_SERVICE_VERSION)
 WEB_SERVICE_TARGET_DIR:=raumfeld/web-service
 WEB_SERVICE_BINARY:=$(WEB_SERVICE_TARGET_DIR)/web-service
-WEB_SERVICE_CROSS_PREFIX:=$(BUILD_DIR)/..
+WEB_SERVICE_CROSS_PREFIX:=$(BASE_DIR)
 
 WEB_SERVICE_DEPENDENCIES = host-pkg-config libraumfeld libraumfeldcpp
 
@@ -25,7 +25,8 @@ $(WEB_SERVICE_DIR)/.bzr:
 	if ! test -d $(WEB_SERVICE_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p web-service-$(WEB_SERVICE_VERSION); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/web-service/$(WEB_SERVICE_VERSION) web-service-$(WEB_SERVICE_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/web-service/$(WEB_SERVICE_VERSION) web-service-$(WEB_SERVICE_VERSION); \
+                cd web-service-trunk && patch -p0 < ../../../package/raumfeld/web-service/web-service-buildroot.patch) \
 	fi
 	touch -c $@
 
