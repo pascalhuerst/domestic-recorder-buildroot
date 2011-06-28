@@ -12,8 +12,8 @@
  CROSS_PREFIX      = $(HOME)/buildroot
 -CROSS_STAGING_DIR = $(CROSS_PREFIX)/build_$(ARCH)/staging_dir
 -CROSS_HOST_DIR    = $(CROSS_PREFIX)/build_$(ARCH)/host_dir
-+CROSS_STAGING_DIR = $(CROSS_PREFIX)/output/staging
-+CROSS_HOST_DIR    = $(CROSS_PREFIX)/output/host
++CROSS_STAGING_DIR = $(CROSS_PREFIX)/staging
++CROSS_HOST_DIR    = $(CROSS_PREFIX)/host
  CROSS_INSTALL_DIR = $(HOME)/root.$(ARCH)/raumfeld/p0-renderer
  
 -DBUS_BINDING_TOOL = $(CROSS_PREFIX)/build_arm/host_dir/usr/bin/dbus-binding-tool
@@ -46,8 +46,8 @@
 -ARCH=arm
  
 -CROSS_STAGING_DIR = $(CROSS_PREFIX)/build_arm/staging_dir
-+CROSS_STAGING_DIR = $(CROSS_PREFIX)/output/staging
-+CROSS_HOST_DIR    = $(CROSS_PREFIX)/output/host
++CROSS_STAGING_DIR = $(CROSS_PREFIX)/staging
++CROSS_HOST_DIR    = $(CROSS_PREFIX)/host
  CROSS_INSTALL_DIR = $(HOME)/root.arm/raumfeld/p0-audiotest
  
 -PKG_CONFIG             = $(CROSS_PREFIX)/build_arm/host_dir/usr/bin/pkg-config

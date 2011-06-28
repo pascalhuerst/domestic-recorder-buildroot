@@ -7,7 +7,7 @@ P0_RENDERER_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 P0_RENDERER_DIR:=$(BUILD_DIR)/p0-renderer-$(P0_RENDERER_VERSION)
 P0_RENDERER_TARGET_DIR:=raumfeld/p0-renderer
 P0_RENDERER_BINARY:=$(P0_RENDERER_TARGET_DIR)/p0-renderer
-P0_RENDERER_CROSS_PREFIX:=$(BUILD_DIR)/..
+P0_RENDERER_CROSS_PREFIX:=$(BASE_DIR)
 
 P0_RENDERER_DEPENDENCIES = host-pkg-config host-libglib2 host-dbus-glib alsa-lib dbus-glib flac libraumfeld
 
@@ -25,7 +25,8 @@ $(P0_RENDERER_DIR)/.bzr:
 	if ! test -d $(P0_RENDERER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p p0-renderer-$(P0_RENDERER_VERSION); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer/$(P0_RENDERER_VERSION) p0-renderer-$(P0_RENDERER_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer/$(P0_RENDERER_VERSION) p0-renderer-$(P0_RENDERER_VERSION); \
+                cd p0-renderer-trunk && patch -p0 < ../../../package/raumfeld/p0-renderer/p0-renderer-buildroot.patch) \
 	fi
 	touch -c $@
 
