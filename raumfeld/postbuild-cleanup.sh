@@ -48,10 +48,10 @@ rm -f  $1/usr/share/alsa/pcm/modem.conf
 rm -f  $1/usr/share/alsa/pcm/rear.conf
 rm -f  $1/usr/share/alsa/pcm/side.conf
 rm -f  $1/usr/share/alsa/pcm/surround*.conf
-rm -rf $1/usr/share/avahi/introspection
+rm -fr $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/gdb
 rm -fr $1/usr/share/glib-2.0
-rm -f  $1/usr/share/pkgconfig
+rm -fr $1/usr/share/pkgconfig
 rm -f  $1/usr/share/xml/iso-codes/iso_639.xml
 rm -f  $1/usr/share/xml/iso-codes/iso_639_3.xml
 rm -f  $1/usr/share/xml/iso-codes/iso_3166_2.xml
