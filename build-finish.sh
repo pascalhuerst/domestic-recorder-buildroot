@@ -70,24 +70,30 @@ if ! test -z "$image"; then
 fi
 
 
-# pull in the current configuration
-source .config
+# read the kernel version from the current configuration
+KERNEL_VERSION=`grep BR2_LINUX_KERNEL_VERSION .config | cut -f2 -d= | sed -e s/\"//g`
 
 
 # copy the output/images directories for later use
 
 mkdir -p binaries/$target
-cp -av output/images binaries/$target
+cp -av output/images/* binaries/$target
 
 
 # do post-processing for some targets ...
 
 
+ROOTFS=output/images/rootfs.tar.gz
+
+# create a list of all files in the rootfs
+if [ -f "$ROOTFS" ]; then
+    tar ztvf $ROOTFS > $target.contents
+fi
 
 case $target in
 	initramfs-arm)
         	# copy the ARM zImage for later use in the update image
-		cp output/build/linux-$BR2_LINUX_KERNEL_VERSION/arch/arm/boot/zImage binaries/$target
+		cp output/build/linux-$KERNEL_VERSION/arch/arm/boot/zImage binaries/$target
 		;;
 
 	imgrootfs-*)
@@ -98,7 +104,6 @@ case $target in
 		;;
 
 	audioadapter-arm|remotecontrol-arm)
-                ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/zImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
@@ -112,7 +117,6 @@ case $target in
 		;;
 
 	base-geode)
-                ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-geode/bzImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
@@ -127,10 +131,7 @@ case $target in
 esac
 
 
-if [ -n "$ROOTFS" ]; then
-    # create a list of all files in the rootfs
-    tar ztvf $ROOTFS > $target.contents
-
+if [ -n "$KERNEL" ]; then
     # create  the update image
     raumfeld/updatecreate.sh \
 	--target=$target \
