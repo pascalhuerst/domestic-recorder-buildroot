@@ -70,24 +70,41 @@ if ! test -z "$image"; then
 fi
 
 
+# pull in the current configuration
+source .config
+
+
+# copy the output/images directories for later use
+
+mkdir -p binaries/$target
+cp -av output/images binaries/$target
+
+
 # do post-processing for some targets ...
 
+
+
 case $target in
+	initramfs-arm)
+        	# copy the ARM zImage for later use in the update image
+		cp output/build/linux-$BR2_LINUX_KERNEL_VERSION/arch/arm/boot/zImage binaries/$target
+		;;
+
 	imgrootfs-*)
 		# resize the root fs ext2 image so that genext2fs will
 		# find free inodes when building the deployment targets.
 		# this should probably be made part of br2 some day.
-		/sbin/resize2fs output/images/rootfs.ext2 64M
+		/sbin/resize2fs binaries/$target/rootfs.ext2 64M
 		;;
 
 	audioadapter-arm|remotecontrol-arm)
                 ROOTFS=output/images/rootfs.tar.gz
-                KERNEL=output/images/uImage
+                KERNEL=binaries/initramfs-arm/zImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=arm \
-				--base-rootfs-img=output/images/rootfs.ext2 \
+				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
 			        --version=$version
@@ -96,12 +113,12 @@ case $target in
 
 	base-geode)
                 ROOTFS=output/images/rootfs.tar.gz
-                KERNEL=output/images/bzImage
+                KERNEL=binaries/initramfs-geode/bzImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=geode \
-				--base-rootfs-img=output/images/rootfs.ext2 \
+				--base-rootfs-img=binaries/imgrootfs-geode/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
 				--version=$version

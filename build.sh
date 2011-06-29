@@ -61,6 +61,11 @@ if [ "$found" != "1" ]; then
 fi
 
 
+# cleanup from previous builds
+
+make clean
+
+
 # update the raumfeld-version
 
 git_version=$(git describe --tags --abbrev=0)
