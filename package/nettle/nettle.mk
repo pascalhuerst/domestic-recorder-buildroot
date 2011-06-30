@@ -11,4 +11,6 @@ NETTLE_INSTALL_STAGING = YES
 
 NETTLE_DEPENDENCIES = gmp
 
+NETTLE_CONF_ENV = LIBS=-lm
+
 $(eval $(call AUTOTARGETS,package,nettle))
