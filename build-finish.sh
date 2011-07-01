@@ -73,7 +73,7 @@ KERNEL_VERSION=`grep BR2_LINUX_KERNEL_VERSION .config | cut -f2 -d= | sed -e s/\
 # create a list of all files in the rootfs
 
 if [ -f output/images/rootfs.tar.gz ]; then
-    tar ztvf $ROOTFS > $target.contents
+    tar ztvf output/images/rootfs.tar.gz > $target.contents
 else
     (cd output/target ; find . -exec ls -l {} \;) > $target.contents
 fi
