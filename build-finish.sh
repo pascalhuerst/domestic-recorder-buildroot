@@ -74,6 +74,15 @@ fi
 KERNEL_VERSION=`grep BR2_LINUX_KERNEL_VERSION .config | cut -f2 -d= | sed -e s/\"//g`
 
 
+# create a list of all files in the rootfs
+
+if [ -f output/images/rootfs.tar.gz ]; then
+    tar ztvf $ROOTFS > $target.contents
+else
+    (cd output/target ; find . -exec ls -l {} \;) > $target.contents
+fi
+
+
 # copy the output/images directories for later use
 
 mkdir -p binaries/$target
@@ -81,14 +90,6 @@ cp -av output/images/* binaries/$target
 
 
 # do post-processing for some targets ...
-
-
-ROOTFS=output/images/rootfs.tar.gz
-
-# create a list of all files in the rootfs
-if [ -f "$ROOTFS" ]; then
-    tar ztvf $ROOTFS > $target.contents
-fi
 
 case $target in
 	initramfs-arm)
@@ -104,6 +105,7 @@ case $target in
 		;;
 
 	audioadapter-arm|remotecontrol-arm)
+                ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/zImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
@@ -117,6 +119,7 @@ case $target in
 		;;
 
 	base-geode)
+                ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-geode/bzImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
@@ -131,7 +134,7 @@ case $target in
 esac
 
 
-if [ -n "$KERNEL" ]; then
+if [ -n "$ROOTFS" ]; then
     # create  the update image
     raumfeld/updatecreate.sh \
 	--target=$target \
