@@ -92,7 +92,11 @@ if test -n "$2"; then
     find $1/usr/bin -type f -executable -not -name remote-control -exec $STRIPCMD {} \;
     find $1/usr/sbin -type f -executable -exec $STRIPCMD {} \;
     find $1/usr/libexec -type f -executable -exec $STRIPCMD {} \;
+    find $1/usr/lib -type f -executable -name 'libgmp*' -exec $STRIPCMD {} \;
+    find $1/usr/lib -type f -executable -name 'libgnutls*' -exec $STRIPCMD {} \;
     find $1/usr/lib -type f -executable -name 'libgst*' -exec $STRIPCMD {} \;
+    find $1/usr/lib -type f -executable -name 'libhogweed*' -exec $STRIPCMD {} \;
+    find $1/usr/lib -type f -executable -name 'libnettle*' -exec $STRIPCMD {} \;
     find $1/usr/lib -type f -executable -name 'libsmb*' -exec $STRIPCMD {} \;
     find $1/usr/lib/udev -type f -executable -exec $STRIPCMD {} \;
     if test -d $1/usr/lib/alsa-lib; then
