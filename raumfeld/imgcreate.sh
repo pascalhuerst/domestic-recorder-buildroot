@@ -121,7 +121,7 @@ fi
 echo "exec /$target.sh \$*" > $tmpdir/start-test.sh
 chmod a+x $tmpdir/start-test.sh
 
-# count entries in rootfs.tar
+# count entries in rootfs.tgz
 tar -zf $tmpdir/rootfs.tgz -t | wc -l > $tmpdir/rootfs.tgz.numfiles
 
 rm -f $ext2_img
