@@ -1,0 +1,13 @@
+# UBI devices
+/dev/ubi_ctrl  c       660     0       0       10      62      0       0       
+/dev/ubi0      c       660     0       0       253     0       0       0       
+/dev/ubi0_     c       660     0       0       253     1       0       1       
+
+# ALSA
+/dev/snd       d       755     0       0       -       -       -       -       
+/dev/snd/controlC0     c       666     0       0       116     0       -       
+/dev/snd/controlC1     c       666     0       0       116     32      -       
+/dev/snd/pcmC0D0c      c       666     0       0       116     24      -       
+/dev/snd/pcmC0D0p      c       666     0       0       116     16      -       
+/dev/snd/pcmC1D0p      c       666     0       0       116     48      -       
+/dev/snd/mixer         c       666     0       0       116     33      -       
