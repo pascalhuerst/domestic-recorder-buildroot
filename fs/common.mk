@@ -57,13 +57,13 @@ endif
 	-@rm -f $(FAKEROOT_SCRIPT) $(FULL_DEVICE_TABLE)
 	$(foreach hook,$(ROOTFS_$(2)_POST_GEN_HOOKS),$(call $(hook))$(sep))
 ifeq ($$(BR2_TARGET_ROOTFS_$(2)_GZIP),y)
-	gzip -9 -c $$@ > $$@.gz
+	gzip -9 $$@
 endif
 ifeq ($$(BR2_TARGET_ROOTFS_$(2)_BZIP2),y)
-	bzip2 -9 -c $$@ > $$@.bz2
+	bzip2 -9 $$@
 endif
 ifeq ($$(BR2_TARGET_ROOTFS_$(2)_LZMA),y)
-	$(LZMA) -9 -c $$@ > $$@.lzma
+	$(LZMA) -9 $$@
 endif
 
 rootfs-$(1)-show-depends:
