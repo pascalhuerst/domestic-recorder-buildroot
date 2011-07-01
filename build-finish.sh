@@ -12,7 +12,6 @@ targets="initramfs-arm imgrootfs-arm            \
 echo_usage() {
 cat << __EOF__ >&2
 Usage: $0 --target=<target> [--image=<image> --version=<version>]
-       $0 --update-configs
 
    target is one of
 __EOF__
@@ -23,9 +22,6 @@ cat << __EOF__ >&2
 
    image     is optional and can be one of 'init flash final'
    version   is optional and serves as an identifier for this build
-
-   If --update-configs is specified, the target configs are all ran
-   thru 'make oldconfig'. No further action is taken.
 
 __EOF__
         exit 1
