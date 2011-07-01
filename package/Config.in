@@ -341,6 +341,7 @@ source "package/libffi/Config.in"
 source "package/libglib2/Config.in"
 source "package/liboil/Config.in"
 source "package/libunwind/Config.in"
+source "package/orc/Config.in"
 source "package/startup-notification/Config.in"
 endmenu
 
