@@ -12,8 +12,8 @@ TAGLIB_INSTALL_STAGING = YES
 TAGLIB_DEPENDENCIES = host-pkg-config libglib2
 
 TAGLIB_CONF_ENV = \
-	USER_INCLUDES=`PKG_CONFIG_SYSROOT_DIR=$(STAGING_DIR) $(HOST_DIR)/usr/bin/pkg-config --cflags gio-2.0` \
-	USER_LDFLAGS=`PKG_CONFIG_SYSROOT_DIR=$(STAGING_DIR) $(HOST_DIR)/usr/bin/pkg-config --libs gio-2.0` \
+	USER_INCLUDES="`PKG_CONFIG_SYSROOT_DIR=$(STAGING_DIR) $(HOST_DIR)/usr/bin/pkg-config --cflags gio-2.0`" \
+	USER_LDFLAGS="-L$(STAGING_DIR)/usr/lib `PKG_CONFIG_SYSROOT_DIR=$(STAGING_DIR) $(HOST_DIR)/usr/bin/pkg-config --libs gio-2.0`" \
 	DO_NOT_COMPILE='bindings tests examples' \
 	ac_cv_header_cppunit_extensions_HelperMacros_h=no \
 	ac_cv_header_zlib_h=$(if $(BR2_PACKAGE_ZLIB),yes,no)
