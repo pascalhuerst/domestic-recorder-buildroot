@@ -12,7 +12,7 @@ GST_PLUGINS_BASE_INSTALL_STAGING = YES
 # and the host has a freetype-config script, then the host
 # include dirs are added to the search path causing trouble
 GST_PLUGINS_BASE_CONF_ENV =
-		FT2_CONFIG=/bin/false \
+		FT2_CONFIG=/bin/ilfalse \
 		ac_cv_header_stdint_t="stdint.h"
 
 GST_PLUGINS_BASE_CONF_OPT = \
@@ -25,6 +25,10 @@ GST_PLUGINS_BASE_CONF_OPT = \
 		--disable-freetypetest
 
 GST_PLUGINS_BASE_DEPENDENCIES = gstreamer
+
+ifeq ($(BR2_PACKAGE_ORC),y)
+GST_FFMPEG_DEPENDENCIES += orc
+endif
 
 # alsa support needs pcm+mixer support, but configure fails to check for it
 ifeq ($(BR2_PACKAGE_ALSA_LIB)$(BR2_PACKAGE_ALSA_LIB_MIXER)$(BR2_PACKAGE_ALSA_LIB_PCM),yyy)
