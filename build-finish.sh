@@ -79,13 +79,9 @@ else
 fi
 
 
-# copy the output/images directories for later use
+# do post-processing ...
 
 mkdir -p binaries/$target
-cp -av output/images/* binaries/$target
-
-
-# do post-processing for some targets ...
 
 case $target in
 	initramfs-arm)
@@ -93,10 +89,16 @@ case $target in
 		cp output/build/linux-$KERNEL_VERSION/arch/arm/boot/zImage binaries/$target
 		;;
 
+        initramfs-geode)
+                # copy the bzImage for later use in the update image
+                cp output/images/bzImage binaries/$target
+                ;;
+
 	imgrootfs-*)
 		# resize the root fs ext2 image so that genext2fs will
 		# find free inodes when building the deployment targets.
 		# this should probably be made part of br2 some day.
+                cp output/images/rootfs.ext2 binaries/$target
 		/sbin/resize2fs binaries/$target/rootfs.ext2 64M
 		;;
 
