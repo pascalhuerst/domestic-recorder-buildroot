@@ -2,6 +2,10 @@
 #
 # post-build.sh for the base-geode target
 
+echo "Copying kernel to the root filesystem ..."
+mkdir -p $1/boot
+cp binaries/base-geode/bzImage $1/boot
+
 echo "Populating the root filesystem ..."
 
 rm -f $1/etc/resolv.conf
