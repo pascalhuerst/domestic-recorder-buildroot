@@ -4,7 +4,7 @@
 
 echo "Copying kernel to the root filesystem ..."
 mkdir -p $1/boot
-cp binaries/base-geode/bzImage $1/boot
+cp output/images/bzImage $1/boot
 
 echo "Populating the root filesystem ..."
 
