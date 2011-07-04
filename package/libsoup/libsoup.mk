@@ -4,7 +4,7 @@
 #
 #############################################################
 
-LIBSOUP_MAJOR_VERSION:=2.31
+LIBSOUP_MAJOR_VERSION:=2.32
 LIBSOUP_VERSION:=$(LIBSOUP_MAJOR_VERSION).2
 LIBSOUP_SOURCE:=libsoup-$(LIBSOUP_VERSION).tar.bz2
 LIBSOUP_SITE:=http://ftp.gnome.org/pub/gnome/sources/libsoup/$(LIBSOUP_MAJOR_VERSION)
@@ -19,9 +19,15 @@ endif
 LIBSOUP_CONF_OPT = \
 	--disable-explicit-deps \
 	--disable-glibtest	\
-	--disable-ssl		\
 	--without-gnome
 
 LIBSOUP_DEPENDENCIES = $(if $(BR2_NEEDS_GETTEXT_IF_LOCALE),gettext libintl) host-pkg-config host-libglib2 libglib2 libxml2
+
+ifeq ($(BR2_PACKAGE_GNUTLS),y)
+LIBSOUP_DEPENDENCIES += gnutls
+LIBSOUP_CONF_OPT += --enable-ssl
+else
+LIBSOUP_CONF_OPT += --disable-ssl
+endif
 
 $(eval $(call AUTOTARGETS,package,libsoup))
