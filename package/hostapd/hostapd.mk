@@ -20,6 +20,14 @@ define HOSTAPD_CRYPTO_CONFIG
 	echo "CONFIG_INTERNAL_LIBTOMMATH_FAST=y" >>$(HOSTAPD_CONFIG)
 endef
 
+ifeq ($(BR2_PACKAGE_MADWIFI),y)
+	HOSTAPD_DEPENDENCIES += madwifi
+define HOSTAPD_MADWIFI_CONFIG
+	echo "CONFIG_DRIVER_MADWIFI=y" >>$(HOSTAPD_CONFIG)
+	echo "CFLAGS += -I/$(MADWIFI_DIR)" >>$(HOSTAPD_CONFIG)
+endef
+endif
+
 # Try to use openssl for TLS if it's already available
 # gnutls is also supported for TLS
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
@@ -87,6 +95,7 @@ define HOSTAPD_CONFIGURE_CMDS
 	$(HOSTAPD_EAP_CONFIG)
 	$(HOSTAPD_WPS_CONFIG)
 	$(HOSTAPD_LIBNL_CONFIG)
+	$(HOSTAPD_MADWIFI_CONFIG)
 endef
 
 define HOSTAPD_INSTALL_TARGET_CMDS
