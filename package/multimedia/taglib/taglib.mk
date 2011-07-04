@@ -24,6 +24,17 @@ define TAGLIB_REMOVE_DEVFILE
 	rm -f $(TARGET_DIR)/usr/bin/taglib-config
 endef
 
+define TAGLIB_STAGING_LINK_SO
+	ln -sf libtag $(STAGING_DIR)/usr/lib/libtag.so
+endef
+
+define TAGLIB_TARGET_LINK_SO
+	ln -sf libtag $(TARGET_DIR)/usr/lib/libtag.so
+endef
+
+TAGLIB_POST_INSTALL_STAGING_HOOKS += TAGLIB_STAGING_LINK_SO
+TAGLIB_POST_INSTALL_TARGET_HOOKS += TAGLIB_TARGET_LINK_SO
+
 ifneq ($(BR2_HAVE_DEVFILES),y)
 TAGLIB_POST_INSTALL_TARGET_HOOKS += TAGLIB_REMOVE_DEVFILE
 endif
