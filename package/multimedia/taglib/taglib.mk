@@ -26,10 +26,12 @@ endef
 
 define TAGLIB_STAGING_LINK_SO
 	ln -sf libtag $(STAGING_DIR)/usr/lib/libtag.so
+	ln -sf libtag.1 $(STAGING_DIR)/usr/lib/libtag.so.1
 endef
 
 define TAGLIB_TARGET_LINK_SO
 	ln -sf libtag $(TARGET_DIR)/usr/lib/libtag.so
+	ln -sf libtag.1 $(TARGET_DIR)/usr/lib/libtag.so.1
 endef
 
 TAGLIB_POST_INSTALL_STAGING_HOOKS += TAGLIB_STAGING_LINK_SO
