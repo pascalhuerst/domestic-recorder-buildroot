@@ -17,7 +17,6 @@ LIBSOUP_CONF_ENV += soup_cv_ipv6=no
 endif
 
 LIBSOUP_CONF_OPT = \
-	--disable-explicit-deps \
 	--disable-glibtest	\
 	--without-gnome
 
