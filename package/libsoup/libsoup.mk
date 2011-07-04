@@ -24,7 +24,8 @@ LIBSOUP_DEPENDENCIES = $(if $(BR2_NEEDS_GETTEXT_IF_LOCALE),gettext libintl) host
 
 ifeq ($(BR2_PACKAGE_GNUTLS),y)
 LIBSOUP_DEPENDENCIES += gnutls
-LIBSOUP_CONF_OPT += --enable-ssl
+LIBSOUP_CONF_OPT += --enable-ssl \
+	--with-libgcrypt-prefix=$(STAGING_DIR)/usr
 else
 LIBSOUP_CONF_OPT += --disable-ssl
 endif
