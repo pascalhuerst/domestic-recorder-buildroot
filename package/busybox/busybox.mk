@@ -41,25 +41,6 @@ define BUSYBOX_SET_MDEV
 endef
 endif
 
-# If we have external syslogd, force busybox to use it
-ifeq ($(BR2_PACKAGE_SYSKLOGD),y)
-define BUSYBOX_SET_SYSKLOGD
-	@$(SED) "/#include.*busybox\.h/a#define CONFIG_SYSLOGD" \
-		$(BUSYBOX_DIR)/init/init.c
-endef
-endif
-
-# id applet breaks on >=1.13.0 with old uclibc unless the bb pwd routines are used
-ifeq ($(BR2_BUSYBOX_VERSION_1_13_X)$(BR2_BUSYBOX_VERSION_1_14_X)$(BR2_UCLIBC_VERSION_0_9_29),yy)
-define BUSYBOX_SET_BB_PWD
-	if grep -q 'CONFIG_ID=y' $(BUSYBOX_BUILD_CONFIG); \
-	then \
-		echo 'warning: CONFIG_ID needs BB_PWD_GRP with old uclibc, enabling' >&2;\
-		$(SED) "s/^.*CONFIG_USE_BB_PWD_GRP.*/CONFIG_USE_BB_PWD_GRP=y/;" $(BUSYBOX_BUILD_CONFIG); \
-	fi
-endef
-endif
-
 ifeq ($(BR2_LARGEFILE),y)
 define BUSYBOX_SET_LARGEFILE
 	$(call KCONFIG_ENABLE_OPT,CONFIG_LFS,$(BUSYBOX_BUILD_CONFIG))
