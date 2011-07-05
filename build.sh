@@ -63,7 +63,7 @@ fi
 
 # cleanup from previous builds
 
-make clean
+rm -rf output
 
 
 # update the raumfeld-version
