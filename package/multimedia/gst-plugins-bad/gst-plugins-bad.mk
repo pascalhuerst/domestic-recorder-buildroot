@@ -12,6 +12,10 @@ GST_PLUGINS_BAD_CONF_OPT = \
 
 GST_PLUGINS_BAD_DEPENDENCIES = gst-plugins-base gstreamer
 
+ifeq ($(BR2_PACKAGE_ORC),y)
+GST_PLUGINS_BAD_DEPENDENCIES += orc
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_ADPCMDEC),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-adpcmdec
 else
@@ -122,16 +126,16 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-dtmf
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DVBSUBOVERLAY),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-dvbsuboverlay
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-dvbsuboverlay
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DVDSPU),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-dvdspu
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-dvdspu
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DVDSUBOVERLAY),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-dvdsuboverlay
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-dvdsuboverlay
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FESTIVAL),y)
