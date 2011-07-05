@@ -112,7 +112,7 @@ case $target in
 				--platform=arm \
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
-				--kernel=binaries/initramfs-arm/uImage
+				--kernel=binaries/initramfs-arm/uImage \
 			        --version=$version
 		done
 		;;
