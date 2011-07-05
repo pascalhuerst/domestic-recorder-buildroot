@@ -186,6 +186,42 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-hdvparse
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_INTERLACE),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-interlace
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-interlace
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_INVTELECINE),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-invtelecine
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-invtelecine
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_INVTELECINE),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-invtelecine
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-invtelecine
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_IVFPARSE),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-ivfparse
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-ivfparse
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_JP2KDECIMATOR),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-jp2kdecimator
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-jp2kdecimator
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_JPEGFORMAT),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-jpegformat
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-jpegformat
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_LIBRFB),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-librfb
 else
@@ -202,6 +238,12 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_MPEGDEMUX),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-mpegdemux
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-mpegdemux
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_MPEGPSMUX),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-mpegpsmux
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-mpegpsmux
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_MPEGTSMUX),y)
@@ -252,6 +294,12 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-pcapparse
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_PNM),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-pnm
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-pnm
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_QTMUX),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-qtmux
 else
@@ -286,6 +334,12 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SDP),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-sdp
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-sdp
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SEGMENTCLIP),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-segmentclip
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-segmentclip
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SIREN),y)
@@ -340,6 +394,12 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_VMNC),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-vmnc
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-vmnc
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_Y4M),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-y4m
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-y4m
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DIRECTFB),y)
