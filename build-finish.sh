@@ -85,12 +85,13 @@ mkdir -p binaries/$target
 
 case $target in
 	initramfs-arm)
-        	# copy the ARM zImage for later use in the update image
+        	# copy the ARM kernel images for later use
+                cp output/images/uImage binaries/$target
 		cp output/build/linux-$KERNEL_VERSION/arch/arm/boot/zImage binaries/$target
 		;;
 
         initramfs-geode)
-                # copy the bzImage for later use in the update image
+                # copy the Geode kernel image for later use
                 cp output/images/bzImage binaries/$target
                 ;;
 
@@ -104,28 +105,28 @@ case $target in
 
 	audioadapter-arm|remotecontrol-arm)
                 ROOTFS=output/images/rootfs.tar.gz
-                KERNEL=binaries/initramfs-arm/zImage
+                ZIMAGE=binaries/initramfs-arm/zImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=arm \
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
-				--kernel=$KERNEL \
+				--kernel=binaries/initramfs-arm/uImage
 			        --version=$version
 		done
 		;;
 
 	base-geode)
                 ROOTFS=output/images/rootfs.tar.gz
-                KERNEL=binaries/initramfs-geode/bzImage
+                ZIMAGE=binaries/initramfs-geode/bzImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=geode \
 				--base-rootfs-img=binaries/imgrootfs-geode/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
-				--kernel=$KERNEL \
+				--kernel=$ZIMAGE \
 				--version=$version
 		done
                 ;;
@@ -137,5 +138,5 @@ if [ -n "$ROOTFS" ]; then
     raumfeld/updatecreate.sh \
 	--target=$target \
 	--targz=$ROOTFS \
-        --kexec=$KERNEL
+        --kexec=$ZIMAGE
 fi
