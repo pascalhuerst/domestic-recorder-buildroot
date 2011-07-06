@@ -4,38 +4,26 @@
 #
 #############################################################
 
-ifeq ($(BR2_TOOLCHAIN_SOURCE),y)
+ifeq ($(BR2_TOOLCHAIN_BUILDROOT),y)
 
 # specifying UCLIBC_CONFIG_FILE on the command-line overrides the .config
 # setting.
 ifndef UCLIBC_CONFIG_FILE
-UCLIBC_CONFIG_FILE=$(subst ",, $(strip $(BR2_UCLIBC_CONFIG)))
-#")
+UCLIBC_CONFIG_FILE=$(call qstrip,$(BR2_UCLIBC_CONFIG))
 endif
 
-UCLIBC_VER:=$(subst ",,$(BR2_UCLIBC_VERSION_STRING))
-#")
-
-UCLIBC_OFFICIAL_VERSION:=$(UCLIBC_VER)$(VENDOR_SUFFIX)$(VENDOR_UCLIBC_RELEASE)
+UCLIBC_VERSION:=$(call qstrip,$(BR2_UCLIBC_VERSION_STRING))
 
 ifeq ($(BR2_UCLIBC_VERSION_SNAPSHOT),y)
 UCLIBC_SITE:=http://www.uclibc.org/downloads/snapshots
-UCLIBC_DIR:=$(TOOL_BUILD_DIR)/uClibc
+UCLIBC_DIR:=$(TOOLCHAIN_DIR)/uClibc
 else
-UCLIBC_DIR:=$(TOOL_BUILD_DIR)/uClibc-$(UCLIBC_OFFICIAL_VERSION)
 UCLIBC_SITE:=http://www.uclibc.org/downloads
-ifeq ($(BR2_TOOLCHAIN_EXTERNAL_SOURCE),y)
-UCLIBC_SITE:=$(VENDOR_SITE)
-endif
+UCLIBC_DIR:=$(TOOLCHAIN_DIR)/uClibc-$(UCLIBC_VERSION)
 endif
 
-ifeq ($(BR2_TOOLCHAIN_BUILDROOT),y)
 UCLIBC_PATCH_DIR:=toolchain/uClibc/
-else
-UCLIBC_PATCH_DIR:=toolchain/uClibc/ext_source/$(VENDOR_PATCH_DIR)/$(UCLIBC_OFFICIAL_VERSION)
-endif
-
-UCLIBC_SOURCE:=uClibc-$(UCLIBC_OFFICIAL_VERSION).tar.bz2
+UCLIBC_SOURCE:=uClibc-$(UCLIBC_VERSION).tar.bz2
 
 UCLIBC_CAT:=$(BZCAT)
 
@@ -51,7 +39,6 @@ UCLIBC_TARGET_ARCH:=$(shell $(SHELL) -c "echo $(ARCH) | sed \
 		-e 's/mips.*/mips/' \
 		-e 's/mipsel.*/mips/' \
 		-e 's/cris.*/cris/' \
-		-e 's/nios2.*/nios2/' \
 		-e 's/xtensa.*/xtensa/' \
 ")
 # just handle the ones that can be big or little
@@ -76,45 +63,28 @@ else
 UCLIBC_NOT_TARGET_ENDIAN:=LITTLE
 endif
 
-UCLIBC_ARM_TYPE:=CONFIG_$(strip $(subst ",, $(BR2_ARM_TYPE)))
-#"))
-UCLIBC_SPARC_TYPE:=CONFIG_SPARC_$(strip $(subst ",, $(BR2_SPARC_TYPE)))
-#"))
+UCLIBC_ARM_TYPE:=CONFIG_$(call qstrip,$(BR2_ARM_TYPE))
+UCLIBC_SPARC_TYPE:=CONFIG_SPARC_$(call qstrip,$(BR2_SPARC_TYPE))
 
 $(DL_DIR)/$(UCLIBC_SOURCE):
 	$(call DOWNLOAD,$(UCLIBC_SITE),$(UCLIBC_SOURCE))
 
-ifneq ($(BR2_ENABLE_LOCALE_PREGENERATED),)
-UCLIBC_SITE_LOCALE:=http://www.uclibc.org/downloads
-UCLIBC_SOURCE_LOCALE:=uClibc-locale-030818.tgz
-
-$(DL_DIR)/$(UCLIBC_SOURCE_LOCALE):
-	$(call DOWNLOAD,$(UCLIBC_SITE_LOCALE),$(UCLIBC_SOURCE_LOCALE))
-
-UCLIBC_LOCALE_DATA:=$(DL_DIR)/$(UCLIBC_SOURCE_LOCALE)
-else
-UCLIBC_LOCALE_DATA=
-endif
-
 uclibc-unpacked: $(UCLIBC_DIR)/.unpacked
-$(UCLIBC_DIR)/.unpacked: $(DL_DIR)/$(UCLIBC_SOURCE) $(UCLIBC_LOCALE_DATA)
-	mkdir -p $(TOOL_BUILD_DIR)
+$(UCLIBC_DIR)/.unpacked: $(DL_DIR)/$(UCLIBC_SOURCE)
+	mkdir -p $(TOOLCHAIN_DIR)
 	rm -rf $(UCLIBC_DIR)
-	$(UCLIBC_CAT) $(DL_DIR)/$(UCLIBC_SOURCE) | tar -C $(TOOL_BUILD_DIR) $(TAR_OPTIONS) -
+	$(UCLIBC_CAT) $(DL_DIR)/$(UCLIBC_SOURCE) | tar -C $(TOOLCHAIN_DIR) $(TAR_OPTIONS) -
 	touch $@
 
 uclibc-patched: $(UCLIBC_DIR)/.patched
 $(UCLIBC_DIR)/.patched: $(UCLIBC_DIR)/.unpacked
 ifneq ($(BR2_UCLIBC_VERSION_SNAPSHOT),y)
 	toolchain/patch-kernel.sh $(UCLIBC_DIR) $(UCLIBC_PATCH_DIR) \
-		uClibc-$(UCLIBC_OFFICIAL_VERSION)-\*.patch \
-		uClibc-$(UCLIBC_OFFICIAL_VERSION)-\*.patch.$(ARCH)
+		uClibc-$(UCLIBC_VERSION)-\*.patch \
+		uClibc-$(UCLIBC_VERSION)-\*.patch.$(ARCH)
 else
 	toolchain/patch-kernel.sh $(UCLIBC_DIR) $(UCLIBC_PATCH_DIR) \
 		uClibc.\*.patch uClibc.\*.patch.$(ARCH)
-endif
-ifneq ($(BR2_ENABLE_LOCALE_PREGENERATED),)
-	cp -dpf $(DL_DIR)/$(UCLIBC_SOURCE_LOCALE) $(UCLIBC_DIR)/extra/locale/
 endif
 	touch $@
 
@@ -207,12 +177,6 @@ ifeq ($(BR2_mips_64),y)
 	$(SED) 's/.*\(CONFIG_MIPS_ISA_MIPS64\).*/\1=y/' $(UCLIBC_DIR)/.oldconfig
 endif
 endif
-ifeq ($(UCLIBC_TARGET_ARCH),nios2)
-	/bin/echo "# UCLIBC_FORMAT_FDPIC_ELF is not set" >> $(UCLIBC_DIR)/.oldconfig
-	/bin/echo "UCLIBC_FORMAT_FLAT=y" >> $(UCLIBC_DIR)/.oldconfig
-	/bin/echo "# UCLIBC_FORMAT_FLAT_SEP_DATA is not set" >> $(UCLIBC_DIR)/.oldconfig
-	/bin/echo "# UCLIBC_FORMAT_SHARED_FLAT is not set" >> $(UCLIBC_DIR)/.oldconfig
-endif
 ifeq ($(UCLIBC_TARGET_ARCH),sh)
 	/bin/echo "# CONFIG_SH2A is not set" >> $(UCLIBC_DIR)/.oldconfig
 	/bin/echo "# CONFIG_SH2 is not set" >> $(UCLIBC_DIR)/.oldconfig
@@ -253,13 +217,16 @@ ifeq ($(UCLIBC_TARGET_ARCH),sparc)
 	$(SED) 's/^.*$(UCLIBC_SPARC_TYPE)[^B].*/$(UCLIBC_SPARC_TYPE)=y/g' $(UCLIBC_DIR)/.oldconfig
 endif
 ifeq ($(UCLIBC_TARGET_ARCH),powerpc)
-ifeq ($(BR2_powerpc_8540),y)
+ifeq ($(BR2_powerpc_8540)$(BR2_powerpc_e500mc),y)
 	/bin/echo "# CONFIG_CLASSIC is not set" >> $(UCLIBC_DIR)/.oldconfig
 	/bin/echo "CONFIG_E500=y" >> $(UCLIBC_DIR)/.oldconfig
 else
 	/bin/echo "CONFIG_CLASSIC=y" >> $(UCLIBC_DIR)/.oldconfig
 	/bin/echo "# CONFIG_E500 is not set" >> $(UCLIBC_DIR)/.oldconfig
 endif
+endif
+ifeq ($(UCLIBC_TARGET_ARCH),avr32)
+	/bin/echo "LINKRELAX=y" >> $(UCLIBC_DIR)/.oldconfig
 endif
 ifneq ($(UCLIBC_TARGET_ENDIAN),)
 	# The above doesn't work for me, so redo
@@ -304,7 +271,7 @@ else
 		-e 's,.*UCLIBC_HAS_FPU.*,UCLIBC_HAS_FPU=y\nHAS_FPU=y\nUCLIBC_HAS_FLOATS=y\n,g' \
 		$(UCLIBC_DIR)/.oldconfig
 endif
-ifeq ($(BR2_USE_SSP),y)
+ifeq ($(BR2_TOOLCHAIN_BUILDROOT_USE_SSP),y)
 	$(SED) 's,^.*UCLIBC_HAS_SSP[^_].*,UCLIBC_HAS_SSP=y,g' $(UCLIBC_DIR)/.oldconfig
 else
 	$(SED) 's,^.*UCLIBC_HAS_SSP[^_].*,UCLIBC_HAS_SSP=n,g' $(UCLIBC_DIR)/.oldconfig
@@ -321,8 +288,10 @@ else
 endif
 ifeq ($(BR2_PTHREADS),y)
 	echo "LINUXTHREADS=y" >> $(UCLIBC_DIR)/.oldconfig
+	echo "LINUXTHREADS_NEW=y" >> $(UCLIBC_DIR)/.oldconfig
 else
 	echo "# LINUXTHREADS is not set" >> $(UCLIBC_DIR)/.oldconfig
+	echo "# LINUXTHREADS_NEW is not set" >> $(UCLIBC_DIR)/.oldconfig
 endif
 ifeq ($(BR2_PTHREADS_OLD),y)
 	echo "LINUXTHREADS_OLD=y" >> $(UCLIBC_DIR)/.oldconfig
@@ -340,11 +309,7 @@ else
 	echo "# PTHREADS_DEBUG_SUPPORT is not set" >> $(UCLIBC_DIR)/.oldconfig
 endif
 ifeq ($(BR2_ENABLE_LOCALE),y)
-ifeq ($(BR2_ENABLE_LOCALE_PREGENERATED),y)
-	$(SED) 's,^.*UCLIBC_HAS_LOCALE.*,UCLIBC_HAS_LOCALE=y\nUCLIBC_PREGENERATED_LOCALE_DATA=y\nUCLIBC_DOWNLOAD_PREGENERATED_LOCALE_DATA=y\nUCLIBC_HAS_XLOCALE=y\nUCLIBC_HAS_GLIBC_DIGIT_GROUPING=n\n,g' $(UCLIBC_DIR)/.oldconfig
-else
-	$(SED) 's,^.*UCLIBC_HAS_LOCALE.*,UCLIBC_HAS_LOCALE=y\nUCLIBC_PREGENERATED_LOCALE_DATA=n\nUCLIBC_DOWNLOAD_PREGENERATED_LOCALE_DATA=n\nUCLIBC_HAS_XLOCALE=y\nUCLIBC_HAS_GLIBC_DIGIT_GROUPING=n\n,g' $(UCLIBC_DIR)/.oldconfig
-endif
+	$(SED) 's,^.*UCLIBC_HAS_LOCALE.*,UCLIBC_HAS_LOCALE=y\n# UCLIBC_BUILD_ALL_LOCALE is not set\nUCLIBC_BUILD_MINIMAL_LOCALE=y\nUCLIBC_BUILD_MINIMAL_LOCALES="en_US"\nUCLIBC_PREGENERATED_LOCALE_DATA=n\nUCLIBC_DOWNLOAD_PREGENERATED_LOCALE_DATA=n\nUCLIBC_HAS_XLOCALE=y\nUCLIBC_HAS_GLIBC_DIGIT_GROUPING=n\n,g' $(UCLIBC_DIR)/.oldconfig
 else
 	$(SED) 's,^.*UCLIBC_HAS_LOCALE.*,UCLIBC_HAS_LOCALE=n,g' $(UCLIBC_DIR)/.oldconfig
 endif
@@ -355,8 +320,10 @@ else
 endif
 ifeq ($(BR2_PROGRAM_INVOCATION),y)
 	$(SED) 's,^.*UCLIBC_HAS_PROGRAM_INVOCATION_NAME.*,UCLIBC_HAS_PROGRAM_INVOCATION_NAME=y,g' $(UCLIBC_DIR)/.oldconfig
+	$(SED) 's,^.*UCLIBC_HAS___PROGNAME.*,UCLIBC_HAS___PROGNAME=y,g' $(UCLIBC_DIR)/.oldconfig
 else
 	$(SED) 's,^.*UCLIBC_HAS_PROGRAM_INVOCATION_NAME.*,UCLIBC_HAS_PROGRAM_INVOCATION_NAME=n,g' $(UCLIBC_DIR)/.oldconfig
+	$(SED) 's,^.*UCLIBC_HAS___PROGNAME.*,UCLIBC_HAS___PROGNAME=n,g' $(UCLIBC_DIR)/.oldconfig
 endif
 ifeq ("$(KERNEL_ARCH)","i386")
 	/bin/echo "# CONFIG_GENERIC_386 is not set" >> $(UCLIBC_DIR)/.oldconfig
@@ -416,47 +383,48 @@ endif
 
 $(UCLIBC_DIR)/.config: $(UCLIBC_DIR)/.oldconfig
 	cp -f $(UCLIBC_DIR)/.oldconfig $(UCLIBC_DIR)/.config
-	mkdir -p $(TOOL_BUILD_DIR)/uClibc_dev/usr/include
-	mkdir -p $(TOOL_BUILD_DIR)/uClibc_dev/usr/lib
-	mkdir -p $(TOOL_BUILD_DIR)/uClibc_dev/lib
+	mkdir -p $(TOOLCHAIN_DIR)/uClibc_dev/usr/include
+	mkdir -p $(TOOLCHAIN_DIR)/uClibc_dev/usr/lib
+	mkdir -p $(TOOLCHAIN_DIR)/uClibc_dev/lib
 	$(MAKE1) -C $(UCLIBC_DIR) \
-		PREFIX=$(TOOL_BUILD_DIR)/uClibc_dev/ \
+		ARCH="$(UCLIBC_TARGET_ARCH)" \
+		PREFIX=$(TOOLCHAIN_DIR)/uClibc_dev/ \
 		DEVEL_PREFIX=/usr/ \
-		RUNTIME_PREFIX=$(TOOL_BUILD_DIR)/uClibc_dev/ \
+		RUNTIME_PREFIX=$(TOOLCHAIN_DIR)/uClibc_dev/ \
 		HOSTCC="$(HOSTCC)" \
 		oldconfig
 	touch $@
 
+ifeq ($(BR2_CCACHE),y)
+# we'll need ccache for the host built before make oldconfig
+# if configured, otherwise uclibc-menuconfig will fail.
+# Use order-only dependency as host-ccache is a virtual target
+$(UCLIBC_DIR)/.config: | host-ccache
+endif
+
 $(UCLIBC_DIR)/.configured: $(LINUX_HEADERS_DIR)/.configured $(UCLIBC_DIR)/.config
-	set -x && $(MAKE1) -C $(UCLIBC_DIR) \
-		PREFIX=$(TOOL_BUILD_DIR)/uClibc_dev/ \
+	$(MAKE1) -C $(UCLIBC_DIR) \
+		ARCH="$(UCLIBC_TARGET_ARCH)" \
+		PREFIX=$(TOOLCHAIN_DIR)/uClibc_dev/ \
 		DEVEL_PREFIX=/usr/ \
-		RUNTIME_PREFIX=$(TOOL_BUILD_DIR)/uClibc_dev/ \
+		RUNTIME_PREFIX=$(TOOLCHAIN_DIR)/uClibc_dev/ \
 		HOSTCC="$(HOSTCC)" headers \
-		$(if $(BR2_UCLIBC_VERSION_0_9_28_3),install_dev,install_headers)
+		lib/crt1.o lib/crti.o lib/crtn.o \
+		install_headers
 	# Install the kernel headers to the first stage gcc include dir
 	# if necessary
-ifeq ($(LINUX_HEADERS_IS_KERNEL),y)
-	if [ ! -f $(TOOL_BUILD_DIR)/uClibc_dev/usr/include/linux/version.h ]; then \
+	if [ ! -f $(TOOLCHAIN_DIR)/uClibc_dev/usr/include/linux/version.h ]; then \
 		cp -pLR $(LINUX_HEADERS_DIR)/include/* \
-			$(TOOL_BUILD_DIR)/uClibc_dev/usr/include/; \
+			$(TOOLCHAIN_DIR)/uClibc_dev/usr/include/; \
 	fi
-else
-	if [ ! -f $(STAGING_DIR)/usr/include/linux/version.h ]; then \
-		cp -pLR $(LINUX_HEADERS_DIR)/include/asm \
-			$(TOOL_BUILD_DIR)/uClibc_dev/usr/include/; \
-		cp -pLR $(LINUX_HEADERS_DIR)/include/linux \
-			$(TOOL_BUILD_DIR)/uClibc_dev/usr/include/; \
-		if [ -d $(LINUX_HEADERS_DIR)/include/asm-generic ]; then \
-			cp -pLR $(LINUX_HEADERS_DIR)/include/asm-generic \
-				$(TOOL_BUILD_DIR)/uClibc_dev/usr/include/; \
-		fi; \
-	fi
-endif
+	$(TARGET_CROSS)gcc -nostdlib -nostartfiles -shared -x c /dev/null -o $(TOOLCHAIN_DIR)/uClibc_dev/usr/lib/libc.so
+	$(TARGET_CROSS)gcc -nostdlib -nostartfiles -shared -x c /dev/null -o $(TOOLCHAIN_DIR)/uClibc_dev/usr/lib/libm.so
+	cp -pLR $(UCLIBC_DIR)/lib/crt[1in].o $(TOOLCHAIN_DIR)/uClibc_dev/usr/lib/
 	touch $@
 
-$(UCLIBC_DIR)/lib/libc.a: $(UCLIBC_DIR)/.configured $(gcc_initial) $(LIBFLOAT_TARGET)
+$(UCLIBC_DIR)/lib/libc.a: $(UCLIBC_DIR)/.configured $(gcc_intermediate) $(LIBFLOAT_TARGET)
 	$(MAKE1) -C $(UCLIBC_DIR) \
+		ARCH="$(UCLIBC_TARGET_ARCH)" \
 		PREFIX= \
 		DEVEL_PREFIX=/ \
 		RUNTIME_PREFIX=/ \
@@ -464,96 +432,72 @@ $(UCLIBC_DIR)/lib/libc.a: $(UCLIBC_DIR)/.configured $(gcc_initial) $(LIBFLOAT_TA
 		all
 	touch -c $@
 
-uclibc-menuconfig: host-sed $(UCLIBC_DIR)/.config
+uclibc-menuconfig: dirs $(UCLIBC_DIR)/.config
 	$(MAKE1) -C $(UCLIBC_DIR) \
-		PREFIX=$(TOOL_BUILD_DIR)/uClibc_dev/ \
+		ARCH="$(UCLIBC_TARGET_ARCH)" \
+		PREFIX=$(TOOLCHAIN_DIR)/uClibc_dev/ \
 		DEVEL_PREFIX=/usr/ \
-		RUNTIME_PREFIX=$(TOOL_BUILD_DIR)/uClibc_dev/ \
+		RUNTIME_PREFIX=$(TOOLCHAIN_DIR)/uClibc_dev/ \
 		HOSTCC="$(HOSTCC)" \
 		menuconfig && \
 	touch -c $(UCLIBC_DIR)/.config
 
 
 $(STAGING_DIR)/usr/lib/libc.a: $(UCLIBC_DIR)/lib/libc.a
-ifneq ($(BR2_TOOLCHAIN_SYSROOT),y)
 	$(MAKE1) -C $(UCLIBC_DIR) \
-		PREFIX= \
-		DEVEL_PREFIX=$(STAGING_DIR)/ \
-		RUNTIME_PREFIX=$(STAGING_DIR)/ \
-		install_runtime install_dev
-else
-	$(MAKE1) -C $(UCLIBC_DIR) \
+		ARCH="$(UCLIBC_TARGET_ARCH)" \
 		PREFIX=$(STAGING_DIR) \
 		DEVEL_PREFIX=/usr/ \
 		RUNTIME_PREFIX=/ \
 		install_runtime install_dev
-endif
 	# Install the kernel headers to the staging dir if necessary
-ifeq ($(LINUX_HEADERS_IS_KERNEL),y)
 	if [ ! -f $(STAGING_DIR)/usr/include/linux/version.h ]; then \
 		cp -pLR $(LINUX_HEADERS_DIR)/include/* \
 			$(STAGING_DIR)/usr/include/; \
 	fi
-else
-	if [ ! -f $(STAGING_DIR)/usr/include/linux/version.h ]; then \
-		cp -pLR $(LINUX_HEADERS_DIR)/include/asm \
-			$(STAGING_DIR)/usr/include/; \
-		cp -pLR $(LINUX_HEADERS_DIR)/include/linux \
-			$(STAGING_DIR)/usr/include/; \
-		if [ -d $(LINUX_HEADERS_DIR)/include/asm-generic ]; then \
-			cp -pLR $(LINUX_HEADERS_DIR)/include/asm-generic \
-				$(STAGING_DIR)/usr/include/; \
-		fi; \
-	fi
-endif
 	# Build the host utils. Need to add an install target...
 	$(MAKE1) -C $(UCLIBC_DIR)/utils \
-		PREFIX=$(STAGING_DIR) \
+		PREFIX=$(HOST_DIR) \
 		HOSTCC="$(HOSTCC)" \
 		hostutils
 	if [ -f $(UCLIBC_DIR)/utils/ldd.host ]; then \
-		install -c $(UCLIBC_DIR)/utils/ldd.host $(STAGING_DIR)/usr/bin/ldd; \
-		ln -sf ldd $(STAGING_DIR)/usr/bin/$(REAL_GNU_TARGET_NAME)-ldd; \
+		install -D $(UCLIBC_DIR)/utils/ldd.host $(HOST_DIR)/usr/bin/ldd; \
+		ln -sf ldd $(HOST_DIR)/usr/bin/$(REAL_GNU_TARGET_NAME)-ldd; \
 	fi
 	if [ -f $(UCLIBC_DIR)/utils/ldconfig.host ]; then \
-		install -c $(UCLIBC_DIR)/utils/ldconfig.host $(STAGING_DIR)/usr/bin/ldconfig; \
-		ln -sf ldconfig $(STAGING_DIR)/usr/bin/$(REAL_GNU_TARGET_NAME)-ldconfig; \
-		ln -sf ldconfig $(STAGING_DIR)/usr/bin/$(GNU_TARGET_NAME)-ldconfig; \
+		install -D $(UCLIBC_DIR)/utils/ldconfig.host $(HOST_DIR)/usr/bin/ldconfig; \
+		ln -sf ldconfig $(HOST_DIR)/usr/bin/$(REAL_GNU_TARGET_NAME)-ldconfig; \
+		ln -sf ldconfig $(HOST_DIR)/usr/bin/$(GNU_TARGET_NAME)-ldconfig; \
 	fi
 	touch -c $@
 
 ifneq ($(TARGET_DIR),)
 $(TARGET_DIR)/lib/libc.so.0: $(STAGING_DIR)/usr/lib/libc.a
 	$(MAKE1) -C $(UCLIBC_DIR) \
+		ARCH="$(UCLIBC_TARGET_ARCH)" \
 		PREFIX=$(TARGET_DIR) \
 		DEVEL_PREFIX=/usr/ \
 		RUNTIME_PREFIX=/ \
 		install_runtime
-ifeq ($(BR2_UCLIBC_VERSION_0_9_28_3),y)
-ifneq ($(BR2_PTHREAD_DEBUG),y)
-	-$(STRIPCMD) $(STRIP_STRIP_UNNEEDED) $(@D)/libpthread*.so*
-endif
-endif
 	touch -c $@
 
 $(TARGET_DIR)/usr/bin/ldd: $(cross_compiler)
 	$(MAKE1) -C $(UCLIBC_DIR) CC=$(TARGET_CROSS)gcc \
 		CPP=$(TARGET_CROSS)cpp LD=$(TARGET_CROSS)ld \
+		ARCH="$(UCLIBC_TARGET_ARCH)" \
 		PREFIX=$(TARGET_DIR) utils install_utils
-ifeq ($(BR2_CROSS_TOOLCHAIN_TARGET_UTILS),y)
-	mkdir -p $(STAGING_DIR)/usr/$(REAL_GNU_TARGET_NAME)/target_utils
-	install -c $(TARGET_DIR)/usr/bin/ldd \
-		$(STAGING_DIR)/usr/$(REAL_GNU_TARGET_NAME)/target_utils/ldd
-endif
 	touch -c $@
 
+ifneq ($(BR2_PREFER_STATIC_LIB),y)
 UCLIBC_TARGETS=$(TARGET_DIR)/lib/libc.so.0
+endif
+
 ifeq ($(BR2_UCLIBC_INSTALL_TEST_SUITE),y)
 UCLIBC_TARGETS+=uclibc-test
 endif
 endif
 
-uclibc: $(cross_compiler) $(STAGING_DIR)/usr/lib/libc.a $(UCLIBC_TARGETS)
+uclibc: $(gcc_intermediate) $(STAGING_DIR)/usr/lib/libc.a $(UCLIBC_TARGETS)
 
 uclibc-source: $(DL_DIR)/$(UCLIBC_SOURCE)
 
@@ -566,19 +510,18 @@ uclibc-oldconfig: $(UCLIBC_DIR)/.oldconfig
 uclibc-update: uclibc-config
 	cp -f $(UCLIBC_DIR)/.config $(UCLIBC_CONFIG_FILE)
 
-uclibc-configured: kernel-headers $(UCLIBC_DIR)/.configured
+uclibc-configured: gcc_initial kernel-headers $(UCLIBC_DIR)/.configured
 
 uclibc-configured-source: uclibc-source
 
 uclibc-clean: uclibc-test-clean
-	-$(MAKE1) -C $(UCLIBC_DIR) clean
+	-$(MAKE1) -C $(UCLIBC_DIR) ARCH="$(UCLIBC_TARGET_ARCH)" clean
 	rm -f $(UCLIBC_DIR)/.config
 
 uclibc-dirclean: uclibc-test-dirclean
 	rm -rf $(UCLIBC_DIR)
 
-uclibc-target-utils:
-#$(TARGET_DIR)/usr/bin/ldd
+uclibc-target-utils: $(TARGET_DIR)/usr/bin/ldd
 
 uclibc-target-utils-source: $(DL_DIR)/$(UCLIBC_SOURCE)
 
@@ -593,7 +536,7 @@ $(TARGET_DIR)/root/uClibc/test/unistd/errno: $(UCLIBC_DIR)/test/unistd/errno
 	$(INSTALL) $(UCLIBC_DIR)/Rules.mak $(TARGET_DIR)/root/uClibc
 	$(INSTALL) $(UCLIBC_DIR)/.config $(TARGET_DIR)/root/uClibc
 
-uclibc-test: uclibc $(TARGET_DIR)/root/uClibc/test/unistd/errno
+uclibc-test: $(STAGING_DIR)/usr/lib/libc.a $(TARGET_DIR)/root/uClibc/test/unistd/errno
 
 uclibc-test-source: uclibc-source
 
@@ -613,28 +556,16 @@ uclibc-test-dirclean:
 
 $(TARGET_DIR)/usr/lib/libc.a: $(STAGING_DIR)/usr/lib/libc.a
 	$(MAKE1) -C $(UCLIBC_DIR) \
+		ARCH="$(UCLIBC_TARGET_ARCH)" \
 		PREFIX=$(TARGET_DIR) \
 		DEVEL_PREFIX=/usr/ \
 		RUNTIME_PREFIX=/ \
 		install_dev
 	# Install the kernel headers to the target dir if necessary
-ifeq ($(LINUX_HEADERS_IS_KERNEL),y)
 	if [ ! -f $(TARGET_DIR)/usr/include/linux/version.h ]; then \
 		cp -pLR $(LINUX_HEADERS_DIR)/include/* \
 			$(TARGET_DIR)/usr/include/; \
 	fi
-else
-	if [ ! -f $(TARGET_DIR)/usr/include/linux/version.h ]; then \
-		cp -pLR $(LINUX_HEADERS_DIR)/include/asm \
-			$(TARGET_DIR)/usr/include/; \
-		cp -pLR $(LINUX_HEADERS_DIR)/include/linux \
-			$(TARGET_DIR)/usr/include/; \
-		if [ -d $(LINUX_HEADERS_DIR)/include/asm-generic ]; then \
-			cp -pLR $(LINUX_HEADERS_DIR)/include/asm-generic \
-				$(TARGET_DIR)/usr/include/; \
-		fi; \
-	fi
-endif
 	touch -c $@
 
 uclibc_target: cross_compiler uclibc $(TARGET_DIR)/usr/lib/libc.a $(TARGET_DIR)/usr/bin/ldd

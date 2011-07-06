@@ -1,7 +1,6 @@
 #!/bin/bash
 
-targets="devel-arm devel-geode			\
-         initramfs-arm imgrootfs-arm		\
+targets="initramfs-arm imgrootfs-arm		\
          initramfs-geode imgrootfs-geode	\
          audioadapter-arm remotecontrol-arm	\
          base-geode"
@@ -64,8 +63,7 @@ fi
 
 # cleanup from previous builds
 
-eval `grep BR2_ARCH .config`
-rm -fr build_$BR2_ARCH project_build_$BR2_ARCH toolchain_build_$BR2_ARCH
+rm -rf output
 
 
 # update the raumfeld-version

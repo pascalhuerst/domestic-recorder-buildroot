@@ -10,19 +10,33 @@ echo "Purging unwanted files ..."
 rm -fr $1/etc/bash_completion.d
 rm -fr $1/usr/include
 rm -f  $1/usr/bin/arm-linux-directfb-csource
+rm -f  $1/usr/bin/certtool
 rm -f  $1/usr/bin/dbus-binding-tool
 rm -f  $1/usr/bin/faad
 rm -f  $1/usr/bin/flac
+rm -f  $1/usr/bin/gdbus
+rm -f  $1/usr/bin/glib-compile-schemas
 rm -f  $1/usr/bin/glib-genmarshal
 rm -f  $1/usr/bin/glib-gettextize
 rm -f  $1/usr/bin/glib-mkenums
 rm -f  $1/usr/bin/gobject-query
+rm -f  $1/usr/bin/gnutls-cli*
+rm -f  $1/usr/bin/gsettings
 rm -f  $1/usr/bin/gst-visualise-0.10
 rm -f  $1/usr/bin/gtester
 rm -f  $1/usr/bin/gtester-report
 rm -f  $1/usr/bin/gupnp-binding-tool
 rm -f  $1/usr/bin/iconv
+rm -f  $1/usr/bin/mail-lock
+rm -f  $1/usr/bin/mail-touchlock
+rm -f  $1/usr/bin/mail-unlock
 rm -f  $1/usr/bin/metaflac
+rm -f  $1/usr/bin/nettle-lfib-stream
+rm -f  $1/usr/bin/p11tool
+rm -f  $1/usr/bin/pkcs1-conv
+rm -f  $1/usr/bin/psktool
+rm -f  $1/usr/bin/sexp-conv
+rm -f  $1/usr/bin/srptool
 rm -f  $1/usr/bin/ssh-keyscan
 rm -f  $1/usr/bin/xml2-config
 rm -f  $1/usr/bin/xmlcatalog
@@ -48,10 +62,10 @@ rm -f  $1/usr/share/alsa/pcm/modem.conf
 rm -f  $1/usr/share/alsa/pcm/rear.conf
 rm -f  $1/usr/share/alsa/pcm/side.conf
 rm -f  $1/usr/share/alsa/pcm/surround*.conf
-rm -rf $1/usr/share/avahi/introspection
+rm -fr $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/gdb
 rm -fr $1/usr/share/glib-2.0
-rm -f  $1/usr/share/pkgconfig
+rm -fr $1/usr/share/pkgconfig
 rm -f  $1/usr/share/xml/iso-codes/iso_639.xml
 rm -f  $1/usr/share/xml/iso-codes/iso_639_3.xml
 rm -f  $1/usr/share/xml/iso-codes/iso_3166_2.xml
@@ -78,7 +92,11 @@ if test -n "$2"; then
     find $1/usr/bin -type f -executable -not -name remote-control -exec $STRIPCMD {} \;
     find $1/usr/sbin -type f -executable -exec $STRIPCMD {} \;
     find $1/usr/libexec -type f -executable -exec $STRIPCMD {} \;
+    find $1/usr/lib -type f -executable -name 'libgmp*' -exec $STRIPCMD {} \;
+    find $1/usr/lib -type f -executable -name 'libgnutls*' -exec $STRIPCMD {} \;
     find $1/usr/lib -type f -executable -name 'libgst*' -exec $STRIPCMD {} \;
+    find $1/usr/lib -type f -executable -name 'libhogweed*' -exec $STRIPCMD {} \;
+    find $1/usr/lib -type f -executable -name 'libnettle*' -exec $STRIPCMD {} \;
     find $1/usr/lib -type f -executable -name 'libsmb*' -exec $STRIPCMD {} \;
     find $1/usr/lib/udev -type f -executable -exec $STRIPCMD {} \;
     if test -d $1/usr/lib/alsa-lib; then

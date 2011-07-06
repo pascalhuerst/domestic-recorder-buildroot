@@ -7,9 +7,9 @@ REPORT_DAEMON_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 REPORT_DAEMON_DIR:=$(BUILD_DIR)/raumfeld-report-daemon-$(REPORT_DAEMON_VERSION)
 REPORT_DAEMON_TARGET_DIR:=raumfeld/report-daemon
 REPORT_DAEMON_BINARY:=$(REPORT_DAEMON_TARGET_DIR)/raumfeld-report-daemon
-REPORT_DAEMON_CROSS_PREFIX:=$(BUILD_DIR)/..
+REPORT_DAEMON_CROSS_PREFIX:=$(BASE_DIR)
 
-REPORT_DAEMON_DEPENDENCIES = host-pkgconfig libsoup
+REPORT_DAEMON_DEPENDENCIES = host-pkg-config libsoup
 
 ifeq ($(ARCH),arm)
 REPORT_DAEMON_CROSS = ARM
@@ -29,7 +29,8 @@ $(REPORT_DAEMON_DIR)/.bzr:
 	if ! test -d $(REPORT_DAEMON_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p raumfeld-report-daemon-$(REPORT_DAEMON_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld-report-daemon/$(REPORT_DAEMON_VERSION) raumfeld-report-daemon-$(REPORT_DAEMON_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld-report-daemon/$(REPORT_DAEMON_VERSION) raumfeld-report-daemon-$(REPORT_DAEMON_VERSION); \
+                cd raumfeld-report-daemon-trunk && patch -p0 < ../../../package/raumfeld/report-daemon/report-daemon-buildroot.patch) \
 	fi
 	touch -c $@
 

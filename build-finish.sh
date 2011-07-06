@@ -1,7 +1,6 @@
 #!/bin/bash
 
-targets="devel-arm devel-geode                  \
-         initramfs-arm imgrootfs-arm            \
+targets="initramfs-arm imgrootfs-arm            \
          initramfs-geode imgrootfs-geode        \
          audioadapter-arm remotecontrol-arm     \
          base-geode"
@@ -13,7 +12,6 @@ targets="devel-arm devel-geode                  \
 echo_usage() {
 cat << __EOF__ >&2
 Usage: $0 --target=<target> [--image=<image> --version=<version>]
-       $0 --update-configs
 
    target is one of
 __EOF__
@@ -24,9 +22,6 @@ cat << __EOF__ >&2
 
    image     is optional and can be one of 'init flash final'
    version   is optional and serves as an identifier for this build
-
-   If --update-configs is specified, the target configs are all ran
-   thru 'make oldconfig'. No further action is taken.
 
 __EOF__
         exit 1
@@ -71,47 +66,51 @@ if ! test -z "$image"; then
 fi
 
 
-# do post-processing for some targets ...
+# read the kernel version from the current configuration
+KERNEL_VERSION=`grep BR2_LINUX_KERNEL_VERSION .config | cut -f2 -d= | sed -e s/\"//g`
+
+
+# create a list of all files in the rootfs
+
+if [ -f output/images/rootfs.tar.gz ]; then
+    tar ztvf output/images/rootfs.tar.gz > $target.contents
+else
+    (cd output/target ; find . -exec ls -l {} \;) > $target.contents
+fi
+
+
+# do post-processing ...
+
+mkdir -p binaries/$target
 
 case $target in
-
-	# copy the ARM zImage for later use in the update image
 	initramfs-arm)
-		cp project_build_arm/uclibc/linux-/arch/arm/boot/zImage binaries/initramfs-arm
+        	# copy the ARM kernel images for later use
+                cp output/images/uImage binaries/$target
+		cp output/build/linux-$KERNEL_VERSION/arch/arm/boot/zImage binaries/$target
 		;;
 
-	# resize the root fs ext2 image so that genext2fs will find
-	# free inodes when building the deployment targets.
-	# this should probably be made part of br2 some day.
-	imgrootfs-arm)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.arm.ext2 64M
-		;;
-	imgrootfs-geode)
-		/sbin/resize2fs binaries/uclibc/imgrootfs.i586.ext2 64M
+        initramfs-geode)
+                # copy the Geode kernel image for later use
+                cp output/images/bzImage binaries/$target
+                ;;
+
+	imgrootfs-*)
+		# resize the root fs ext2 image so that genext2fs will
+		# find free inodes when building the deployment targets.
+		# this should probably be made part of br2 some day.
+                cp output/images/rootfs.ext2 binaries/$target
+		/sbin/resize2fs binaries/$target/rootfs.ext2 64M
 		;;
 
-	audioadapter-arm)
-                ROOTFS=binaries/uclibc/rootfs-audioadapter.arm.tar.gz
+	audioadapter-arm|remotecontrol-arm)
+                ROOTFS=output/images/rootfs.tar.gz
                 ZIMAGE=binaries/initramfs-arm/zImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=arm \
-				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
-				--target-rootfs-tgz=$ROOTFS \
-				--kernel=binaries/initramfs-arm/uImage \
-			        --version=$version
-		done
-		;;
-
-	remotecontrol-arm)
-                ROOTFS=binaries/uclibc/rootfs-remotecontrol.arm.tar.gz
-                ZIMAGE=binaries/initramfs-arm/zImage
-		for t in $IMAGES; do
-			raumfeld/imgcreate.sh \
-				--target=$target-$t \
-				--platform=arm \
-				--base-rootfs-img=binaries/uclibc/imgrootfs.arm.ext2 \
+				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=binaries/initramfs-arm/uImage \
 			        --version=$version
@@ -119,15 +118,15 @@ case $target in
 		;;
 
 	base-geode)
-                ROOTFS=binaries/uclibc/rootfs-base.i586.tar.gz
+                ROOTFS=output/images/rootfs.tar.gz
                 ZIMAGE=binaries/initramfs-geode/bzImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=geode \
-				--base-rootfs-img=binaries/uclibc/imgrootfs.i586.ext2 \
+				--base-rootfs-img=binaries/imgrootfs-geode/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
-				--kernel=binaries/initramfs-geode/bzImage \
+				--kernel=$ZIMAGE \
 				--version=$version
 		done
                 ;;
@@ -135,9 +134,6 @@ esac
 
 
 if [ -n "$ROOTFS" ]; then
-    # create a list of all files in the rootfs
-    tar ztvf $ROOTFS > $target.contents
-
     # create  the update image
     raumfeld/updatecreate.sh \
 	--target=$target \

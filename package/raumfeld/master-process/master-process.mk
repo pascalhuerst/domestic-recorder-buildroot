@@ -7,9 +7,9 @@ MASTER_PROCESS_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 MASTER_PROCESS_DIR:=$(BUILD_DIR)/master-process-$(MASTER_PROCESS_VERSION)
 MASTER_PROCESS_TARGET_DIR:=raumfeld/master-process
 MASTER_PROCESS_BINARY:=$(MASTER_PROCESS_TARGET_DIR)/raumfeld-master-process
-MASTER_PROCESS_CROSS_PREFIX:=$(BUILD_DIR)/..
+MASTER_PROCESS_CROSS_PREFIX:=$(BASE_DIR)
 
-MASTER_PROCESS_DEPENDENCIES = host-pkgconfig host-libglib2 libraumfeld
+MASTER_PROCESS_DEPENDENCIES = host-pkg-config host-libglib2 libraumfeld
 
 ifeq ($(ARCH),arm)
 MASTER_PROCESS_CROSS = ARM
@@ -25,7 +25,8 @@ $(MASTER_PROCESS_DIR)/.bzr:
 	if ! test -d $(MASTER_PROCESS_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p master-process-$(MASTER_PROCESS_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/master-process/$(MASTER_PROCESS_VERSION) master-process-$(MASTER_PROCESS_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/master-process/$(MASTER_PROCESS_VERSION) master-process-$(MASTER_PROCESS_VERSION); \
+		cd master-process-trunk && patch -p0 < ../../../package/raumfeld/master-process/master-process-buildroot.patch) \
 	fi
 	touch -c $@
 

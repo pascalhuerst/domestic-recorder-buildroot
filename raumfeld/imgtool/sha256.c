@@ -21,7 +21,7 @@
 #include "sha256.h"
 
 /* prototypes of internals */
-int little_endian();
+int little_endian(void);
 void swap_bytes(sha_byte_t *a, sha_byte_t *b);
 void convert_int64_little_endian(sha_ulong_t *num);
 void convert_int64_big_endian(sha_ulong_t *num);
@@ -40,7 +40,7 @@ const sha_256_t DEFAULT_SHA256 = {
 };
 
 /* 232 times the cube root of the first 64 primes 2..311 */
-unsigned int ROUND_CONSTANTS[64] = {
+const unsigned int ROUND_CONSTANTS[64] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
 	0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
 	0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
@@ -60,7 +60,7 @@ rotate_right(sha_uint_t num, int amount)
 
 /* Return TRUE if little endian. False otherwise. */
 int
-little_endian()
+little_endian(void)
 {
 	int i = 1;
 	char *p = (char *)&i;
@@ -248,9 +248,6 @@ sha256(sha_byte_t *message, sha_ulong_t size)
 
 	}
 
-	/* Free Willy! */
-/*      Free(digestable_message); */
-
 	return digest;
 }
 
@@ -259,4 +256,3 @@ sha256_string(char *message)
 {
 	return sha256(((sha_byte_t *)message), strlen(message));
 }
-

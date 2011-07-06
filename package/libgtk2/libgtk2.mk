@@ -3,12 +3,12 @@
 # libgtk2.0
 #
 #############################################################
-LIBGTK2_VERSION_MAJOR:=2.12
-LIBGTK2_VERSION_MINOR:=12
+LIBGTK2_VERSION_MAJOR:=2.24
+LIBGTK2_VERSION_MINOR:=4
 LIBGTK2_VERSION = $(LIBGTK2_VERSION_MAJOR).$(LIBGTK2_VERSION_MINOR)
 
 LIBGTK2_SOURCE = gtk+-$(LIBGTK2_VERSION).tar.bz2
-LIBGTK2_SITE = ftp://ftp.gtk.org/pub/gtk/$(LIBGTK2_VERSION_MAJOR)
+LIBGTK2_SITE = http://ftp.gnome.org/pub/gnome/sources/gtk+/$(LIBGTK2_VERSION_MAJOR)
 LIBGTK2_AUTORECONF = NO
 LIBGTK2_INSTALL_STAGING = YES
 LIBGTK2_INSTALL_TARGET = YES
@@ -45,12 +45,6 @@ LIBGTK2_CONF_ENV = ac_cv_func_posix_getpwuid_r=yes glib_cv_stack_grows=no \
 		ac_cv_func_mkstemp=yes \
 		utils_cv_func_mkstemp_limitations=no \
 		utils_cv_func_mkdir_trailing_slash_bug=no \
-		ac_cv_func_memcmp_working=yes \
-		ac_cv_have_decl_malloc=yes \
-		gl_cv_func_malloc_0_nonnull=yes \
-		ac_cv_func_malloc_0_nonnull=yes \
-		ac_cv_func_calloc_0_nonnull=yes \
-		ac_cv_func_realloc_0_nonnull=yes \
 		jm_cv_func_gettimeofday_clobber=no \
 		gl_cv_func_working_readdir=yes \
 		jm_ac_cv_func_link_follows_symlink=no \
@@ -72,13 +66,11 @@ LIBGTK2_CONF_ENV = ac_cv_func_posix_getpwuid_r=yes glib_cv_stack_grows=no \
 		ac_cv_prog_F77=no \
 		ac_cv_path_CUPS_CONFIG=no
 
-LIBGTK2_CONF_OPT = --enable-shared \
-		--enable-static \
-		--disable-glibtest \
+LIBGTK2_CONF_OPT = --disable-glibtest \
 		--enable-explicit-deps=no \
 		--disable-debug
 
-LIBGTK2_DEPENDENCIES = host-pkgconfig host-libgtk2 libglib2 cairo pango atk
+LIBGTK2_DEPENDENCIES = host-pkg-config host-libgtk2 libglib2 cairo pango atk gdk-pixbuf
 
 ifeq ($(BR2_PACKAGE_DIRECTFB),y)
 	LIBGTK2_CONF_OPT += --with-gdktarget=directfb
@@ -94,11 +86,6 @@ ifeq ($(BR2_PACKAGE_XORG7),y)
 	LIBGTK2_DEPENDENCIES += xlib_libXcomposite xserver_xorg-server
 else
 	LIBGTK2_CONF_OPT += --without-x
-endif
-
-# Buildroot does not support JPEG2000 library
-ifeq ($(LIBGTK2_VERSION_MAJOR),2.15)
-LIBGTK2_CONF_OPT += --without-libjasper
 endif
 
 ifeq ($(BR2_PACKAGE_LIBPNG),y)
@@ -125,60 +112,45 @@ else
 LIBGTK2_CONF_OPT += --disable-cups
 endif
 
-$(eval $(call AUTOTARGETS,package,libgtk2))
-
-$(LIBGTK2_HOOK_POST_INSTALL):
-	$(INSTALL) -m 755 package/libgtk2/S26libgtk2 $(TARGET_DIR)/etc/init.d/
+ifeq ($(BR2_PACKAGE_LIBGTK2_DEMO),)
+define LIBGTK2_POST_INSTALL_TWEAKS
 	rm -rf $(TARGET_DIR)/usr/share/gtk-2.0/demo $(TARGET_DIR)/usr/bin/gtk-demo
-	touch $@
+endef
 
-# libgtk2 for the host
-LIBGTK2_HOST_DIR:=$(BUILD_DIR)/libgtk2-$(LIBGTK2_VERSION)-host
+LIBGTK2_POST_INSTALL_TARGET_HOOKS += LIBGTK2_POST_INSTALL_TWEAKS
+endif
 
-$(DL_DIR)/$(LIBGTK2_SOURCE):
-	$(call DOWNLOAD,$(LIBGTK2_SITE),$(LIBGTK2_SOURCE))
+# We do not build a full version of libgtk2 for the host, because that
+# requires compiling Cairo, Pango, ATK and X.org for the
+# host. Therefore, we patch it to remove dependencies, and we hack the
+# build to only build gdk-pixbuf-from-source and
+# gtk-update-icon-cache, which are the host tools needed to build Gtk
+# for the target.
 
-$(STAMP_DIR)/host_libgtk2_unpacked: $(DL_DIR)/$(LIBGTK2_SOURCE)
-	mkdir -p $(LIBGTK2_HOST_DIR)
-	$(INFLATE$(suffix $(LIBGTK2_SOURCE))) $< | \
-		$(TAR) $(TAR_STRIP_COMPONENTS)=1 -C $(LIBGTK2_HOST_DIR) $(TAR_OPTIONS) -
-	touch $@
-
-$(STAMP_DIR)/host_libgtk2_configured: $(STAMP_DIR)/host_libgtk2_unpacked $(STAMP_DIR)/host_cairo_installed $(STAMP_DIR)/host_libglib2_installed $(STAMP_DIR)/host_pango_installed $(STAMP_DIR)/host_atk_installed
-	(cd $(LIBGTK2_HOST_DIR); rm -rf config.cache; \
-		$(HOST_CONFIGURE_OPTS) \
-		CFLAGS="$(HOST_CFLAGS)" \
-		LDFLAGS="$(HOST_LDFLAGS)" \
-		./configure \
-		--prefix="$(HOST_DIR)/usr" \
-		--sysconfdir="$(HOST_DIR)/etc" \
+HOST_LIBGTK2_DEPENDENCIES = host-libglib2 host-libpng host-gdk-pixbuf
+HOST_LIBGTK2_AUTORECONF = YES
+HOST_LIBGTK2_CONF_OPT = \
 		--disable-static \
 		--disable-glibtest \
 		--without-libtiff \
 		--without-libjpeg \
-		--with-x \
-		--with-gdktarget=x11 \
+		--with-gdktarget=none \
 		--disable-cups \
-		--disable-debug \
-	)
-	touch $@
+		--disable-debug
 
-$(STAMP_DIR)/host_libgtk2_compiled: $(STAMP_DIR)/host_libgtk2_configured
-	$(HOST_MAKE_ENV) $(MAKE) -C $(LIBGTK2_HOST_DIR)
-	touch $@
+define HOST_LIBGTK2_PATCH_REDUCE_DEPENDENCIES_HOOK
+ toolchain/patch-kernel.sh $(@D) $($(PKG)_DIR_PREFIX)/$($(NOHOSTPKG)_NAME) host-*.patch
+endef
 
-$(STAMP_DIR)/host_libgtk2_installed: $(STAMP_DIR)/host_libgtk2_compiled
-	$(HOST_MAKE_ENV) $(MAKE) -C $(LIBGTK2_HOST_DIR) install
-	touch $@
+HOST_LIBGTK2_POST_PATCH_HOOKS += HOST_LIBGTK2_PATCH_REDUCE_DEPENDENCIES_HOOK
 
-host-libgtk2: $(STAMP_DIR)/host_libgtk2_installed
+define HOST_LIBGTK2_BUILD_CMDS
+ $(HOST_MAKE_ENV) make -C $(@D)/gtk gtk-update-icon-cache
+endef
 
-host-libgtk2-source: libgtk2-source
+define HOST_LIBGTK2_INSTALL_CMDS
+ cp $(@D)/gtk/gtk-update-icon-cache $(HOST_DIR)/usr/bin
+endef
 
-host-libgtk2-clean:
-	rm -f $(addprefix $(STAMP_DIR)/host_libgtk2_,unpacked configured compiled installed)
-	-$(MAKE) -C $(LIBGTK2_HOST_DIR) uninstall
-	-$(MAKE) -C $(LIBGTK2_HOST_DIR) clean
-
-host-libgtk2-dirclean:
-	rm -rf $(LIBGTK2_HOST_DIR)
+$(eval $(call AUTOTARGETS,package,libgtk2))
+$(eval $(call AUTOTARGETS,package,libgtk2,host))

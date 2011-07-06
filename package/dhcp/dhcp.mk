@@ -3,7 +3,7 @@
 # dhcp
 #
 #############################################################
-DHCP_VERSION  = 4.1.2
+DHCP_VERSION  = 4.1.1-P1
 DHCP_SOURCE   = dhcp-$(DHCP_VERSION).tar.gz
 DHCP_SITE     = http://ftp.isc.org/isc/dhcp/
 DHCP_CONF_ENV = ac_cv_file__dev_random=yes
@@ -13,17 +13,21 @@ DHCP_CONF_OPT = \
 	--with-cli-lease-file=/var/lib/dhcp/dhclient.leases \
 	--with-srv-pid-file=/var/run/dhcpd.pid \
 	--with-cli-pid-file=/var/run/dhclient.pid \
-	--with-relay-pid-file=/var/run/dhcrelay.pid \
-	--disable-dhcpv6
+	--with-relay-pid-file=/var/run/dhcrelay.pid
+
+ifneq ($(BR2_INET_IPV6),y)
+        DHCP_CONF_OPT += --disable-dhcpv6
+endif
 
 ifeq ($(BR2_PACKAGE_DHCP_SERVER),y)
 define DHCP_INSTALL_SERVER
 	mkdir -p $(TARGET_DIR)/var/lib
 	(cd $(TARGET_DIR)/var/lib; ln -snf /tmp dhcp)
-	$(INSTALL) -m 0755 -D $(DHCP_DIR)/server/dhcpd $(TARGET_DIR)/usr/sbin/dhcpd
-	$(INSTALL) -m 0755 -D package/dhcp/S80dhcp-server $(TARGET_DIR)/etc/init.d
-	mkdir -p $(TARGET_DIR)/etc/dhcp
-	$(INSTALL) -m 0644 -D package/dhcp/dhcpd.conf $(TARGET_DIR)/etc/dhcp/dhcpd.conf
+	$(INSTALL) -m 0755 -D $(@D)/server/dhcpd $(TARGET_DIR)/usr/sbin/dhcpd
+	$(INSTALL) -m 0755 -D package/dhcp/S80dhcp-server \
+		$(TARGET_DIR)/etc/init.d/S80dhcp-server
+	$(INSTALL) -m 0644 -D package/dhcp/dhcpd.conf \
+		$(TARGET_DIR)/etc/dhcp/dhcpd.conf
 endef
 endif
 
@@ -31,8 +35,10 @@ ifeq ($(BR2_PACKAGE_DHCP_RELAY),y)
 define DHCP_INSTALL_RELAY
 	mkdir -p $(TARGET_DIR)/var/lib
 	(cd $(TARGET_DIR)/var/lib; ln -snf /tmp dhcp)
-	$(INSTALL) -m 0755 -D $(DHCP_DIR)/relay/dhcrelay $(TARGET_DIR)/usr/sbin/
-	$(INSTALL) -m 0755 -D package/dhcp/S80dhcp-relay $(TARGET_DIR)/etc/init.d
+	$(INSTALL) -m 0755 -D $(DHCP_DIR)/relay/dhcrelay \
+		$(TARGET_DIR)/usr/sbin/dhcrelay
+	$(INSTALL) -m 0755 -D package/dhcp/S80dhcp-relay \
+		$(TARGET_DIR)/etc/init.d/S80dhcp-relay
 endef
 endif
 
@@ -40,8 +46,8 @@ ifeq ($(BR2_PACKAGE_DHCP_CLIENT),y)
 define DHCP_INSTALL_CLIENT
 	mkdir -p $(TARGET_DIR)/var/lib
 	(cd $(TARGET_DIR)/var/lib; ln -snf /tmp dhcp)
-	$(INSTALL) -m 0755 -D $(DHCP_DIR)/client/dhclient $(TARGET_DIR)/usr/sbin
-	mkdir -p $(TARGET_DIR)/etc/dhcp
+	$(INSTALL) -m 0755 -D $(DHCP_DIR)/client/dhclient \
+		$(TARGET_DIR)/usr/sbin/dhclient
 	$(INSTALL) -m 0644 -D package/dhcp/dhclient.conf \
 		$(TARGET_DIR)/etc/dhcp/dhclient.conf
 	$(INSTALL) -m 0755 -D package/dhcp/dhclient-script \
@@ -56,7 +62,3 @@ define DHCP_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(call AUTOTARGETS,package,dhcp))
-
-$(DHCP_TARGET_INSTALL_TARGET):
-	$(DHCP_INSTALL_TARGET_CMDS)
-	touch $@

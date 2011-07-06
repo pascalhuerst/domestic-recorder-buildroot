@@ -18,14 +18,14 @@ REMOTE_CONTROL_CONF_ENV = \
 REMOTE_CONTROL_CONF_OPT = \
 	--disable-glibtest
 
-REMOTE_CONTROL_DEPENDENCIES = host-pkgconfig host-libglib2 gettext libintl iso-codes libraumfeld sly-toolkit
+REMOTE_CONTROL_DEPENDENCIES = host-pkg-config host-libglib2 gettext libintl iso-codes libraumfeld sly-toolkit
 
 $(eval $(call AUTOTARGETS,package/raumfeld,remote-control))
 
 $(REMOTE_CONTROL_DIR)/.bzr:
 	if ! test -d $(REMOTE_CONTROL_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/remote-control/$(REMOTE_CONTROL_VERSION) remote-control-$(REMOTE_CONTROL_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/remote-control/$(REMOTE_CONTROL_VERSION) remote-control-$(REMOTE_CONTROL_VERSION)) \
 	fi
 
 $(REMOTE_CONTROL_DIR)/.stamp_downloaded: $(REMOTE_CONTROL_DIR)/.bzr

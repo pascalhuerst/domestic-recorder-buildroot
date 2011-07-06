@@ -1,0 +1,37 @@
+From b59b506279149b7ec55bc8339ff39e8b7943e5ad Mon Sep 17 00:00:00 2001
+From: Ken Werner <ken.werner@linaro.org>
+Date: Thu, 30 Jun 2011 13:15:21 +0200
+Subject: [PATCH] Fix inline assembly.
+
+Remove the third colon if the clobber list is not present.
+
+Signed-off-by: Ken Werner <ken.werner@linaro.org>
+---
+ src/arm/Gresume.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/arm/Gresume.c b/src/arm/Gresume.c
+index c870f5f..f496e99 100644
+--- a/src/arm/Gresume.c
++++ b/src/arm/Gresume.c
+@@ -55,7 +55,7 @@ arm_local_resume (unw_addr_space_t as, unw_cursor_t *cursor, void *arg)
+ 	"ldmia %0, {r4-r12, lr}\n"
+ 	"mov sp, r12\n"
+ 	"bx lr\n"
+-	: : "r" (regs) :
++	: : "r" (regs)
+       );
+     }
+   else
+@@ -87,7 +87,7 @@ arm_local_resume (unw_addr_space_t as, unw_cursor_t *cursor, void *arg)
+       asm __volatile__ (
+ 	"mov sp, %0\n"
+ 	"bx %1\n"
+-	: : "r" (c->sigcontext_sp), "r" (c->sigcontext_pc) :
++	: : "r" (c->sigcontext_sp), "r" (c->sigcontext_pc)
+       );
+    }
+ #else
+-- 
+1.7.1
+

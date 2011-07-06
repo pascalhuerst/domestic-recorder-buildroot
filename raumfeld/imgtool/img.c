@@ -23,12 +23,30 @@
 
 #define DELIMITER	"-------------------------------------------------\n"
 
+
+static sha_256_t img_checksum(int fd, size_t fsize, off_t offset)
+{
+	sha_256_t sha = { 0 };
+	void *buf;
+
+	buf = mmap(NULL, fsize, PROT_READ, MAP_PRIVATE, fd, offset);
+
+	if (!buf) {
+		perror("mmap");
+		return sha;
+	}
+
+	sha = sha256((sha_byte_t *) buf, fsize);
+	munmap(buf, fsize);
+
+        return sha;
+}
+
 int img_check(int fd)
 {
 	int ret;
 	struct stat sb;
 	size_t fsize;
-	void *buf;
 	sha_256_t sha, img_sha;
 	char desc[DESC_SIZE];
 
@@ -59,15 +77,8 @@ int img_check(int fd)
 
 	fsize = sb.st_size - DESC_OFFSET;
 	lseek(fd, 0, SEEK_SET);
-	buf = mmap(NULL, fsize, PROT_READ, MAP_SHARED, fd, DESC_OFFSET);
 
-	if (!buf) {
-		perror("mmap");
-		return -1;
-	}
-
-	sha = sha256((sha_byte_t *) buf, fsize);
-	munmap(buf, fsize);
+        sha = img_checksum(fd, fsize, DESC_OFFSET);
 
 	/* compare given SHA256 with calculated one */
 	if (memcmp(&sha, &img_sha, sizeof(sha)) < 0) {
@@ -78,7 +89,7 @@ int img_check(int fd)
 		debug_print_digest(sha, 1);
 		return -2;
 	}
-	
+
 	printf("Checksum ok: ");
 	debug_print_digest(sha, 1);
 	printf("Description:\n");
@@ -89,9 +100,10 @@ int img_check(int fd)
 	return 0;
 }
 
-static int img_copy(int out, const char *fname)
+static size_t img_copy(int out, const char *fname)
 {
-	int fd, ret, off = 0;
+        int fd;
+        size_t ret, off = 0;
 	char buf[1024 * 10];
 
 	fd = open(fname, O_RDONLY);
@@ -109,15 +121,15 @@ static int img_copy(int out, const char *fname)
 	return off;
 }
 
-int img_create (const char *uimage,
+int img_create (const char *kernel,
 		const char *description,
 		const char *rootfs,
 		const char *output)
 {
-	int ret, fd_out;
-	ssize_t fsize;
+	int fd_out;
+        size_t ret;
+	size_t fsize;
 	sha_256_t sha;
-	void *buf;
 
 	fd_out = open(output,
                       O_RDWR | O_CREAT,
@@ -127,11 +139,11 @@ int img_create (const char *uimage,
 		return fd_out;
 	}
 
-	/* first, copy the uImage */
-	printf("Copying uImage from >%s< ... ", uimage);
-	ret = img_copy(fd_out, uimage);
+	/* first, copy the kernel */
+	printf("Copying kernel from >%s< ... ", kernel);
+	ret = img_copy(fd_out, kernel);
 	if (ret > SHA_OFFSET) {
-		printf("too big! (%d bytes)\n", ret);
+		printf("too big! (%ul bytes)\n", ret);
 		return -1;
 	}
 
@@ -142,7 +154,7 @@ int img_create (const char *uimage,
 	lseek(fd_out, DESC_OFFSET, SEEK_SET);
 	ret = img_copy(fd_out, description);
 	if (ret > IMG_OFFSET) {
-		printf("too big! (%d bytes)\n", ret);
+		printf("too big! (%ul bytes)\n", ret);
 		return -1;
 	}
 
@@ -155,16 +167,7 @@ int img_create (const char *uimage,
 	printf("done.\n");
 
 	/* calculate the checksum */
-	buf = mmap(NULL, fsize, PROT_READ, MAP_SHARED, fd_out, DESC_OFFSET);
-
-	if (!buf) {
-		perror("mmap");
-		return -1;
-	}
-
-	sha = sha256((sha_byte_t *) buf, fsize);
-	munmap(buf, fsize);
-
+        sha = img_checksum (fd_out, fsize, DESC_OFFSET);
 	printf("SHA256 for this image: ");
 	debug_print_digest(sha, 1);
 

@@ -4,81 +4,64 @@
 #
 #############################################################
 
-DNSMASQ_SITE:=http://thekelleys.org.uk/dnsmasq
-DNSMASQ_UPVER:=2.47
-DNSMASQ_SOURCE:=dnsmasq-$(DNSMASQ_UPVER).tar.gz
-DNSMASQ_DIR:=$(BUILD_DIR)/dnsmasq-$(DNSMASQ_UPVER)
-DNSMASQ_BINARY:=dnsmasq
-DNSMASQ_TARGET_BINARY:=usr/sbin/dnsmasq
-
-DNSMASQ_COPTS:=
+DNSMASQ_VERSION = 2.57
+DNSMASQ_SITE = http://thekelleys.org.uk/dnsmasq
+DNSMASQ_MAKE_ENV = CC="$(TARGET_CC)" LDFLAGS="$(TARGET_LDFLAGS)"
+DNSMASQ_MAKE_OPT = COPTS="$(DNSMASQ_COPTS)" PREFIX=/usr CFLAGS="$(TARGET_CFLAGS)"
+DNSMASQ_MAKE_OPT += DESTDIR=$(TARGET_DIR)
 
 ifneq ($(BR2_INET_IPV6),y)
-DNSMASQ_COPTS+=-DNO_IPV6
+	DNSMASQ_COPTS += -DNO_IPV6
+endif
+
+ifneq ($(BR2_PACKAGE_DNSMASQ_DHCP),y)
+	DNSMASQ_COPTS += -DNO_DHCP
 endif
 
 ifneq ($(BR2_PACKAGE_DNSMASQ_TFTP),y)
-DNSMASQ_COPTS+=-DNO_TFTP
+	DNSMASQ_COPTS += -DNO_TFTP
+endif
+
+ifeq ($(BR2_PACKAGE_DNSMASQ_IDN),y)
+	DNSMASQ_MAKE_OPT += all-i18n
+	DNSMASQ_DEPENDENCIES += libidn libintl
+	DNSMASQ_MAKE_ENV += LDFLAGS+="-lintl -lidn"
 endif
 
 ifneq ($(BR2_LARGEFILE),y)
-DNSMASQ_COPTS+=-DNO_LARGEFILE
+	DNSMASQ_COPTS += -DNO_LARGEFILE
 endif
 
 ifeq ($(BR2_PACKAGE_DBUS),y)
-DNSMASQ_DBUS:=dbus
-else
-DNSMASQ_DBUS:=
+	DNSMASQ_DEPENDENCIES += host-pkg-config dbus
 endif
 
-$(DL_DIR)/$(DNSMASQ_SOURCE):
-	$(call DOWNLOAD,$(DNSMASQ_SITE),$(DNSMASQ_SOURCE))
-
-$(DNSMASQ_DIR)/.source: $(DL_DIR)/$(DNSMASQ_SOURCE)
-	$(ZCAT) $(DL_DIR)/$(DNSMASQ_SOURCE) | tar -C $(BUILD_DIR) $(TAR_OPTIONS) -
-	toolchain/patch-kernel.sh $(DNSMASQ_DIR) package/dnsmasq/ \*.patch
-	touch $@
-
-$(DNSMASQ_DIR)/src/$(DNSMASQ_BINARY): $(DNSMASQ_DIR)/.source $(DNSMASQ_DBUS)
 ifeq ($(BR2_PACKAGE_DBUS),y)
+define DNSMASQ_ENABLE_DBUS
 	$(SED) 's^.*#define HAVE_DBUS.*^#define HAVE_DBUS^' \
 		$(DNSMASQ_DIR)/src/config.h
+	$(SED) 's^PKG_CONFIG = pkg-config^PKG_CONFIG = $(PKG_CONFIG_HOST_BINARY)^' \
+		$(DNSMASQ_DIR)/Makefile
+endef
 else
+define DNSMASQ_ENABLE_DBUS
 	$(SED) 's^.*#define HAVE_DBUS.*^/* #define HAVE_DBUS */^' \
 		$(DNSMASQ_DIR)/src/config.h
+endef
 endif
-	$(MAKE) CC=$(TARGET_CC) CFLAGS="$(TARGET_CFLAGS)" AWK=awk \
-		COPTS='$(DNSMASQ_COPTS)' PREFIX=/usr -C $(DNSMASQ_DIR)
-	touch -c $@
 
-$(TARGET_DIR)/$(DNSMASQ_TARGET_BINARY): $(DNSMASQ_DIR)/src/$(DNSMASQ_BINARY)
-	$(MAKE) DESTDIR=$(TARGET_DIR) PREFIX=/usr -C $(DNSMASQ_DIR) install
-	$(STRIPCMD) $(TARGET_DIR)/$(DNSMASQ_TARGET_BINARY)
-	mkdir -p $(TARGET_DIR)/var/lib/misc
-	# Isn't this vulnerable to symlink attacks?
-	ln -sf /tmp/dnsmasq.leases $(TARGET_DIR)/var/lib/misc/dnsmasq.leases
-ifneq ($(BR2_HAVE_MANPAGES),y)
-	rm -rf $(TARGET_DIR)/usr/share/man
-endif
-	touch -c $@
+define DNSMASQ_BUILD_CMDS
+	$(DNSMASQ_ENABLE_DBUS)
+	$(DNSMASQ_MAKE_ENV) $(MAKE) -C $(@D) $(DNSMASQ_MAKE_OPT)
+endef
 
-dnsmasq: uclibc $(TARGET_DIR)/$(DNSMASQ_TARGET_BINARY)
+define DNSMASQ_INSTALL_TARGET_CMDS
+	$(DNSMASQ_MAKE_ENV) $(MAKE) -C $(@D) $(DNSMASQ_MAKE_OPT) install
+endef
 
-dnsmasq-source: $(DL_DIR)/$(DNSMASQ_SOURCE)
+define DNSMASQ_UNINSTALL_TARGET_CMDS
+	rm -f $(TARGET_DIR)/usr/sbin/dnsmasq
+	rm -f $(TARGET_DIR)/usr/share/man/man8/dnsmasq.8
+endef
 
-dnsmasq-clean:
-	rm -f $(addprefix $(TARGET_DIR)/,var/lib/misc/dnsmasq.leases \
-					 usr/share/man/man?/dnsmasq.* \
-					 $(DNSMASQ_TARGET_BINARY))
-	-$(MAKE) -C $(DNSMASQ_DIR) clean
-
-dnsmasq-dirclean:
-	rm -rf $(DNSMASQ_DIR)
-#############################################################
-#
-# Toplevel Makefile options
-#
-#############################################################
-ifeq ($(BR2_PACKAGE_DNSMASQ),y)
-TARGETS+=dnsmasq
-endif
+$(eval $(call GENTARGETS,package,dnsmasq))

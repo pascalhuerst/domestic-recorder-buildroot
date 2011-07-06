@@ -3,14 +3,12 @@
 # libglib2
 #
 #############################################################
-LIBGLIB2_VERSION_MAJOR = 2.26
-LIBGLIB2_VERSION_MINOR = 1
+LIBGLIB2_VERSION_MAJOR = 2.28
+LIBGLIB2_VERSION_MINOR = 6
 LIBGLIB2_VERSION = $(LIBGLIB2_VERSION_MAJOR).$(LIBGLIB2_VERSION_MINOR)
 LIBGLIB2_SOURCE = glib-$(LIBGLIB2_VERSION).tar.bz2
 LIBGLIB2_SITE = http://ftp.gnome.org/pub/gnome/sources/glib/$(LIBGLIB2_VERSION_MAJOR)
 
-LIBGLIB2_AUTORECONF = NO
-LIBGLIB2_LIBTOOL_PATCH = NO
 LIBGLIB2_INSTALL_STAGING = YES
 LIBGLIB2_INSTALL_TARGET = YES
 LIBGLIB2_INSTALL_STAGING_OPT = DESTDIR=$(STAGING_DIR) LDFLAGS=-L$(STAGING_DIR)/usr/lib install
@@ -33,9 +31,7 @@ LIBGLIB2_CONF_ENV =	\
 		ac_cv_func_getcwd_null=yes ac_cv_func_getdelim=yes \
 		ac_cv_func_mkstemp=yes utils_cv_func_mkstemp_limitations=no \
 		utils_cv_func_mkdir_trailing_slash_bug=no \
-		ac_cv_have_decl_malloc=yes gl_cv_func_malloc_0_nonnull=yes \
-		ac_cv_func_malloc_0_nonnull=yes ac_cv_func_calloc_0_nonnull=yes \
-		ac_cv_func_realloc_0_nonnull=yes jm_cv_func_gettimeofday_clobber=no \
+		jm_cv_func_gettimeofday_clobber=no \
 		gl_cv_func_working_readdir=yes jm_ac_cv_func_link_follows_symlink=no \
 		utils_cv_localtime_cache=no ac_cv_struct_st_mtim_nsec=no \
 		gl_cv_func_tzset_clobber=no gl_cv_func_getcwd_null=yes \
@@ -48,9 +44,13 @@ LIBGLIB2_CONF_ENV =	\
 		ac_cv_func_posix_getgrgid_r=no \
 		gt_cv_c_wchar_t=$(if $(BR2_USE_WCHAR),yes,no)
 
-LIBGLIB2_CONF_OPT = --enable-shared --enable-static
+HOST_LIBGLIB2_CONF_OPT = \
+		--disable-gtk-doc \
+		--enable-debug=no \
 
-LIBGLIB2_DEPENDENCIES = uclibc gettext libintl zlib host-pkgconfig host-libglib2
+LIBGLIB2_DEPENDENCIES = host-pkg-config host-libglib2 zlib $(if $(BR2_NEEDS_GETTEXT),gettext libintl)
+
+HOST_LIBGLIB2_DEPENDENCIES = host-pkg-config host-zlib
 
 ifneq ($(BR2_ENABLE_LOCALE),y)
 LIBGLIB2_DEPENDENCIES+=libiconv
@@ -61,52 +61,27 @@ LIBGLIB2_CONF_OPT += --with-libiconv=gnu
 LIBGLIB2_DEPENDENCIES+=libiconv
 endif
 
+define LIBGLIB2_REMOVE_DEV_FILES
+	rm -rf $(TARGET_DIR)/usr/lib/glib-2.0
+	rm -rf $(TARGET_DIR)/usr/share/glib-2.0/gettext
+	rmdir --ignore-fail-on-non-empty $(TARGET_DIR)/usr/share/glib-2.0
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,glib-genmarshal glib-gettextize glib-mkenums gobject-query gtester gtester-report)
+endef
+
+ifneq ($(BR2_HAVE_DEVFILES),y)
+LIBGLIB2_POST_INSTALL_TARGET_HOOKS += LIBGLIB2_REMOVE_DEV_FILES
+endif
+
+define LIBGLIB2_REMOVE_GDB_FILES
+	rm -rf $(TARGET_DIR)/usr/share/glib-2.0/gdb
+	rmdir --ignore-fail-on-non-empty $(TARGET_DIR)/usr/share/glib-2.0
+endef
+
+ifneq ($(BR2_PACKAGE_GDB),y)
+LIBGLIB2_POST_INSTALL_TARGET_HOOKS += LIBGLIB2_REMOVE_GDB_FILES
+endif
+
 $(eval $(call AUTOTARGETS,package,libglib2))
+$(eval $(call AUTOTARGETS,package,libglib2,host))
 
-# libglib2 for the host
-LIBGLIB2_HOST_DIR:=$(BUILD_DIR)/libglib2-$(LIBGLIB2_VERSION)-host
 LIBGLIB2_HOST_BINARY:=$(HOST_DIR)/usr/bin/glib-genmarshal
-
-$(DL_DIR)/$(LIBGLIB2_SOURCE):
-	$(call DOWNLOAD,$(LIBGLIB2_SITE),$(LIBGLIB2_SOURCE))
-
-$(STAMP_DIR)/host_libglib2_unpacked: $(DL_DIR)/$(LIBGLIB2_SOURCE)
-	mkdir -p $(LIBGLIB2_HOST_DIR)
-	$(INFLATE$(suffix $(LIBGLIB2_SOURCE))) $< | \
-		$(TAR) $(TAR_STRIP_COMPONENTS)=1 -C $(LIBGLIB2_HOST_DIR) $(TAR_OPTIONS) -
-	touch $@
-
-$(STAMP_DIR)/host_libglib2_configured: $(STAMP_DIR)/host_libglib2_unpacked $(STAMP_DIR)/host_pkgconfig_installed
-	(cd $(LIBGLIB2_HOST_DIR); rm -rf config.cache; \
-		$(HOST_CONFIGURE_OPTS) \
-		CFLAGS="$(HOST_CFLAGS)" \
-		LDFLAGS="$(HOST_LDFLAGS)" \
-		./configure \
-		--prefix="$(HOST_DIR)/usr" \
-		--sysconfdir="$(HOST_DIR)/etc" \
-		--enable-shared \
-		--disable-static \
-		--disable-gtk-doc \
-		--enable-debug=no \
-	)
-	touch $@
-
-$(STAMP_DIR)/host_libglib2_compiled: $(STAMP_DIR)/host_libglib2_configured
-	$(MAKE) -C $(LIBGLIB2_HOST_DIR)
-	touch $@
-
-$(STAMP_DIR)/host_libglib2_installed: $(STAMP_DIR)/host_libglib2_compiled
-	$(HOST_MAKE_ENV) $(MAKE) -C $(LIBGLIB2_HOST_DIR) install
-	touch $@
-
-host-libglib2: $(STAMP_DIR)/host_libglib2_installed
-
-host-libglib2-source: libglib2-source
-
-host-libglib2-clean:
-	rm -f $(addprefix $(STAMP_DIR)/host_libglib2_,unpacked configured compiled installed)
-	-$(MAKE) -C $(LIBGLIB2_HOST_DIR) uninstall
-	-$(MAKE) -C $(LIBGLIB2_HOST_DIR) clean
-
-host-libglib2-dirclean:
-	rm -rf $(LIBGLIB2_HOST_DIR)

@@ -3,16 +3,18 @@
 # gst-plugins-ugly
 #
 #############################################################
-GST_PLUGINS_UGLY_VERSION = 0.10.14
+GST_PLUGINS_UGLY_VERSION = 0.10.17
 GST_PLUGINS_UGLY_SOURCE = gst-plugins-ugly-$(GST_PLUGINS_UGLY_VERSION).tar.bz2
 GST_PLUGINS_UGLY_SITE = http://gstreamer.freedesktop.org/src/gst-plugins-ugly
-GST_PLUGINS_UGLY_LIBTOOL_PATCH = NO
 
 GST_PLUGINS_UGLY_CONF_OPT = \
-		$(DISABLE_NLS) \
 		--disable-examples
 
 GST_PLUGINS_UGLY_DEPENDENCIES = gstreamer gst-plugins-base
+
+ifeq ($(BR2_PACKAGE_ORC),y)
+GST_PLUGINS_UGLY_DEPENDENCIES += orc
+endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_UGLY_PLUGIN_ASFDEMUX),y)
 GST_PLUGINS_UGLY_CONF_OPT += --enable-asfdemux
@@ -67,6 +69,13 @@ GST_PLUGINS_UGLY_CONF_OPT += --enable-mad
 GST_PLUGINS_UGLY_DEPENDENCIES += libmad
 else
 GST_PLUGINS_UGLY_CONF_OPT += --disable-mad
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_UGLY_PLUGIN_MPEG2DEC),y)
+GST_PLUGINS_UGLY_CONF_OPT += --enable-mpeg2dec
+GST_PLUGINS_UGLY_DEPENDENCIES += libmpeg2
+else
+GST_PLUGINS_UGLY_CONF_OPT += --disable-mpeg2dec
 endif
 
 $(eval $(call AUTOTARGETS,package/multimedia,gst-plugins-ugly))

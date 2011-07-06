@@ -16,12 +16,6 @@ LIBOIL_INSTALL_TARGET = YES
 ifeq ($(BR2_avr32),y)
 LIBOIL_CONF_ENV = as_cv_unaligned_access=no
 endif
-ifeq ($(BR2_cris),y)
-LIBOIL_CONF_ENV = as_cv_unaligned_access=yes
-endif
-ifeq ($(BR2_nios2),y)
-LIBOIL_CONF_ENV = as_cv_unaligned_access=no
-endif
 ifeq ($(BR2_x86_64),y)
 LIBOIL_CONF_ENV = as_cv_unaligned_access=yes
 endif
@@ -36,11 +30,12 @@ ifeq ($(BR2_VFP_FLOAT),y)
 LIBOIL_CONF_OPT+=--enable-vfp
 endif
 
-LIBOIL_DEPENDENCIES = uclibc $(LIBOIL_GLIB_DEP)
+LIBOIL_DEPENDENCIES = $(LIBOIL_GLIB_DEP)
+
+define LIBOIL_TARGET_CLEANUP
+	rm -f $(TARGET_DIR)/usr/bin/oil-bugreport
+endef
+
+LIBOIL_POST_INSTALL_TARGET_HOOKS += LIBOIL_TARGET_CLEANUP
 
 $(eval $(call AUTOTARGETS,package,liboil))
-
-$(LIBOIL_HOOK_POST_INSTALL):
-	# Remove useless bugreport program from the target
-	rm -f $(TARGET_DIR)/usr/bin/oil-bugreport
-	touch $@

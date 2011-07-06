@@ -74,7 +74,7 @@ imgcreate=raumfeld/imgtool/imgcreate
 imginfo=raumfeld/imgtool/imginfo
 resize2fs=/sbin/resize2fs
 
-# ext2_img has to be created in binaries/ temporarily. will be removed later.
+# ext2_img is created in binaries temporarily; will be removed later
 ext2_img=binaries/$target.ext2
 
 target_img=binaries/$target-$version.img
@@ -121,7 +121,7 @@ fi
 echo "exec /$target.sh \$*" > $tmpdir/start-test.sh
 chmod a+x $tmpdir/start-test.sh
 
-# count entries in rootfs.tar
+# count entries in rootfs.tgz
 tar -zf $tmpdir/rootfs.tgz -t | wc -l > $tmpdir/rootfs.tgz.numfiles
 
 rm -f $ext2_img
@@ -137,6 +137,7 @@ echo "Bootstrap image for target $target" > $tmpdir/desc
 date >> $tmpdir/desc
 echo "Host $(hostname)" >> $tmpdir/desc
 
+mkdir -p binaries
 $imgcreate $kernel $tmpdir/desc $ext2_img $target_img
 
 

@@ -7,10 +7,9 @@ P0_TIMESERVER_VERSION:=$(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
 P0_TIMESERVER_DIR:=$(BUILD_DIR)/p0-timeserver-$(P0_TIMESERVER_VERSION)
 P0_TIMESERVER_TARGET_DIR:=raumfeld/p0-timeserver
 P0_TIMESERVER_BINARY:=$(P0_TIMESERVER_TARGET_DIR)/p0-timeserver
-P0_TIMESERVER_CROSS_PREFIX:=$(BUILD_DIR)/..
+P0_TIMESERVER_CROSS_PREFIX:=$(BASE_DIR)
 
-
-P0_TIMESERVER_DEPENDENCIES = host-pkgconfig libraumfeld
+P0_TIMESERVER_DEPENDENCIES = host-pkg-config libraumfeld
 
 ifeq ($(ARCH),arm)
 P0_TIMESERVER_CROSS = ARM
@@ -26,7 +25,8 @@ $(P0_TIMESERVER_DIR)/.bzr:
 	if ! test -d $(P0_TIMESERVER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p p0-timeserver-$(P0_TIMESERVER_VERSION); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-timeserver/$(P0_TIMESERVER_VERSION) p0-timeserver-$(P0_TIMESERVER_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-timeserver/$(P0_TIMESERVER_VERSION) p0-timeserver-$(P0_TIMESERVER_VERSION); \
+		cd p0-timeserver-trunk && patch -p0 < ../../../package/raumfeld/p0-timeserver/p0-timeserver-buildroot.patch) \
 	fi
 	touch -c $@
 

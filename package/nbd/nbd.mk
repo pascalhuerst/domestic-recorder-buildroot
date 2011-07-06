@@ -1,57 +1,26 @@
 #############################################################
 #
-# nbd (client only)
+# nbd
 #
 #############################################################
 
-NBD_VERSION=2.9.11
-NBD_SOURCE=nbd-$(NBD_VERSION).tar.bz2
-NBD_CAT:=$(BZCAT)
+NBD_VERSION = 2.9.15
+NBD_SOURCE = nbd-$(NBD_VERSION).tar.bz2
 NBD_SITE=http://$(BR2_SOURCEFORGE_MIRROR).dl.sourceforge.net/sourceforge/nbd/
-NBD_DIR=$(BUILD_DIR)/nbd-$(NBD_VERSION)
+NBD_CONF_OPT = $(if $(BR2_LARGEFILE),--enable-lfs,--disable-lfs)
+NBD_DEPENDENCIES = libglib2
 
-$(DL_DIR)/$(NBD_SOURCE):
-	$(call DOWNLOAD,$(NBD_SITE),$(NBD_SOURCE))
-
-$(NBD_DIR)/.unpacked: $(DL_DIR)/$(NBD_SOURCE)
-	$(NBD_CAT) $(DL_DIR)/$(NBD_SOURCE) | tar -C $(BUILD_DIR) $(TAR_OPTIONS) -
-	touch $@
-
-$(NBD_DIR)/.configured: $(NBD_DIR)/.unpacked
-	(cd $(NBD_DIR); rm -rf config.cache; \
-		$(TARGET_CONFIGURE_OPTS) \
-		$(TARGET_CONFIGURE_ARGS) \
-		CC=$(TARGET_CC) \
-		./configure \
-		--target=$(GNU_TARGET_NAME) \
-		--host=$(GNU_TARGET_NAME) \
-		--build=$(GNU_HOST_NAME) \
-		--prefix=/usr \
-	)
-	touch $@
-
-$(NBD_DIR)/nbd-client: $(NBD_DIR)/.configured
-	$(MAKE) -C $(NBD_DIR) nbd-client
-
-$(TARGET_DIR)/sbin/nbd-client: $(NBD_DIR)/nbd-client
-	cp $< $@
-	$(STRIPCMD) $@
-
-nbd: uclibc libglib2 $(TARGET_DIR)/sbin/nbd-client
-
-nbd-source: $(DL_DIR)/$(NBD_SOURCE)
-
-nbd-clean:
-	rm -f $(TARGET_DIR)/sbin/nbd-client
-	-$(MAKE) -C $(NBD_DIR) clean
-
-nbd-dirclean:
-	rm -rf $(NBD_DIR)
-#############################################################
-#
-# Toplevel Makefile options
-#
-#############################################################
-ifeq ($(BR2_PACKAGE_NBD),y)
-TARGETS+=nbd
+ifneq ($(BR2_NBD_CLIENT),y)
+	NBD_TOREMOVE += nbd-client
 endif
+ifneq ($(BR2_NBD_SERVER),y)
+	NBD_TOREMOVE += nbd-server
+endif
+
+define NBD_CLEANUP_AFTER_INSTALL
+	rm -f $(addprefix $(TARGET_DIR)/usr/sbin/, $(NBD_TOREMOVE))
+endef
+
+NBD_POST_INSTALL_TARGET_HOOKS += NBD_CLEANUP_AFTER_INSTALL
+
+$(eval $(call AUTOTARGETS,package,nbd))

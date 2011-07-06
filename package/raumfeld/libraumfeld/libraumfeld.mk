@@ -26,15 +26,15 @@ LIBRAUMFELD_CONF_OPT += --enable-profiling
 endif
 
 LIBRAUMFELD_DEPENDENCIES = \
-	host-pkgconfig host-libglib2 \
-	avahi dbus-glib gupnp-av openssl libarchive libunwind
+	host-pkg-config host-libglib2 \
+	avahi dbus-glib gupnp-av openssl libarchive
 
 $(eval $(call AUTOTARGETS,package/raumfeld,libraumfeld))
 
 $(LIBRAUMFELD_DIR)/.bzr:
 	if ! test -d $(LIBRAUMFELD_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
-	 	$(BZR_CO) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld/$(LIBRAUMFELD_VERSION) libraumfeld-$(LIBRAUMFELD_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld/$(LIBRAUMFELD_VERSION) libraumfeld-$(LIBRAUMFELD_VERSION)) \
 	fi
 
 $(LIBRAUMFELD_DIR)/.stamp_downloaded: $(LIBRAUMFELD_DIR)/.bzr
@@ -43,10 +43,3 @@ $(LIBRAUMFELD_DIR)/.stamp_downloaded: $(LIBRAUMFELD_DIR)/.bzr
 $(LIBRAUMFELD_DIR)/.stamp_extracted: $(LIBRAUMFELD_DIR)/.stamp_downloaded
 	(cd $(LIBRAUMFELD_DIR); gtkdocize)
 	touch $@
-
-ifeq ($(BR2_arm),y)
-$(LIBRAUMFELD_HOOK_POST_CONFIGURE):
-	$(call MESSAGE,"Patching libtool for static linking")
-	cat package/raumfeld/libraumfeld/libtool-static-arm.patch | patch -p1 -d $(LIBRAUMFELD_DIR)
-	touch $@
-endif

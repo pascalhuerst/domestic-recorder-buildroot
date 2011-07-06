@@ -3,20 +3,17 @@
 # gdb
 #
 ######################################################################
-GDB_VERSION:=$(strip $(subst ",, $(BR2_GDB_VERSION)))
-#"))
+GDB_VERSION:=$(call qstrip,$(BR2_GDB_VERSION))
 
-GDB_OFFICIAL_VERSION:=$(GDB_VERSION)$(VENDOR_SUFFIX)$(VENDOR_GDB_RELEASE)
-
-GDB_SOURCE:=gdb-$(GDB_OFFICIAL_VERSION).tar.bz2
+GDB_SOURCE:=gdb-$(GDB_VERSION).tar.bz2
 GDB_CAT:=$(BZCAT)
 
-ifeq ($(BR2_TOOLCHAIN_EXTERNAL_SOURCE),y)
-GDB_SITE:=$(VENDOR_SITE)
-GDB_PATCH_DIR:=toolchain/gdb/ext_source/$(VENDOR_PATCH_DIR)/$(GDB_OFFICIAL_VERSION)
+ifeq ($(findstring avr32,$(GDB_VERSION)),avr32)
+ GDB_SITE:=ftp://www.at91.com/pub/buildroot/
+ GDB_PATCH_DIR:=toolchain/gdb/$(GDB_VERSION)
 else
-GDB_SITE:=$(BR2_GNU_MIRROR)/gdb
-GDB_PATCH_DIR:=toolchain/gdb/$(GDB_OFFICIAL_VERSION)
+ GDB_SITE:=$(BR2_GNU_MIRROR)/gdb
+ GDB_PATCH_DIR:=toolchain/gdb/$(GDB_VERSION)
 endif
 
 ifneq ($(filter xtensa%,$(ARCH)),)
@@ -24,21 +21,23 @@ include target/xtensa/patch.in
 GDB_PATCH_EXTRA:=$(call XTENSA_PATCH,gdb,$(GDB_PATCH_DIR),. ..)
 endif
 
-GDB_DIR:=$(TOOL_BUILD_DIR)/gdb-$(GDB_OFFICIAL_VERSION)
+GDB_DIR:=$(TOOLCHAIN_DIR)/gdb-$(GDB_VERSION)
 
 $(DL_DIR)/$(GDB_SOURCE):
 	$(call DOWNLOAD,$(GDB_SITE),$(GDB_SOURCE))
 
 gdb-unpacked: $(GDB_DIR)/.unpacked
 $(GDB_DIR)/.unpacked: $(DL_DIR)/$(GDB_SOURCE)
-	mkdir -p $(TOOL_BUILD_DIR)
-	$(GDB_CAT) $(DL_DIR)/$(GDB_SOURCE) | tar -C $(TOOL_BUILD_DIR) $(TAR_OPTIONS) -
+	mkdir -p $(TOOLCHAIN_DIR)
+	$(GDB_CAT) $(DL_DIR)/$(GDB_SOURCE) | tar -C $(TOOLCHAIN_DIR) $(TAR_OPTIONS) -
 ifeq ($(GDB_VERSION),snapshot)
 	GDB_REAL_DIR=$(shell \
 		tar jtf $(DL_DIR)/$(GDB_SOURCE) | head -1 | cut -d"/" -f1)
-	ln -sf $(TOOL_BUILD_DIR)/$(shell tar jtf $(DL_DIR)/$(GDB_SOURCE) | head -1 | cut -d"/" -f1) $(GDB_DIR)
+	ln -sf $(TOOLCHAIN_DIR)/$(shell tar jtf $(DL_DIR)/$(GDB_SOURCE) | head -1 | cut -d"/" -f1) $(GDB_DIR)
 endif
+ifneq ($(wildcard $(GDB_PATCH_DIR)),)
 	toolchain/patch-kernel.sh $(GDB_DIR) $(GDB_PATCH_DIR) \*.patch $(GDB_PATCH_EXTRA)
+endif
 	$(CONFIG_UPDATE) $(@D)
 	touch $@
 
@@ -74,7 +73,7 @@ $(GDB_TARGET_DIR)/.configured: $(GDB_DIR)/.unpacked
 		CFLAGS_FOR_TARGET="$(TARGET_CFLAGS) $(TARGET_LDFLAGS) -Wno-error" \
 		CFLAGS="$(TARGET_CFLAGS) $(TARGET_LDFLAGS) -Wno-error" \
 		$(GDB_TARGET_CONFIGURE_VARS) \
-		$(GDB_DIR)/configure \
+		$(GDB_DIR)/configure $(QUIET) \
 		--cache-file=/dev/null \
 		--build=$(GNU_HOST_NAME) \
 		--host=$(REAL_GNU_TARGET_NAME) \
@@ -94,9 +93,10 @@ endif
 	touch $@
 
 $(GDB_TARGET_DIR)/gdb/gdb: $(GDB_TARGET_DIR)/.configured
-	$(MAKE) CC=$(TARGET_CC) MT_CFLAGS="$(TARGET_CFLAGS)" \
+	# force ELF support since it fails due to BFD linking problems
+	gdb_cv_var_elf=yes \
+	$(MAKE) CC="$(TARGET_CC)" MT_CFLAGS="$(TARGET_CFLAGS)" \
 		-C $(GDB_TARGET_DIR)
-	$(STRIPCMD) $(GDB_TARGET_DIR)/gdb/gdb
 
 $(TARGET_DIR)/usr/bin/gdb: $(GDB_TARGET_DIR)/gdb/gdb
 	install -c -D $(GDB_TARGET_DIR)/gdb/gdb $(TARGET_DIR)/usr/bin/gdb
@@ -125,7 +125,7 @@ $(GDB_SERVER_DIR)/.configured: $(GDB_DIR)/.unpacked
 		$(TARGET_CONFIGURE_OPTS) \
 		gdb_cv_func_sigsetjmp=yes \
 		bash_cv_have_mbstate_t=yes \
-		$(GDB_DIR)/gdb/gdbserver/configure \
+		$(GDB_DIR)/gdb/gdbserver/configure $(QUIET) \
 		--cache-file=/dev/null \
 		--build=$(GNU_HOST_NAME) \
 		--host=$(REAL_GNU_TARGET_NAME) \
@@ -149,9 +149,8 @@ $(GDB_SERVER_DIR)/.configured: $(GDB_DIR)/.unpacked
 	touch $@
 
 $(GDB_SERVER_DIR)/gdbserver: $(GDB_SERVER_DIR)/.configured
-	$(MAKE) CC=$(TARGET_CC) MT_CFLAGS="$(TARGET_CFLAGS)" \
+	$(MAKE) CC="$(TARGET_CC)" MT_CFLAGS="$(TARGET_CFLAGS)" \
 		-C $(GDB_SERVER_DIR)
-	$(STRIPCMD) $(GDB_SERVER_DIR)/gdbserver
 
 $(TARGET_DIR)/usr/bin/gdbserver: $(GDB_SERVER_DIR)/gdbserver
 ifeq ($(BR2_CROSS_TOOLCHAIN_TARGET_UTILS),y)
@@ -162,6 +161,8 @@ endif
 	install -c -D $(GDB_SERVER_DIR)/gdbserver $(TARGET_DIR)/usr/bin/gdbserver
 
 gdbserver: $(TARGET_DIR)/usr/bin/gdbserver
+
+gdbserver-source: $(DL_DIR)/$(GDB_SOURCE)
 
 gdbserver-clean:
 	-$(MAKE) -C $(GDB_SERVER_DIR) clean
@@ -175,14 +176,15 @@ gdbserver-dirclean:
 #
 ######################################################################
 
-GDB_HOST_DIR:=$(TOOL_BUILD_DIR)/gdbhost-$(GDB_VERSION)
+GDB_HOST_DIR:=$(TOOLCHAIN_DIR)/gdbhost-$(GDB_VERSION)
 
 $(GDB_HOST_DIR)/.configured: $(GDB_DIR)/.unpacked
 	mkdir -p $(GDB_HOST_DIR)
 	(cd $(GDB_HOST_DIR); \
 		gdb_cv_func_sigsetjmp=yes \
 		bash_cv_have_mbstate_t=yes \
-		$(GDB_DIR)/configure \
+		$(HOST_CONFIGURE_OPTS) \
+		$(GDB_DIR)/configure $(QUIET) \
 		--cache-file=/dev/null \
 		--prefix=$(STAGING_DIR) \
 		--build=$(GNU_HOST_NAME) \
@@ -203,12 +205,12 @@ $(GDB_HOST_DIR)/gdb/gdb: $(GDB_HOST_DIR)/.configured
 
 $(TARGET_CROSS)gdb: $(GDB_HOST_DIR)/gdb/gdb
 	install -c $(GDB_HOST_DIR)/gdb/gdb $(TARGET_CROSS)gdb
-	ln -snf ../../bin/$(REAL_GNU_TARGET_NAME)-gdb \
-		$(STAGING_DIR)/usr/$(REAL_GNU_TARGET_NAME)/bin/gdb
 	ln -snf $(REAL_GNU_TARGET_NAME)-gdb \
-		$(STAGING_DIR)/usr/bin/$(GNU_TARGET_NAME)-gdb
+		$(HOST_DIR)/usr/bin/$(GNU_TARGET_NAME)-gdb
 
-gdbhost: $(TARGET_CROSS)gdb
+gdbhost: host-expat $(TARGET_CROSS)gdb
+
+gdbhost-source: $(DL_DIR)/$(GDB_SOURCE)
 
 gdbhost-clean:
 	-$(MAKE) -C $(GDB_HOST_DIR) clean

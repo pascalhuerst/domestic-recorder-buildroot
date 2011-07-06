@@ -1,0 +1,4 @@
+# MSR devices
+/dev/cpu       d       755     0       0       -       -       -       -       
+/dev/cpu/0     d       755     0       0       -       -       -       -       
+/dev/cpu/0/msr c       600     0       0       202     0       0       0       
