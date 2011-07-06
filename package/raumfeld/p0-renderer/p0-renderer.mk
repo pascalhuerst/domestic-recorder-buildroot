@@ -25,8 +25,7 @@ $(P0_RENDERER_DIR)/.bzr:
 	if ! test -d $(P0_RENDERER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p p0-renderer-$(P0_RENDERER_VERSION); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer/$(P0_RENDERER_VERSION) p0-renderer-$(P0_RENDERER_VERSION); \
-                cd p0-renderer-trunk && patch -p0 < ../../../package/raumfeld/p0-renderer/p0-renderer-buildroot.patch) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer/$(P0_RENDERER_VERSION) p0-renderer-$(P0_RENDERER_VERSION)) \
 	fi
 	touch -c $@
 

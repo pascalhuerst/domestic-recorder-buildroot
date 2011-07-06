@@ -25,8 +25,7 @@ $(MASTER_PROCESS_DIR)/.bzr:
 	if ! test -d $(MASTER_PROCESS_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p master-process-$(MASTER_PROCESS_VERSION); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/master-process/$(MASTER_PROCESS_VERSION) master-process-$(MASTER_PROCESS_VERSION); \
-		cd master-process-trunk && patch -p0 < ../../../package/raumfeld/master-process/master-process-buildroot.patch) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/master-process/$(MASTER_PROCESS_VERSION) master-process-$(MASTER_PROCESS_VERSION)) \
 	fi
 	touch -c $@
 

@@ -21,8 +21,7 @@ $(LOOPBACKTEST_DIR)/.bzr:
 	if ! test -d $(LOOPBACKTEST_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p loopbacktest-$(LOOPBACKTEST_VERSION); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer/$(LOOPBACKTEST_VERSION) loopbacktest-$(LOOPBACKTEST_VERSION); \
-		cd loopbacktest-trunk && patch -p0 < ../../../package/raumfeld/p0-renderer/p0-renderer-buildroot.patch) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-renderer/$(LOOPBACKTEST_VERSION) loopbacktest-$(LOOPBACKTEST_VERSION)) \
 	fi
 	touch -c $@
 

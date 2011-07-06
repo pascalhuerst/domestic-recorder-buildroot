@@ -25,8 +25,7 @@ $(P0_TIMESERVER_DIR)/.bzr:
 	if ! test -d $(P0_TIMESERVER_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
 		mkdir -p p0-timeserver-$(P0_TIMESERVER_VERSION); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-timeserver/$(P0_TIMESERVER_VERSION) p0-timeserver-$(P0_TIMESERVER_VERSION); \
-		cd p0-timeserver-trunk && patch -p0 < ../../../package/raumfeld/p0-timeserver/p0-timeserver-buildroot.patch) \
+	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/p0-timeserver/$(P0_TIMESERVER_VERSION) p0-timeserver-$(P0_TIMESERVER_VERSION)) \
 	fi
 	touch -c $@
 
