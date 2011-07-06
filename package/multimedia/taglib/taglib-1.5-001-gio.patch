@@ -312,7 +312,7 @@ diff -ur taglib-1.5-orig/taglib/toolkit/tfile.cpp taglib-1.5/taglib/toolkit/tfil
  void File::clear()
  {
 -  clearerr(d->file);
-+  FILE_IO::clearerr(d->file);
++  // FILE_IO::clearerr(d->file);
  }
  
  long File::tell() const
