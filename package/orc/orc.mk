@@ -10,3 +10,4 @@ ORC_AUTORECONF = YES
 ORC_INSTALL_STAGING = YES
 
 $(eval $(call AUTOTARGETS,package,orc))
+$(eval $(call AUTOTARGETS,package,orc,host))
