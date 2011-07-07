@@ -9,7 +9,7 @@ LOOPBACKTEST_TARGET_DIR:=raumfeld/p0-audiotest
 LOOPBACKTEST_BINARY:=$(LOOPBACKTEST_TARGET_DIR)/p0-audiotest
 LOOPBACKTEST_CROSS_PREFIX:=$(BASE_DIR)
 
-LOOPBACKTEST_DEPENDENCIES = host-pkg-config alsa-lib orc libglib2
+LOOPBACKTEST_DEPENDENCIES = host-pkg-config host-orc alsa-lib orc libglib2
 
 ifeq ($(ARCH),arm)
 LOOPBACKTEST_CROSS=ARM
