@@ -1,0 +1,11 @@
+--- taglib-extras-0.1.6-orig/taglib-extras/wav/wavproperties.h	2009-03-12 22:12:54.000000000 +0100
++++ taglib-extras-0.1.6/taglib-extras/wav/wavproperties.h	2011-07-07 07:51:19.220650066 +0200
+@@ -26,6 +26,8 @@
+ #ifndef TAGLIB_WAVPROPERTIES_H
+ #define TAGLIB_WAVPROPERTIES_H
+ 
++#include <stdint.h>
++
+ #include <taglib-extras_export.h>
+ #include <audioproperties.h>
+ #include <tstring.h>
