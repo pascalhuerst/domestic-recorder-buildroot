@@ -48,14 +48,14 @@ privatekey=raumfeld/rsa-private.key
 
 # map target name to hardware ID
 # keep this in sync with the enum RaumfeldPlatform in libraumfeld
-names=( "Unknown" "Prototype" "Controller" "Connector" "Speaker S" "Base" "Speaker M" )
+names=( "Unknown" "Prototype" "Controller" "Connector" "Speaker S" "Base" "Speaker M" "Speaker L" "Single Speaker" )
 
 case $target in
 	remotecontrol-arm)
 		hardwareids="2"
 		;;
 	audioadapter-arm)
-		hardwareids="3 4 6"
+		hardwareids="3 4 6 7 8"
 		;;
 	base-geode)
 		hardwareids="5"
