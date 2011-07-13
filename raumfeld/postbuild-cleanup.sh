@@ -64,7 +64,6 @@ rm -f  $1/usr/share/alsa/pcm/side.conf
 rm -f  $1/usr/share/alsa/pcm/surround*.conf
 rm -fr $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/gdb
-rm -fr $1/usr/share/glib-2.0
 rm -fr $1/usr/share/pkgconfig
 rm -f  $1/usr/share/xml/iso-codes/iso_639.xml
 rm -f  $1/usr/share/xml/iso-codes/iso_639_3.xml
