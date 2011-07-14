@@ -2,17 +2,34 @@
 
 	Fixes all over the tree and new features.
 
-	Toolchain: uClibc 0.9.32 / NPTL support, ext-toolchain-wrapper
-	improvements, improved non-MMU support.
+	Toolchain: uClibc 0.9.32 / NPTL support, 0.9.29 removed,
+	ext-toolchain-wrapper improvements, improved non-MMU
+	support. GCC 4.3.6 / 4.6.1.
 
-	Updated/fixed packages: berkeleydb, bmon, busybox, dbus,
-	dbus-glib, ethtool, ffmpeg, gst-plugins-bad, libdnet,
-	libmpeg2, mtd-utils, qt, sudo, synergy, usbutils, webkit
+	GENTARGETS infrastructure extended to cover bootloaders and
+	Linux kernel as well. Options to retrive Linux/U-Boot from a
+	custom git repo instead of upstream tarballs.
+	Support for Linux 3.x and release candiate tarballs.
+	X-Loader bootloader for omap added.
 
-	New packages: live555, sredird, statserial, yajl
+	Make source/external-deps now also works for external
+	toolchains / crosstool-ng backend.
+
+	Updated/fixed packages: berkeleydb, bmon, bridge-utils,
+	busybox, dbus, dbus-glib, ethtool, ffmpeg, gst-plugins-bad,
+	gst-plugins-base, lame, libarchive, libdnet, libgcrypt,
+	libgtk2, libmpeg2, lighttpd, mtd-utils, oprofile, qt, ruby,
+	sudo, sqlite, synergy, usbutils, valgrind, webkit
+
+	New packages: acl, attr, ebtables, gnutls, libargtable2,
+	libiqrf, libnspr, libnss, libroxml, live555, mxml, rsyslog,
+	sredird, statserial, stunnel, yajl
 
 	Issues resolved (http://bugs.uclibc.org):
 
+	#3559: libnspr: Add new package
+	#3595: patch to add libroxml
+	#3565: libnss: Add new package
 	#3907: 2011.05 - Qt 4.7.3 not building on ARM
 
 2011.05, Released May 27th, 2011:

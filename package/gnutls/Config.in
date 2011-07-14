@@ -1,11 +1,8 @@
 config BR2_PACKAGE_GNUTLS
-	select BR2_PACKAGE_LIBGCRYPT
 	bool "gnutls"
+	select BR2_PACKAGE_LIBGCRYPT
 	help
-	  gnutls is an HTTP client/server library. It implements the
-	  proposed standards by the IETF's TLS working group. It uses
-	  GObject and the GLib main loop, to integrate well with GNOME
-	  applications.
+	  GnuTLS is a secure communications library implementing the SSL
+	  and TLS protocols and technologies around them.
 
-	  http://www.gnu.org/software/gnutls/
-
+	  http://www.gnu.org/software/gnutls/gnutls.html

@@ -33,6 +33,11 @@ ifeq ($(BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_MDEV),y)
 define BUSYBOX_INSTALL_MDEV_SCRIPT
 	install -m 0755 package/busybox/S10mdev $(TARGET_DIR)/etc/init.d
 endef
+define BUSYBOX_INSTALL_MDEV_CONF
+	[ -f $(TARGET_DIR)/etc/mdev.conf ] || \
+		install -D -m 0644 package/busybox/mdev.conf \
+			$(TARGET_DIR)/etc/mdev.conf
+endef
 define BUSYBOX_SET_MDEV
 	$(call KCONFIG_ENABLE_OPT,CONFIG_MDEV,$(BUSYBOX_BUILD_CONFIG))
 	$(call KCONFIG_ENABLE_OPT,CONFIG_FEATURE_MDEV_CONF,$(BUSYBOX_BUILD_CONFIG))
@@ -122,6 +127,13 @@ define BUSYBOX_DISABLE_MMU_APPLETS
 endef
 endif
 
+define BUSYBOX_INSTALL_LOGGING_SCRIPT
+	if grep -q CONFIG_SYSLOGD=y $(@D)/.config; then \
+		$(INSTALL) -m 0755 -D package/busybox/S01logging \
+			$(TARGET_DIR)/etc/init.d/S01logging; \
+	else rm -f $(TARGET_DIR)/etc/init.d/S01logging; fi
+endef
+
 # We do this here to avoid busting a modified .config in configure
 BUSYBOX_POST_EXTRACT_HOOKS += BUSYBOX_COPY_CONFIG
 
@@ -152,6 +164,8 @@ define BUSYBOX_INSTALL_TARGET_CMDS
 			$(TARGET_DIR)/usr/share/udhcpc/default.script; \
 	fi
 	$(BUSYBOX_INSTALL_MDEV_SCRIPT)
+	$(BUSYBOX_INSTALL_MDEV_CONF)
+	$(BUSYBOX_INSTALL_LOGGING_SCRIPT)
 endef
 
 define BUSYBOX_UNINSTALL_TARGET_CMDS
