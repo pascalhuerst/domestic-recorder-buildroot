@@ -12,6 +12,7 @@ rm -fr $1/usr/include
 rm -f  $1/usr/bin/arm-linux-directfb-csource
 rm -f  $1/usr/bin/certtool
 rm -f  $1/usr/bin/dbus-binding-tool
+rm -f  $1/usr/bin/directfb-config
 rm -f  $1/usr/bin/faad
 rm -f  $1/usr/bin/flac
 rm -f  $1/usr/bin/gdbus
@@ -26,7 +27,9 @@ rm -f  $1/usr/bin/gst-visualise-0.10
 rm -f  $1/usr/bin/gtester
 rm -f  $1/usr/bin/gtester-report
 rm -f  $1/usr/bin/gupnp-binding-tool
+rm -f  $1/usr/bin/gvfs-trash
 rm -f  $1/usr/bin/iconv
+rm -f  $1/usr/bin/jpegtran
 rm -f  $1/usr/bin/mail-lock
 rm -f  $1/usr/bin/mail-touchlock
 rm -f  $1/usr/bin/mail-unlock
@@ -91,13 +94,12 @@ if test -n "$2"; then
     find $1/usr/bin -type f -executable -not -name remote-control -exec $STRIPCMD {} \;
     find $1/usr/sbin -type f -executable -exec $STRIPCMD {} \;
     find $1/usr/libexec -type f -executable -exec $STRIPCMD {} \;
+    find $1/usr/lib -type f -executable -name 'libcrypto*' -exec $STRIPCMD {} \;
     find $1/usr/lib -type f -executable -name 'libgmp*' -exec $STRIPCMD {} \;
     find $1/usr/lib -type f -executable -name 'libgnutls*' -exec $STRIPCMD {} \;
     find $1/usr/lib -type f -executable -name 'libgst*' -exec $STRIPCMD {} \;
-    find $1/usr/lib -type f -executable -name 'libhogweed*' -exec $STRIPCMD {} \;
-    find $1/usr/lib -type f -executable -name 'libnettle*' -exec $STRIPCMD {} \;
+    find $1/usr/lib -type f -executable -name 'libnl*' -exec $STRIPCMD {} \;
     find $1/usr/lib -type f -executable -name 'libsmb*' -exec $STRIPCMD {} \;
-    find $1/usr/lib/udev -type f -executable -exec $STRIPCMD {} \;
     if test -d $1/usr/lib/alsa-lib; then
         find $1/usr/lib/alsa-lib -type f -executable -exec $STRIPCMD {} \;
     fi
