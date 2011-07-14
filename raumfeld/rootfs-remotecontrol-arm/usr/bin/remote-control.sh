@@ -1,10 +1,9 @@
 #!/bin/sh
 
-echo "starting gvfsd"
+echo "starting session dbus"
 # export GVFS_SMB_DEBUG=3
 # export GVFS_DEBUG=1
 eval `dbus-launch --sh-syntax`
-/usr/libexec/gvfsd &
 
 while (true); do
 
