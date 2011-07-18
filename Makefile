@@ -494,9 +494,6 @@ endif
 
 source: $(TARGETS_SOURCE) $(HOST_SOURCE)
 
-_source-check:
-	$(MAKE) DL_MODE=SOURCE_CHECK $(EXTRAMAKEARGS) source
-
 external-deps:
 	@$(MAKE) -Bs DL_MODE=SHOW_EXTERNAL_DEPS $(EXTRAMAKEARGS) source | sort -u
 
@@ -601,7 +598,7 @@ savedefconfig: $(BUILD_DIR)/buildroot-config/conf outputmakefile
 
 # check if download URLs are outdated
 source-check: allyesconfig
-	$(MAKE) $(EXTRAMAKEARGS) _source-check
+	$(MAKE) DL_MODE=SOURCE_CHECK $(EXTRAMAKEARGS) source
 
 endif # ifeq ($(BR2_HAVE_DOT_CONFIG),y)
 
@@ -677,7 +674,7 @@ endif
 	@echo '  make V=0|1             - 0 => quiet build (default), 1 => verbose build'
 	@echo '  make O=dir             - Locate all output files in "dir", including .config'
 	@echo
-	@$(foreach b, $(notdir $(wildcard $(TOPDIR)/configs/*_defconfig)), \
+	@$(foreach b, $(sort $(notdir $(wildcard $(TOPDIR)/configs/*_defconfig))), \
 	  printf "  %-35s - Build for %s\\n" $(b) $(b:_defconfig=);)
 	@echo
 	@echo 'See docs/README and docs/buildroot.html for further details'
