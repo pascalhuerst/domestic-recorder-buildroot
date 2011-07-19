@@ -35,6 +35,8 @@ rm -f  $1/usr/bin/mail-touchlock
 rm -f  $1/usr/bin/mail-unlock
 rm -f  $1/usr/bin/metaflac
 rm -f  $1/usr/bin/nettle-lfib-stream
+rm -f  $1/usr/bin/orcc
+rm -f  $1/usr/bin/orc-bugreport
 rm -f  $1/usr/bin/p11tool
 rm -f  $1/usr/bin/pkcs1-conv
 rm -f  $1/usr/bin/psktool
