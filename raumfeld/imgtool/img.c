@@ -1,4 +1,4 @@
-/* 
+/*
  * img tool suite
  *
  * (c) 2009 Daniel Mack
@@ -29,7 +29,7 @@ static sha_256_t img_checksum(int fd, size_t fsize, off_t offset)
 	sha_256_t sha = { 0 };
 	void *buf;
 
-	buf = mmap(NULL, fsize, PROT_READ, MAP_PRIVATE, fd, offset);
+	buf = mmap(NULL, fsize, PROT_READ, MAP_SHARED, fd, offset);
 
 	if (!buf) {
 		perror("mmap");
