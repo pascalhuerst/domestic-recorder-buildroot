@@ -1,15 +1,3 @@
-From b59b506279149b7ec55bc8339ff39e8b7943e5ad Mon Sep 17 00:00:00 2001
-From: Ken Werner <ken.werner@linaro.org>
-Date: Thu, 30 Jun 2011 13:15:21 +0200
-Subject: [PATCH] Fix inline assembly.
-
-Remove the third colon if the clobber list is not present.
-
-Signed-off-by: Ken Werner <ken.werner@linaro.org>
----
- src/arm/Gresume.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
-
 diff --git a/src/arm/Gresume.c b/src/arm/Gresume.c
 index c870f5f..f496e99 100644
 --- a/src/arm/Gresume.c
@@ -32,6 +20,3 @@ index c870f5f..f496e99 100644
        );
     }
  #else
--- 
-1.7.1
-
