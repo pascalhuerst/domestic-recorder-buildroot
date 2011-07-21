@@ -1,0 +1,20 @@
+ONLY A HACK FOR BOOTLOADER UPDATES!
+---
+ arch/arm/mach-pxa/raumfeld.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/arch/arm/mach-pxa/raumfeld.c b/arch/arm/mach-pxa/raumfeld.c
+index e3ffe5a..602cd9e 100644
+--- a/arch/arm/mach-pxa/raumfeld.c
++++ b/arch/arm/mach-pxa/raumfeld.c
+@@ -327,7 +327,7 @@ static struct mtd_partition raumfeld_nand_partitions[] = {
+                .name           = "Bootloader",
+                .offset         = 0,
+                .size           = 0xa0000,
+-               .mask_flags     = MTD_WRITEABLE, /* force read-only */
++               .mask_flags     = 0, /* force read-only */
+        },
+        {
+                .name           = "BootloaderEnvironment",
+-- 
+1.7.5.4
