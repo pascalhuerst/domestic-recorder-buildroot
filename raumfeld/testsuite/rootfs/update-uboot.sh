@@ -3,11 +3,9 @@
 hw=$(cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' ')
 rev=$(fw_printenv boardrev | cut -f 2 -d'=')
 
-# ancient version of our hardware do not report the revision.
-# default to '1' in this case.
-
 if [ -z "$rev" ]; then
-	rev="0x1"
+    echo "Can't determine current board revision, not updating."
+    exit 0
 fi
 
 # check if an update is needed
