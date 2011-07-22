@@ -98,16 +98,13 @@ case $target in
 base-geode-coreboot)
 	cp -a raumfeld/testsuite/coreboot $tmpdir/
 	;;
-base-geode-init)
+base-geode-init|base-geode-flash)
         add_raumfeld_demo
         ;;
-base-geode-flash)
-        add_raumfeld_demo
-	;;
-*-arm-uboot)
+*-arm-uboot|*-arm-flash)
 	cp -a raumfeld/U-Boot/* $tmpdir/
 	;;
-audioadapter-arm-*)
+audioadapter-arm-init|audioadapter-arm-final)
         add_audiotest_wav
         ;;
 esac
