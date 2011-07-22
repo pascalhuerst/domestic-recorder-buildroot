@@ -106,7 +106,7 @@ case $target in
 	audioadapter-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 ZIMAGE=binaries/initramfs-arm/zImage
-                BOOTLOADERS="raumfeld/U-Boot/raumfeld-connector.bin raumfeld/U-Boot/raumfeld-speaker.bin" 
+                BOOTLOADERS=raumfeld/U-Boot/raumfeld-connector.bin,raumfeld/U-Boot/raumfeld-speaker.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -155,5 +155,5 @@ if [ -n "$ROOTFS" ]; then
 	--target=$target \
 	--targz=$ROOTFS \
         --kexec=$ZIMAGE \
-        --bootloaders=\"$BOOTLOADERS\"
+        --bootloaders=$BOOTLOADERS
 fi

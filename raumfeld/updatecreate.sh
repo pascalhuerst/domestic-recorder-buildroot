@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo_usage() {
-	echo "Usage: $0 --target=<target> --targz=<tar.gz> --kexec=<zimage> --bootloaders=<uboot.bin>"
+	echo "Usage: $0 --target=<target> --targz=<tar.gz> --kexec=<zimage> --bootloaders=<uboot1.bin,uboot2.bin>"
         exit 1
 }
 
@@ -32,7 +32,7 @@ gunzip -c $targz > $tmp
 tmpdir=$(mktemp -d)
 mkdir -p $tmpdir/tmp
 cp $kexec $tmpdir/tmp/raumfeld-update.zImage
-for bootloader in "$bootloaders"; do
+for bootloader in $(echo $bootloaders | tr ',' ' '); do
     cp $bootloader $tmpdir/tmp
 done
 echo "chown -R root.root $tmpdir/tmp" > $tmpdir/.fakeroot
