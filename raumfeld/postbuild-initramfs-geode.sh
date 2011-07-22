@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# post-build.sh for the initramfs-arm target
+# post-build.sh for the initramfs-geode target
 
 cp raumfeld/initramfs/initramfs.sh $1
 

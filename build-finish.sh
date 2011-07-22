@@ -103,9 +103,25 @@ case $target in
 		/sbin/resize2fs binaries/$target/rootfs.ext2 64M
 		;;
 
-	audioadapter-arm|remotecontrol-arm)
+	audioadapter-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 ZIMAGE=binaries/initramfs-arm/zImage
+                BOOTLOADERS="raumfeld/U-Boot/raumfeld-connector.bin raumfeld/U-Boot/raumfeld-speaker.bin" 
+		for t in $IMAGES; do
+			raumfeld/imgcreate.sh \
+				--target=$target-$t \
+				--platform=arm \
+				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
+				--target-rootfs-tgz=$ROOTFS \
+				--kernel=binaries/initramfs-arm/uImage \
+			        --version=$version
+		done
+		;;
+
+	remotecontrol-arm)
+                ROOTFS=output/images/rootfs.tar.gz
+                ZIMAGE=binaries/initramfs-arm/zImage
+                BOOTLOADERS=raumfeld/U-Boot/raumfeld-controller.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -138,5 +154,6 @@ if [ -n "$ROOTFS" ]; then
     raumfeld/updatecreate.sh \
 	--target=$target \
 	--targz=$ROOTFS \
-        --kexec=$ZIMAGE
+        --kexec=$ZIMAGE \
+        --bootloaders=\"$BOOTLOADERS\"
 fi

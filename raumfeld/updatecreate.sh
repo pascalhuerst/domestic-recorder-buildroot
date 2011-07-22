@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo_usage() {
-	echo "Usage: $0 --target=<target> --targz=<tar.gz> --kexec=<zimage>"
+	echo "Usage: $0 --target=<target> --targz=<tar.gz> --kexec=<zimage> --bootloaders=<uboot.bin>"
         exit 1
 }
 
@@ -32,6 +32,9 @@ gunzip -c $targz > $tmp
 tmpdir=$(mktemp -d)
 mkdir -p $tmpdir/tmp
 cp $kexec $tmpdir/tmp/raumfeld-update.zImage
+for bootloader in "$bootloaders"; do
+    cp $bootloader $tmpdir/tmp
+done
 echo "chown -R root.root $tmpdir/tmp" > $tmpdir/.fakeroot
 echo "tar -C $tmpdir -f $tmpdir/new.tar -c ./tmp" >> $tmpdir/.fakeroot
 chmod a+x $tmpdir/.fakeroot
@@ -67,7 +70,7 @@ case $target in
 esac
 
 
-# only one update per target for the time being.
+# only one update per target for the time being
 
 for hardwareid in $hardwareids; do
     hardwarename=${names[$hardwareid]}

@@ -14,14 +14,17 @@ case "$hw" in
 	Controller)
 		arch="arm"
 		img="control.img"
+                bootloader="raumfeld-controller.bin"
 		;;
 	Connector)
 		arch="arm"
 		img="connect.img"
+                bootloader="raumfeld-connector.bin"
 		;;
 	Speaker)
 		arch="arm"
 		img="speaker.img"
+                bootloader="raumfeld-speaker.bin"
 		;;
 	Geode*)
 		arch="geode"
@@ -59,6 +62,12 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 			echo "unknown architecture '$arch'"
 			;;
 	esac
+
+	if [ -n "$bootloader" ]; then
+                gunzip -c $update | tar xv ./tmp/$bootloader 
+	        echo "Checking the boot-loader ..."
+                (cd /tmp; /update-uboot.sh; rm -f $bootloader)
+        fi
 
 	cd /mnt
 	raumfeld-extract-update $update $numfiles
