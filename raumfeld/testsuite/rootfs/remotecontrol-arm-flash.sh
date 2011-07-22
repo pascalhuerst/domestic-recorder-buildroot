@@ -8,11 +8,7 @@ source tests.inc
 TITLE="NANDFLASH"
 DIALOGOPTS="--title $TITLE"
 
-BASE="/raumfeld-logo.raw"
 COLOR="ffff"
-
-# can be removed as soon as the kernel logo is in place
-cat $BASE > /dev/fb0
 
 (tests/init_flash || dialog_err "ERROR!" $DIALOGOPTS; exit 1) | \
     /percent 2023 | \
