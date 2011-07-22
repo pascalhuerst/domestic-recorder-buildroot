@@ -30,23 +30,28 @@ __EOF__
 }
 
 add_raumfeld_demo() {
-        DOWNLOAD_SITE=http://rf-devel.teufel.local/buildroot/dl
-        DOWNLOAD_FILE="Raumfeld Demo.mp3"
-        test -f "dl/$DOWNLOAD_FILE" || \
-            wget -P dl "$DOWNLOAD_SITE/$DOWNLOAD_FILE"
-        cp "dl/$DOWNLOAD_FILE" $tmpdir/
+    DOWNLOAD_SITE=http://rf-devel.teufel.local/buildroot/dl
+    DOWNLOAD_FILE="Raumfeld Demo.mp3"
+    test -f "dl/$DOWNLOAD_FILE" || \
+        wget -P dl "$DOWNLOAD_SITE/$DOWNLOAD_FILE"
+    cp "dl/$DOWNLOAD_FILE" $tmpdir/
 }
 
 add_audiotest_wav() {
-        DOWNLOAD_PRIMARY_SITE=http://rf-devel.teufel.local/buildroot/dl
-        DOWNLOAD_BACKUP_SITE=http://caiaq.de/download/raumfeld
-        DOWNLOAD_FILE="audiotest.wav"
-        test -f dl/$DOWNLOAD_FILE || \
-            for site in $DOWNLOAD_PRIMARY_SITE $DOWNLOAD_BACKUP_SITE; \
-            do wget -P dl $site/$DOWNLOAD_FILE && break; done
-        cp dl/$DOWNLOAD_FILE $tmpdir/
+    DOWNLOAD_PRIMARY_SITE=http://rf-devel.teufel.local/buildroot/dl
+    DOWNLOAD_BACKUP_SITE=http://caiaq.de/download/raumfeld
+    DOWNLOAD_FILE="audiotest.wav"
+    test -f dl/$DOWNLOAD_FILE || \
+        for site in $DOWNLOAD_PRIMARY_SITE $DOWNLOAD_BACKUP_SITE; \
+        do wget -P dl $site/$DOWNLOAD_FILE && break; done
+    cp dl/$DOWNLOAD_FILE $tmpdir/
 }
 
+add_rootfs_tgz() {
+    # count entries in rootfs.tgz
+    tar -zf $target_rootfs_tgz -t | wc -l > $tmpdir/rootfs.tgz.numfiles
+    cp $target_rootfs_tgz $tmpdir/rootfs.tgz
+}
 
 ./buildlog.sh $*
 
@@ -90,23 +95,45 @@ test -f $rootfstgz	|| exit 1
 mkdir $tmpdir
 echo "Operating in $tmpdir"
 
-cp $target_rootfs_tgz $tmpdir/rootfs.tgz
 cp -a raumfeld/testsuite/rootfs/* $tmpdir/
 
-# some images need special files
+# add special files according to the image we are creating
 case $target in
-base-geode-coreboot)
-	cp -a raumfeld/testsuite/coreboot $tmpdir/
-	;;
-base-geode-init|base-geode-flash)
-        add_raumfeld_demo
-        ;;
-*-arm-uboot|*-arm-flash)
-	cp -a raumfeld/U-Boot/* $tmpdir/
-	;;
-audioadapter-arm-init|audioadapter-arm-final)
+    audioadapter-arm-init)
+        add_rootfs_tgz
         add_audiotest_wav
         ;;
+    audioadapter-arm-flash)
+        add_rootfs_tgz
+	cp raumfeld/U-Boot/raumfeld-connector.bin $tmpdir/
+	cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
+	;;
+    audioadapter-arm-final)
+        add_audiotest_wav
+        ;;
+    audioadapter-arm-uboot)
+	cp raumfeld/U-Boot/raumfeld-connector.bin $tmpdir/
+	cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
+	;;
+
+    base-geode-init|base-geode-flash)
+        add_rootfs_tgz
+        add_raumfeld_demo
+        ;;
+    base-geode-coreboot)
+	cp -a raumfeld/testsuite/coreboot $tmpdir/
+	;;
+
+    remotecontrol-arm-init)
+        add_rootfs_tgz
+	;;
+    remotecontrol-arm-flash)
+        add_rootfs_tgz
+	cp raumfeld/U-Boot/raumfeld-controller.bin $tmpdir/
+	;;
+    remotecontrol-arm-uboot)
+	cp raumfeld/U-Boot/raumfeld-controller.bin $tmpdir/
+	;;
 esac
 
 # sanity check to not create unbootable images
@@ -117,9 +144,6 @@ fi
 
 echo "exec /$target.sh \$*" > $tmpdir/start-test.sh
 chmod a+x $tmpdir/start-test.sh
-
-# count entries in rootfs.tgz
-tar -zf $tmpdir/rootfs.tgz -t | wc -l > $tmpdir/rootfs.tgz.numfiles
 
 rm -f $ext2_img
 genext2fs -b 1024 -x $base_rootfs_img -d $tmpdir $ext2_img
