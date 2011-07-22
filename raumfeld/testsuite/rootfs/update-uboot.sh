@@ -13,6 +13,7 @@ fi
 # check if an update is needed
 # we update the bootloader if it doesn't pad the board revision to 4 digits
 if [ $(expr length $rev) -ge 6 ]; then
+    echo "Boot-loader seems to be OK, not updating."
     exit 0
 fi
 
