@@ -1,4 +1,4 @@
-2011.08, Not released yet:
+2011.08-rc1, Released August 4th, 2011:
 
 	Fixes all over the tree and new features.
 
@@ -9,31 +9,43 @@
 	GENTARGETS infrastructure extended to cover bootloaders and
 	Linux kernel as well. Options to retrive Linux/U-Boot from a
 	custom git repo instead of upstream tarballs.
-	Support for Linux 3.x and release candiate tarballs.
+	Support for Linux 3.x and release candidate tarballs.
 	X-Loader bootloader for omap added.
 
 	Make source/external-deps now also works for external
 	toolchains / crosstool-ng backend.
 
-	Updated/fixed packages: berkeleydb, bmon, bridge-utils,
-	busybox, cmake, dbus, dbus-glib, ethtool, ffmpeg,
-	gst-plugins-bad, gst-plugins-base, gvfs, jpeg, lame,
-	libarchive, libdnet, libgcrypt, libgtk2, libmpeg2, libpng,
-	lighttpd, linux-fusion, lzo, mtd-utils, oprofile, proftpd, qt,
-	ruby, shared-mime-info, sudo, sqlite, synergy, usbutils,
-	valgrind, webkit, xz
+	Updated/fixed packages: autoconf, berkeleydb, bind, binutils,
+	bmon, bridge-utils, busybox, cmake, dbus, dbus-glib,
+	e2fsprogs, ethtool, ffmpeg, gst-plugins-{bad,base,good,ugly},
+	gvfs, hostapd, iproute2, iptables, iw, jpeg, lame, libarchive,
+	libdnet, libdrm, libgcrypt, libgtk2, libmpeg2, libpng,
+	libsoup, lighttpd, linux-fusion, lzo, midori, mtd-utils,
+	nfs-utils, openvpn, oprofile, orc, pkg-config, proftpd, qt,
+	ruby, samba, sdl, shared-mime-info, sudo, sqlite, squid,
+	synergy, udev, usbmount, usbutils, util-linux, valgrind,
+	webkit, xorg-xserver, xz, zlib
 
-	New packages: acl, attr, ebtables, gnutls, libargtable2,
-	libiqrf, libnspr, libnss, libroxml, libyaml, live555, mxml,
-	rsyslog, sredird, statserial, stunnel, uboot-tools, yajl
+	New packages: acl, attr, ebtables, gnutls, inotify-tools,
+	ipset, libargtable2, libiqrf, libmnl, libnspr, libnss,
+	libroxml, libyaml, live555, mxml, orc, rsyslog, sredird,
+	statserial, stunnel, ti-utils, uboot-tools, yajl
+
+	Deprecated packages: liboil, swfdec
+
+	Removed packages: hal
 
 	Issues resolved (http://bugs.uclibc.org):
 
 	#3559: libnspr: Add new package
 	#3595: patch to add libroxml
 	#3565: libnss: Add new package
+	#3583: xfonts_font-adobe-100dpi fails due to missing map file
+	#3649: [PATCH] Add mapdir to existing pkg-config patch
 	#3907: 2011.05 - Qt 4.7.3 not building on ARM
+	#3961: Nfs-utils: Remove SUSv3-function index
 	#3985: "help" target's defconfig list needs sort
+	#3997: bump libroxml to v2.1.0
 
 2011.05, Released May 27th, 2011:
 

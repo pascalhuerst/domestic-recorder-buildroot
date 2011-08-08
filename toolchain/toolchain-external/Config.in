@@ -120,7 +120,7 @@ config BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_MIPS44
             - MIPS32 little endian soft float uclibc
 
 config BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_POWERPC201009
-	bool "CodeSoucery PowerPC 2010.09"
+	bool "CodeSourcery PowerPC 2010.09"
 	depends on BR2_powerpc
 	select BR2_TOOLCHAIN_EXTERNAL_GLIBC
 	select BR2_INSTALL_LIBSTDCPP
@@ -138,7 +138,7 @@ config BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_POWERPC201009
             - 970 glibc hard-float, 64 bits
 
 config BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_SH201009
-	bool "CodeSoucery SH 2010.09"
+	bool "CodeSourcery SH 2010.09"
 	depends on BR2_sh4a || BR2_sh4aeb
 	select BR2_TOOLCHAIN_EXTERNAL_GLIBC
 	select BR2_INSTALL_LIBSTDCPP
@@ -153,9 +153,13 @@ config BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_SH201009
             - SH4A, uClibc, big endian
 
 config BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_SH2A_201009
-	bool "CodeSoucery SH 2010.09"
+	bool "CodeSourcery SH 2010.09"
 	depends on BR2_sh2a
 	select BR2_TOOLCHAIN_EXTERNAL_UCLIBC
+	select BR2_LARGEFILE
+	select BR2_INET_RPC
+	select BR2_USE_WCHAR
+	select BR2_TOOLCHAIN_HAS_THREADS
 	select BR2_INSTALL_LIBSTDCPP
 	help
 	  Toolchain for the SuperH architecture, from CodeSourcery. It
@@ -173,7 +177,6 @@ config BR2_TOOLCHAIN_EXTERNAL_BLACKFIN_UCLINUX_2010RC1
 	select BR2_INET_IPV6
 	select BR2_INET_RPC
 	select BR2_USE_WCHAR
-	select BR2_PROGRAM_INVOCATION
 	select BR2_TOOLCHAIN_HAS_THREADS
 	help
 	  Toolchain for the Blackfin architecture, from
@@ -231,7 +234,6 @@ config BR2_TOOLCHAIN_EXTERNAL_GLIBC
 	select BR2_INET_RPC
 	select BR2_USE_WCHAR
 	select BR2_ENABLE_LOCALE
-	select BR2_PROGRAM_INVOCATION
 	select BR2_TOOLCHAIN_HAS_THREADS
 	select BR2_TOOLCHAIN_HAS_SHADOW_PASSWORDS
 
@@ -300,17 +302,10 @@ config BR2_TOOLCHAIN_EXTERNAL_LOCALE
 	  support. If you don't know, leave the default value,
 	  Buildroot will tell you if it's correct or not.
 
-config BR2_TOOLCHAIN_EXTERNAL_PROGRAM_INVOCATION
-	bool "Toolchain has program invocation support?"
-	select BR2_PROGRAM_INVOCATION
-	help
-	  Select this option if your external toolchain has program
-	  invocation support. If you don't know, leave the default
-	  value, Buildroot will tell you if it's correct or not.
-
 config BR2_TOOLCHAIN_EXTERNAL_HAS_THREADS
 	bool "Toolchain has threads support?"
 	select BR2_TOOLCHAIN_HAS_THREADS
+	default y
 	help
 	  Select this option if your external toolchain has thread
 	  support. If you don't know, leave the default value,

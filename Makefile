@@ -24,7 +24,7 @@
 #--------------------------------------------------------------
 
 # Set and export the version string
-export BR2_VERSION:=2011.08-git
+export BR2_VERSION:=2011.08-rc1
 
 # This top-level Makefile can *not* be executed in parallel
 .NOTPARALLEL:
@@ -492,7 +492,7 @@ target-purgelocales:
 	done
 endif
 
-source: $(TARGETS_SOURCE) $(HOST_SOURCE)
+source: dirs $(TARGETS_SOURCE) $(HOST_SOURCE)
 
 external-deps:
 	@$(MAKE) -Bs DL_MODE=SHOW_EXTERNAL_DEPS $(EXTRAMAKEARGS) source | sort -u
