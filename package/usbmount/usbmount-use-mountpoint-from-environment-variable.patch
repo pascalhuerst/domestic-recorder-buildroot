@@ -1,0 +1,10 @@
+--- usbmount/usbmount.orig	2011-08-09 13:46:54.000000000 +0200
++++ usbmount/usbmount	2011-08-09 13:47:33.000000000 +0200
+@@ -44,7 +44,6 @@
+ 
+ # Default values for configuration variables.
+ ENABLED=1
+-MOUNTPOINTS=
+ FILESYSTEMS=
+ MOUNTOPTIONS=
+ FS_MOUNTOPTIONS=
