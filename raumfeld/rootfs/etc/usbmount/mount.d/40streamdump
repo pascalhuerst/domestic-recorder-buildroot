@@ -4,7 +4,7 @@
 grep "^ismaster=yes" /var/raumfeld-1.0/master-process.conf || exit 0
 
 # Check for disk label
-label=`/lib/udev/vol_id $UM_DEVICE --label`
+label=$(blkid -o value -s LABEL $UM_DEVICE)
 
 if test "$label" = "STREAMDUMP"; then
   mkdir -p /tmp/streamdump

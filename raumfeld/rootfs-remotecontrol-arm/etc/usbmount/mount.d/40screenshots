@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Check for disk label
-label=`/lib/udev/vol_id $UM_DEVICE --label`
+label=$(blkid -o value -s LABEL $UM_DEVICE)
 
 if test "$label" = "SCREENSHOTS"; then
   mkdir -p /tmp/screenshots
