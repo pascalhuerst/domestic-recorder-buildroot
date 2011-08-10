@@ -16,7 +16,7 @@ if test "$1" = add; then
 
     log "handle mount of $DEVNAME"
 
-    DEV_UUID=`/lib/udev/vol_id $DEVNAME --uuid`
+    DEV_UUID=$(blkid -o value -s UUID $DEVNAME)
 
     log "extracted uuid $DEV_UUID"
 
@@ -28,8 +28,7 @@ if test "$1" = add; then
 
     log "starting usbmount add"
 
-    export MOUNTPOINTS=$MOUNT_POINT
-    /sbin/usbmount add
+    MOUNTPOINTS=$MOUNT_POINT /usr/share/usbmount/usbmount add
 
 elif test "$1" = remove; then
 
@@ -39,8 +38,7 @@ elif test "$1" = remove; then
 
     log "starting usbmount remove"
 
-    export MOUNTPOINTS=$MOUNT_POINT
-    /sbin/usbmount remove
+    MOUNTPOINTS=$MOUNT_POINT /usr/share/usbmount/usbmount remove
 
     log "removing mount point $MOUNT_POINT"
 
