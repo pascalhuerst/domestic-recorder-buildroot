@@ -22,3 +22,4 @@ ORC_POST_INSTALL_TARGET_HOOKS += ORC_REMOVE_DEVFILES
 endif
 
 $(eval $(call AUTOTARGETS,package,orc))
+$(eval $(call AUTOTARGETS,package,orc,host))
