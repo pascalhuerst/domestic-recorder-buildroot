@@ -4,11 +4,10 @@
 #
 #############################################################
 
-GUPNP_VERSION:=0.14.1
-GUPNP_SOURCE:=gupnp-$(GUPNP_VERSION).tar.gz
-GUPNP_SITE:=http://www.gupnp.org/sites/all/files/sources
+GUPNP_VERSION = 0.14.1
+GUPNP_SOURCE = gupnp-$(GUPNP_VERSION).tar.gz
+GUPNP_SITE = http://www.gupnp.org/sites/all/files/sources
 GUPNP_INSTALL_STAGING = YES
-GUPNP_INSTALL_TARGET = YES
 
 GUPNP_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(LIBGLIB2_HOST_BINARY)

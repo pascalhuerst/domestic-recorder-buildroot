@@ -3,7 +3,7 @@ config BR2_PACKAGE_GUPNP_AV
 	default n
 	depends on BR2_PACKAGE_GUPNP
 	help
-          GUPnP-AV is a collection of helpers for building AV (audio/video)
-          applications using GUPnP.
+	  GUPnP-AV is a collection of helpers for building AV (audio/video)
+	  applications using GUPnP.
 
-          http://www.gupnp.org/
+	  http://www.gupnp.org/

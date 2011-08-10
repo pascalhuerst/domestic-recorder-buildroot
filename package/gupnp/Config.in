@@ -1,12 +1,17 @@
 config BR2_PACKAGE_GUPNP
 	bool "gupnp"
-	default n
 	select BR2_PACKAGE_GSSDP
-        select BR2_PACKAGE_LIBXML2
-        select BR2_PACKAGE_UTIL_LINUX_LIBUUID
+	select BR2_PACKAGE_LIBXML2
+	select BR2_PACKAGE_UTIL_LINUX
+	select BR2_PACKAGE_UTIL_LINUX_LIBUUID
+	depends on BR2_LARGEFILE
+	depends on BR2_USE_WCHAR
 	help
-          GUPnP implements the UPnP specification: resource announcement
-          and discovery, description, control, event notification, and
-          presentation.
+	  GUPnP implements the UPnP specification: resource announcement
+	  and discovery, description, control, event notification, and
+	  presentation.
 
-          http://www.gupnp.org/
+	  http://www.gupnp.org/
+
+comment "gupnp requires a toolchain with LARGEFILE + WCHAR support"
+	depends on !(BR2_LARGEFILE && BR2_USE_WCHAR)
