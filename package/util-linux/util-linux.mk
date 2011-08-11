@@ -11,7 +11,7 @@ UTIL_LINUX_AUTORECONF = YES
 UTIL_LINUX_INSTALL_STAGING = YES
 UTIL_LINUX_DEPENDENCIES = host-pkg-config
 
-UTIL_LINUX_CONF_OPT += --disable-rpath --disable-makeinstall-chown
+UTIL_LINUX_CONF_OPT += --disable-rpath --disable-makeinstall-chown --disable-nls
 
 # If both util-linux and busybox are selected, make certain util-linux
 # wins the fight over who gets to have their utils actually installed
@@ -23,11 +23,6 @@ ifeq ($(BR2_PACKAGE_NCURSES),y)
 UTIL_LINUX_DEPENDENCIES += ncurses
 else
 UTIL_LINUX_CONF_OPT += --without-ncurses
-endif
-
-ifeq ($(BR2_PACKAGE_LIBINTL),y)
-UTIL_LINUX_DEPENDENCIES += libintl
-UTIL_LINUX_MAKE_OPT += LIBS=-lintl
 endif
 
 #############################################
