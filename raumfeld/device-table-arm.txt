@@ -9,5 +9,5 @@
 /dev/snd/controlC1     c       666     0       0       116     32      -       
 /dev/snd/pcmC0D0c      c       666     0       0       116     24      -       
 /dev/snd/pcmC0D0p      c       666     0       0       116     16      -       
-/dev/snd/pcmC1D0p      c       666     0       0       116     48      -       
+/dev/snd/pcmC0D1p      c       666     0       0       116     17      -       
 /dev/snd/mixer         c       666     0       0       116     33      -       
