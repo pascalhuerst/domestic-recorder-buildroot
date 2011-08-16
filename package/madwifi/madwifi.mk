@@ -1,15 +1,15 @@
 #############################################################
 #
-# hostpapd
+# madwifi
 #
 #############################################################
-MADWIFI_VERSION = 0.9.4
+MADWIFI_VERSION = trunk
 MADWIFI_SOURCE = madwifi-$(MADWIFI_VERSION)-current.tar.gz
 MADWIFI_SITE = http://snapshots.madwifi-project.org
 
-MADWIFI_DIR:=$(BUILD_DIR)/madwifi-$(MADWIFI_VERSION)-r4100-20090929
-MADWIFI_BINARY:=madwifi
-MADWIFI_TARGET_BINARY:=wlanconfig
+MADWIFI_DIR = $(BUILD_DIR)/madwifi-$(MADWIFI_VERSION)-r4164-20110816
+MADWIFI_BINARY = madwifi
+MADWIFI_TARGET_BINARY = wlanconfig
 
 MADWIFI_KERNEL_VERSION = $(call qstrip,$(BR2_LINUX_KERNEL_VERSION))
 MADWIFI_KERNEL_PATH = $(BUILD_DIR)/linux-$(MADWIFI_KERNEL_VERSION)
@@ -57,20 +57,3 @@ madwifi-dirclean:
 ifeq ($(BR2_PACKAGE_MADWIFI),y)
 TARGETS+=madwifi
 endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
