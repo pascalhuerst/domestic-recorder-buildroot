@@ -1,8 +1,24 @@
+diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
+index 9faf91a..8c4f22a 100644
+--- a/arch/x86/kernel/tsc.c
++++ b/arch/x86/kernel/tsc.c
+@@ -392,7 +392,10 @@ success:
+ 	delta *= PIT_TICK_RATE;
+ 	do_div(delta, i*256*1000);
+ 	printk("Fast TSC calibration using PIT\n");
+-	return delta;
++	
++	/* HACK HACK */
++	return 498000;
++	//return delta;
+ }
+ 
+ /**
 diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
-index 7c8e712..9f59b7f 100644
+index 81bf25e..87076f5 100644
 --- a/drivers/leds/Kconfig
 +++ b/drivers/leds/Kconfig
-@@ -77,6 +77,16 @@ config LEDS_ALIX2
+@@ -96,6 +96,16 @@ config LEDS_ALIX2
  	  This option enables support for the PCEngines ALIX.2 and ALIX.3 LEDs.
  	  You have to set leds-alix2.force=1 for boards with Award BIOS.
  
@@ -18,81 +34,33 @@ index 7c8e712..9f59b7f 100644
 +
  config LEDS_H1940
  	tristate "LED Support for iPAQ H1940 device"
- 	depends on LEDS_CLASS && ARCH_H1940
+ 	depends on ARCH_H1940
 diff --git a/drivers/leds/leds-alix2.c b/drivers/leds/leds-alix2.c
-index 731d4ee..e41b252 100644
+index f59ffad..8fa1e7c 100644
 --- a/drivers/leds/leds-alix2.c
 +++ b/drivers/leds/leds-alix2.c
-@@ -11,11 +11,31 @@
- #include <linux/module.h>
+@@ -12,6 +12,7 @@
  #include <linux/platform_device.h>
  #include <linux/string.h>
-+#include <linux/pci.h>
+ #include <linux/pci.h>
 +#include <linux/input-polldev.h>
  
  static int force = 0;
  module_param(force, bool, 0444);
- MODULE_PARM_DESC(force, "Assume system has ALIX.2/ALIX.3 style LEDs");
+@@ -20,6 +21,12 @@ MODULE_PARM_DESC(force, "Assume system has ALIX.2/ALIX.3 style LEDs");
+ #define MSR_LBAR_GPIO		0x5140000C
+ #define CS5535_GPIO_SIZE	256
  
-+#define MSR_LBAR_GPIO		0x5140000C
-+#define CS5535_GPIO_SIZE	256
-+
-+static u32 gpio_base;
-+
-+static struct pci_device_id divil_pci[] = {
-+	{ PCI_DEVICE(PCI_VENDOR_ID_NS,  PCI_DEVICE_ID_NS_CS5535_ISA) },
-+	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_CS5536_ISA) },
-+	{ } /* NULL entry */
-+};
-+MODULE_DEVICE_TABLE(pci, divil_pci);
-+
 +#ifdef CONFIG_LEDS_ALIX2_BUTTON
 +static struct input_polled_dev *ipdev;
 +static int alix_button_last;
 +#define POLL_INTERVAL_DEFAULT 250
 +#endif
 +
- struct alix_led {
- 	struct led_classdev cdev;
- 	unsigned short port;
-@@ -30,9 +50,9 @@ static void alix_led_set(struct led_classdev *led_cdev,
- 		container_of(led_cdev, struct alix_led, cdev);
+ static u32 gpio_base;
  
- 	if (brightness)
--		outl(led_dev->on_value, led_dev->port);
-+		outl(led_dev->on_value, gpio_base + led_dev->port);
- 	else
--		outl(led_dev->off_value, led_dev->port);
-+		outl(led_dev->off_value, gpio_base + led_dev->port);
- }
- 
- static struct alix_led alix_leds[] = {
-@@ -41,7 +61,7 @@ static struct alix_led alix_leds[] = {
- 			.name = "alix:1",
- 			.brightness_set = alix_led_set,
- 		},
--		.port = 0x6100,
-+		.port = 0x00,
- 		.on_value = 1 << 22,
- 		.off_value = 1 << 6,
- 	},
-@@ -50,7 +70,7 @@ static struct alix_led alix_leds[] = {
- 			.name = "alix:2",
- 			.brightness_set = alix_led_set,
- 		},
--		.port = 0x6180,
-+		.port = 0x80,
- 		.on_value = 1 << 25,
- 		.off_value = 1 << 9,
- 	},
-@@ -59,12 +79,26 @@ static struct alix_led alix_leds[] = {
- 			.name = "alix:3",
- 			.brightness_set = alix_led_set,
- 		},
--		.port = 0x6180,
-+		.port = 0x80,
- 		.on_value = 1 << 27,
- 		.off_value = 1 << 11,
+ static struct pci_device_id divil_pci[] = {
+@@ -78,6 +85,20 @@ static struct alix_led alix_leds[] = {
  	},
  };
  
@@ -113,10 +81,11 @@ index 731d4ee..e41b252 100644
  static int __init alix_led_probe(struct platform_device *pdev)
  {
  	int i;
-@@ -76,6 +110,35 @@ static int __init alix_led_probe(struct platform_device *pdev)
+@@ -89,6 +110,36 @@ static int __init alix_led_probe(struct platform_device *pdev)
  		if (ret < 0)
  			goto fail;
  	}
++
 +
 +#ifdef CONFIG_LEDS_ALIX2_BUTTON
 +	/* enable button input */
@@ -137,7 +106,7 @@ index 731d4ee..e41b252 100644
 +	ipdev->input->id.bustype = BUS_HOST;
 +
 +	set_bit(EV_KEY, ipdev->input->evbit);
-+        ipdev->input->keybit[BIT_WORD(BTN_MISC)] = BIT_MASK(BTN_MISC);
++	ipdev->input->keybit[BIT_WORD(BTN_MISC)] = BIT_MASK(BTN_MISC);
 +
 +	ret = input_register_polled_device(ipdev);
 +	if (ret) {
@@ -149,499 +118,3 @@ index 731d4ee..e41b252 100644
  	return 0;
  
  fail:
-@@ -101,64 +164,104 @@ static struct platform_driver alix_led_driver = {
- 	},
- };
- 
--static int __init alix_present(void)
-+static int __init alix_present(unsigned long bios_phys,
-+				const char *alix_sig,
-+				size_t alix_sig_len)
- {
--	const unsigned long bios_phys = 0x000f0000;
- 	const size_t bios_len = 0x00010000;
--	const char alix_sig[] = "PC Engines ALIX.";
--	const size_t alix_sig_len = sizeof(alix_sig) - 1;
--
- 	const char *bios_virt;
- 	const char *scan_end;
- 	const char *p;
--	int ret = 0;
-+	char name[64];
- 
- 	if (force) {
- 		printk(KERN_NOTICE "%s: forced to skip BIOS test, "
- 		       "assume system has ALIX.2 style LEDs\n",
- 		       KBUILD_MODNAME);
--		ret = 1;
--		goto out;
-+		return 1;
- 	}
- 
- 	bios_virt = phys_to_virt(bios_phys);
- 	scan_end = bios_virt + bios_len - (alix_sig_len + 2);
- 	for (p = bios_virt; p < scan_end; p++) {
- 		const char *tail;
-+		char *a;
- 
--		if (memcmp(p, alix_sig, alix_sig_len) != 0) {
-+		if (memcmp(p, alix_sig, alix_sig_len) != 0)
- 			continue;
--		}
-+
-+		memcpy(name, p, sizeof(name));
-+
-+		/* remove the first \0 character from string */
-+		a = strchr(name, '\0');
-+		if (a)
-+			*a = ' ';
-+
-+		/* cut the string at a newline */
-+		a = strchr(name, '\r');
-+		if (a)
-+			*a = '\0';
- 
- 		tail = p + alix_sig_len;
--		if ((tail[0] == '2' || tail[0] == '3') && tail[1] == '\0') {
-+		if ((tail[0] == '2' || tail[0] == '3')) {
- 			printk(KERN_INFO
- 			       "%s: system is recognized as \"%s\"\n",
--			       KBUILD_MODNAME, p);
--			ret = 1;
--			break;
-+			       KBUILD_MODNAME, name);
-+			return 1;
- 		}
- 	}
- 
--out:
--	return ret;
-+	return 0;
- }
- 
- static struct platform_device *pdev;
- 
--static int __init alix_led_init(void)
-+static int __init alix_pci_led_init(void)
- {
--	int ret;
-+	u32 low, hi;
-+
-+	if (pci_dev_present(divil_pci) == 0) {
-+		printk(KERN_WARNING KBUILD_MODNAME": DIVIL not found\n");
-+		return -ENODEV;
-+	}
-+
-+	/* Grab the GPIO I/O range */
-+	rdmsr(MSR_LBAR_GPIO, low, hi);
-+
-+	/* Check the mask and whether GPIO is enabled (sanity check) */
-+	if (hi != 0x0000f001) {
-+		printk(KERN_WARNING KBUILD_MODNAME": GPIO not enabled\n");
-+		return -ENODEV;
-+	}
-+
-+	/* Mask off the IO base address */
-+	gpio_base = low & 0x0000ff00;
- 
--	if (!alix_present()) {
--		ret = -ENODEV;
--		goto out;
-+	if (!request_region(gpio_base, CS5535_GPIO_SIZE, KBUILD_MODNAME)) {
-+		printk(KERN_ERR KBUILD_MODNAME": can't allocate I/O for GPIO\n");
-+		return -ENODEV;
- 	}
- 
--	/* enable output on GPIO for LED 1,2,3 */
--	outl(1 << 6, 0x6104);
--	outl(1 << 9, 0x6184);
--	outl(1 << 11, 0x6184);
-+	/* Set GPIO function to output */
-+	outl(1 << 6, gpio_base + 0x04);
-+	outl(1 << 9, gpio_base + 0x84);
-+	outl(1 << 11, gpio_base + 0x84);
-+
-+	return 0;
-+}
-+
-+static int __init alix_led_init(void)
-+{
-+	int ret = -ENODEV;
-+	const char tinybios_sig[] = "PC Engines ALIX.";
-+	const char coreboot_sig[] = "PC Engines\0ALIX.";
-+
-+	if (alix_present(0xf0000, tinybios_sig, sizeof(tinybios_sig) - 1) ||
-+	    alix_present(0x500, coreboot_sig, sizeof(coreboot_sig) - 1))
-+		ret = alix_pci_led_init();
-+
-+	if (ret < 0)
-+		return ret;
- 
- 	pdev = platform_device_register_simple(KBUILD_MODNAME, -1, NULL, 0);
- 	if (!IS_ERR(pdev)) {
-@@ -168,7 +271,6 @@ static int __init alix_led_init(void)
- 	} else
- 		ret = PTR_ERR(pdev);
- 
--out:
- 	return ret;
- }
- 
-@@ -176,6 +278,7 @@ static void __exit alix_led_exit(void)
- {
- 	platform_device_unregister(pdev);
- 	platform_driver_unregister(&alix_led_driver);
-+	release_region(gpio_base, CS5535_GPIO_SIZE);
- }
- 
- module_init(alix_led_init);
-diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index cd982f4..05cfc1c 100644
---- a/arch/x86/kernel/tsc.c
-+++ b/arch/x86/kernel/tsc.c
-@@ -392,7 +392,10 @@ success:
- 	delta *= PIT_TICK_RATE;
- 	do_div(delta, i*256*1000);
- 	printk("Fast TSC calibration using PIT\n");
--	return delta;
-+	
-+	/* HACK HACK */
-+	return 498000;
-+	//return delta;
- }
- 
- /**
-
---- a/drivers/net/wireless/ath/ath5k/base.orig	2009-11-23 16:17:45.000000000 +0100
-+++ b/drivers/net/wireless/ath/ath5k/base.c	2009-11-23 16:18:04.000000000 +0100
-@@ -2824,7 +2824,7 @@
- 	 * then we must allow the user to set how many tx antennas we
- 	 * have available
- 	 */
--	ath5k_hw_set_antenna_mode(ah, AR5K_ANTMODE_DEFAULT);
-+	ath5k_hw_set_antenna_mode(ah, AR5K_ANTMODE_SINGLE_AP);
- 
- unlock:
- 	mutex_unlock(&sc->lock);
-
-commit 2a4ab640d3c28c2952967e5f63ea495555bf2a5f
-Author: Feng Tang <feng.tang@intel.com>
-Date:   Tue Jul 7 23:01:15 2009 -0400
-
-    ACPI, x86: expose some IO-APIC routines when CONFIG_ACPI=n
-    
-    Some IO-APIC routines are ACPI specific now, but need to
-    be exposed when CONFIG_ACPI=n for the benefit of SFI.
-    
-    Remove #ifdef ACPI around these routines:
-    
-    io_apic_get_unique_id(int ioapic, int apic_id);
-    io_apic_get_version(int ioapic);
-    io_apic_get_redir_entries(int ioapic);
-    
-    Move these routines from ACPI-specific boot.c to io_apic.c:
-    
-    uniq_ioapic_id(u8 id)
-    mp_find_ioapic()
-    mp_find_ioapic_pin()
-    mp_register_ioapic()
-    
-    Also, since uniq_ioapic_id() is now no longer static,
-    re-name it to io_apic_unique_id() for consistency
-    with the other public io_apic routines.
-    
-    For simplicity, do not #ifdef the resulting code ACPI || SFI,
-    thought that could be done in the future if it is important
-    to optimize the !ACPI !SFI IO-APIC x86 kernel for size.
-    
-    Signed-off-by: Feng Tang <feng.tang@intel.com>
-    Signed-off-by: Len Brown <len.brown@intel.com>
-    Cc: x86@kernel.org
-
-diff --git a/arch/x86/include/asm/io_apic.h b/arch/x86/include/asm/io_apic.h
-index 330ee80..85232d3 100644
---- a/arch/x86/include/asm/io_apic.h
-+++ b/arch/x86/include/asm/io_apic.h
-@@ -150,11 +150,10 @@ extern int timer_through_8259;
- #define io_apic_assign_pci_irqs \
- 	(mp_irq_entries && !skip_ioapic_setup && io_apic_irqs)
- 
--#ifdef CONFIG_ACPI
-+extern u8 io_apic_unique_id(u8 id);
- extern int io_apic_get_unique_id(int ioapic, int apic_id);
- extern int io_apic_get_version(int ioapic);
- extern int io_apic_get_redir_entries(int ioapic);
--#endif /* CONFIG_ACPI */
- 
- struct io_apic_irq_attr;
- extern int io_apic_set_pci_routing(struct device *dev, int irq,
-@@ -177,6 +176,16 @@ extern int setup_ioapic_entry(int apic, int irq,
- 			      int polarity, int vector, int pin);
- extern void ioapic_write_entry(int apic, int pin,
- 			       struct IO_APIC_route_entry e);
-+
-+struct mp_ioapic_gsi{
-+	int gsi_base;
-+	int gsi_end;
-+};
-+extern struct mp_ioapic_gsi  mp_gsi_routing[];
-+int mp_find_ioapic(int gsi);
-+int mp_find_ioapic_pin(int ioapic, int gsi);
-+void __init mp_register_ioapic(int id, u32 address, u32 gsi_base);
-+
- #else  /* !CONFIG_X86_IO_APIC */
- #define io_apic_assign_pci_irqs 0
- static const int timer_through_8259 = 0;
-diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-index 6b8ca3a..7e62d1e 100644
---- a/arch/x86/kernel/acpi/boot.c
-+++ b/arch/x86/kernel/acpi/boot.c
-@@ -833,106 +833,6 @@ static int __init acpi_parse_madt_lapic_entries(void)
- extern int es7000_plat;
- #endif
- 
--static struct {
--	int gsi_base;
--	int gsi_end;
--} mp_ioapic_routing[MAX_IO_APICS];
--
--int mp_find_ioapic(int gsi)
--{
--	int i = 0;
--
--	/* Find the IOAPIC that manages this GSI. */
--	for (i = 0; i < nr_ioapics; i++) {
--		if ((gsi >= mp_ioapic_routing[i].gsi_base)
--		    && (gsi <= mp_ioapic_routing[i].gsi_end))
--			return i;
--	}
--
--	printk(KERN_ERR "ERROR: Unable to locate IOAPIC for GSI %d\n", gsi);
--	return -1;
--}
--
--int mp_find_ioapic_pin(int ioapic, int gsi)
--{
--	if (WARN_ON(ioapic == -1))
--		return -1;
--	if (WARN_ON(gsi > mp_ioapic_routing[ioapic].gsi_end))
--		return -1;
--
--	return gsi - mp_ioapic_routing[ioapic].gsi_base;
--}
--
--static u8 __init uniq_ioapic_id(u8 id)
--{
--#ifdef CONFIG_X86_32
--	if ((boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) &&
--	    !APIC_XAPIC(apic_version[boot_cpu_physical_apicid]))
--		return io_apic_get_unique_id(nr_ioapics, id);
--	else
--		return id;
--#else
--	int i;
--	DECLARE_BITMAP(used, 256);
--	bitmap_zero(used, 256);
--	for (i = 0; i < nr_ioapics; i++) {
--		struct mpc_ioapic *ia = &mp_ioapics[i];
--		__set_bit(ia->apicid, used);
--	}
--	if (!test_bit(id, used))
--		return id;
--	return find_first_zero_bit(used, 256);
--#endif
--}
--
--static int bad_ioapic(unsigned long address)
--{
--	if (nr_ioapics >= MAX_IO_APICS) {
--		printk(KERN_ERR "ERROR: Max # of I/O APICs (%d) exceeded "
--		       "(found %d)\n", MAX_IO_APICS, nr_ioapics);
--		panic("Recompile kernel with bigger MAX_IO_APICS!\n");
--	}
--	if (!address) {
--		printk(KERN_ERR "WARNING: Bogus (zero) I/O APIC address"
--		       " found in table, skipping!\n");
--		return 1;
--	}
--	return 0;
--}
--
--void __init mp_register_ioapic(int id, u32 address, u32 gsi_base)
--{
--	int idx = 0;
--
--	if (bad_ioapic(address))
--		return;
--
--	idx = nr_ioapics;
--
--	mp_ioapics[idx].type = MP_IOAPIC;
--	mp_ioapics[idx].flags = MPC_APIC_USABLE;
--	mp_ioapics[idx].apicaddr = address;
--
--	set_fixmap_nocache(FIX_IO_APIC_BASE_0 + idx, address);
--	mp_ioapics[idx].apicid = uniq_ioapic_id(id);
--	mp_ioapics[idx].apicver = io_apic_get_version(idx);
--
--	/*
--	 * Build basic GSI lookup table to facilitate gsi->io_apic lookups
--	 * and to prevent reprogramming of IOAPIC pins (PCI GSIs).
--	 */
--	mp_ioapic_routing[idx].gsi_base = gsi_base;
--	mp_ioapic_routing[idx].gsi_end = gsi_base +
--	    io_apic_get_redir_entries(idx);
--
--	printk(KERN_INFO "IOAPIC[%d]: apic_id %d, version %d, address 0x%x, "
--	       "GSI %d-%d\n", idx, mp_ioapics[idx].apicid,
--	       mp_ioapics[idx].apicver, mp_ioapics[idx].apicaddr,
--	       mp_ioapic_routing[idx].gsi_base, mp_ioapic_routing[idx].gsi_end);
--
--	nr_ioapics++;
--}
--
- int __init acpi_probe_gsi(void)
- {
- 	int idx;
-@@ -947,7 +847,7 @@ int __init acpi_probe_gsi(void)
- 
- 	max_gsi = 0;
- 	for (idx = 0; idx < nr_ioapics; idx++) {
--		gsi = mp_ioapic_routing[idx].gsi_end;
-+		gsi = mp_gsi_routing[idx].gsi_end;
- 
- 		if (gsi > max_gsi)
- 			max_gsi = gsi;
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index d2ed6c5..a8c0232 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -85,6 +85,9 @@ int nr_ioapic_registers[MAX_IO_APICS];
- struct mpc_ioapic mp_ioapics[MAX_IO_APICS];
- int nr_ioapics;
- 
-+/* IO APIC gsi routing info */
-+struct mp_ioapic_gsi  mp_gsi_routing[MAX_IO_APICS];
-+
- /* MP IRQ source entries */
- struct mpc_intsrc mp_irqs[MAX_IRQ_SOURCES];
- 
-@@ -3941,11 +3944,28 @@ int io_apic_set_pci_routing(struct device *dev, int irq,
- 	return __io_apic_set_pci_routing(dev, irq, irq_attr);
- }
- 
--/* --------------------------------------------------------------------------
--                          ACPI-based IOAPIC Configuration
--   -------------------------------------------------------------------------- */
-+u8 __init io_apic_unique_id(u8 id)
-+{
-+#ifdef CONFIG_X86_32
-+	if ((boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) &&
-+	    !APIC_XAPIC(apic_version[boot_cpu_physical_apicid]))
-+		return io_apic_get_unique_id(nr_ioapics, id);
-+	else
-+		return id;
-+#else
-+	int i;
-+	DECLARE_BITMAP(used, 256);
- 
--#ifdef CONFIG_ACPI
-+	bitmap_zero(used, 256);
-+	for (i = 0; i < nr_ioapics; i++) {
-+		struct mpc_ioapic *ia = &mp_ioapics[i];
-+		__set_bit(ia->apicid, used);
-+	}
-+	if (!test_bit(id, used))
-+		return id;
-+	return find_first_zero_bit(used, 256);
-+#endif
-+}
- 
- #ifdef CONFIG_X86_32
- int __init io_apic_get_unique_id(int ioapic, int apic_id)
-@@ -4054,8 +4074,6 @@ int acpi_get_override_irq(int bus_irq, int *trigger, int *polarity)
- 	return 0;
- }
- 
--#endif /* CONFIG_ACPI */
--
- /*
-  * This function currently is only a helper for the i386 smp boot process where
-  * we need to reprogram the ioredtbls to cater for the cpus which have come online
-@@ -4201,3 +4219,76 @@ void __init ioapic_insert_resources(void)
- 		r++;
- 	}
- }
-+
-+int mp_find_ioapic(int gsi)
-+{
-+	int i = 0;
-+
-+	/* Find the IOAPIC that manages this GSI. */
-+	for (i = 0; i < nr_ioapics; i++) {
-+		if ((gsi >= mp_gsi_routing[i].gsi_base)
-+		    && (gsi <= mp_gsi_routing[i].gsi_end))
-+			return i;
-+	}
-+
-+	printk(KERN_ERR "ERROR: Unable to locate IOAPIC for GSI %d\n", gsi);
-+	return -1;
-+}
-+
-+int mp_find_ioapic_pin(int ioapic, int gsi)
-+{
-+	if (WARN_ON(ioapic == -1))
-+		return -1;
-+	if (WARN_ON(gsi > mp_gsi_routing[ioapic].gsi_end))
-+		return -1;
-+
-+	return gsi - mp_gsi_routing[ioapic].gsi_base;
-+}
-+
-+static int bad_ioapic(unsigned long address)
-+{
-+	if (nr_ioapics >= MAX_IO_APICS) {
-+		printk(KERN_WARNING "WARING: Max # of I/O APICs (%d) exceeded "
-+		       "(found %d), skipping\n", MAX_IO_APICS, nr_ioapics);
-+		return 1;
-+	}
-+	if (!address) {
-+		printk(KERN_WARNING "WARNING: Bogus (zero) I/O APIC address"
-+		       " found in table, skipping!\n");
-+		return 1;
-+	}
-+	return 0;
-+}
-+
-+void __init mp_register_ioapic(int id, u32 address, u32 gsi_base)
-+{
-+	int idx = 0;
-+
-+	if (bad_ioapic(address))
-+		return;
-+
-+	idx = nr_ioapics;
-+
-+	mp_ioapics[idx].type = MP_IOAPIC;
-+	mp_ioapics[idx].flags = MPC_APIC_USABLE;
-+	mp_ioapics[idx].apicaddr = address;
-+
-+	set_fixmap_nocache(FIX_IO_APIC_BASE_0 + idx, address);
-+	mp_ioapics[idx].apicid = io_apic_unique_id(id);
-+	mp_ioapics[idx].apicver = io_apic_get_version(idx);
-+
-+	/*
-+	 * Build basic GSI lookup table to facilitate gsi->io_apic lookups
-+	 * and to prevent reprogramming of IOAPIC pins (PCI GSIs).
-+	 */
-+	mp_gsi_routing[idx].gsi_base = gsi_base;
-+	mp_gsi_routing[idx].gsi_end = gsi_base +
-+	    io_apic_get_redir_entries(idx);
-+
-+	printk(KERN_INFO "IOAPIC[%d]: apic_id %d, version %d, address 0x%x, "
-+	       "GSI %d-%d\n", idx, mp_ioapics[idx].apicid,
-+	       mp_ioapics[idx].apicver, mp_ioapics[idx].apicaddr,
-+	       mp_gsi_routing[idx].gsi_base, mp_gsi_routing[idx].gsi_end);
-+
-+	nr_ioapics++;
-+}
