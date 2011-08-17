@@ -6,7 +6,7 @@
 case "$1" in
   start)
  	echo "Loading modules..."
-	modprobe ath_pci
+	modprobe ath5k
 	;;
   *)
         ;;
