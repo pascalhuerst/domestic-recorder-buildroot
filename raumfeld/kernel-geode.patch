@@ -14,27 +14,6 @@ index 9faf91a..8c4f22a 100644
  }
  
  /**
-diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
-index 81bf25e..87076f5 100644
---- a/drivers/leds/Kconfig
-+++ b/drivers/leds/Kconfig
-@@ -96,6 +96,16 @@ config LEDS_ALIX2
- 	  This option enables support for the PCEngines ALIX.2 and ALIX.3 LEDs.
- 	  You have to set leds-alix2.force=1 for boards with Award BIOS.
- 
-+config LEDS_ALIX2_BUTTON
-+	bool "Input device support for button on ALIX boards"
-+	depends on LEDS_ALIX2 && INPUT
-+	select INPUT_POLLDEV
-+	help
-+	  This option enables support for a button connected to J15 of ALIX
-+	  boards. No external pullup is required.
-+	
-+	  Only select that option if you modified your ALIX board like this.
-+
- config LEDS_H1940
- 	tristate "LED Support for iPAQ H1940 device"
- 	depends on ARCH_H1940
 diff --git a/drivers/leds/leds-alix2.c b/drivers/leds/leds-alix2.c
 index f59ffad..8fa1e7c 100644
 --- a/drivers/leds/leds-alix2.c
@@ -118,3 +97,22 @@ index f59ffad..8fa1e7c 100644
  	return 0;
  
  fail:
+--- linux-3.0.1/drivers/leds/Kconfig.orig	2011-08-17 12:14:34.000000000 +0200
++++ linux-3.0.1/drivers/leds/Kconfig	2011-08-17 12:14:54.000000000 +0200
+@@ -121,6 +121,16 @@
+ 	  This option enables support for the PCEngines ALIX.2 and ALIX.3 LEDs.
+ 	  You have to set leds-alix2.force=1 for boards with Award BIOS.
+ 
++config LEDS_ALIX2_BUTTON
++	bool "Input device support for button on ALIX boards"
++	depends on LEDS_ALIX2 && INPUT
++	select INPUT_POLLDEV
++	help
++	  This option enables support for a button connected to J15 of ALIX
++	  boards. No external pullup is required.
++	
++	  Only select that option if you modified your ALIX board like this.
++
+ config LEDS_COBALT_QUBE
+ 	tristate "LED Support for the Cobalt Qube series front LED"
+ 	depends on LEDS_CLASS
