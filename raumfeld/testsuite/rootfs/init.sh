@@ -7,6 +7,12 @@ mount -n sys /sys -t sysfs
 mount -n -t tmpfs tmpfs /tmp
 mount -n -t tmpfs tmpfs /var
 
+# devtmpfs does not get automounted for initramfs
+mount -t devtmpfs devtmpfs /dev
+exec 0</dev/console
+exec 1>/dev/console
+exec 2>/dev/console
+
 export PATH="/sbin:/usr/sbin:$PATH"
 udevd --daemon
 
@@ -34,4 +40,3 @@ export TERM=xterm-color
 dmesg -n 1
 /start-test.sh
 exec /bin/sh
-
