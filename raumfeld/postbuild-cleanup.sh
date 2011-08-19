@@ -105,26 +105,3 @@ if test -d $1/usr/lib/directfb-1.4-5; then
     rm -f $1/usr/lib/directfb-1.4-5/interfaces/IDirectFBImageProvider/libidirectfbimageprovider_dfiff.so
     rm -f $1/usr/lib/directfb-1.4-5/interfaces/IDirectFBFont/libidirectfbfont_dgiff.so
 fi
-
-if test -n "$2"; then
-    STRIPCMD=${2}strip
-    echo "Stripping binaries (using $STRIPCMD) ..."
-    find $1/bin -type f -executable -exec $STRIPCMD {} \;
-    find $1/sbin -type f -executable -exec $STRIPCMD {} \;
-    find $1/usr/bin -type f -executable -not -name remote-control -exec $STRIPCMD {} \;
-    find $1/usr/sbin -type f -executable -exec $STRIPCMD {} \;
-    find $1/usr/libexec -type f -executable -exec $STRIPCMD {} \;
-    find $1/usr/lib -type f -executable -name 'libcrypto*' -exec $STRIPCMD {} \;
-    find $1/usr/lib -type f -executable -name 'libgcrypt*' -exec $STRIPCMD {} \;
-    find $1/usr/lib -type f -executable -name 'libgmp*' -exec $STRIPCMD {} \;
-    find $1/usr/lib -type f -executable -name 'libgnutls*' -exec $STRIPCMD {} \;
-    find $1/usr/lib -type f -executable -name 'libgst*' -exec $STRIPCMD {} \;
-    find $1/usr/lib -type f -executable -name 'libnl*' -exec $STRIPCMD {} \;
-    find $1/usr/lib -type f -executable -name 'libsmb*' -exec $STRIPCMD {} \;
-    if test -d $1/usr/lib/alsa-lib; then
-        find $1/usr/lib/alsa-lib -type f -executable -exec $STRIPCMD {} \;
-    fi
-    if test -d $1/usr/lib/gstreamer-0.10; then
-        find $1/usr/lib/gstreamer-0.10 -type f -executable -exec $STRIPCMD {} \;
-    fi
-fi
