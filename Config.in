@@ -251,6 +251,14 @@ config BR2_STRIP_none
 	  none    do not strip (only for debugging!)
 endchoice
 
+config BR2_STRIP_EXCLUDES
+	string "executables that should not be stripped"
+	depends on !BR2_STRIP_none
+	default ""
+	help
+	  You may specify a list of binaries and libraries here that
+	  should not be stripped on the target.
+
 choice
 	prompt "gcc optimization level"
 	default BR2_OPTIMIZE_S

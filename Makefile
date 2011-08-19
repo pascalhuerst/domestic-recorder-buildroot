@@ -290,6 +290,9 @@ HOSTCC  := $(CCACHE) $(HOSTCC)
 HOSTCXX := $(CCACHE) $(HOSTCXX)
 endif
 
+# executables that should not be stripped in target-finalize
+DONT_STRIP:=$(patsubst %,-not -name '%',$(call qstrip,$(BR2_STRIP_EXCLUDES)))
+
 include toolchain/Makefile.in
 include package/Makefile.in
 
@@ -453,7 +456,8 @@ endif
 ifeq ($(BR2_PACKAGE_PYTHON_PYC_ONLY),y)
 	find $(TARGET_DIR)/usr/lib/ -name '*.py' -print0 | xargs -0 rm -f
 endif
-	find $(TARGET_DIR) -type f -perm +111 '!' -name 'libthread_db*.so*' | \
+	find $(TARGET_DIR) -type f -perm +111 '!' -name 'libthread_db*.so*' \
+		$(DONT_STRIP) | \
 		xargs $(STRIPCMD) 2>/dev/null || true
 	find $(TARGET_DIR)/lib/modules -type f -name '*.ko' | \
 		xargs -r $(KSTRIPCMD) || true
