@@ -9,6 +9,7 @@ echo "Purging unwanted files ..."
 
 rm -fr $1/etc/bash_completion.d
 rm -fr $1/etc/usbmount/usbmount.d
+rm -fr $1/home
 rm -f  $1/lib/udev/accelerometer
 rm -f  $1/lib/udev/keymap
 rm -fr $1/lib/udev/keymaps
