@@ -22,6 +22,7 @@ rm -f  $1/lib/udev/rules.d/61-accelerometer.rules
 rm -f  $1/lib/udev/rules.d/75-cd-aliases-generator.rules
 rm -f  $1/lib/udev/rules.d/95-keyboard-force-release.rules
 rm -f  $1/lib/udev/rules.d/95-keymap.rules
+rm -f  $1/media/usb*
 rm -fr $1/usr/include
 rm -f  $1/usr/bin/arm-linux-directfb-csource
 rm -f  $1/usr/bin/certtool
@@ -37,7 +38,9 @@ rm -f  $1/usr/bin/glib-mkenums
 rm -f  $1/usr/bin/gobject-query
 rm -f  $1/usr/bin/gnutls-*
 rm -f  $1/usr/bin/gsettings
+rm -f  $1/usr/bin/gst-discoverer-0.10
 rm -f  $1/usr/bin/gst-feedback
+rm -f  $1/usr/bin/gst-feedback-0.10
 rm -f  $1/usr/bin/gst-inspect
 rm -f  $1/usr/bin/gst-launch
 rm -f  $1/usr/bin/gst-typefind
