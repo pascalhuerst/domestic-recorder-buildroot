@@ -10,7 +10,17 @@ echo "Purging unwanted files ..."
 rm -fr $1/etc/bash_completion.d
 rm -fr $1/etc/usbmount/usbmount.d
 rm -fr $1/home
+rm -f  $1/lib/udev/accelerometer
+rm -f  $1/lib/udev/keymap
 rm -fr $1/lib/udev/keymaps
+rm -f  $1/lib/udev/cdrom_id
+rm -f  $1/lib/udev/v4l_id
+rm -f  $1/lib/udev/rules.d/42-qemu-usb.rules
+rm -f  $1/lib/udev/rules.d/60-cdrom_id.rules
+rm -f  $1/lib/udev/rules.d/60-persistent-v4l.rules
+rm -f  $1/lib/udev/rules.d/61-accelerometer.rules
+rm -f  $1/lib/udev/rules.d/75-cd-aliases-generator.rules
+rm -f  $1/lib/udev/rules.d/95-keyboard-force-release.rules
 rm -f  $1/lib/udev/rules.d/95-keymap.rules
 rm -f  $1/media/usb*
 rm -fr $1/usr/include
@@ -79,7 +89,6 @@ rm -fr $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/common-lisp
 rm -fr $1/usr/share/gdb
 rm -f  $1/usr/share/getopt/*.tcsh
-rm -fr $1/usr/share/gvfs/remote-volume-monitors
 rm -fr $1/usr/share/pkgconfig
 rm -fr $1/usr/share/sounds
 rm -f  $1/usr/share/xml/iso-codes/iso_639.xml
