@@ -7,5 +7,9 @@ mount -a
 eval $(fw_printenv ethaddr)
 test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
 
-# increase scheduler priority of the DMA IRQ handler
-chrt -f -p 70 $(ps | awk '/\[irq\/25\-DMA\]/ {print $1}')
+# reduce scheduler priority of the eth0 IRQ handler
+chrt -f -p 40 $(ps | awk '/\[irq\/136-eth\%d\]/ {print $1}') 
+
+# tune RT scheduler period and runtime
+echo "10000" > /proc/sys/kernel/sched_rt_period_us
+echo  "9000" > /proc/sys/kernel/sched_rt_runtime_us
