@@ -6,3 +6,6 @@ mount -a
 # Set the MAC address of eth0
 eval $(fw_printenv ethaddr)
 test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
+
+# increase scheduler priority of the DMA IRQ handler
+chrt -f -p 70 $(ps | awk '/\[irq\/25\-DMA\]/ {print $1}')
