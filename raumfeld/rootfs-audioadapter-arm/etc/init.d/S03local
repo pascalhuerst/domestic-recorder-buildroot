@@ -11,5 +11,5 @@ test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
 chrt -f -p 40 $(ps | awk '/\[irq\/136-eth\%d\]/ {print $1}') 
 
 # tune RT scheduler period and runtime
-echo "10000" > /proc/sys/kernel/sched_rt_period_us
-echo  "9000" > /proc/sys/kernel/sched_rt_runtime_us
+echo "30000" > /proc/sys/kernel/sched_rt_period_us
+echo "25000" > /proc/sys/kernel/sched_rt_runtime_us
