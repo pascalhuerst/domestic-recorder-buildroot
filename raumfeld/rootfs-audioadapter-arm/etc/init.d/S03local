@@ -6,3 +6,7 @@ mount -a
 # Set the MAC address of eth0
 eval $(fw_printenv ethaddr)
 test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
+
+# tune RT scheduler period and runtime
+echo "30000" > /proc/sys/kernel/sched_rt_period_us
+echo "25000" > /proc/sys/kernel/sched_rt_runtime_us
