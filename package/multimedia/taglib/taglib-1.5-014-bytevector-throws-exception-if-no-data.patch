@@ -1,0 +1,10 @@
+--- ../../buildroot_arm/output/build/taglib-1.5/taglib/toolkit/tbytevector.cpp	2011-08-25 11:20:46.856746250 +0200
++++ ./taglib/toolkit/tbytevector.cpp	2011-08-29 14:11:37.809207569 +0200
+@@ -207,6 +207,7 @@
+ 
+     if(data.size() <= 0) {
+       debug("ByteVectorMirror::toNumber<T>() -- data is empty, returning 0");
++      throw "ByteVectorMirror::toNumber<T>() -- data is empty";
+       return sum;
+     }
+ 
