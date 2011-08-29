@@ -22,7 +22,7 @@ rm -f  $1/lib/udev/rules.d/61-accelerometer.rules
 rm -f  $1/lib/udev/rules.d/75-cd-aliases-generator.rules
 rm -f  $1/lib/udev/rules.d/95-keyboard-force-release.rules
 rm -f  $1/lib/udev/rules.d/95-keymap.rules
-rm -f  $1/media/usb*
+rm -fr $1/media/usb*
 rm -fr $1/usr/include
 rm -f  $1/usr/bin/arm-linux-directfb-csource
 rm -f  $1/usr/bin/certtool

@@ -101,6 +101,10 @@ else
 		sleep 1
 	done
 
+        # It takes a while for partitions to be recognized after the disk
+        # was found.  Sleep three more seconds...
+        sleep 3
+
 	mkdir /usb
 
 	mount /dev/sda1 /usb || mount /dev/sda /usb
