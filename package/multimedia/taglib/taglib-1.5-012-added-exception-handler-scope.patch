@@ -1,0 +1,126 @@
+diff -Naur '-x*ake*' ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit//tbytevector.cpp ./taglib/toolkit//tbytevector.cpp
+--- ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit//tbytevector.cpp	2011-09-01 12:07:49.812655456 +0200
++++ ./taglib/toolkit//tbytevector.cpp	2011-09-01 15:41:40.395353188 +0200
+@@ -208,7 +208,10 @@
+     T sum = 0;
+ 
+     if(data.size() <= 0) {
+-      debug("ByteVectorMirror::toNumber<T>() -- data is empty, returning 0");
++      if(!ExceptionHandlingScope::throwException("ByteVectorMirror::toNumber<T>() -- data is empty, returning 0"))
++      {
++        debug("ByteVectorMirror::toNumber<T>() -- data is empty, returning 0");
++      }
+       return sum;
+     }
+ 
+@@ -473,7 +476,7 @@
+ 
+     tPatternPositions::const_iterator itPos = morePatternPositions.begin();
+ 
+-    for (int i = 0; i < numPatternPositions; i++)
++    for (size_t i = 0; i < numPatternPositions; i++)
+     {
+       int patternPos = (i < numDefaultStorageFields) ? defaultStorageForPatternPositions[i] : *(itPos++);
+ 
+@@ -741,3 +744,4 @@
+     s << v[i];
+   return s;
+ }
++
+diff -Naur '-x*ake*' ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit//tbytevector.h ./taglib/toolkit//tbytevector.h
+--- ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit//tbytevector.h	2011-03-11 14:15:38.000000000 +0100
++++ ./taglib/toolkit//tbytevector.h	2011-09-01 16:10:40.793473421 +0200
+@@ -31,9 +31,82 @@
+ 
+ #include <vector>
+ #include <ostream>
++#include <tr1/functional>
+ 
+ namespace TagLib {
+ 
++  class TAGLIB_EXPORT ExceptionHandlingScope
++  {
++      struct ScopeGuard
++      {
++        private:
++          ExceptionHandlingScope &m_var;
++
++        public:
++          ScopeGuard(ExceptionHandlingScope &b) : m_var(b)
++          {
++            m_var.isCatching(true);
++          }
++
++          ~ScopeGuard()
++          {
++            m_var.isCatching(false);
++          }
++      };
++
++    public:
++      typedef std::tr1::function<void (const char*)> tOnException;
++
++      template<typename TRet>
++      TRet tryFunction(std::tr1::function<TRet (void)> func, tOnException onException = tOnException())
++      {
++        try
++        {
++          ScopeGuard guard(*this);
++          return func();
++        }
++        catch(const char *e)
++        {
++          if(onException)
++            onException(e);
++        }
++        return TRet();
++      }
++
++      void tryFunction(std::tr1::function<void (void)> func, tOnException onException = tOnException())
++      {
++        try
++        {
++          ScopeGuard guard(*this);
++          func();
++        }
++        catch(const char *error)
++        {
++          if(onException)
++            onException(error);
++        }
++      }
++
++      static bool throwException(const char *error)
++      {
++        if(isCatching(false))
++        {
++          throw error;
++          return true;
++        }
++        return false;
++      }
++
++    private:
++      static bool isCatching(bool v)
++      {
++        static bool isCatching = false;
++        bool old = isCatching;
++        isCatching = v;
++        return old;
++      }
++  };
++
+   //! A byte vector
+ 
+   /*!
+@@ -397,8 +470,8 @@
+     static ByteVector null;
+ 
+     /*!
+-	   * Returns a hex-encoded copy of the byte vector.
+-	   */
++     * Returns a hex-encoded copy of the byte vector.
++     */
+     ByteVector toHex() const;
+ 
+   protected:
