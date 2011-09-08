@@ -1,0 +1,43 @@
+#!/bin/sh
+
+#TESTS MIDIFIED FOR MANAGED NETWORKS
+
+. ../tests.inc
+TITLE="WIRELESS-MANAGED"
+DIALOGOPTS="--title $TITLE"
+
+source ./wifi_managed.inc
+
+./leds-blink 6 &
+
+TEST_HOST_WIRELESS=192.168.1.1
+
+killall dhclient
+
+/sbin/ifconfig ${WIRELESS_IFNAME} down
+/sbin/iwconfig ${WIRELESS_IFNAME} mode Managed
+/sbin/iwconfig ${WIRELESS_IFNAME} essid ${ESSID}
+/sbin/ifconfig ${WIRELESS_IFNAME} ${IP_WIRELESS} up
+/usr/sbin/dhclient -sf /dhclient-script ${WIRELESS_IFNAME}
+
+killall leds-blink
+
+dialog_info "Testing WIRELESS. Please wait. ---------------------------------- ESSID=$ESSID QUALITY=$QUALITY" $DIALOGOPTS
+
+./leds-blink 7 &
+
+#TODO: decrease timeout
+
+CRC1=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg.md5sum | cut -f1 -d' ')
+CRC2=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg | md5sum | cut -f1 -d' ')
+
+killall leds-blink
+
+if [ "$CRC1" = "$CRC2" ]; then
+	dialog_success "OK!" $DIALOGOPTS
+  
+else
+	dialog_err "TEST FAILED!" $DIALOGOPTS
+	exit 1
+fi
+
