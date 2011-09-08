@@ -3,13 +3,22 @@
 #include <string.h>
 #include <ctype.h>
 
+static int search_managed = 0;
+
 static void print_net(char *mode, char *essid, char *quality)
 {
 	if (!mode || !essid || !quality)
 		return;
 
-	if (strcmp(mode, "Ad-Hoc") != 0)
-		return;
+
+  if(search_managed)
+  {
+  	if (strcmp(mode, "Master") != 0)
+  		return;
+  }
+  else
+	  if (strcmp(mode, "Ad-Hoc") != 0)
+		  return;
 
 	// strip leading and trailing '"'
 	if (*essid == '"')
@@ -21,12 +30,17 @@ static void print_net(char *mode, char *essid, char *quality)
 	printf("%s\t%s\n", quality, essid);
 }
 
+
+
 int main(int argc, const char **argv)
 {
 	char buf[1024];
 	char *mode = NULL;
 	char *essid = NULL;
 	char *quality = NULL;
+
+  if(argc > 1 && !strcmp("-m",argv[1]))
+    search_managed = 1;
 
 	while (fgets(buf, sizeof(buf), stdin)) {
 		char *tmp, *s = buf;

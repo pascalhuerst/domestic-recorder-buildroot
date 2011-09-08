@@ -1,5 +1,7 @@
 #!/bin/sh
 
+
+
 . ../tests.inc
 TITLE="WIRELESS"
 DIALOGOPTS="--title $TITLE"

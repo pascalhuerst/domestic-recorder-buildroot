@@ -22,6 +22,7 @@ dialog --menu "Select test to run" 20 60 15 \
 	12	zerosetup-button \
 	13	battery		\
 	14	audioloopback	\
+	15	wifi-managed	\
 	XX	shell		\
 	2> $OUT
 
@@ -70,6 +71,9 @@ case $n in
 		;;
 	14)
 		./audio-loopback
+		;;
+	15)
+		./wifi-managed
 		;;
 	XX)
 		exit 0

@@ -1,5 +1,10 @@
 #!/bin/sh
 
+
+if [ ! -z "$(aplay -l | grep "Raumfeld DDX")" ]; then
+amixer cset numid=1 255
+arecord -f cd - -D hw:0,1 | aplay -D hw:0,0 -f cd -
+else
 amixer cset numid=1 255
 arecord -f cd - | aplay -f cd -
-
+fi
