@@ -5,7 +5,6 @@ config BR2_PACKAGE_RAUMFELD_META_SERVER
         select BR2_PACKAGE_ISO_CODES
         select BR2_PACKAGE_SQLITE3
         select BR2_PACKAGE_TAGLIB
-        select BR2_PACKAGE_TAGLIB_EXTRAS
 	help
 	  raumfeld meta-server
 

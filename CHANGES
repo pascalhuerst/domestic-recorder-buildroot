@@ -1,3 +1,37 @@
+2011.11, Not released yet:
+
+2011.08, Released August 31th, 2011:
+
+	Fixes all over the tree.
+
+	Toolchain: Fix codesourcery 2009q3 ARM download, Linux 3.0.4
+	kernel headers.
+
+	Updated/fixed packages: ipset, python
+
+2011.08-rc2, Released August 29th, 2011:
+
+	Fixes all over the tree.
+
+	Toolchain: crosstool-NG 1.12.1, use binutils 2.21 on
+	mips/sh/older uClibc, disallow uClibc 0.9.32 on avr32/sh
+	(broken).
+
+	Defconfigs: kernel updates, fix mini2440 serial port config,
+	remove old arm toolchain configs.
+
+	Bootloaders: Fix grub patching, add barebox-{n,x,menuconfig}
+	targets similar to linux/busybox.
+
+	Updated/fixed packages: barebox, directfb, libsoup,
+	libxml-parser-perl, mtd, ncurses, python, ti-utils, udev,
+	usbmount, util-linux, xfont_font-misc-misc
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#3685: ncurses installation hangs due to old version of tic
+	#4093: Grub fails to install bz2 patch after conversion to...
+
 2011.08-rc1, Released August 4th, 2011:
 
 	Fixes all over the tree and new features.

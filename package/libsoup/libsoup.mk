@@ -17,15 +17,15 @@ LIBSOUP_CONF_ENV += soup_cv_ipv6=no
 endif
 
 LIBSOUP_CONF_OPT = \
+	--disable-explicit-deps \
 	--disable-glibtest	\
 	--without-gnome
 
 LIBSOUP_DEPENDENCIES = $(if $(BR2_NEEDS_GETTEXT_IF_LOCALE),gettext libintl) host-pkg-config host-libglib2 libglib2 libxml2
 
-ifeq ($(BR2_PACKAGE_GNUTLS),y)
+ifeq ($(BR2_PACKAGE_LIBSOUP_SSL),y)
 LIBSOUP_DEPENDENCIES += gnutls
-LIBSOUP_CONF_OPT += --enable-ssl \
-	--with-libgcrypt-prefix=$(STAGING_DIR)/usr
+LIBSOUP_CONF_OPT += --enable-ssl --with-libgcrypt-prefix=$(STAGING_DIR)/usr
 else
 LIBSOUP_CONF_OPT += --disable-ssl
 endif

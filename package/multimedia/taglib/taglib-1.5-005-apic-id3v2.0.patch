@@ -21,11 +21,10 @@ diff -Naur taglib-1.5-orig/taglib/mpeg/id3v2/frames/attachedpictureframe.cpp tag
  };
  
  ////////////////////////////////////////////////////////////////////////////////
-@@ -135,7 +138,18 @@
- 
+@@ -136,6 +136,18 @@
    int pos = 1;
  
--  d->mimeType = readStringField(data, String::Latin1, &pos);
+   d->mimeType = readStringField(data, String::Latin1, &pos);
 +  if(d->m_tagHeader->majorVersion() < 3)
 +  {
 +    // fixed to 3 bytes in id3v2.[<3]
@@ -38,9 +37,9 @@ diff -Naur taglib-1.5-orig/taglib/mpeg/id3v2/frames/attachedpictureframe.cpp tag
 +    d->mimeType = readStringField(data, String::Latin1, &pos);
 +  }
 +
-   d->type = (TagLib::ID3v2::AttachedPictureFrame::Type)data[pos++];
-   d->description = readStringField(data, d->textEncoding, &pos);
- 
+   /* Now we need at least two more bytes available */	
+   if (uint(pos) + 1 >= data.size()) {
+     debug("Truncated picture frame.");
 @@ -163,8 +177,8 @@
  // private members
  ////////////////////////////////////////////////////////////////////////////////
@@ -55,15 +54,14 @@ diff -Naur taglib-1.5-orig/taglib/mpeg/id3v2/frames/attachedpictureframe.cpp tag
 diff -Naur taglib-1.5-orig/taglib/mpeg/id3v2/frames/attachedpictureframe.h taglib-1.5/taglib/mpeg/id3v2/frames/attachedpictureframe.h
 --- taglib-1.5-orig/taglib/mpeg/id3v2/frames/attachedpictureframe.h	2009-11-19 15:17:52.000000000 +0100
 +++ taglib-1.5/taglib/mpeg/id3v2/frames/attachedpictureframe.h	2009-11-19 15:23:16.000000000 +0100
-@@ -207,7 +207,7 @@
-       virtual ByteVector renderFields() const;
- 
+@@ -211,6 +211,6 @@
      private:
--      AttachedPictureFrame(const ByteVector &data, Header *h);
-+      AttachedPictureFrame(const ByteVector &data, Header *h, ID3v2::Header *tagHeader);
        AttachedPictureFrame(const AttachedPictureFrame &);
        AttachedPictureFrame &operator=(const AttachedPictureFrame &);
+-      AttachedPictureFrame(const ByteVector &data, Header *h);
++      AttachedPictureFrame(const ByteVector &data, Header *h, ID3v2::Header *tagHeader);
  
+     };
 diff -Naur taglib-1.5-orig/taglib/mpeg/id3v2/id3v2framefactory.cpp taglib-1.5/taglib/mpeg/id3v2/id3v2framefactory.cpp
 --- taglib-1.5-orig/taglib/mpeg/id3v2/id3v2framefactory.cpp	2009-11-19 15:17:52.000000000 +0100
 +++ taglib-1.5/taglib/mpeg/id3v2/id3v2framefactory.cpp	2009-11-19 15:20:22.000000000 +0100

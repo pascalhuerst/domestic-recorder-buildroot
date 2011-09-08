@@ -24,7 +24,7 @@
 #--------------------------------------------------------------
 
 # Set and export the version string
-export BR2_VERSION:=2011.08-rc1
+export BR2_VERSION:=2011.11-git
 
 # This top-level Makefile can *not* be executed in parallel
 .NOTPARALLEL:
@@ -290,6 +290,9 @@ HOSTCC  := $(CCACHE) $(HOSTCC)
 HOSTCXX := $(CCACHE) $(HOSTCXX)
 endif
 
+# executables that should not be stripped in target-finalize
+DONT_STRIP:=$(patsubst %,-not -name '%',$(call qstrip,$(BR2_STRIP_EXCLUDES)))
+
 include toolchain/Makefile.in
 include package/Makefile.in
 
@@ -453,7 +456,8 @@ endif
 ifeq ($(BR2_PACKAGE_PYTHON_PYC_ONLY),y)
 	find $(TARGET_DIR)/usr/lib/ -name '*.py' -print0 | xargs -0 rm -f
 endif
-	find $(TARGET_DIR) -type f -perm +111 '!' -name 'libthread_db*.so*' | \
+	find $(TARGET_DIR) -type f -perm +111 '!' -name 'libthread_db*.so*' \
+		$(DONT_STRIP) | \
 		xargs $(STRIPCMD) 2>/dev/null || true
 	find $(TARGET_DIR)/lib/modules -type f -name '*.ko' | \
 		xargs -r $(KSTRIPCMD) || true
@@ -658,12 +662,17 @@ ifeq ($(BR2_PACKAGE_BUSYBOX),y)
 endif
 ifeq ($(BR2_LINUX_KERNEL),y)
 	@echo '  linux-menuconfig       - Run Linux kernel menuconfig'
+	@echo '  linux-savedefconfig    - Run Linux kernel savedefconfig'
 endif
 ifeq ($(BR2_TOOLCHAIN_BUILDROOT),y)
 	@echo '  uclibc-menuconfig      - Run uClibc menuconfig'
 endif
 ifeq ($(BR2_TOOLCHAIN_CTNG),y)
 	@echo '  ctng-menuconfig        - Run crosstool-NG menuconfig'
+endif
+ifeq ($(BR2_TARGET_BAREBOX),y)
+	@echo '  barebox-menuconfig     - Run barebox menuconfig'
+	@echo '  barebox-savedefconfig  - Run barebox savedefconfig'
 endif
 	@echo
 	@echo 'Miscellaneous:'
