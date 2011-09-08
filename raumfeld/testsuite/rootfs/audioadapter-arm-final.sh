@@ -20,7 +20,7 @@ if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
 	./leds-blink 4 &
 	$INPUT_TEST rotary_cw
 	killall leds-blink
-	
+
 	./leds-blink 5 &
 	$INPUT_TEST rotary_ccw
 	killall leds-blink
@@ -29,13 +29,12 @@ if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
 	led_off 2
 
 if [ ! -z "$(grep -i ": 0401" /proc/cpuinfo)" ]; then
-# Raumfeld One  
-  ./wifi_managed
+	# Raumfeld One
+	./wifi_managed
 
 	led_on 1
 	led_on 2
 fi
-
 
 	./audio
 
