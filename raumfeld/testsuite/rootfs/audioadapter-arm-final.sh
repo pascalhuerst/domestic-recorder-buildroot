@@ -7,8 +7,6 @@ cd /tests
 led_off 1
 led_off 2
 
-exit 0
-
 if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
 
 	# TEST PROCEDURE FOR SPEAKERS
