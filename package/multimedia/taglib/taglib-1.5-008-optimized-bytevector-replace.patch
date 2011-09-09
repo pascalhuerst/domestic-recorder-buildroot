@@ -1,13 +1,6 @@
 --- taglib-1.5/taglib/toolkit/tbytevector.cpp	2010-01-05 14:57:18.000000000 +0100
 +++ taglib-1.5/taglib/toolkit/tbytevector.cpp	2010-01-07 11:01:13.000000000 +0100
-@@ -23,12 +23,14 @@
-  *   http://www.mozilla.org/MPL/                                           *
-  ***************************************************************************/
- 
-+#include <glib.h>
- #include <ostream>
- 
- #include <tstring.h>
+@@ -29,6 +30,7 @@
  #include <tdebug.h>
  
  #include <string.h>
