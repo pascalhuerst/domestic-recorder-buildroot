@@ -7,9 +7,11 @@ ifconfig $WIRELESS_IFNAME up
 retry=10
 ok=0
 
+# we search for the highest quality net named RaumfeldFactoryTest
+
 while [ ! "$ok" = "1" ] && [ ! "$retry" = "0" ]; do
-		/wireless_scan -m | sort | head -n 1)
 	TMP=$(/sbin/iwlist ${WIRELESS_IFNAME} scan | \
+		/wireless_scan -m | grep -i RaumfeldFactoryTest | sort | head -n 1)
 
 	ok=1
 
@@ -18,17 +20,12 @@ while [ ! "$ok" = "1" ] && [ ! "$retry" = "0" ]; do
 		ok=0
 	fi
 
-	QUALITY=$(echo ${TMP} | cut -f1 -d' ')
-	ESSID=$(echo ${TMP} | cut -f2 -d' ')
-	MIN_QUALITY=-40
-
-	if [ ${MIN_QUALITY} -gt ${QUALITY} ]; then
-		err="SIGNAL LEVEL $QUALITY TOO WEAK ($MIN_QUALITY required) -- ESSID $ESSID"
-		ok=0
-	fi
-
 	retry=$(($retry - 1))
 done
+
+if [  "$ok" = "1" ]; then
+  dialog_info "RaumfeldFactoryTest found, now connecting"
+fi
 
 if [ ! "$ok" = "1" ]; then
 	dialog_err "$err"

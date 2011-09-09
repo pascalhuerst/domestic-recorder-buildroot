@@ -50,5 +50,4 @@ fi
 
 test_result
 
-./test-menu
-
+exit 1
