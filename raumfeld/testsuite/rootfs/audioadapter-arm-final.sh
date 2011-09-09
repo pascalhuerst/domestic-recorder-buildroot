@@ -33,6 +33,13 @@ if [ ! -z "$(grep -i ": 0401" /proc/cpuinfo)" ]; then
 	led_on 1
 	led_on 2
 fi
+if [ ! -z "$(grep -i ": 0201" /proc/cpuinfo)" ]; then
+	# Speaker L
+	./wifi_managed
+
+	led_on 1
+	led_on 2
+fi
 
 	./audio
 

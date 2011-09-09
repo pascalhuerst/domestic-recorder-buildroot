@@ -16,7 +16,7 @@ while [ ! "$ok" = "1" ] && [ ! "$retry" = "0" ]; do
 	ok=1
 
 	if [ -z "${TMP}" ]; then
-		err="NO WIRELESS NETWORKS FOUND"
+		err="RaumfeldFactoryTest not found!"
 		ok=0
 	fi
 
@@ -28,6 +28,9 @@ if [  "$ok" = "1" ]; then
 fi
 
 if [ ! "$ok" = "1" ]; then
+	killall leds-blink
+  ./leds-blink 8 &
 	dialog_err "$err"
+  exit 1
 fi
 
