@@ -127,7 +127,7 @@ config BR2_PACKAGE_SAMBA_SMBD
 	default y
 	depends on BR2_PACKAGE_SAMBA
 	help
-	  The server daemon that provides filesharing and printing services,
+	  The server daemon that provides filesharing and printing services
 
 config BR2_PACKAGE_SAMBA_SMBGET
 	bool "smbget"

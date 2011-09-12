@@ -4,7 +4,7 @@
 #
 #############################################################
 
-NETSNMP_VERSION = 5.6.1
+NETSNMP_VERSION = 5.6.1.1
 NETSNMP_SITE = http://$(BR2_SOURCEFORGE_MIRROR).dl.sourceforge.net/sourceforge/net-snmp
 NETSNMP_SOURCE = net-snmp-$(NETSNMP_VERSION).tar.gz
 NETSNMP_INSTALL_STAGING = YES
@@ -41,6 +41,11 @@ endif
 # Docs
 ifneq ($(BR2_HAVE_DOCUMENTATION),y)
 	NETSNMP_CONF_OPT += --disable-manuals
+endif
+
+ifneq ($(BR2_PACKAGE_NETSNMP_ENABLE_MIBS),y)
+	NETSNMP_CONF_OPT += --disable-mib-loading
+	NETSNMP_CONF_OPT += --disable-mibs
 endif
 
 # Remove IPv6 MIBs if there's no IPv6
