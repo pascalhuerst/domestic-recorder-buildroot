@@ -148,7 +148,7 @@ chmod a+x $tmpdir/start-test.sh
 rm -f $ext2_img
 genext2fs -b 1024 -x $base_rootfs_img -d $tmpdir $ext2_img
 
-# shrink the fs to the max
+# shrink the filesystem to the minimum size
 $resize2fs -M $ext2_img
 
 ###### CREATE THE IMAGE #######
