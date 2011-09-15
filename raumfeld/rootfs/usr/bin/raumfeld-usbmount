@@ -14,9 +14,28 @@ log()
 
 if test "$1" = add; then
 
-    log "handle mount of $DEVNAME"
+    # There are USB sticks that are reported to have a broken
+    # file-system on sda and a valid one on sda1. So whenever
+    # we are called for the raw device, wait a little and check
+    # if any partitions are showing up.
+    case $DEVNAME in
+    	/dev/sd?)
+    	    sleep 2
+    	    for i in 1 2 3 4; do
+    	    	if [ -b $DEVNAME$i ]; then
+    	    	    exit 0
+    	    	fi
+    	    done
+    	;;
+    esac
+
+    log "handle insertion of $DEVNAME"
 
     DEV_UUID=$(blkid -o value -s UUID $DEVNAME)
+
+    if [ -z "$DEV_UUID" ]; then
+    	exit 0
+    fi
 
     log "extracted uuid $DEV_UUID"
 
@@ -32,7 +51,7 @@ if test "$1" = add; then
 
 elif test "$1" = remove; then
 
-    log "handle unmount of $DEVNAME"
+    log "handle removal of $DEVNAME"
 
     MOUNT_POINT=`mount | grep $DEVNAME | awk '{print $3}'`
 
