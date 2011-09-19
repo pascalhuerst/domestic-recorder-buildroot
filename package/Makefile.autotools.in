@@ -22,6 +22,22 @@
 #
 ################################################################################
 
+
+#
+# Utility function to upgrade config.sub and config.guess files
+#
+# argument 1 : directory into which config.guess and config.sub need
+# to be updated. Note that config.sub and config.guess are searched
+# recursively in this directory.
+#
+define CONFIG_UPDATE
+	for file in config.guess config.sub; do \
+		for i in $$(find $(1) -name $$file); do \
+			cp support/gnuconfig/$$file $$i; \
+		done; \
+	done
+endef
+
 ################################################################################
 # AUTOTARGETS_INNER -- defines how the configuration, compilation and
 # installation of an autotools package should be done, implements a
@@ -132,11 +148,8 @@ endif
 # Hook to update config.sub and config.guess if needed
 #
 define UPDATE_CONFIG_HOOK
-	for file in config.guess config.sub; do \
-		for i in $$$$(find $$(@D) -name $$$$file); do \
-			cp package/gnuconfig/$$$$file $$$$i; \
-		done; \
-	done
+       @$$(call MESSAGE, "Updating config.sub and config.guess")
+       $$(call CONFIG_UPDATE,$$(@D))
 endef
 
 $(2)_POST_PATCH_HOOKS += UPDATE_CONFIG_HOOK
@@ -152,11 +165,11 @@ define LIBTOOL_PATCH_HOOK
 			ltmain_version=`sed -n '/^[ 	]*VERSION=/{s/^[ 	]*VERSION=//;p;q;}' $$$$i | \
 			sed -e 's/\([0-9].[0-9]*\).*/\1/' -e 's/\"//'`; \
 			if test $$$${ltmain_version} = '1.5'; then \
-				toolchain/patch-kernel.sh $$$${i%/*} package buildroot-libtool-v1.5.patch; \
+				support/scripts/apply-patches.sh $$$${i%/*} support/libtool buildroot-libtool-v1.5.patch; \
 			elif test $$$${ltmain_version} = "2.2"; then\
-				toolchain/patch-kernel.sh $$$${i%/*} package buildroot-libtool-v2.2.patch; \
+				support/scripts/apply-patches.sh $$$${i%/*} support/libtool buildroot-libtool-v2.2.patch; \
 			elif test $$$${ltmain_version} = "2.4"; then\
-				toolchain/patch-kernel.sh $$$${i%/*} package buildroot-libtool-v2.4.patch; \
+				support/scripts/apply-patches.sh $$$${i%/*} support/libtool buildroot-libtool-v2.4.patch; \
 			fi \
 		done \
 	fi
@@ -177,11 +190,11 @@ define AUTORECONF_HOOK
 		for i in `find $$($$(PKG)_SRCDIR) -name ltmain.sh`; do \
 			ltmain_version=`sed -n '/^[ 	]*VERSION=/{s/^[ 	]*VERSION=//;p;q;}' $$$$i | sed 's/\([0-9].[0-9]*\).*/\1/'`; \
 			if test $$$${ltmain_version} = "1.5"; then \
-				toolchain/patch-kernel.sh $$$${i%/*} package buildroot-libtool-v1.5.patch; \
+				support/scripts/apply-patches.sh $$$${i%/*} support/libtool buildroot-libtool-v1.5.patch; \
 			elif test $$$${ltmain_version} = "2.2"; then\
-				toolchain/patch-kernel.sh $$$${i%/*} package buildroot-libtool-v2.2.patch; \
+				support/scripts/apply-patches.sh $$$${i%/*} support/libtool buildroot-libtool-v2.2.patch; \
 			elif test $$$${ltmain_version} = "2.4"; then\
-				toolchain/patch-kernel.sh $$$${i%/*} package buildroot-libtool-v2.4.patch; \
+				support/scripts/apply-patches.sh $$$${i%/*} support/libtool buildroot-libtool-v2.4.patch; \
 			fi \
 		done \
 	fi
