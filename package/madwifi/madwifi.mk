@@ -21,7 +21,7 @@ $(DL_DIR)/$(MADWIFI_SOURCE):
 
 $(MADWIFI_DIR)/.source: $(DL_DIR)/$(MADWIFI_SOURCE)
 	$(ZCAT) $(DL_DIR)/$(MADWIFI_SOURCE) | tar -C $(BUILD_DIR) $(TAR_OPTIONS) -
-	toolchain/patch-kernel.sh $(MADWIFI_DIR) package/madwifi/ madwifi-\*.patch
+	support/scripts/apply-patches.sh $(MADWIFI_DIR) package/madwifi/ madwifi-\*.patch
 	touch $@
 
 $(MADWIFI_DIR)/.configured: $(MADWIFI_DIR)/.source
