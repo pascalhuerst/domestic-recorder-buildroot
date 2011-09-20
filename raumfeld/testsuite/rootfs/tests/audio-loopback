@@ -1,10 +1,12 @@
 #!/bin/sh
 
+playback_device="hw:0,0"
+capture_device="hw:0,1"
 
-if [ ! -z "$(aplay -l | grep "Raumfeld DDX")" ]; then
-amixer cset numid=1 255
-arecord -f cd - -D hw:0,1 | aplay -D hw:0,0 -f cd -
-else
-amixer cset numid=1 255
-arecord -f cd - | aplay -f cd -
+if [ -z "$(aplay -l | grep "Raumfeld DDX")" ]; then
+    capture_device="hw:0,0"
 fi
+
+amixer cset numid=1 255
+arecord -f cd - -D $capture_device | aplay -D $playback_device -f cd -
+
