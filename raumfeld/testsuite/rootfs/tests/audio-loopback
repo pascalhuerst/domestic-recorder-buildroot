@@ -1,10 +1,11 @@
 #!/bin/sh
 
 playback_device="hw:0,0"
-capture_device="hw:0,1"
+capture_device="hw:0,0"
 
-if [ -z "$(aplay -l | grep "Raumfeld DDX")" ]; then
-    capture_device="hw:0,0"
+if [ ! -z "$(aplay -l | grep "Raumfeld DDX")" ]; then
+    # Raumfeld One
+    capture_device="hw:0,1"
 fi
 
 amixer cset numid=1 255
