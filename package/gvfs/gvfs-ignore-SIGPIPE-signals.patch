@@ -1,0 +1,44 @@
+commit 9dcde52c3e6b8164180cfe8a60896b6d5e1e8c97
+Author: Tomas Bzatek <tbzatek@redhat.com>
+Date:   Mon Aug 29 14:50:50 2011 +0200
+
+    Ignore SIGPIPE signals to avoid process termination on cancelled transfer
+    
+    That way we would be able to properly get EPIPE when trying to write to
+    a socket or pipe whose far end has been closed. This happens e.g. on
+    file copy cancellation. Glib does similar thing on GSocket initialization.
+    
+    https://bugzilla.gnome.org/show_bug.cgi?id=649041
+
+diff --git a/daemon/daemon-main.c b/daemon/daemon-main.c
+index bc53346..ef9025c 100644
+--- a/daemon/daemon-main.c
++++ b/daemon/daemon-main.c
+@@ -68,6 +68,12 @@ daemon_init (void)
+ 
+   g_log_set_handler (NULL, G_LOG_LEVEL_DEBUG, log_debug, NULL);
+ 
++#ifdef SIGPIPE
++  /* Ignore SIGPIPE to avoid killing daemons on cancelled transfer *
++   * See https://bugzilla.gnome.org/show_bug.cgi?id=649041         *
++   */
++  signal (SIGPIPE, SIG_IGN);
++#endif
+   
+   dbus_error_init (&derror);
+   connection = dbus_bus_get (DBUS_BUS_SESSION, &derror);
+diff --git a/daemon/main.c b/daemon/main.c
+index 757229d..4703562 100644
+--- a/daemon/main.c
++++ b/daemon/main.c
+@@ -54,6 +54,10 @@ main (int argc, char *argv[])
+   textdomain (GETTEXT_PACKAGE);
+   
+   g_thread_init (NULL);
++
++#ifdef SIGPIPE
++  signal (SIGPIPE, SIG_IGN);
++#endif
+   
+   g_set_application_name (_("GVFS Daemon"));
+   context = g_option_context_new ("");
