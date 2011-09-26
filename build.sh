@@ -63,7 +63,13 @@ fi
 
 # cleanup from previous builds
 
-rm -rf output
+rm -rf output/build
+rm -rf output/host
+rm -rf output/images
+rm -f  output/staging
+rm -rf output/stamps
+rm -rf output/target
+rm -rf output/toolchain
 
 
 # update the raumfeld-version
