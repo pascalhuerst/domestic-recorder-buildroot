@@ -17,12 +17,12 @@ ifeq ($(BR2_PACKAGE_TAGLIB_MP4),y)
 TAGLIB_CONF_OPT += -DWITH_MP4=ON
 endif
 
-define TAGLIB_INSTALL_TARGET_CMDS
-	cp -a $(STAGING_DIR)/usr/lib/libtag.so* $(TARGET_DIR)/usr/lib
+define TAGLIB_REMOVE_DEVFILE
+	rm -f $(TARGET_DIR)/usr/bin/taglib-config
 endef
 
-define TAGLIB_UNINSTALL_TARGET_CMDS
-        rm -f $(TARGET_DIR)/usr/lib/libtag.so*
-endef
+ifneq ($(BR2_HAVE_DEVFILES),y)
+TAGLIB_POST_INSTALL_TARGET_HOOKS += TAGLIB_REMOVE_DEVFILE
+endif
 
 $(eval $(call CMAKETARGETS,package/multimedia,taglib))
