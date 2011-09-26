@@ -6,6 +6,7 @@ capture_device="hw:0,0"
 if [ ! -z "$(aplay -l | grep "Raumfeld DDX")" ]; then
     # Raumfeld One
     capture_device="hw:0,1"
+    alsactl -f /tests/sta326.stl restore
 fi
 
 amixer cset numid=1 255
