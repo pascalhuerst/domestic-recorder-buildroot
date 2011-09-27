@@ -113,14 +113,3 @@ diff -Naur '-x*ake*' ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit/
    //! A byte vector
  
    /*!
-@@ -397,8 +470,8 @@
-     static ByteVector null;
- 
-     /*!
--	   * Returns a hex-encoded copy of the byte vector.
--	   */
-+     * Returns a hex-encoded copy of the byte vector.
-+     */
-     ByteVector toHex() const;
- 
-   protected:
