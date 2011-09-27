@@ -16,7 +16,7 @@ state.DDX {
 	control.2 {
 		iface MIXER
 		name 'Master Switch'
-		value false
+		value true
 		comment {
 			access 'read write'
 			type BOOLEAN
