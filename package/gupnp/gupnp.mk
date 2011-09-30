@@ -14,4 +14,4 @@ GUPNP_CONF_ENV = \
 
 GUPNP_DEPENDENCIES = host-pkg-config host-libglib2 libxml2 gssdp util-linux
 
-$(eval $(call AUTOTARGETS,package,gupnp))
+$(eval $(call AUTOTARGETS))

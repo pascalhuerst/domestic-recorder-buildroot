@@ -10,5 +10,4 @@ GST_FLUENDO_MP3_LIBTOOL_PATCH = NO
 
 GST_FLUENDO_MP3_DEPENDENCIES = gstreamer liboil
 
-
-$(eval $(call AUTOTARGETS,package/multimedia,gst-fluendo-mp3))
+$(eval $(call AUTOTARGETS))

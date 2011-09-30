@@ -15,6 +15,6 @@ GUPNP_IGD_CONF_ENV = \
 
 GUPNP_IGD_DEPENDENCIES = host-pkg-config gupnp
 
-$(eval $(call AUTOTARGETS,package,gupnp-igd))
+$(eval $(call AUTOTARGETS,package))
 
 

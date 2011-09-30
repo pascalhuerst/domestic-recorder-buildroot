@@ -10,4 +10,4 @@ ISO_CODES_INSTALL_STAGING = YES
 ISO_CODES_INSTALL_TARGET = YES
 ISO_CODES_DEPENDENCIES = gettext
 
-$(eval $(call AUTOTARGETS,package,iso-codes))
+$(eval $(call AUTOTARGETS))

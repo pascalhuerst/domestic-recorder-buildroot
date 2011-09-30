@@ -14,4 +14,4 @@ GSSDP_CONF_ENV = \
 
 GSSDP_DEPENDENCIES = host-pkg-config host-libglib2 libsoup
 
-$(eval $(call AUTOTARGETS,package,gssdp))
+$(eval $(call AUTOTARGETS))
