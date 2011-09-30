@@ -22,7 +22,7 @@ SLY_TOOLKIT_CONF_OPT = \
 
 SLY_TOOLKIT_DEPENDENCIES = host-pkg-config host-libglib2 libglib2 directfb
 
-$(eval $(call AUTOTARGETS,package/raumfeld,sly-toolkit))
+$(eval $(call AUTOTARGETS))
 
 $(SLY_TOOLKIT_DIR)/.bzr:
 	if ! test -d $(SLY_TOOLKIT_DIR)/.bzr; then \

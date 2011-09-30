@@ -17,7 +17,7 @@ LIBRAUMFELDCPP_CONF_OPT = \
 
 LIBRAUMFELDCPP_DEPENDENCIES = host-pkg-config libsoup libraumfeld
 
-$(eval $(call AUTOTARGETS,package/raumfeld,libraumfeldcpp))
+$(eval $(call AUTOTARGETS))
 
 $(LIBRAUMFELDCPP_DIR)/.bzr:
 	if ! test -d $(LIBRAUMFELDCPP_DIR)/.bzr; then \
