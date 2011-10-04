@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# change the mount options for the rootfs to noatime
+mount -o remount,noatime /
+
 # set the standby (spindown) timeout for the internal hard-disk
 hdparm -S 60 /dev/hda
 
