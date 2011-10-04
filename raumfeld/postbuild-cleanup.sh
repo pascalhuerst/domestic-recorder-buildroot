@@ -102,9 +102,9 @@ find $1/usr/share/locale -name iso_639_3.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_3166_2.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_4217.mo -exec rm -f {} \;
 find $1/usr/share/locale -name iso_15924.mo -exec rm -f {} \;
-if test -d $1/usr/lib/directfb-1.4-5; then
-    find $1/usr/lib/directfb-1.4-5 -name '*.o' -exec rm -f {} \;
-    rm -fr $1/usr/lib/directfb-1.4-5/interfaces/IDirectFBVideoProvider
-    rm -f $1/usr/lib/directfb-1.4-5/interfaces/IDirectFBImageProvider/libidirectfbimageprovider_dfiff.so
-    rm -f $1/usr/lib/directfb-1.4-5/interfaces/IDirectFBFont/libidirectfbfont_dgiff.so
+if test -d $1/usr/lib/directfb-1.4-6; then
+    find $1/usr/lib/directfb-1.4-6 -name '*.o' -exec rm -f {} \;
+    rm -fr $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBVideoProvider
+    rm -f $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBImageProvider/libidirectfbimageprovider_dfiff.so
+    rm -f $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBFont/libidirectfbfont_dgiff.so
 fi
