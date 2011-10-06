@@ -3,13 +3,13 @@
 # crda
 #
 #############################################################
-CRDA_VERSION:=52300e7
-CRDA_SOURCE:=crda-$(CRDA_VERSION).tar.gz
-CRDA_URL:=http://git.kernel.org/?p=linux/kernel/git/mcgrof/crda.git;a=snapshot;h=$(CRDA_VERSION);sf=tgz
-CRDA_CAT:=$(ZCAT)
-CRDA_NAME:=crda-$(CRDA_VERSION)
-CRDA_DIR:=$(BUILD_DIR)/$(CRDA_NAME)
-CRDA_TARGET_BINARY:=$(TARGET_DIR)/usr/sbin/crda
+CRDA_VERSION = 52300e7
+CRDA_SOURCE = crda-$(CRDA_VERSION).tar.gz
+CRDA_URL = http://git.kernel.org/?p=linux/kernel/git/mcgrof/crda.git;a=snapshot;h=$(CRDA_VERSION);sf=tgz
+CRDA_CAT = $(ZCAT)
+CRDA_NAME = crda-$(CRDA_VERSION)
+CRDA_DIR = $(BUILD_DIR)/$(CRDA_NAME)
+CRDA_TARGET_BINARY = $(TARGET_DIR)/usr/sbin/crda
 
 $(CRDA_DIR)/.stamp_downloaded:
 	$(Q)test -e $(DL_DIR)/$(CRDA_SOURCE) || \
