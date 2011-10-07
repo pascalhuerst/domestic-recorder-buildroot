@@ -120,6 +120,9 @@ case $target in
         add_rootfs_tgz
         add_raumfeld_demo
         ;;
+    base-geode-final)
+        add_rootfs_tgz
+        ;;
     base-geode-coreboot)
 	cp -a raumfeld/testsuite/coreboot $tmpdir/
 	;;
