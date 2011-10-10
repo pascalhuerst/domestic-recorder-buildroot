@@ -33,8 +33,10 @@ umount $TMPROOT/boot
 umount $TMPROOT
 
 kill $pid
-./leds-blink 3
+./leds-blink 3 &
 
 sleep 5
+
+echo "Rebooting ..."
 
 reboot
