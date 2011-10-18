@@ -16,6 +16,11 @@ if BR2_PACKAGE_UTIL_LINUX
 #  --disable-foo
 #
 
+config BR2_PACKAGE_UTIL_LINUX_BASIC
+	bool "install basic utilities"
+	help
+	 Install the basic util-linux binaries.
+
 config BR2_PACKAGE_UTIL_LINUX_MOUNT
 	bool "build mount utilties"
 	select BR2_PACKAGE_UTIL_LINUX_LIBBLKID
