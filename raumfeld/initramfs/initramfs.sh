@@ -64,7 +64,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	esac
 
 	if [ -n "$bootloader" ]; then
-                gunzip -c $update | tar xv ./tmp/$bootloader 
+                gunzip -c $update | tar x ./tmp/$bootloader
 	        echo "Checking the boot-loader ..."
                 (cd /tmp; /update-uboot.sh; rm -f $bootloader)
         fi
