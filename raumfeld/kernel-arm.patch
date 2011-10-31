@@ -472775,60 +472775,6 @@ index 8c40949..a839de0 100644
  	lbs_deb_main("done clearing commands\n");
  	spin_unlock_irqrestore(&priv->driver_lock, flags);
 From: Johannes Stezenbach <js@sig21.net>
-Date: Fri, 28 Oct 2011 17:17:41 +0200
-Subject: [PATCH 1/2] ASoC: sta32x: power down amplifier on mute
-
-To reduce noise, the amplifier is powered down when
-master mute is set.
-
-Signed-off-by: Johannes Stezenbach <js@sig21.net>
----
- sound/soc/codecs/sta32x.c |   26 +++++++++++++++++++++++++-
- 1 files changed, 25 insertions(+), 1 deletions(-)
-
-diff --git a/sound/soc/codecs/sta32x.c b/sound/soc/codecs/sta32x.c
-index 409d89d..61073ae 100644
---- a/sound/soc/codecs/sta32x.c
-+++ b/sound/soc/codecs/sta32x.c
-@@ -266,9 +266,33 @@ static int sta32x_coefficient_put(struct snd_kcontrol *kcontrol,
- 	.put = sta32x_coefficient_put, \
- 	.private_value = index | (5 << 16) }
- 
-+/* to reduce noise, when MMUTE is set the amplifier
-+ * is also powered down
-+ */
-+static int sta32x_put_mmute_sw(struct snd_kcontrol *kcontrol,
-+			       struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-+	bool mute = (ucontrol->value.integer.value[0] & 1) == 0;
-+	int rc;
-+
-+	if (mute) {
-+		rc = snd_soc_put_volsw(kcontrol, ucontrol);
-+		snd_soc_update_bits(codec, STA32X_CONFF,
-+				    STA32X_CONFF_EAPD, 0);
-+	} else {
-+		snd_soc_update_bits(codec, STA32X_CONFF,
-+				    STA32X_CONFF_EAPD, STA32X_CONFF_EAPD);
-+		rc = snd_soc_put_volsw(kcontrol, ucontrol);
-+	}
-+	return rc;
-+}
-+
-+
- static const struct snd_kcontrol_new sta32x_snd_controls[] = {
- SOC_SINGLE_TLV("Master Volume", STA32X_MVOL, 0, 0xff, 1, mvol_tlv),
--SOC_SINGLE("Master Switch", STA32X_MMUTE, 0, 1, 1),
-+SOC_SINGLE_EXT("Master Switch", STA32X_MMUTE, 0, 1, 1,
-+	       snd_soc_get_volsw, sta32x_put_mmute_sw),
- SOC_SINGLE("Ch1 Switch", STA32X_MMUTE, 1, 1, 1),
- SOC_SINGLE("Ch2 Switch", STA32X_MMUTE, 2, 1, 1),
- SOC_SINGLE("Ch3 Switch", STA32X_MMUTE, 3, 1, 1),
--- 
-1.7.7.1
-
-From: Johannes Stezenbach <js@sig21.net>
 Date: Fri, 28 Oct 2011 18:43:18 +0200
 Subject: [PATCH 2/2] ASoC: sta32x: add workaround for ESD reset issue
 
