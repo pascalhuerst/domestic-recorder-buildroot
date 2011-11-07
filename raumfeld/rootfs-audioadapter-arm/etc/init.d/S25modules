@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Load modules ...
+#
+
+case "$1" in
+  start)
+ 	echo "Loading modules..."
+        modprobe pxamci
+        modprobe libertas_sdio
+	;;
+  *)
+        ;;
+esac
+
+exit $?
+
