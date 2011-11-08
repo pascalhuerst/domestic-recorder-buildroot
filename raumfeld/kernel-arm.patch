@@ -392749,3 +392749,94 @@ index f08fae9..063cb19 100644
 -- 
 1.7.5.4
 
+From ee645478830064fb59a7dc18d6f65bb9c1d3890c Mon Sep 17 00:00:00 2001
+From: Johannes Stezenbach <js@sig21.net>
+Date: Tue, 5 Jul 2011 16:42:28 +0200
+Subject: [PATCH] ASoC: pxa/raumfled: fix MCLK for STA326 and WM8782
+
+New hardware has fixed MCLK = 11.2896MHz
+
+Signed-off-by: Johannes Stezenbach <js@sig21.net>
+---
+ sound/soc/pxa/raumfeld.c |   40 +++++++++++++++++++---------------------
+ 1 files changed, 19 insertions(+), 21 deletions(-)
+
+diff --git a/sound/soc/pxa/raumfeld.c b/sound/soc/pxa/raumfeld.c
+index 894731b..7d4f1bf 100644
+--- a/sound/soc/pxa/raumfeld.c
++++ b/sound/soc/pxa/raumfeld.c
+@@ -232,27 +232,26 @@ static int raumfeld_sta32x_startup(struct snd_pcm_substream *substream)
+ 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+ 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+ 
+-	/* FIXME: currently only fixed MCLK of 12.288MHz is available */
++	/* fixed MCLK of 11.2896MHz */
+ 	snd_pcm_hw_constraint_mask64(substream->runtime,
+ 				    SNDRV_PCM_HW_PARAM_RATE,
+-				    SNDRV_PCM_RATE_32000 |
+-				    SNDRV_PCM_RATE_48000 |
+-				    SNDRV_PCM_RATE_96000 |
+-				    SNDRV_PCM_RATE_192000);
++				    SNDRV_PCM_RATE_44100 |
++				    SNDRV_PCM_RATE_88200 |
++				    SNDRV_PCM_RATE_176400);
+ 
+ 	/* PXA DMA cannot do zero extend for 24bit samples,
+-	* thus only 16bit (two samples packet into 32bit word)
+-	* or 32bit samples are possible
+-	*/
++	 * thus only 16bit (two samples packet into 32bit word)
++	 * or 32bit samples are possible
++	 */
+ 	snd_pcm_hw_constraint_mask64(substream->runtime,
+ 				    SNDRV_PCM_HW_PARAM_FORMAT,
+ 				    SNDRV_PCM_FMTBIT_S16_LE  | SNDRV_PCM_FMTBIT_S16_BE |
+ 				    SNDRV_PCM_FMTBIT_S32_LE  | SNDRV_PCM_FMTBIT_S32_BE);
+ 
+-	/* FIXME: we have a fixed MCLK, set it here so ALSA knows
+-	* the supported sample rates and can resample if necessary
+-	*/
+-	return snd_soc_dai_set_sysclk(codec_dai, 0, 12288000, 0);
++	/* we have a fixed MCLK, set it here so ALSA knows
++	 * the supported sample rates and can resample if necessary
++	 */
++	return snd_soc_dai_set_sysclk(codec_dai, 0, 11289600, 0);
+ }
+ 
+ static void raumfeld_sta32x_shutdown(struct snd_pcm_substream *substream)
+@@ -273,13 +272,12 @@ static int raumfeld_sta32x_hw_params(struct snd_pcm_substream *substream,
+ 	unsigned int fmt, clk = 0;
+ 	int ret = 0;
+ 
+-	// FIXME: currently only fixed MCLK of 12.288MHz is available
++	// fixed MCLK of 11.2896MHz
+ 	switch (params_rate(params)) {
+-	case 32000:
+-	case 48000:
+-	case 96000:
+-	case 192000:
+-		clk = 12288000;
++	case 44100:
++	case 88200:
++	case 176400:
++		clk = 11289600;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -352,10 +350,10 @@ static int raumfeld_wm8782_hw_params(struct snd_pcm_substream *substream,
+ 	unsigned int fmt, clk = 0;
+ 	int ret = 0;
+ 
+-	// FIXME: currently only fixed MCLK of 12.288MHz is available
++	// fixed MCLK of 11.2896MHz
+ 	switch (params_rate(params)) {
+-	case 48000:
+-		clk = 12288000;
++	case 44100:
++		clk = 11289600;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+-- 
+1.7.5.4
+
