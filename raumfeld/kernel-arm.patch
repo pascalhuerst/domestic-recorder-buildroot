@@ -392733,3 +392733,23 @@ index 894731b..7d4f1bf 100644
 -- 
 1.7.5.4
 
+diff --git a/sound/soc/codecs/cs4270.c b/sound/soc/codecs/cs4270.c
+index f1f237e..ee45091 100644
+--- a/sound/soc/codecs/cs4270.c
++++ b/sound/soc/codecs/cs4270.c
+@@ -612,14 +610,7 @@ static int cs4270_soc_resume(struct snd_soc_codec *codec)
+ 	ndelay(500);
+ 
+ 	/* first restore the entire register cache ... */
+-	for (reg = CS4270_FIRSTREG; reg <= CS4270_LASTREG; reg++) {
+-		u8 val = snd_soc_read(codec, reg);
+-
+-		if (i2c_smbus_write_byte_data(i2c_client, reg, val)) {
+-			dev_err(codec->dev, "i2c write failed\n");
+-			return -EIO;
+-		}
+-	}
++	snd_soc_cache_sync(codec);
+ 
+ 	/* ... then disable the power-down bits */
+ 	reg = snd_soc_read(codec, CS4270_PWRCTL);
