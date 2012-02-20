@@ -1,3 +1,4 @@
+
 #############################################################
 #
 # gst-ffmpeg
@@ -12,19 +13,14 @@ GST_FFMPEG_DEPENDENCIES = gstreamer gst-plugins-base
 
 GST_FFMPEG_CONF_OPT = \
 	--with-ffmpeg-extra-configure="--target-os=linux \
+	                               --disable-debug \
 				       --disable-ffmpeg \
                                        --disable-ffplay \
                                        --disable-ffserver \
                                        --disable-avfilter \
-                                       --disable-swscale \
                                        --enable-gpl \
-                                       --enable-nonfree \
-                                       --enable-postproc \
                                        --enable-pthreads \
                                        --enable-zlib \
-                                       --disable-avfilter \
-                                       --enable-postproc \
-                                       --enable-swscale \
                                        --prefix=$(STAGING_DIR)/usr \
                                        --enable-cross-compile \
                                        --sysroot=$(STAGING_DIR) \
