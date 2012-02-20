@@ -31,9 +31,16 @@ GST_FFMPEG_CONF_OPT = \
                                        --cross-prefix=$(TARGET_CROSS) \
                                        --disable-shared \
                                        --enable-static \
+				       --disable-iwmmxt \
+                                       --disable-bsfs \
+                                       --disable-decoders \
+                                       --disable-demuxers \
                                        --disable-encoders \
+                                       --disable-filters \
                                        --disable-muxers \
-				       --disable-iwmmxt"
+                                       --disable-parsers \
+                                       --disable-protocols"
+
 
 ifeq ($(BR2_PACKAGE_BZIP2),y)
 GST_FFMPEG_DEPENDENCIES += bzip2
