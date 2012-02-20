@@ -39,7 +39,10 @@ GST_FFMPEG_CONF_OPT = \
                                        --disable-filters \
                                        --disable-muxers \
                                        --disable-parsers \
-                                       --disable-protocols"
+                                       --disable-protocols \
+                                       --enable-decoder=alac \
+                                       --enable-decoder=wmav1 \
+                                       --enable-decoder=wmav2 "
 
 
 ifeq ($(BR2_PACKAGE_BZIP2),y)
