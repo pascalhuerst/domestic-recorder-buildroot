@@ -12,6 +12,8 @@ case "$1" in
 	brctl addif br0 eth1
 	ifconfig eth0 up
 	ifconfig eth1 up
+        hwaddr=$(ifconfig eth0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
+        ifconfig br0 hw ether $hwaddr
 	ifconfig br0 up
 	;;
   stop)
