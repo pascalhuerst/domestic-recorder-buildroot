@@ -4,7 +4,7 @@
 TITLE="HARDDISK"
 DIALOGOPTS="--title $TITLE"
 
-DEV=/dev/hda
+DEV=/dev/sda
 TMPROOT=/tmp/root
 
 # enable 32bit access
