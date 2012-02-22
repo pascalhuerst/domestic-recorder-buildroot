@@ -1,4 +1,4 @@
 # Rules for usbmount
 
-KERNEL=="sd*", SUBSYSTEMS=="usb", ACTION=="add",    RUN+="/usr/bin/raumfeld-usbmount add"
-KERNEL=="sd*", SUBSYSTEMS=="usb", ACTION=="remove", RUN+="/usr/bin/raumfeld-usbmount remove"
+KERNEL=="sd*", SUBSYSTEM=="block", ACTION=="add",    RUN+="/usr/bin/raumfeld-usbmount add"
+KERNEL=="sd*", SUBSYSTEM=="block", ACTION=="remove", RUN+="/usr/bin/raumfeld-usbmount remove"

@@ -9,7 +9,7 @@
 source tests.inc
 cd tests
 
-DEV=/dev/sda
+DEV=/dev/hda
 TMPROOT=/tmp/root
 
 ./leds-blink 1 &

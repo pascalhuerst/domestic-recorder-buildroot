@@ -7,4 +7,4 @@ devpts		/dev/pts	devpts	defaults,gid=5,mode=620	0	0
 tmpfs		/tmp		tmpfs	defaults	        0	0
 sysfs		/sys		sysfs	defaults        	0	0
 
-/dev/sda3	/data           ext3    rw,noatime             	0	0
+/dev/hda3	/data           ext3    rw,noatime             	0	0

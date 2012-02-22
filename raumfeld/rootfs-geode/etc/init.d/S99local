@@ -4,7 +4,7 @@
 mount -o remount,noatime /
 
 # set the standby (spindown) timeout for the internal hard-disk
-hdparm -S 60 /dev/sda
+hdparm -S 60 /dev/hda
 
 # start the master-process
 cd /raumfeld/master-process
