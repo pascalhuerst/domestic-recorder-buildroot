@@ -43,7 +43,8 @@ GST_FFMPEG_CONF_OPT = \
                                        --disable-protocols \
                                        --enable-decoder=alac \
                                        --enable-decoder=wmav1 \
-                                       --enable-decoder=wmav2 "
+                                       --enable-decoder=wmav2 \
+                                       --enable-decoder=wmapro "
 
 ifeq ($(BR2_PACKAGE_BZIP2),y)
 GST_FFMPEG_DEPENDENCIES += bzip2
