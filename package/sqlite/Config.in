@@ -19,6 +19,6 @@ config BR2_PACKAGE_SQLITE_STAT3
 	depends on BR2_PACKAGE_SQLITE
 	help
 	  Adds additional logic to the ANALYZE command and to the query
-	  planner that can help SQLite to chose a better query plan under
+	  planner that can help SQLite to choose a better query plan under
 	  certain situations.
 

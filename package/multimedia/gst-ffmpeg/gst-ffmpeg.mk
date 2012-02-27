@@ -5,11 +5,12 @@
 #
 #############################################################
 
-GST_FFMPEG_VERSION = 0.10.11
+GST_FFMPEG_VERSION = 0.10.13
 GST_FFMPEG_SOURCE = gst-ffmpeg-$(GST_FFMPEG_VERSION).tar.bz2
 GST_FFMPEG_SITE = http://gstreamer.freedesktop.org/src/gst-ffmpeg
 GST_FFMPEG_INSTALL_STAGING = YES
-GST_FFMPEG_DEPENDENCIES = gstreamer gst-plugins-base
+
+GST_FFMPEG_DEPENDENCIES = host-pkg-config gstreamer gst-plugins-base
 
 GST_FFMPEG_CONF_OPT = \
 	--with-ffmpeg-extra-configure="--target-os=linux \
@@ -43,7 +44,6 @@ GST_FFMPEG_CONF_OPT = \
                                        --enable-decoder=alac \
                                        --enable-decoder=wmav1 \
                                        --enable-decoder=wmav2 "
-
 
 ifeq ($(BR2_PACKAGE_BZIP2),y)
 GST_FFMPEG_DEPENDENCIES += bzip2
