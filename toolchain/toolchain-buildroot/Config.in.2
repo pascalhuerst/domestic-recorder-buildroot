@@ -25,6 +25,13 @@ config BR2_TOOLCHAIN_BUILDROOT_INET_RPC
 	  Enable this option if you want your toolchain to support
 	  RPC (needed for NFS, for example).
 
+config BR2_TOOLCHAIN_BUILDROOT_INET_ADDRCONFIG
+	bool "Enable AI ADDRCONFIG support"
+	help
+	  Enable this option if you want your toolchain to support
+	  the AI_ADDRCONFIG flag to query interfaces to find both
+	  ipv4 and ipv6 support.
+
 config BR2_TOOLCHAIN_BUILDROOT_WCHAR
 	bool "Enable WCHAR support"
 	select BR2_USE_WCHAR
