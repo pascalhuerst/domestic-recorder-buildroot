@@ -1,0 +1,19 @@
+--- a/libsoup/soup-socket.c	2012-02-11 18:29:23.000000000 +0100
++++ b/libsoup/soup-socket.c	2012-03-19 17:20:47.476408113 +0100
+@@ -1127,6 +1127,7 @@
+ 	g_clear_error (&error);
+ 
+ 	data->callback (data->sock, status, data->user_data);
++	g_object_unref(priv->conn);
+ 	g_object_unref (data->sock);
+ 	g_slice_free (SoupSocketAsyncConnectData, data);
+ }
+@@ -1149,6 +1150,8 @@
+ 
+ 	if (priv->async_context && !priv->use_thread_context)
+ 		g_main_context_push_thread_default (priv->async_context);
++
++	g_object_ref(priv->conn);
+ 	g_tls_connection_handshake_async (G_TLS_CONNECTION (priv->conn),
+ 					  G_PRIORITY_DEFAULT,
+ 					  cancellable, handshake_async_ready,

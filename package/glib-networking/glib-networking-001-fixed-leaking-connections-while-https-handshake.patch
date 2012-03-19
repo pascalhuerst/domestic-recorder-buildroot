@@ -1,0 +1,40 @@
+--- a/tls/gnutls/gtlsconnection-gnutls.c	2012-01-04 16:41:15.000000000 +0100
++++ b/tls/gnutls/gtlsconnection-gnutls.c	2012-03-19 17:25:46.684646556 +0100
+@@ -1027,15 +1027,20 @@
+       g_object_unref (simple);
+     }
+   else if (error)
++  {
+     g_error_free (error);
+-
+-  source = g_tls_connection_gnutls_create_source (gnutls, 0, cancellable);
+-  g_source_set_callback (source,
+-			 (GSourceFunc) g_tls_connection_gnutls_handshake_ready,
+-			 simple, NULL);
+-  g_source_set_priority (source, io_priority);
+-  g_source_attach (source, g_main_context_get_thread_default ());
+-  g_source_unref (source);
++    g_object_unref (simple);
++  }
++  else
++  {
++    source = g_tls_connection_gnutls_create_source (gnutls, 0, cancellable);
++    g_source_set_callback (source,
++         (GSourceFunc) g_tls_connection_gnutls_handshake_ready,
++         simple, NULL);
++    g_source_set_priority (source, io_priority);
++    g_source_attach (source, g_main_context_get_thread_default ());
++    g_source_unref (source);
++  }
+ }
+ 
+ static gboolean
+@@ -1221,7 +1226,7 @@
+       g_error_free (error);
+       g_object_unref (acd->simple);
+       if (acd->cancellable)
+-	g_object_unref (acd->cancellable);
++        g_object_unref (acd->cancellable);
+       g_slice_free (AsyncCloseData, acd);
+     }
+   else
