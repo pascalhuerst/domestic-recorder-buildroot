@@ -3,6 +3,7 @@ config BR2_PACKAGE_LIBRAUMFELDCPP
 	select BR2_PACKAGE_LIBRAUMFELD
 	select BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_LIBSOUP
+	select BR2_PACKAGE_LIBSOUP_SSL
 	help
 	  libraumfeldcpp is a C++ utility library for the Raumfeld software
           stack
