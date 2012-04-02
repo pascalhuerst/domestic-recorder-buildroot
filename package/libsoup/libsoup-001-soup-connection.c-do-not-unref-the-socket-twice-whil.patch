@@ -1,0 +1,42 @@
+From 0c0619228a3488a4808cad2383073e00db22cd6d Mon Sep 17 00:00:00 2001
+From: Sergio Villar Senin <svillar@igalia.com>
+Date: Wed, 28 Mar 2012 10:29:49 +0200
+Subject: [PATCH 1/2] soup-connection.c: do not unref the socket twice while
+ disconnecting
+
+Reentrant calls to soup_socket_disconnect() when disconnecting the socket
+lead to double disconnections and double unref of the same SoupSocket.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=672178
+---
+ libsoup/soup-connection.c |   13 +++++++++----
+ 1 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/libsoup/soup-connection.c b/libsoup/soup-connection.c
+index b299e2b..ad4e8e6 100644
+--- a/libsoup/soup-connection.c
++++ b/libsoup/soup-connection.c
+@@ -842,11 +842,16 @@ soup_connection_disconnect (SoupConnection *conn)
+ 		soup_connection_set_state (conn, SOUP_CONNECTION_DISCONNECTED);
+ 
+ 	if (priv->socket) {
+-		g_signal_handlers_disconnect_by_func (priv->socket,
+-						      socket_disconnected, conn);
+-		soup_socket_disconnect (priv->socket);
+-		g_object_unref (priv->socket);
++		/* Set the socket to NULL at the beginning to avoid reentrancy
++		 * issues. soup_socket_disconnect() could trigger a reentrant
++		 * call unref'ing and disconnecting the socket twice.
++		 */
++		SoupSocket *socket = priv->socket;
+ 		priv->socket = NULL;
++		g_signal_handlers_disconnect_by_func (socket,
++						      socket_disconnected, conn);
++		soup_socket_disconnect (socket);
++		g_object_unref (socket);
+ 	}
+ 
+ 	if (old_state != SOUP_CONNECTION_DISCONNECTED)
+-- 
+1.7.9.1
+
