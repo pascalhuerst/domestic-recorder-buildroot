@@ -1,0 +1,58 @@
+From 2233462ae94aa648ffe4bd910ef6e05e87c2ccc0 Mon Sep 17 00:00:00 2001
+From: Jonny Lamb <jonnylamb@gnome.org>
+Date: Tue, 3 Apr 2012 20:54:25 -0400
+Subject: [PATCH 3/4] server: keep a ref on the client context while clearing
+ up
+
+We need to keep a ref on the client context struct for the duration of
+the cleanup otherwise it will be disposed of before the
+SoupSocket::disconnect callback is called, and that will dereference
+the old client context pointer.
+
+Fixes: https://bugzilla.gnome.org/show_bug.cgi?id=673468
+
+Signed-off-by: Jonny Lamb <jonnylamb@gnome.org>
+---
+ libsoup/soup-server.c |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+
+diff --git a/libsoup/soup-server.c b/libsoup/soup-server.c
+index 96704ce..f4b7f41 100644
+--- a/libsoup/soup-server.c
++++ b/libsoup/soup-server.c
+@@ -142,6 +142,9 @@ static void set_property (GObject *object, guint prop_id,
+ static void get_property (GObject *object, guint prop_id,
+ 			  GValue *value, GParamSpec *pspec);
+ 
++static SoupClientContext *soup_client_context_ref (SoupClientContext *client);
++static void soup_client_context_unref (SoupClientContext *client);
++
+ static void
+ free_handler (SoupServerHandler *hand)
+ {
+@@ -183,6 +186,13 @@ finalize (GObject *object)
+ 
+ 		priv->clients = g_slist_remove (priv->clients, client);
+ 
++		/* keep a ref on the client context so it doesn't get destroyed
++		 * when we finish the message; the SoupSocket::disconnect
++		 * handler will refer to client->server later when the socket is
++		 * disconnected.
++		 */
++		soup_client_context_ref (client);
++
+ 		if (client->msg) {
+ 			soup_message_set_status (client->msg, SOUP_STATUS_IO_ERROR);
+ 			soup_message_io_finished (client->msg);
+@@ -190,6 +200,8 @@ finalize (GObject *object)
+ 
+ 		soup_socket_disconnect (sock);
+ 		g_object_unref (sock);
++
++		soup_client_context_unref (client);
+ 	}
+ 
+ 	if (priv->default_handler)
+-- 
+1.7.9.1
+
