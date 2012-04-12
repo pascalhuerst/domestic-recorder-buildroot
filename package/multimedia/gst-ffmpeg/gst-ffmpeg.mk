@@ -41,6 +41,7 @@ GST_FFMPEG_CONF_OPT = \
                                        --disable-muxers \
                                        --disable-parsers \
                                        --disable-protocols \
+                                       --enable-decoder=aac \
                                        --enable-decoder=alac \
                                        --enable-decoder=wmav1 \
                                        --enable-decoder=wmav2 \
