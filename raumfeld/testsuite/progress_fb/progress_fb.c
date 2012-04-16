@@ -66,13 +66,13 @@ static inline void fb_set_row(int x, int w, int y, int v)
 
 static void draw_bar(int percent, int x, int y, int w, int h, int color)
 {
-	int cx, cy;
+	int cy;
 
 	if (percent == 0)
 		return;
 
 	for (cy = y; cy < y + ((h * percent + 50) / 100); cy++)
-		fb_set_row(cx, w, cy, color);
+		fb_set_row(x, w, cy, color);
 }
 
 int main(int argc, char **argv)
