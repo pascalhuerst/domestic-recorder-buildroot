@@ -15,19 +15,40 @@ config BR2_PACKAGE_UDEV
 
 if BR2_PACKAGE_UDEV
 
+config BR2_PACKAGE_UDEV_ACL
+	bool "enable acl permissions"
+	help
+	  Enable enable local user acl permissions support
+
+config BR2_PACKAGE_UDEV_GUDEV
+	bool "enable GObject libudev support"
+	help
+	  Enable GObject libudev support
+
+config BR2_PACKAGE_UDEV_HWDATA
+	bool "enable hardware data"
+	help
+	  Enable hardware identification and configuration data
+
+config BR2_PACKAGE_UDEV_INTROSPECTION
+	bool "enable GObject introspection"
+	help
+	  Enable GObject introspection support
+
+config BR2_PACKAGE_UDEV_KEYMAP
+	bool "enable keymap fixup"
+	help
+	  Enable keymap fixup support
+
+config BR2_PACKAGE_UDEV_MTD
+	bool "enable MTD support"
+	help
+	  Enable MTD probe support
+
 config BR2_PACKAGE_UDEV_RULES_GEN
 	bool "enable rules generator"
 	help
 	  Enable persistant rules generator
-
-config BR2_PACKAGE_UDEV_ALL_EXTRAS
-	bool "enable all extras"
-	select BR2_PACKAGE_ACL
-	select BR2_PACKAGE_HWDATA
-	select BR2_PACKAGE_LIBGLIB2
-	help
-	  Enable all extras with external dependencies like
-	  libacl, hwdata and libglib2
 
 endif
 

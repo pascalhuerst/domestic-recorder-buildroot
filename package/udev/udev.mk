@@ -15,24 +15,43 @@ UDEV_CONF_OPT =			\
 	--sbindir=/sbin		\
 	--with-rootlibdir=/lib	\
 	--libexecdir=/lib	\
-	--with-usb-ids-path=/usr/share/hwdata/usb.ids	\
-	--with-pci-ids-path=/usr/share/hwdata/pci.ids	\
 	--with-firmware-path=/lib/firmware		\
-	--disable-introspection
+	--with-usb-ids-path=/usr/share/hwdata/usb.ids	\
+	--with-pci-ids-path=/usr/share/hwdata/pci.ids
 
 UDEV_DEPENDENCIES = host-gperf host-pkg-config util-linux kmod
 
-ifeq ($(BR2_PACKAGE_UDEV_RULES_GEN),y)
-UDEV_CONF_OPT += --enable-rule_generator
+ifeq ($(BR2_PACKAGE_UDEV_ACL),y)
+UDEV_CONF_OPT += --enable-udev_acl
+UDEV_DEPENDENCIES += acl
 endif
 
-ifeq ($(BR2_PACKAGE_UDEV_ALL_EXTRAS),y)
-UDEV_DEPENDENCIES += acl hwdata libglib2
-UDEV_CONF_OPT +=		\
-	--enable-udev_acl
+ifeq ($(BR2_PACKAGE_UDEV_GUDEV),y)
+UDEV_DEPENDENCIES += libglib2
 else
-UDEV_CONF_OPT +=		\
-	--disable-gudev
+UDEV_CONF_OPT += --disable-gudev
+endif
+
+ifeq ($(BR2_PACKAGE_UDEV_HWDATA),y)
+UDEV_DEPENDENCIES += hwdata
+endif
+
+ifeq ($(BR2_PACKAGE_UDEV_INTROSPECTION),y)
+UDEV_DEPENDENCIES += libglib2
+else
+UDEV_CONF_OPT += --disable-introspection
+endif
+
+ifneq ($(BR2_PACKAGE_UDEV_KEYMAP),y)
+UDEV_CONF_OPT += --disable-keymap
+endif
+
+ifneq ($(BR2_PACKAGE_UDEV_MTD),y)
+UDEV_CONF_OPT += --disable-mtd_probe
+endif
+
+ifeq ($(BR2_PACKAGE_UDEV_RULES_GEN),y)
+UDEV_CONF_OPT += --enable-rule_generator
 endif
 
 define UDEV_INSTALL_INITSCRIPT
