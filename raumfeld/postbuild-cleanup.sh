@@ -17,11 +17,10 @@ rm -f  $1/lib/udev/cdrom_id
 rm -f  $1/lib/udev/v4l_id
 rm -f  $1/lib/udev/rules.d/42-qemu-usb.rules
 rm -f  $1/lib/udev/rules.d/60-cdrom_id.rules
+rm -f  $1/lib/udev/rules.d/60-persistent-storage-tape.rules
 rm -f  $1/lib/udev/rules.d/60-persistent-v4l.rules
 rm -f  $1/lib/udev/rules.d/61-accelerometer.rules
-rm -f  $1/lib/udev/rules.d/75-cd-aliases-generator.rules
-rm -f  $1/lib/udev/rules.d/95-keyboard-force-release.rules
-rm -f  $1/lib/udev/rules.d/95-keymap.rules
+rm -f  $1/lib/udev/rules.d/78-sound-card.rules
 rm -fr $1/media/usb*
 rm -fr $1/usr/include
 rm -f  $1/usr/bin/arm-linux-directfb-csource
