@@ -107,14 +107,6 @@ case $target in
                 ROOTFS=output/images/rootfs.tar.gz
                 ZIMAGE=binaries/initramfs-arm/zImage
                 BOOTLOADERS=raumfeld/U-Boot/raumfeld-connector.bin,raumfeld/U-Boot/raumfeld-speaker.bin
-
-                # create  the update image
-                raumfeld/updatecreate.sh \
-	            --target=$target \
-	            --targz=$ROOTFS \
-                    --kexec=$ZIMAGE \
-                    --bootloaders=$BOOTLOADERS
-
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -130,14 +122,6 @@ case $target in
                 ROOTFS=output/images/rootfs.tar.gz
                 ZIMAGE=binaries/initramfs-arm/zImage
                 BOOTLOADERS=raumfeld/U-Boot/raumfeld-controller.bin
-
-                # create  the update image
-                raumfeld/updatecreate.sh \
-	            --target=$target \
-	            --targz=$ROOTFS \
-                    --kexec=$ZIMAGE \
-                    --bootloaders=$BOOTLOADERS
-
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -152,14 +136,6 @@ case $target in
 	base-geode)
                 ROOTFS=output/images/rootfs.tar.gz
                 ZIMAGE=binaries/initramfs-geode/bzImage
-
-                # create  the update image
-                raumfeld/updatecreate.sh \
-	            --target=$target \
-	            --targz=$ROOTFS \
-                    --kexec=$ZIMAGE \
-                    --bootloaders=$BOOTLOADERS
-
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -171,3 +147,13 @@ case $target in
 		done
                 ;;
 esac
+
+
+if [ -n "$ROOTFS" ]; then
+    # create  the update image
+    raumfeld/updatecreate.sh \
+	--target=$target \
+	--targz=$ROOTFS \
+        --kexec=$ZIMAGE \
+        --bootloaders=$BOOTLOADERS
+fi
