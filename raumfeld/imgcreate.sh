@@ -152,7 +152,11 @@ rm -f $ext2_img
 genext2fs -b 1024 -x $base_rootfs_img -d $tmpdir $ext2_img
 
 # shrink the filesystem to the minimum size
-$resize2fs -M $ext2_img
+# add 4 blocks to work around a bug in resize2fs which sometimes
+# calculates a wrong minimum size
+size=$($resize2fs -P $ext2_img | cut -d ' ' -f 7)
+size=$(expr $size + 4)
+$resize2fs $ext2_img $size
 
 ###### CREATE THE IMAGE #######
 
