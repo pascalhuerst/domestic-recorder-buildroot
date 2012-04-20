@@ -66,10 +66,6 @@ if ! test -z "$image"; then
 fi
 
 
-# read the kernel version from the current configuration
-KERNEL_VERSION=`grep BR2_LINUX_KERNEL_VERSION .config | cut -f2 -d= | sed -e s/\"//g`
-
-
 # create a list of all files in the rootfs
 
 if [ -f output/images/rootfs.tar.gz ]; then
@@ -87,7 +83,6 @@ case $target in
 	initramfs-arm)
         	# copy the ARM kernel images for later use
                 cp output/images/uImage binaries/$target
-		cp output/build/linux-$KERNEL_VERSION/arch/arm/boot/zImage binaries/$target
 		;;
 
         initramfs-geode)
@@ -105,7 +100,7 @@ case $target in
 
 	audioadapter-arm)
                 ROOTFS=output/images/rootfs.tar.gz
-                ZIMAGE=binaries/initramfs-arm/zImage
+                ZIMAGE=binaries/initramfs-arm/uImage
                 BOOTLOADERS=raumfeld/U-Boot/raumfeld-connector.bin,raumfeld/U-Boot/raumfeld-speaker.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
@@ -120,7 +115,7 @@ case $target in
 
 	remotecontrol-arm)
                 ROOTFS=output/images/rootfs.tar.gz
-                ZIMAGE=binaries/initramfs-arm/zImage
+                ZIMAGE=binaries/initramfs-arm/uImage
                 BOOTLOADERS=raumfeld/U-Boot/raumfeld-controller.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
