@@ -87,6 +87,7 @@ ifeq ($(BR2_PACKAGE_UTIL_LINUX_LIBBLKID),y)
 define UTIL_LINUX_INSTALL_LIBBLKID
 	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)/libblkid \
 		DESTDIR=$(TARGET_DIR) install
+	$(INSTALL) -D -m 0755 $(@D)/misc-utils/blkid $(TARGET_DIR)/sbin
 endef
 endif
 
