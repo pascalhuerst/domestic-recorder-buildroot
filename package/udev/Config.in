@@ -1,15 +1,8 @@
 config BR2_PACKAGE_UDEV
 	bool "udev"
 	depends on BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_UDEV
-	depends on BR2_LARGEFILE # util-linux
-	depends on BR2_USE_WCHAR # util-linux
-	select BR2_PACKAGE_UTIL_LINUX
-	select BR2_PACKAGE_UTIL_LINUX_LIBBLKID
-	select BR2_PACKAGE_KMOD
 	help
 	  Userspace device daemon.
-
-	  udev requires a Linux kernel >= 2.6.34: it relies on devtmpfs.
 
 	  ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
 
