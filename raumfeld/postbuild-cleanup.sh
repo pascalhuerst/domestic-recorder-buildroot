@@ -98,7 +98,6 @@ rm -fr $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/common-lisp
 rm -fr $1/usr/share/gdb
 rm -f  $1/usr/share/getopt/*.tcsh
-rm -fr $1/usr/share/glib-2.0
 rm -fr $1/usr/share/pkgconfig
 rm -fr $1/usr/share/sounds
 rm -f  $1/usr/share/xml/iso-codes/iso_639.xml
