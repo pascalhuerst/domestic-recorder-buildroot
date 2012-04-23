@@ -48,6 +48,11 @@ config BR2_TOOLCHAIN_BUILDROOT_LOCALE
 	  Enable this option if you want your toolchain to support
 	  localization and internationalization.
 
+config BR2_TOOLCHAIN_BUILDROOT_BUILD_LOCALES
+        string "Locales to build minimal support for"
+	depends on BR2_TOOLCHAIN_BUILDROOT_LOCALE
+        default "en_US"
+
 config BR2_TOOLCHAIN_BUILDROOT_CXX
 	bool "Enable C++ support"
 	select BR2_INSTALL_LIBSTDCPP
