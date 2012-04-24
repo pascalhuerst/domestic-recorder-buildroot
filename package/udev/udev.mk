@@ -10,6 +10,7 @@ UDEV_INSTALL_STAGING = YES
 
 UDEV_CONF_OPT =			\
 	--sbindir=/sbin		\
+	--libexecdir=/lib/udev	\
 	--with-rootlibdir=/lib	\
 	--with-firmware-path=/lib/firmware		\
 	--with-usb-ids-path=/usr/share/hwdata/usb.ids	\
