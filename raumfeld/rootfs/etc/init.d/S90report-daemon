@@ -1,4 +1,5 @@
 #!/bin/sh
 
-/raumfeld/report-daemon/report-daemon.sh &
+cd /raumfeld/report-daemon
+./report-daemon.sh &
 
