@@ -8,7 +8,7 @@ DEV=/dev/hda
 TMPROOT=/tmp/root
 
 # enable 32bit access
-hdparm -c1 -d1 -p4 ${DEV}
+hdparm -c1 ${DEV}
 
 # purge partition table, if any. This script does it the hard way.
 dd if=/dev/zero of=$DEV bs=512 count=1
