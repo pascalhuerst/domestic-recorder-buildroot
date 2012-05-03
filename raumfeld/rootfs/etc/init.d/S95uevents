@@ -1,6 +1,15 @@
 #!/bin/sh
 
 # generate udev events for USB devices present at boot time
-for uevent in $(find /sys -regex ".*\/block\/sd.*\/uevent"); do
-    echo "add" > $uevent
-done
+
+case "$1" in
+    start)
+        for uevent in $(find /sys -regex ".*\/block\/sd.*\/uevent"); do
+            echo "add" > $uevent
+        done
+	;;
+    *)
+	;;
+esac
+
+exit $?

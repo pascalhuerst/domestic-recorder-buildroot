@@ -1,3 +1,15 @@
 #!/bin/sh
-hw=$(cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' ' | tr '[A-Z]' '[a-z]')
-hostname $hw
+
+case "$1" in
+  start)
+        hw=$(cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' ' | tr '[A-Z]' '[a-z]')
+        hostname $hw
+	;;
+  stop)
+	;;
+  *)
+	echo $"Usage: $0 {start|stop}"
+	exit 1
+esac
+
+exit $?

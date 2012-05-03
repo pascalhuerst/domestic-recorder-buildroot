@@ -1,8 +1,19 @@
 #!/bin/sh
 
-# Mount all partitions listed in /etc/fstab
-mount -a
+case "$1" in
+  start)
+        # Mount all partitions listed in /etc/fstab
+        mount -a
 
-# Set the MAC address of eth0
-eval $(fw_printenv ethaddr)
-test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
+        # Set the MAC address of eth0
+        eval $(fw_printenv ethaddr)
+        test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
+	;;
+  stop)
+	;;
+  *)
+	echo $"Usage: $0 {start|stop}"
+	exit 1
+esac
+
+exit $?
