@@ -114,6 +114,7 @@ find $1/usr/share/locale -name iso_15924.mo -exec rm -f {} \;
 if test -d $1/usr/lib/directfb-1.4-6; then
     find $1/usr/lib/directfb-1.4-6 -name '*.o' -exec rm -f {} \;
     rm -fr $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBVideoProvider
-    rm -f $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBImageProvider/libidirectfbimageprovider_dfiff.so
-    rm -f $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBFont/libidirectfbfont_dgiff.so
+    rm -f  $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBImageProvider/libidirectfbimageprovider_dfiff.so
+    rm -f  $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBFont/libidirectfbfont_dgiff.so
+    rm -f  $i/usr/lib/directfb-1.4-6/interfaces/ICoreResourceManager/libicoreresourcemanager_test.so
 fi
