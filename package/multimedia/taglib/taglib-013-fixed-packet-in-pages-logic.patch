@@ -1,5 +1,5 @@
---- a/taglib/ogg/oggpage.cpp	2012-05-18 17:45:06.595212155 +0200
-+++ b/taglib/ogg/oggpage.cpp	2011-09-26 17:26:29.334833250 +0200
+--- a/taglib/ogg/oggpage.cpp	2012-05-21 10:23:08.352000248 +0200
++++ b/taglib/ogg/oggpage.cpp	2012-05-18 17:45:06.595212155 +0200
 @@ -107,6 +107,9 @@
    if(index == lastPacketIndex)
      flags = ContainsPacketFlags(flags | EndsWithPacket);
