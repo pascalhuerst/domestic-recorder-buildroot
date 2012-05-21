@@ -614,8 +614,7 @@ endif
 
 clean:
 	rm -rf $(STAGING_DIR) $(TARGET_DIR) $(BINARIES_DIR) $(HOST_DIR) \
-		$(STAMP_DIR) $(BUILD_DIR) $(TOOLCHAIN_DIR) \
-		$(BASE_DIR)/staging $(BASE_DIR)/toolchainfile.cmake
+		$(STAMP_DIR) $(BUILD_DIR) $(TOOLCHAIN_DIR) $(BASE_DIR)/staging
 
 distclean: clean
 ifeq ($(DL_DIR),$(TOPDIR)/dl)
