@@ -33,7 +33,7 @@ diff -Naur '-x*ake*' ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit/
 @@ -31,9 +31,82 @@
  
  #include <vector>
- #include <ostream>
+ #include <iostream>
 +#include <tr1/functional>
  
  namespace TagLib {
