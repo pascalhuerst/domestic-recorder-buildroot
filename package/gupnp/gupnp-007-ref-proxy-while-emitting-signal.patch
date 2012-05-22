@@ -1,0 +1,21 @@
+--- a/libgupnp/gupnp-service-proxy.c	2012-05-22 11:33:37.284532432 +0200
++++ b/libgupnp/gupnp-service-proxy.c	2012-05-22 11:29:44.452532432 +0200
+@@ -1670,6 +1670,9 @@
+                         /* subscription in progress, delay emision! */
+                         return TRUE;
+ 
++        // in case of destruction during emit_notifications_for_doc or emit_notify_data_free let us ref ourself
++        g_object_ref(proxy);
++
+         for (pending_notify = proxy->priv->pending_notifies;
+              pending_notify != NULL;
+              pending_notify = pending_notify->next) {
+@@ -1714,6 +1717,8 @@
+                 subscribe (proxy);
+         }
+ 
++        g_object_unref(proxy);
++
+         return FALSE;
+ }
+ 
