@@ -1,6 +1,5 @@
 config BR2_PACKAGE_MROUTED
 	bool "mrouted"
-	select BR2_TOOLCHAIN_BUILDROOT_INET_ADDRCONFIG
 	help
 	  An implementation of the DVMRP multicast routing protocol.
 
