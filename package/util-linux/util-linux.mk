@@ -3,16 +3,16 @@
 # util-linux
 #
 #############################################################
-
-UTIL_LINUX_VERSION = $(UTIL_LINUX_VERSION_MAJOR)
+UTIL_LINUX_VERSION = $(UTIL_LINUX_VERSION_MAJOR).1
 UTIL_LINUX_VERSION_MAJOR = 2.20
 UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_VERSION).tar.bz2
 UTIL_LINUX_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/util-linux/v$(UTIL_LINUX_VERSION_MAJOR)
 UTIL_LINUX_AUTORECONF = YES
 UTIL_LINUX_INSTALL_STAGING = YES
 UTIL_LINUX_DEPENDENCIES = host-pkg-config
+UTIL_LINUX_CONF_ENV = scanf_cv_type_modifier=no
 
-UTIL_LINUX_CONF_OPT += --disable-rpath --disable-makeinstall-chown --disable-nls
+UTIL_LINUX_CONF_OPT += --disable-rpath --disable-makeinstall-chown
 
 # We don't want the host-busybox dependency to be added automatically
 HOST_UTIL_LINUX_DEPENDENCIES = host-pkg-config
@@ -27,6 +27,11 @@ ifeq ($(BR2_PACKAGE_NCURSES),y)
 UTIL_LINUX_DEPENDENCIES += ncurses
 else
 UTIL_LINUX_CONF_OPT += --without-ncurses
+endif
+
+ifeq ($(BR2_PACKAGE_LIBINTL),y)
+UTIL_LINUX_DEPENDENCIES += libintl
+UTIL_LINUX_MAKE_OPT += LIBS=-lintl
 endif
 
 #############################################
@@ -75,46 +80,6 @@ HOST_UTIL_LINUX_CONF_OPT += \
 	--disable-cramfs --disable-switch_root --disable-pivot_root \
 	--disable-fallocate --disable-unshare --disable-rename \
 	--disable-schedutils --disable-wall --disable-partx
-
-# Avoid the basic utilities if we just want the libraries
-ifeq ($(BR2_PACKAGE_UTIL_LINUX_BASIC),y)
-define UTIL_LINUX_INSTALL_BASIC
-	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) DESTDIR=$(TARGET_DIR) install
-endef
-endif
-
-ifeq ($(BR2_PACKAGE_UTIL_LINUX_LIBBLKID),y)
-define UTIL_LINUX_INSTALL_LIBBLKID
-	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)/libblkid \
-		DESTDIR=$(TARGET_DIR) install
-	$(INSTALL) -D -m 0755 $(@D)/misc-utils/blkid $(TARGET_DIR)/sbin
-endef
-endif
-
-ifeq ($(BR2_PACKAGE_UTIL_LINUX_LIBMOUNT),y)
-define UTIL_LINUX_INSTALL_LIBMOUNT
-	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)/libmount \
-		DESTDIR=$(TARGET_DIR) install
-endef
-endif
-
-ifeq ($(BR2_PACKAGE_UTIL_LINUX_LIBUUID),y)
-define UTIL_LINUX_INSTALL_LIBUUID
-	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)/libuuid \
-		DESTDIR=$(TARGET_DIR) install
-endef
-endif
-
-define UTIL_LINUX_INSTALL_TARGET_CMDS
-	$(UTIL_LINUX_INSTALL_BASIC)
-	$(UTIL_LINUX_INSTALL_LIBBLKID)
-	$(UTIL_LINUX_INSTALL_LIBMOUNT)
-	$(UTIL_LINUX_INSTALL_LIBUUID)
-endef
-
-define HOST_UTIL_LINUX_INSTALL_TARGET_CMDS
-	$(UTIL_LINUX_INSTALL_LIBUUID)
-endef
 
 $(eval $(call AUTOTARGETS))
 $(eval $(call AUTOTARGETS,host))

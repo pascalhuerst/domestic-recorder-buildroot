@@ -25,13 +25,6 @@ config BR2_TOOLCHAIN_BUILDROOT_INET_RPC
 	  Enable this option if you want your toolchain to support
 	  RPC (needed for NFS, for example).
 
-config BR2_TOOLCHAIN_BUILDROOT_INET_ADDRCONFIG
-	bool "Enable AI ADDRCONFIG support"
-	help
-	  Enable this option if you want your toolchain to support
-	  the AI_ADDRCONFIG flag to query interfaces to find both
-	  ipv4 and ipv6 support.
-
 config BR2_TOOLCHAIN_BUILDROOT_WCHAR
 	bool "Enable WCHAR support"
 	select BR2_USE_WCHAR
@@ -47,11 +40,6 @@ config BR2_TOOLCHAIN_BUILDROOT_LOCALE
 	help
 	  Enable this option if you want your toolchain to support
 	  localization and internationalization.
-
-config BR2_TOOLCHAIN_BUILDROOT_BUILD_LOCALES
-        string "Locales to build minimal support for"
-	depends on BR2_TOOLCHAIN_BUILDROOT_LOCALE
-        default "en_US"
 
 config BR2_TOOLCHAIN_BUILDROOT_CXX
 	bool "Enable C++ support"
@@ -109,7 +97,6 @@ choice
 endchoice
 
 source "toolchain/elf2flt/Config.in"
-source "toolchain/mklibs/Config.in"
 
 config BR2_VFP_FLOAT
 	bool "Use ARM Vector Floating Point unit"

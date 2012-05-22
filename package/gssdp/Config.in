@@ -1,7 +1,6 @@
 config BR2_PACKAGE_GSSDP
 	bool "gssdp"
 	select BR2_PACKAGE_LIBSOUP
-        select BR2_TOOLCHAIN_BUILDROOT_INET_ADDRCONFIG
 	depends on BR2_USE_WCHAR
 	help
           GSSDP implements resource discovery and announcement over SSDP.
