@@ -81,6 +81,46 @@ HOST_UTIL_LINUX_CONF_OPT += \
 	--disable-fallocate --disable-unshare --disable-rename \
 	--disable-schedutils --disable-wall --disable-partx
 
+# Avoid the basic utilities if we just want the libraries
+ifeq ($(BR2_PACKAGE_UTIL_LINUX_BASIC),y)
+define UTIL_LINUX_INSTALL_BASIC
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) DESTDIR=$(TARGET_DIR) install
+endef
+endif
+
+ifeq ($(BR2_PACKAGE_UTIL_LINUX_LIBBLKID),y)
+define UTIL_LINUX_INSTALL_LIBBLKID
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)/libblkid \
+		DESTDIR=$(TARGET_DIR) install
+	$(INSTALL) -D -m 0755 $(@D)/misc-utils/blkid $(TARGET_DIR)/sbin
+endef
+endif
+
+ifeq ($(BR2_PACKAGE_UTIL_LINUX_LIBMOUNT),y)
+define UTIL_LINUX_INSTALL_LIBMOUNT
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)/libmount \
+		DESTDIR=$(TARGET_DIR) install
+endef
+endif
+
+ifeq ($(BR2_PACKAGE_UTIL_LINUX_LIBUUID),y)
+define UTIL_LINUX_INSTALL_LIBUUID
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)/libuuid \
+		DESTDIR=$(TARGET_DIR) install
+endef
+endif
+
+define UTIL_LINUX_INSTALL_TARGET_CMDS
+	$(UTIL_LINUX_INSTALL_BASIC)
+	$(UTIL_LINUX_INSTALL_LIBBLKID)
+	$(UTIL_LINUX_INSTALL_LIBMOUNT)
+	$(UTIL_LINUX_INSTALL_LIBUUID)
+endef
+
+define HOST_UTIL_LINUX_INSTALL_TARGET_CMDS
+	$(UTIL_LINUX_INSTALL_LIBUUID)
+endef
+
 $(eval $(call AUTOTARGETS))
 $(eval $(call AUTOTARGETS,host))
 
