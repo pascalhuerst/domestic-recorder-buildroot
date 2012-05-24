@@ -3,22 +3,26 @@
 # gvfs
 #
 #############################################################
-GVFS_VERSION_MAJOR = 1.8
-GVFS_VERSION_MINOR = 2
+GVFS_VERSION_MAJOR = 1.12
+GVFS_VERSION_MINOR = 3
 GVFS_VERSION = $(GVFS_VERSION_MAJOR).$(GVFS_VERSION_MINOR)
-GVFS_SOURCE = gvfs-$(GVFS_VERSION).tar.gz
+GVFS_SOURCE = gvfs-$(GVFS_VERSION).tar.xz
 GVFS_SITE = http://ftp.gnome.org/pub/GNOME/sources/gvfs/$(GVFS_VERSION_MAJOR)
 GVFS_INSTALL_STAGING = YES
 GVFS_DEPENDENCIES = host-pkg-config host-libglib2 libglib2 dbus shared-mime-info
 
 GVFS_CONF_OPT = \
-	--disable-gconf			\
+	--disable-hal			\
+	--disable-gudev			\
+	--disable-udisks2		\
 	--disable-cdda			\
+	--disable-afc			\
 	--disable-obexftp		\
 	--disable-gphoto2		\
 	--disable-keyring		\
-	--disable-bash-completion	\
-	--disable-hal
+	--disable-bluray		\
+	--disable-afp			\
+	--disable-bash-completion
 
 ifeq ($(BR2_PACKAGE_AVAHI),y)
 GVFS_DEPENDENCIES += avahi
