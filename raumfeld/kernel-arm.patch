@@ -473349,3 +473349,30 @@ index 8ad93ee..48425a1 100644
  		break;
  
  	default:
+--- linux-3.0.4/sound/soc/pxa/raumfeld.c	2012-06-12 18:07:20.000000000 +0200
++++ linux-3.0.4/sound/soc/pxa/raumfeld.c	2012-06-12 17:56:45.000000000 +0200
+@@ -302,11 +302,11 @@
+ 		return -EINVAL;
+ 	}
+ 
++	/* setup the CODEC DAI */
+ 	fmt = SND_SOC_DAIFMT_I2S |
+-	      SND_SOC_DAIFMT_NB_NF |
++	      SND_SOC_DAIFMT_NB_IF |
+ 	      SND_SOC_DAIFMT_CBS_CFS;
+ 
+-	/* setup the CODEC DAI */
+ 	ret = snd_soc_dai_set_fmt(codec_dai, fmt);
+ 	if (ret < 0)
+ 		return ret;
+@@ -316,6 +316,10 @@
+ 		return ret;
+ 
+ 	/* setup the CPU DAI */
++	fmt = SND_SOC_DAIFMT_I2S |
++	      SND_SOC_DAIFMT_NB_NF |
++	      SND_SOC_DAIFMT_CBS_CFS;
++
+ 	ret = snd_soc_dai_set_pll(cpu_dai, 0, 0, 0, clk);
+ 	if (ret < 0)
+ 		return ret;
