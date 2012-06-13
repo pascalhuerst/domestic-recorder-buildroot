@@ -1,0 +1,14 @@
+--- busybox-1.20.1/util-linux/mount.c.orig	2012-06-13 17:03:56.000000000 +0200
++++ busybox-1.20.1/util-linux/mount.c	2012-06-13 17:04:03.000000000 +0200
+@@ -579,9 +579,9 @@
+ 				args[rc++] = (char *)"-n";
+ 			args[rc++] = mp->mnt_fsname;
+ 			args[rc++] = mp->mnt_dir;
+-			if (filteropts) {
++			if (mp->mnt_opts) {
+ 				args[rc++] = (char *)"-o";
+-				args[rc++] = filteropts;
++				args[rc++] = mp->mnt_opts;
+ 			}
+ 			args[rc] = NULL;
+ 			rc = spawn_and_wait(args);
