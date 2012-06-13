@@ -54,7 +54,6 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 			update=/update/$img
 			;;
 		geode)
-                        hdparm -c1 /dev/hda
 			mount -t ext3 -o rw,sync /dev/hda2 /mnt
 			mount -t ext3 -o rw,sync /dev/hda1 /mnt/boot
 			update=/mnt/update/$img
