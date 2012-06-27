@@ -1,0 +1,42 @@
+--- usbmount-0.0.22/usbmount.orig	2012-06-27 17:06:02.000000000 +0200
++++ usbmount-0.0.22/usbmount	2012-06-27 17:06:29.000000000 +0200
+@@ -112,12 +112,22 @@
+ 	# Test if the filesystem type is in the list of filesystem
+ 	# types to mount.
+ 	if in_list "$fstype" "$FILESYSTEMS"; then
++	    mounted=0
+ 	    # Search an available mountpoint.
+ 	    for v in $MOUNTPOINTS; do
+-		if [ -d "$v" ] && ! grep -q "^[^ ][^ ]*  *$v " /proc/mounts; then
+-		    mountpoint="$v"
+-		    log debug "mountpoint $mountpoint is available for $DEVNAME"
+-		    break
++		if [ -d "$v" ]; then
++		    if grep -q "^[^ ][^ ]*  *$v " /proc/mounts; then
++			if grep -q "^$DEVNAME $v " /proc/mounts; then
++			    mountpoint="$v"
++			    log info "$DEVNAME is already mounted at $mountpoint"
++			    mounted=1
++			    break
++			fi
++		    else
++		        mountpoint="$v"
++		        log debug "mountpoint $mountpoint is available for $DEVNAME"
++		        break
++		    fi
+ 		fi
+ 	    done
+ 	    if [ -n "$mountpoint" ]; then
+@@ -134,8 +144,10 @@
+ 		fi
+ 
+ 		# Mount the filesystem.
+-		log info "executing command: mount -t$fstype ${options:+-o$options} $DEVNAME $mountpoint"
+-		mount "-t$fstype" "${options:+-o$options}" "$DEVNAME" "$mountpoint"
++		if expr $mounted = 0; then
++		    log info "executing command: mount -t$fstype ${options:+-o$options} $DEVNAME $mountpoint"
++		    mount "-t$fstype" "${options:+-o$options}" "$DEVNAME" "$mountpoint"
++		fi
+ 
+ 		# Determine vendor and model.
+ 		vendor=
