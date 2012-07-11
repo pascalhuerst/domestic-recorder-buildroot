@@ -131,7 +131,7 @@ diff --git a/arch/x86/mm/memtest.c b/arch/x86/mm/memtest.c
 index 92faf3a..f974ab5 100644
 --- a/arch/x86/mm/memtest.c
 +++ b/arch/x86/mm/memtest.c
-@@ -91,9 +91,8 @@ static void __init do_one_pass(u64 pattern, u64 start, u64 end)
+@@ -91,8 +91,8 @@ static void __init do_one_pass(u64 pattern, u64 start, u64 end)
  	}
  }
  
