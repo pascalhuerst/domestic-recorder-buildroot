@@ -116,32 +116,3 @@ index f59ffad..8fa1e7c 100644
  config LEDS_COBALT_QUBE
  	tristate "LED Support for the Cobalt Qube series front LED"
  	depends on LEDS_CLASS
-From 1bbe9bbc3acf5fa8dad5654796cd9fd06af47de8 Mon Sep 17 00:00:00 2001
-From: Sven Neumann <s.neumann@raumfeld.com>
-Date: Tue, 10 Jul 2012 19:06:16 +0200
-Subject: [PATCH] memtest: run memtest by default
-
-Run a quick memtest by default unless disabled by passing memtest=0
-on the kernel command-line.
----
- arch/x86/mm/memtest.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/x86/mm/memtest.c b/arch/x86/mm/memtest.c
-index 92faf3a..f974ab5 100644
---- a/arch/x86/mm/memtest.c
-+++ b/arch/x86/mm/memtest.c
-@@ -91,8 +91,8 @@ static void __init do_one_pass(u64 pattern, u64 start, u64 end)
- 	}
- }
- 
--/* default is disabled */
--static int memtest_pattern __initdata;
-+/* default is to run the first two test patterns */
-+static int memtest_pattern __initdata = 2;
- 
- static int __init parse_memtest(char *arg)
- {
--- 
-1.7.9.5
-
