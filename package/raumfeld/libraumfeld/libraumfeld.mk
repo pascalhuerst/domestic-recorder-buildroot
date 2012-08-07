@@ -27,7 +27,7 @@ endif
 
 LIBRAUMFELD_DEPENDENCIES = \
 	host-pkg-config host-libglib2 \
-	avahi dbus-glib gupnp-av openssl libarchive libunwind
+	avahi gupnp-av openssl libarchive libunwind
 
 $(eval $(call AUTOTARGETS))
 
