@@ -5,9 +5,8 @@ case "$1" in
        # change the mount options for the rootfs to noatime
        mount -o remount,noatime /
 
-       # enable 32bit IO and set the standby (spindown) timeout
-       # for the internal hard-disk
-       hdparm -c1 -S60 /dev/hda
+       # set the standby (spindown) timeout for the internal hard-disk
+       hdparm -S60 /dev/hda
 
        # start the master-process
        cd /raumfeld/master-process
