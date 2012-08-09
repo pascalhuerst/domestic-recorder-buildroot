@@ -63,7 +63,7 @@ index c28ba30..2138816 100644
 +{
 +	struct bss_handler_args *args = user_data;
 +	struct wpa_bss *res;
-+	struct wpabuf wps_ie;
++	struct wpabuf *wps_ie;
 +	DBusMessageIter iter_dict, variant_iter;
 +        const char *type = "";
 +
