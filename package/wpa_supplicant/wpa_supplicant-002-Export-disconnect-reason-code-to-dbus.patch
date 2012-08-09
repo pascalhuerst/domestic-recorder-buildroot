@@ -1,0 +1,188 @@
+From 0bb1e425b553f05adbc9df9e7ff92c0284e7e8f6 Mon Sep 17 00:00:00 2001
+From: Gary Morain <gmorain@chromium.org>
+Date: Sat, 30 Jun 2012 16:43:50 +0300
+Subject: [PATCH] Export disconnect reason code to dbus
+
+In the properties changed signal, added a new property
+"DisconnectReason", which carries the IEEE 802.11 reason code of the
+most recent disassociation or deauthentication event. The reason code is
+negative if it is locally generated. The property is sent to the DBUS
+immediately so as to prevent it from being coalesced with other
+disconnect events.
+
+Signed-off-by: Gary Morain <gmorain@chromium.org>
+---
+ wpa_supplicant/dbus/dbus_new.c          |   14 ++++++++++++++
+ wpa_supplicant/dbus/dbus_new.h          |    1 +
+ wpa_supplicant/dbus/dbus_new_handlers.c |   21 +++++++++++++++++++++
+ wpa_supplicant/dbus/dbus_new_handlers.h |    4 ++++
+ wpa_supplicant/events.c                 |    5 +++++
+ wpa_supplicant/notify.c                 |    6 ++++++
+ wpa_supplicant/notify.h                 |    1 +
+ wpa_supplicant/wpa_supplicant_i.h       |    3 +++
+ 8 files changed, 55 insertions(+)
+
+diff --git a/wpa_supplicant/dbus/dbus_new.c b/wpa_supplicant/dbus/dbus_new.c
+index a8e87d5..fcdf995 100644
+--- a/wpa_supplicant/dbus/dbus_new.c
++++ b/wpa_supplicant/dbus/dbus_new.c
+@@ -1735,10 +1735,12 @@ void wpas_dbus_signal_prop_changed(struct wpa_supplicant *wpa_s,
+ 				   enum wpas_dbus_prop property)
+ {
+ 	char *prop;
++	dbus_bool_t flush;
+ 
+ 	if (wpa_s->dbus_new_path == NULL)
+ 		return; /* Skip signal since D-Bus setup is not yet ready */
+ 
++	flush = FALSE;
+ 	switch (property) {
+ 	case WPAS_DBUS_PROP_AP_SCAN:
+ 		prop = "ApScan";
+@@ -1761,6 +1763,10 @@ void wpas_dbus_signal_prop_changed(struct wpa_supplicant *wpa_s,
+ 	case WPAS_DBUS_PROP_CURRENT_AUTH_MODE:
+ 		prop = "CurrentAuthMode";
+ 		break;
++	case WPAS_DBUS_PROP_DISCONNECT_REASON:
++		prop = "DisconnectReason";
++		flush = TRUE;
++		break;
+ 	default:
+ 		wpa_printf(MSG_ERROR, "dbus: %s: Unknown Property value %d",
+ 			   __func__, property);
+@@ -1770,6 +1776,10 @@ void wpas_dbus_signal_prop_changed(struct wpa_supplicant *wpa_s,
+ 	wpa_dbus_mark_property_changed(wpa_s->global->dbus,
+ 				       wpa_s->dbus_new_path,
+ 				       WPAS_DBUS_NEW_IFACE_INTERFACE, prop);
++	if (flush) {
++		wpa_dbus_flush_object_changed_properties(
++			wpa_s->global->dbus->con, wpa_s->dbus_new_path);
++	}
+ }
+ 
+ 
+@@ -2746,6 +2756,10 @@ static const struct wpa_dbus_property_desc wpas_dbus_interface_properties[] = {
+ 	  NULL
+ 	},
+ #endif /* CONFIG_P2P */
++	{ "DisconnectReason", WPAS_DBUS_NEW_IFACE_INTERFACE, "i",
++	  wpas_dbus_getter_disconnect_reason,
++	  NULL
++	},
+ 	{ NULL, NULL, NULL, NULL, NULL }
+ };
+ 
+diff --git a/wpa_supplicant/dbus/dbus_new.h b/wpa_supplicant/dbus/dbus_new.h
+index 4d322a1..3b632c4 100644
+--- a/wpa_supplicant/dbus/dbus_new.h
++++ b/wpa_supplicant/dbus/dbus_new.h
+@@ -34,6 +34,7 @@ enum wpas_dbus_prop {
+ 	WPAS_DBUS_PROP_CURRENT_NETWORK,
+ 	WPAS_DBUS_PROP_CURRENT_AUTH_MODE,
+ 	WPAS_DBUS_PROP_BSSS,
++	WPAS_DBUS_PROP_DISCONNECT_REASON,
+ };
+ 
+ enum wpas_dbus_bss_prop {
+diff --git a/wpa_supplicant/dbus/dbus_new_handlers.c b/wpa_supplicant/dbus/dbus_new_handlers.c
+index bde2aff..58b941c 100644
+--- a/wpa_supplicant/dbus/dbus_new_handlers.c
++++ b/wpa_supplicant/dbus/dbus_new_handlers.c
+@@ -2352,6 +2352,27 @@ dbus_bool_t wpas_dbus_setter_fast_reauth(DBusMessageIter *iter,
+ 
+ 
+ /**
++ * wpas_dbus_getter_disconnect_reason - Get most recent reason for disconnect
++ * @iter: Pointer to incoming dbus message iter
++ * @error: Location to store error on failure
++ * @user_data: Function specific data
++ * Returns: TRUE on success, FALSE on failure
++ *
++ * Getter for "DisconnectReason" property.  The reason is negative if it is
++ * locally generated.
++ */
++dbus_bool_t wpas_dbus_getter_disconnect_reason(DBusMessageIter *iter,
++					       DBusError *error,
++					       void *user_data)
++{
++	struct wpa_supplicant *wpa_s = user_data;
++	dbus_int32_t reason = wpa_s->disconnect_reason;
++	return wpas_dbus_simple_property_getter(iter, DBUS_TYPE_INT32,
++						&reason, error);
++}
++
++
++/**
+  * wpas_dbus_getter_bss_expire_age - Get BSS entry expiration age
+  * @iter: Pointer to incoming dbus message iter
+  * @error: Location to store error on failure
+diff --git a/wpa_supplicant/dbus/dbus_new_handlers.h b/wpa_supplicant/dbus/dbus_new_handlers.h
+index 8cba724..80a061f 100644
+--- a/wpa_supplicant/dbus/dbus_new_handlers.h
++++ b/wpa_supplicant/dbus/dbus_new_handlers.h
+@@ -150,6 +150,10 @@ dbus_bool_t wpas_dbus_setter_fast_reauth(DBusMessageIter *iter,
+ 					 DBusError *error,
+ 					 void *user_data);
+ 
++dbus_bool_t wpas_dbus_getter_disconnect_reason(DBusMessageIter *iter,
++					       DBusError *error,
++					       void *user_data);
++
+ dbus_bool_t wpas_dbus_getter_bss_expire_age(DBusMessageIter *iter,
+ 					    DBusError *error, void *user_data);
+ 
+diff --git a/wpa_supplicant/events.c b/wpa_supplicant/events.c
+index 513a8e8..6685b6b 100644
+--- a/wpa_supplicant/events.c
++++ b/wpa_supplicant/events.c
+@@ -1585,6 +1585,8 @@
+ 		bssid = wpa_s->pending_bssid;
+ 	wpas_connection_failed(wpa_s, bssid);
+ 	wpa_sm_notify_disassoc(wpa_s->wpa);
++	wpa_s->disconnect_reason = reason_code;
++	wpas_notify_disconnect_reason(wpa_s);
+ 	wpa_msg(wpa_s, MSG_INFO, WPA_EVENT_DISCONNECTED "bssid=" MACSTR
+ 		" reason=%d",
+ 		MAC2STR(bssid), reason_code);
+diff --git a/wpa_supplicant/notify.c b/wpa_supplicant/notify.c
+index c4d7e93..0ede0d0 100644
+--- a/wpa_supplicant/notify.c
++++ b/wpa_supplicant/notify.c
+@@ -97,6 +97,12 @@ void wpas_notify_state_changed(struct wpa_supplicant *wpa_s,
+ }
+ 
+ 
++void wpas_notify_disconnect_reason(struct wpa_supplicant *wpa_s)
++{
++	wpas_dbus_signal_prop_changed(wpa_s, WPAS_DBUS_PROP_DISCONNECT_REASON);
++}
++
++
+ void wpas_notify_network_changed(struct wpa_supplicant *wpa_s)
+ {
+ 	wpas_dbus_signal_prop_changed(wpa_s, WPAS_DBUS_PROP_CURRENT_NETWORK);
+diff --git a/wpa_supplicant/notify.h b/wpa_supplicant/notify.h
+index e2bf788..58675ac 100644
+--- a/wpa_supplicant/notify.h
++++ b/wpa_supplicant/notify.h
+@@ -22,6 +22,7 @@ void wpas_notify_iface_removed(struct wpa_supplicant *wpa_s);
+ void wpas_notify_state_changed(struct wpa_supplicant *wpa_s,
+ 			       enum wpa_states new_state,
+ 			       enum wpa_states old_state);
++void wpas_notify_disconnect_reason(struct wpa_supplicant *wpa_s);
+ void wpas_notify_network_changed(struct wpa_supplicant *wpa_s);
+ void wpas_notify_ap_scan_changed(struct wpa_supplicant *wpa_s);
+ void wpas_notify_bssid_changed(struct wpa_supplicant *wpa_s);
+diff --git a/wpa_supplicant/wpa_supplicant_i.h b/wpa_supplicant/wpa_supplicant_i.h
+index 2d6ee38..b608f29 100644
+--- a/wpa_supplicant/wpa_supplicant_i.h
++++ b/wpa_supplicant/wpa_supplicant_i.h
+@@ -510,5 +510,8 @@
+ 		u16 num_modes;
+ 		u16 flags;
+ 	} hw;
++
++	/* WLAN_REASON_* reason codes. Negative if locally generated. */
++	int disconnect_reason;
+ };
+ 
