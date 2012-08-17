@@ -29,6 +29,7 @@ case "$hw" in
 	Geode*)
 		arch="geode"
 		img="base.img"
+                bios="raumfeld-base.rom"
 		;;
 	*)
 		img="uImage"
@@ -67,6 +68,12 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
                 gunzip -c $update | tar x ./tmp/$bootloader
 	        echo "Checking the boot-loader ..."
                 (cd /tmp; /update-uboot.sh; rm -f $bootloader)
+        fi
+
+	if [ -n "$bios" ]; then
+                gunzip -c $update | tar x ./tmp/$bios
+	        echo "Checking the BIOS ..."
+                (cd /tmp; /update-coreboot.sh; rm -f $bios)
         fi
 
 	cd /mnt

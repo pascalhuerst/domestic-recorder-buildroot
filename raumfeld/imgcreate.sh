@@ -116,14 +116,20 @@ case $target in
 	cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
 	;;
 
-    base-geode-init|base-geode-flash)
+    base-geode-init)
         add_rootfs_tgz
         add_raumfeld_demo
+        ;;
+    base-geode-flash)
+        add_rootfs_tgz
+        add_raumfeld_demo
+	cp raumfeld/Coreboot/raumfeld-base.rom $tmpdir/
         ;;
     base-geode-final)
         add_rootfs_tgz
         ;;
     base-geode-coreboot)
+	cp raumfeld/Coreboot/raumfeld-base.rom $tmpdir/
 	cp -a raumfeld/testsuite/coreboot $tmpdir/
 	;;
 

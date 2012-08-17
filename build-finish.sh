@@ -131,6 +131,7 @@ case $target in
 	base-geode)
                 ROOTFS=output/images/rootfs.tar.gz
                 ZIMAGE=binaries/initramfs-geode/bzImage
+                BOOTLOADERS=raumfeld/Coreboot/raumfeld-base.rom
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \

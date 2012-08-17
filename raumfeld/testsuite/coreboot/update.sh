@@ -1,4 +1,3 @@
 #!/bin/sh
 
-/coreboot/flashrom -w /coreboot/coreboot.bin
-
+/usr/sbin/flashrom -p internal -w /raumfeld-base.rom

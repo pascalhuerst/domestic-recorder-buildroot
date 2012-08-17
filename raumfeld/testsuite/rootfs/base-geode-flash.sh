@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# potentially update the BIOS
+./update-coreboot.sh
+
 source tests.inc
 
 cd tests
