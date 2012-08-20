@@ -1,6 +1,0 @@
-config BR2_PACKAGE_MADWIFI
-	bool "madwifi"
-	help
-          advanced WLAN drivers
-          http://madwifi-project.org/
-
