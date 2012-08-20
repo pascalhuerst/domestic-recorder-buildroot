@@ -18,7 +18,7 @@ revision=$(dmidecode -t bios | grep BIOS\ Revision)
 
 if [ -z $revision ]; then
     echo "Updating the BIOS, cross your fingers ..."
-    flashrom -p internal:laptop=this_is_not_a_laptop -w /raumfeld-base.rom
+    flashrom -p internal:laptop=this_is_not_a_laptop -w raumfeld-base.rom
 else
     echo "$revision, not updating."
     exit 0
