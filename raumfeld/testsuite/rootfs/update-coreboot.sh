@@ -16,10 +16,13 @@ revision=$(dmidecode -t bios | grep BIOS\ Revision)
 
 # with the old BIOS, dmidecode is not able to get the revision
 
-if [ -z $revision ]; then
-    echo "Updating the BIOS, cross your fingers ..."
-    flashrom -p internal:laptop=this_is_not_a_laptop -w raumfeld-base.rom
-else
-    echo "$revision, not updating."
-    exit 0
-fi
+case "x$revision" in
+    x|'xRevision 3.0')
+        echo $revision
+        echo "Updating the BIOS, cross your fingers ..."
+        flashrom -p internal:laptop=this_is_not_a_laptop,boardmismatch=force -w raumfeld-base.rom
+        ;;
+    *)
+        echo "$revision, not updating."
+        ;;
+esac
