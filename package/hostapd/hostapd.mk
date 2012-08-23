@@ -9,7 +9,6 @@ HOSTAPD_SITE = http://hostap.epitest.fi/releases
 HOSTAPD_SUBDIR = hostapd
 HOSTAPD_CONFIG = $(HOSTAPD_DIR)/$(HOSTAPD_SUBDIR)/.config
 HOSTAPD_DEPENDENCIES = libnl
-HOSTAPD_CFLAGS = $(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include/libnl3/
 HOSTAPD_LDFLAGS = $(TARGET_LDFLAGS)
 
 # libnl needs -lm (for rint) if linking statically
@@ -36,16 +35,9 @@ define HOSTAPD_TLS_CONFIG
 	echo "CONFIG_TLS=openssl" >>$(HOSTAPD_CONFIG)
 endef
 else
-ifeq ($(BR2_PACKAGE_GNUTLS),y)
-	HOSTAPD_DEPENDENCIES += gnutls
-define HOSTAPD_TLS_CONFIG
-	echo "CONFIG_TLS=gnutls" >>$(HOSTAPD_CONFIG)
-endef
-else
 define HOSTAPD_TLS_CONFIG
 	echo "CONFIG_TLS=internal" >>$(HOSTAPD_CONFIG)
 endef
-endif
 endif
 
 ifeq ($(BR2_PACKAGE_HOSTAPD_EAP),y)
@@ -84,7 +76,14 @@ endef
 endif
 
 define HOSTAPD_CONFIGURE_CMDS
-	cp $(@D)/hostapd/defconfig $(HOSTAPD_CONFIG)
+	cp $(@D)/$(HOSTAPD_SUBDIR)/defconfig $(HOSTAPD_CONFIG)
+	$(SED) "s/\/local//" $(@D)/$(HOSTAPD_SUBDIR)/Makefile
+	echo "CFLAGS += $(TARGET_CFLAGS)" >>$(HOSTAPD_CONFIG)
+	echo "LDFLAGS += $(HOSTAPD_LDFLAGS)" >>$(HOSTAPD_CONFIG)
+	echo "CC = $(TARGET_CC)" >>$(HOSTAPD_CONFIG)
+# Drivers
+	$(SED) "s/^#CONFIG_DRIVER_WIRED/CONFIG_DRIVER_WIRED/" $(HOSTAPD_CONFIG)
+	$(SED) "s/^#CONFIG_DRIVER_NL80211/CONFIG_DRIVER_NL80211/" $(HOSTAPD_CONFIG)
 # Misc
 	$(SED) "s/^CONFIG_IPV6/#CONFIG_IPV6/" $(HOSTAPD_CONFIG)
 	$(SED) "s/^#CONFIG_IEEE80211N/CONFIG_IEEE80211N/" $(HOSTAPD_CONFIG)
@@ -95,12 +94,7 @@ define HOSTAPD_CONFIGURE_CMDS
 	$(HOSTAPD_EAP_CONFIG)
 	$(HOSTAPD_WPS_CONFIG)
 	$(HOSTAPD_LIBNL_CONFIG)
-endef
-
-define HOSTAPD_BUILD_CMDS
-	$(TARGET_MAKE_ENV) CFLAGS="$(HOSTAPD_CFLAGS)" \
-		LDFLAGS="$(TARGET_LDFLAGS)" \
-		$(MAKE) CC="$(TARGET_CC)" -C $(@D)/$(HOSTAPD_SUBDIR)
+	$(HOSTAPD_MADWIFI_CONFIG)
 endef
 
 define HOSTAPD_INSTALL_TARGET_CMDS
@@ -110,4 +104,9 @@ define HOSTAPD_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/bin/hostapd_cli
 endef
 
-$(eval $(call GENTARGETS))
+define HOSTAPD_UNINSTALL_TARGET_CMDS
+	rm -f $(TARGET_DIR)/usr/sbin/hostapd
+	rm -f $(TARGET_DIR)/usr/bin/hostapd
+endef
+
+$(eval $(call AUTOTARGETS))
