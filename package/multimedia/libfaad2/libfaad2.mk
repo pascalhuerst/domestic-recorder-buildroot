@@ -11,6 +11,6 @@ LIBFAAD2_INSTALL_STAGING = YES
 
 LIBFAAD2_CONF_OPT = CFLAGS="-DFIXED_POINT"
 
-$(eval $(call AUTOTARGETS))
+$(eval $(autotools-package))
 
 

@@ -14,4 +14,4 @@ GUPNP_AV_CONF_ENV = \
 
 GUPNP_AV_DEPENDENCIES = host-pkg-config host-libglib2 gupnp
 
-$(eval $(call AUTOTARGETS))
+$(eval $(autotools-package))

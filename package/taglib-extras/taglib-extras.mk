@@ -24,4 +24,4 @@ define TAGLIB_EXTRAS_UNINSTALL_TARGET_CMDS
         rm -f $(TARGET_DIR)/usr/lib/libtag-extras.so*
 endef
 
-$(eval $(call CMAKETARGETS))
+$(eval $(cmake-package))

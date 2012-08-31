@@ -10,4 +10,4 @@ ISO_CODES_SITE = ftp://pkg-isocodes.alioth.debian.org/pub/pkg-isocodes/
 ISO_CODES_INSTALL_STAGING = YES
 ISO_CODES_DEPENDENCIES = gettext
 
-$(eval $(call AUTOTARGETS))
+$(eval $(autotools-package))

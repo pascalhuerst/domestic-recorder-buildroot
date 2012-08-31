@@ -13,4 +13,4 @@ NETTLE_DEPENDENCIES = gmp
 
 NETTLE_CONF_ENV = LIBS=-lm
 
-$(eval $(call AUTOTARGETS))
+$(eval $(autotools-package))
