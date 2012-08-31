@@ -14,9 +14,6 @@ GST_PLUGINS_GOOD_CONF_OPT = \
 		--disable-sunaudio \
 		--disable-osx_audio \
 		--disable-osx_video \
-		--disable-x \
-		--disable-xshm \
-		--disable-xvideo \
 		--disable-aalib \
 		--disable-aalibtest \
 		--disable-esd \
@@ -25,8 +22,22 @@ GST_PLUGINS_GOOD_CONF_OPT = \
 
 GST_PLUGINS_GOOD_DEPENDENCIES = gstreamer gst-plugins-base
 
+
 ifeq ($(BR2_PACKAGE_ORC),y)
 GST_PLUGINS_GOOD_DEPENDENCIES += orc
+endif
+
+ifeq ($(BR2_PACKAGE_XORG7),y)
+GST_PLUGINS_GOOD_DEPENDENCIES += xlib_libX11 xlib_libXext xlib_libXv
+GST_PLUGINS_GOOD_CONF_OPT += \
+	--enable-x \
+	--enable-xshm \
+	--enable-xvideo
+else
+GST_PLUGINS_GOOD_CONF_OPT += \
+	--disable-x \
+	--disable-xshm \
+	--disable-xvideo
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_JPEG),y)
@@ -369,4 +380,4 @@ else
 GST_PLUGINS_GOOD_CONF_OPT += --disable-speex
 endif
 
-$(eval $(call AUTOTARGETS))
+$(eval $(autotools-package))

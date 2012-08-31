@@ -51,4 +51,4 @@ ifeq ($(BR2_PACKAGE_BZIP2),y)
 GST_FFMPEG_DEPENDENCIES += bzip2
 endif
 
-$(eval $(call AUTOTARGETS))
+$(eval $(autotools-package))

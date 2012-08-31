@@ -177,4 +177,4 @@ define WPA_SUPPLICANT_INSTALL_TARGET_CMDS
 	$(WPA_SUPPLICANT_INSTALL_DBUS)
 endef
 
-$(eval $(call GENTARGETS))
+$(eval $(generic-package))

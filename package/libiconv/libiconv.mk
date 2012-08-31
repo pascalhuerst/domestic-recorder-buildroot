@@ -20,4 +20,11 @@ endef
 LIBICONV_POST_INSTALL_TARGET_HOOKS += LIBICONV_TARGET_REMOVE_PRELOADABLE_LIBS
 LIBICONV_POST_INSTALL_STAGING_HOOKS += LIBICONV_STAGING_REMOVE_PRELOADABLE_LIBS
 
-$(eval $(call AUTOTARGETS))
+$(eval $(autotools-package))
+
+# Configurations where the toolchain supports locales and the libiconv
+# package is enabled are incorrect, because the toolchain already
+# provides libiconv functionality, and having both confuses packages.
+ifeq ($(BR2_PACKAGE_LIBICONV)$(BR2_ENABLE_LOCALE),yy)
+$(error Libiconv should never be enabled when the toolchain supports locales. Report this failure to Buildroot developers)
+endif
