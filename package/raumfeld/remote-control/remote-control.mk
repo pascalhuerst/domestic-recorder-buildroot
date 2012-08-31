@@ -20,7 +20,7 @@ REMOTE_CONTROL_CONF_OPT = \
 
 REMOTE_CONTROL_DEPENDENCIES = host-pkg-config host-libglib2 gettext libintl iso-codes libraumfeld sly-toolkit
 
-$(eval $(call AUTOTARGETS))
+$(eval $(autotools-package))
 
 $(REMOTE_CONTROL_DIR)/.bzr:
 	if ! test -d $(REMOTE_CONTROL_DIR)/.bzr; then \

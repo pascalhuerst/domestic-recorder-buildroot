@@ -11,7 +11,7 @@ RAUMFELD_EXTRACT_INSTALL_TARGET = YES
 
 RAUMFELD_EXTRACT_DEPENDENCIES = libarchive
 
-$(eval $(call AUTOTARGETS))
+$(eval $(autotools-package))
 
 $(RAUMFELD_EXTRACT_DIR)/.bzr:
 	if ! test -d $(RAUMFELD_EXTRACT_DIR)/.bzr; then \
