@@ -9,7 +9,7 @@ WEB_SERVICE_TARGET_DIR:=raumfeld/web-service
 WEB_SERVICE_BINARY:=$(WEB_SERVICE_TARGET_DIR)/web-service
 WEB_SERVICE_CROSS_PREFIX:=$(BASE_DIR)
 
-WEB_SERVICE_DEPENDENCIES = host-pkg-config libraumfeld libraumfeldcpp
+WEB_SERVICE_DEPENDENCIES = host-pkg-config host-libglib2 libraumfeld libraumfeldcpp
 
 ifeq ($(ARCH),arm)
 WEB_SERVICE_CROSS = ARM
