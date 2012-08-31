@@ -34,7 +34,7 @@ $(eval $(call AUTOTARGETS))
 $(LIBRAUMFELD_DIR)/.bzr:
 	if ! test -d $(LIBRAUMFELD_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld/$(LIBRAUMFELD_VERSION) libraumfeld-$(LIBRAUMFELD_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR)) co -q --lightweight $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld/$(LIBRAUMFELD_VERSION) libraumfeld-$(LIBRAUMFELD_VERSION)) \
 	fi
 
 $(LIBRAUMFELD_DIR)/.stamp_downloaded: $(LIBRAUMFELD_DIR)/.bzr

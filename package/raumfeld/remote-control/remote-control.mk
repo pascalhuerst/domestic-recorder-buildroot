@@ -25,7 +25,7 @@ $(eval $(call AUTOTARGETS))
 $(REMOTE_CONTROL_DIR)/.bzr:
 	if ! test -d $(REMOTE_CONTROL_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/remote-control/$(REMOTE_CONTROL_VERSION) remote-control-$(REMOTE_CONTROL_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR)) co -q --lightweight $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/remote-control/$(REMOTE_CONTROL_VERSION) remote-control-$(REMOTE_CONTROL_VERSION)) \
 	fi
 
 $(REMOTE_CONTROL_DIR)/.stamp_downloaded: $(REMOTE_CONTROL_DIR)/.bzr

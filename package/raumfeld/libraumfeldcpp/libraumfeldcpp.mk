@@ -22,7 +22,7 @@ $(eval $(call AUTOTARGETS))
 $(LIBRAUMFELDCPP_DIR)/.bzr:
 	if ! test -d $(LIBRAUMFELDCPP_DIR)/.bzr; then \
 	  	(cd $(BUILD_DIR); \
-	 	$(call qstrip,$(BR2_BZR_CO)) $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeldcpp/$(LIBRAUMFELDCPP_VERSION) libraumfeldcpp-$(LIBRAUMFELDCPP_VERSION)) \
+	 	$(call qstrip,$(BR2_BZR)) co -q --lightweight $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeldcpp/$(LIBRAUMFELDCPP_VERSION) libraumfeldcpp-$(LIBRAUMFELDCPP_VERSION)) \
 	fi
 
 $(LIBRAUMFELDCPP_DIR)/.stamp_downloaded: $(LIBRAUMFELDCPP_DIR)/.bzr
