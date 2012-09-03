@@ -61,6 +61,12 @@ if [ "$found" != "1" ]; then
 fi
 
 
+# put the .config file in place
+
+cp raumfeld/br2-$target.config .config
+make oldconfig
+
+
 # cleanup from previous builds
 
 make clean
@@ -79,12 +85,6 @@ fi
 
 mkdir -p raumfeld/rootfs/etc
 echo $versionstr > raumfeld/rootfs/etc/raumfeld-version
-
-
-# put the .config file in place
-
-cp raumfeld/br2-$target.config .config
-make oldconfig
 
 
 # run the actual build process
