@@ -4,11 +4,8 @@
 #
 #############################################################
 
-LIBRAUMFELD_VERSION = $(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
-LIBRAUMFELD_AUTORECONF = YES
-LIBRAUMFELD_LIBTOOL_PATCH = NO
+LIBRAUMFELD_MODULE = raumfeld
 LIBRAUMFELD_INSTALL_STAGING = YES
-LIBRAUMFELD_INSTALL_TARGET = YES
 
 LIBRAUMFELD_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
@@ -29,17 +26,7 @@ LIBRAUMFELD_DEPENDENCIES = \
 	host-pkg-config host-libglib2 \
 	avahi gupnp-av openssl libarchive libunwind
 
-$(eval $(autotools-package))
-
-$(LIBRAUMFELD_DIR)/.bzr:
-	if ! test -d $(LIBRAUMFELD_DIR)/.bzr; then \
-	  	(cd $(BUILD_DIR); \
-	 	$(call qstrip,$(BR2_BZR)) co -q --lightweight $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/raumfeld/$(LIBRAUMFELD_VERSION) libraumfeld-$(LIBRAUMFELD_VERSION)) \
-	fi
-
-$(LIBRAUMFELD_DIR)/.stamp_downloaded: $(LIBRAUMFELD_DIR)/.bzr
-	touch $@
-
-$(LIBRAUMFELD_DIR)/.stamp_extracted: $(LIBRAUMFELD_DIR)/.stamp_downloaded
+LIBRAUMFELD_POST_EXTRACT_HOOKS = \
 	(cd $(LIBRAUMFELD_DIR); gtkdocize)
-	touch $@
+
+$(eval $(raumfeld-autotools-package))

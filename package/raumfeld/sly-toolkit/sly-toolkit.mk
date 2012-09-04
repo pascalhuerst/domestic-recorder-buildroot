@@ -4,11 +4,7 @@
 #
 #############################################################
 
-SLY_TOOLKIT_VERSION = $(call qstrip,$(BR2_PACKAGE_RAUMFELD_BRANCH))
-SLY_TOOLKIT_AUTORECONF = YES
-SLY_TOOLKIT_LIBTOOL_PATCH = NO
 SLY_TOOLKIT_INSTALL_STAGING = YES
-SLY_TOOLKIT_INSTALL_TARGET = YES
 
 SLY_TOOLKIT_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
@@ -22,17 +18,7 @@ SLY_TOOLKIT_CONF_OPT = \
 
 SLY_TOOLKIT_DEPENDENCIES = host-pkg-config host-libglib2 libglib2 directfb
 
-$(eval $(autotools-package))
-
-$(SLY_TOOLKIT_DIR)/.bzr:
-	if ! test -d $(SLY_TOOLKIT_DIR)/.bzr; then \
-	  	(cd $(BUILD_DIR); \
-	 	$(call qstrip,$(BR2_BZR)) co -q --lightweight $(BR2_PACKAGE_RAUMFELD_REPOSITORY)/sly-toolkit/$(SLY_TOOLKIT_VERSION) sly-toolkit-$(SLY_TOOLKIT_VERSION)) \
-	fi
-
-$(SLY_TOOLKIT_DIR)/.stamp_downloaded: $(SLY_TOOLKIT_DIR)/.bzr
-	touch $@
-
-$(SLY_TOOLKIT_DIR)/.stamp_extracted: $(SLY_TOOLKIT_DIR)/.stamp_downloaded
+SLY_TOOLKIT_POST_EXTRACT_HOOKS = \
 	(cd $(SLY_TOOLKIT_DIR); gtkdocize)
-	touch $@
+
+$(eval $(raumfeld-autotools-package))
