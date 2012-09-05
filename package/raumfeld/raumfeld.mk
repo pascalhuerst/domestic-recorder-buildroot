@@ -52,6 +52,9 @@ $(2)_SITE = $$(call qstrip,$$(BR2_PACKAGE_RAUMFELD_REPOSITORY))/$$($(2)_MODULE)/
 endif
 
 
+RAUMFELD_CLEAN_FOR_REBUILD_TARGETS += $(1)-clean-for-rebuild
+
+
 # Call the generic package infrastructure to generate the necessary
 # make targets
 $(call inner-generic-package,$(1),$(2),$(2),$(3),target)
@@ -70,6 +73,7 @@ $$($(2)_DIR)/.stamp_downloaded:
 	$(Q)touch $$@
 
 $(2)_EXTRACT_CMDS = $$($(2)_POST_EXTRACT_HOOKS)
+
 
 endef # inner-raumfeld-cross-package
 
@@ -98,6 +102,8 @@ ifndef $(2)_AUTORECONF
 endif
 
 
+RAUMFELD_CLEAN_FOR_REBUILD_TARGETS += $(1)-clean-for-rebuild
+
 # Call the generic autotools package infrastructure to generate the necessary
 # make targets
 $(call inner-autotools-package,$(1),$(2),$(2),$(3),target)
@@ -109,11 +115,14 @@ $$($(2)_DIR)/.stamp_downloaded:
 	@$(call MESSAGE,"Checking out $(1) from $$($(2)_BRANCH)")
 	if ! test -d $$($(2)_DIR)/.bzr; then \
 		(cd $$(BUILD_DIR); \
-		 $$(call qstrip,$$(BR2_BZR)) co -q --lightweight $$($(2)_SITE) $$($(2)_DIR)) \
+		 $$(call qstrip,$$(BR2_BZR)) checkout -q --lightweight $$($(2)_SITE) $$($(2)_DIR)) \
+	else \
+		(cd $$($(2)_DIR); $$(call qstrip,$$(BR2_BZR)) update -q) \
 	fi
 	$(Q)touch $$@
 
 $(2)_EXTRACT_CMDS = $$($(2)_POST_EXTRACT_HOOKS)
+
 
 endef # inner-raumfeld-autotools-package
 
@@ -137,4 +146,8 @@ raumfeld-cross-package = $(call inner-raumfeld-cross-package,$(call pkgname),$(c
 ################################################################################
 ################################################################################
 
+RAUMFELD_CLEAN_FOR_REBUILD_TARGETS =
+
 include package/raumfeld/*/*.mk
+
+raumfeld-rebuild: $(RAUMFELD_CLEAN_FOR_REBUILD_TARGETS) all
