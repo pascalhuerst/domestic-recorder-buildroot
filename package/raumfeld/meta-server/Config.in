@@ -1,4 +1,4 @@
-config BR2_PACKAGE_RAUMFELD_META_SERVER
+config BR2_PACKAGE_META_SERVER
 	bool "meta-server"
 	select BR2_PACKAGE_LIBRAUMFELD
 	select BR2_PACKAGE_LIBRAUMFELDCPP
@@ -8,6 +8,6 @@ config BR2_PACKAGE_RAUMFELD_META_SERVER
         select BR2_PACKAGE_TAGLIB_ASF
         select BR2_PACKAGE_TAGLIB_MP4
 	help
-	  raumfeld meta-server
+	  Raumfeld meta-server
 
 	  http://www.raumfeld.com/

@@ -1,8 +1,8 @@
-config BR2_PACKAGE_RAUMFELD_WEB_SERVICE
+config BR2_PACKAGE_WEB_SERVICE
 	bool "web-service"
 	select BR2_PACKAGE_LIBRAUMFELD
 	select BR2_PACKAGE_LIBRAUMFELDCPP
 	help
-	  raumfeld web-service
+	  Raumfeld web-service
 
 	  http://www.raumfeld.com/

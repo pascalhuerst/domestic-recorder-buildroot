@@ -1,7 +1,7 @@
-config BR2_PACKAGE_RAUMFELD_MASTER_PROCESS
+config BR2_PACKAGE_MASTER_PROCESS
 	bool "master-process"
 	select BR2_PACKAGE_LIBRAUMFELD
 	help
-	  raumfeld master-process
+	  Raumfeld master-process
 
 	  http://www.raumfeld.com/

@@ -1,8 +1,8 @@
-config BR2_PACKAGE_RAUMFELD_TIMESERVER
-	bool "timeserver"
+config BR2_PACKAGE_P0_TIMESERVER
+	bool "p0-timeserver"
 	select BR2_PACKAGE_LIBRAUMFELD
 	help
-	  raumfeld timeserver
+	  Raumfeld time-server
 
 	  http://www.raumfeld.com/
 
