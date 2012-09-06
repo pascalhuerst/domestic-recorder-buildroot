@@ -51,6 +51,10 @@ else
 $(2)_SITE = $$(call qstrip,$$(BR2_PACKAGE_RAUMFELD_REPOSITORY))/$$($(2)_MODULE)/branches/$$($(2)_BRANCH)
 endif
 
+ifndef $(2)_SITE_METHOD
+  $(2)_SITE_METHOD = override
+endif
+
 
 RAUMFELD_CLEAN_FOR_REBUILD_TARGETS += $(1)-clean-for-rebuild
 
@@ -106,6 +110,10 @@ ifeq ($$($(2)_BRANCH),trunk)
 $(2)_SITE = $$(call qstrip,$$(BR2_PACKAGE_RAUMFELD_REPOSITORY))/$$($(2)_MODULE)/trunk
 else
 $(2)_SITE = $$(call qstrip,$$(BR2_PACKAGE_RAUMFELD_REPOSITORY))/$$($(2)_MODULE)/branches/$$($(2)_BRANCH)
+endif
+
+ifndef $(2)_SITE_METHOD
+  $(2)_SITE_METHOD = override
 endif
 
 
