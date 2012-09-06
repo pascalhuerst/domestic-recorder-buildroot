@@ -1,4 +1,24 @@
 ################################################################################
+# raumfeld-bzr-source
+#
+#  argument 1 is the lowercase package name
+#  argument 2 is the uppercase package name
+################################################################################
+
+define raumfeld-bzr-source
+
+	@$(call MESSAGE,"Checking out $(1) from $$($(2)_BRANCH)")
+	if ! test -d $$($(2)_DIR)/.bzr; then \
+		(cd $$(BUILD_DIR); \
+		$$(call qstrip,$$(BR2_BZR)) checkout -q --lightweight $$($(2)_SITE) $$($(2)_DIR)) \
+	else \
+		(cd $$($(2)_DIR); $$(call qstrip,$$(BR2_BZR)) update -q) \
+	fi
+
+endef
+
+
+################################################################################
 # inner-raumfeld-cross-package
 #
 #  argument 1 is the lowercase package name
@@ -67,13 +87,7 @@ $(call inner-generic-package,$(1),$(2),$(2),$(3),target)
 # Override download and extract targets
 
 $$($(2)_DIR)/.stamp_downloaded:
-	@$(call MESSAGE,"Checking out $(1) from $$($(2)_BRANCH)")
-	if ! test -d $$($(2)_DIR)/.bzr; then \
-		(cd $$(BUILD_DIR); \
-		 $$(call qstrip,$$(BR2_BZR)) checkout -q --lightweight $$($(2)_SITE) $$($(2)_DIR)) \
-	else \
-		(cd $$($(2)_DIR); $$(call qstrip,$$(BR2_BZR)) update -q) \
-	fi
+	$(call raumfeld-bzr-source,$(1),$(2))
 	$(Q)touch $$@
 
 $(2)_EXTRACT_CMDS = $$($(2)_POST_EXTRACT_HOOKS)
@@ -127,13 +141,7 @@ $(call inner-autotools-package,$(1),$(2),$(2),$(3),target)
 # Override download and extract targets
 
 $$($(2)_DIR)/.stamp_downloaded:
-	@$(call MESSAGE,"Checking out $(1) from $$($(2)_BRANCH)")
-	if ! test -d $$($(2)_DIR)/.bzr; then \
-		(cd $$(BUILD_DIR); \
-		 $$(call qstrip,$$(BR2_BZR)) checkout -q --lightweight $$($(2)_SITE) $$($(2)_DIR)) \
-	else \
-		(cd $$($(2)_DIR); $$(call qstrip,$$(BR2_BZR)) update -q) \
-	fi
+	$(call raumfeld-bzr-source,$(1),$(2))
 	$(Q)touch $$@
 
 $(2)_EXTRACT_CMDS = $$($(2)_POST_EXTRACT_HOOKS)
