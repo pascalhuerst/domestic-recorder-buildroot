@@ -7,7 +7,7 @@ case "$hw" in
         ;;
     *)
 	echo "Looks like we are on the wrong hardware, exiting."
-	exit 0        
+	exit 0
 esac
 
 # check if an update is needed
@@ -20,7 +20,7 @@ case "x$revision" in
     x|'xBIOS Revision 3.0')
         echo $revision
         echo "Updating the BIOS, cross your fingers ..."
-        flashrom -p internal:laptop=this_is_not_a_laptop,boardmismatch=force -w raumfeld-base.rom
+        flashrom -p internal:boardmismatch=force -w raumfeld-base.rom
         ;;
     *)
         echo "$revision, not updating."
