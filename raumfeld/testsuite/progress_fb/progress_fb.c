@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 	if (argc < 6) {
 		printf("Usage: %s <x> <y> <w> <h> <color>\n", argv[0]);
 		printf("\t<x>, <y>, <w>, <h>	The coordinates for the percent bar\n");
-		printf("\t<color>		\tThe color to paint with, in hex, %dbit\n", FB_DEPTH * 8);
+		printf("\t<color>		\tThe color to paint with, in hex, %ldbit\n", FB_DEPTH * 8);
 		return 1;
 	}
 

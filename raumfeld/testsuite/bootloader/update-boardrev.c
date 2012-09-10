@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 				return -4;
 			}
 
-			printf ("Found string at offset %d - updating\n", pos - buf);
+			printf ("Found string at offset %ld - updating\n", pos - buf);
 			if (lseek (fd, pos - buf, SEEK_SET) < 0) {
 				perror ("seek");
 				return -5;
