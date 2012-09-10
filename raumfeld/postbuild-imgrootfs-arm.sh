@@ -7,9 +7,6 @@ echo "Populating the root filesystem ..."
 # raumfeld version
 cp -r raumfeld/rootfs/etc/raumfeld-version $1/etc
 
-# wi2wi firmware
-cp -av raumfeld/rootfs-arm/lib $1
-
 echo "Building and installing test binaries..."
 
 GCC=$2gcc
