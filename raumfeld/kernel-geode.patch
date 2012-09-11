@@ -11,3 +11,31 @@ index 90e23e7..8197530 100644
  		.active_low		= 1,
  		.desc			= "Reset button",
  		.type			= EV_KEY,
+From 18c638e84eed5b0e1c0b11cb121ef1be63c67591 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Tue, 11 Sep 2012 10:54:19 +0200
+Subject: [PATCH] leds: skip BIOS test for PC Enginges ALIX2 board
+
+The BIOS signature changed with newer coreboot versions. Skip
+the BIOS check so that the kernel does not depend on the BIOS
+version.
+---
+ arch/x86/platform/geode/alix.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/platform/geode/alix.c b/arch/x86/platform/geode/alix.c
+index 90e23e7..3cc2fa9 100644
+--- a/arch/x86/platform/geode/alix.c
++++ b/arch/x86/platform/geode/alix.c
+@@ -35,7 +35,7 @@
+ #define BIOS_SIGNATURE_COREBOOT		0x500
+ #define BIOS_REGION_SIZE		0x10000
+ 
+-static bool force = 0;
++static bool force = 1;
+ module_param(force, bool, 0444);
+ /* FIXME: Award bios is not automatically detected as Alix platform */
+ MODULE_PARM_DESC(force, "Force detection as ALIX.2/ALIX.3 platform");
+-- 
+1.7.9.5
+
