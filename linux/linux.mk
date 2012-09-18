@@ -33,6 +33,8 @@ endif
 
 LINUX_PATCHES = $(call qstrip,$(BR2_LINUX_KERNEL_PATCH))
 
+LINUX_FIRMWARE_BINARIES = $(call qstrip,$(BR2_LINUX_KERNEL_FIRMWARE))
+
 LINUX_INSTALL_IMAGES = YES
 LINUX_DEPENDENCIES  += host-module-init-tools
 
@@ -145,6 +147,16 @@ define LINUX_APPLY_PATCHES
 endef
 
 LINUX_POST_PATCH_HOOKS += LINUX_APPLY_PATCHES
+
+
+define LINUX_ADD_FIRMWARE
+	$(if $(LINUX_FIRMWARE_BINARIES),
+		@$(call MESSAGE,"Add firmware binaries"))
+	$(foreach blob,$(LINUX_FIRMWARE_BINARIES),\
+		cp $(blob) $(LINUX_DIR)/firmware)
+endef
+
+LINUX_POST_PATCH_HOOKS += LINUX_ADD_FIRMWARE
 
 
 ifeq ($(BR2_LINUX_KERNEL_USE_DEFCONFIG),y)

@@ -96,6 +96,16 @@ config BR2_LINUX_KERNEL_PATCH
 	  matching linux-*.patch in the directory will be applied.
 
 #
+# Firmware images
+#
+
+config BR2_LINUX_KERNEL_FIRMWARE
+	string "Custom firmware binaries"
+	help
+          A space-separated list of files to place into the firmware
+          folder of the kernel source before compilation.
+
+#
 # Configuration selection
 #
 
