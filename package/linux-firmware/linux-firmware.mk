@@ -71,6 +71,9 @@ LINUX_FIRMWARE_FILES_$(BR2_PACKAGE_LINUX_FIRMWARE_TI_WL128X) += \
 	ti-connectivity/TIInit_7.2.31.bts 			\
 	LICENCE.ti-connectivity
 
+# sd8787
+LINUX_FIRMWARE_FILES_$(BR2_PACKAGE_LINUX_FIRMWARE_MRVL_SD8787) += \
+	mrvl/sd8787_uapsta.bin
 
 ifneq ($(LINUX_FIRMWARE_FILES_y),)
 
