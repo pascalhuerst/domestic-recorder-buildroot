@@ -76,7 +76,7 @@ ifndef $(2)_SITE_METHOD
 endif
 
 
-RAUMFELD_CLEAN_FOR_REBUILD_TARGETS += $(1)-clean-for-rebuild
+RAUMFELD_DIRCLEAN_TARGETS += $(1)-dirclean
 
 
 # Call the generic package infrastructure to generate the necessary
@@ -131,7 +131,8 @@ ifndef $(2)_SITE_METHOD
 endif
 
 
-RAUMFELD_CLEAN_FOR_REBUILD_TARGETS += $(1)-clean-for-rebuild
+RAUMFELD_DIRCLEAN_TARGETS += $(1)-dirclean
+
 
 # Call the generic autotools package infrastructure to generate the necessary
 # make targets
@@ -169,8 +170,8 @@ raumfeld-cross-package = $(call inner-raumfeld-cross-package,$(call pkgname),$(c
 ################################################################################
 ################################################################################
 
-RAUMFELD_CLEAN_FOR_REBUILD_TARGETS =
+RAUMFELD_DIRCLEAN_TARGETS =
 
 include package/raumfeld/*/*.mk
 
-raumfeld-rebuild: $(RAUMFELD_CLEAN_FOR_REBUILD_TARGETS) all
+raumfeld-rebuild: $(RAUMFELD_DIRCLEAN_TARGETS) all
