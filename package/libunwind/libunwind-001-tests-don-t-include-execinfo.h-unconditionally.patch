@@ -1,0 +1,48 @@
+From 3ca58a368f6ec5bee5767df81df36dda5426cce5 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Tue, 9 Oct 2012 12:11:05 +0200
+Subject: [PATCH] tests: don't include execinfo.h unconditionally
+
+On some systems (for example uCLibC in certain configurations),
+backtrace support is not available.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+---
+ tests/test-coredump-unwind.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/tests/test-coredump-unwind.c b/tests/test-coredump-unwind.c
+index 5254708..215b308 100644
+--- a/tests/test-coredump-unwind.c
++++ b/tests/test-coredump-unwind.c
+@@ -57,7 +57,11 @@
+ #include <grp.h>
+ 
+ /* For SIGSEGV handler code */
++
++#if HAVE_EXECINFO_H
+ #include <execinfo.h>
++#endif
++
+ #include <sys/ucontext.h>
+ 
+ #include <libunwind-coredump.h>
+@@ -238,6 +242,7 @@ void handle_sigsegv(int sig, siginfo_t *info, void *ucontext)
+ 			ip);
+ 
+   {
++#if HAVE_EXECINFO_H
+     /* glibc extension */
+     void *array[50];
+     int size;
+@@ -245,6 +250,7 @@ void handle_sigsegv(int sig, siginfo_t *info, void *ucontext)
+ #ifdef __linux__
+     backtrace_symbols_fd(array, size, 2);
+ #endif
++#endif
+   }
+ 
+   _exit(1);
+-- 
+1.7.9.5
+
