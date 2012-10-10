@@ -1,0 +1,32 @@
+From 19a6ca780fc680ef12e8c92bf9231ae4b9e8eb38 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Tue, 3 Aug 2010 14:51:06 +0200
+Subject: [PATCH] disable code that doesn't compile with uCLibc
+
+---
+ src/x86/Gos-linux.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/src/x86/Gos-linux.c b/src/x86/Gos-linux.c
+index 31f83ba..869176d 100644
+--- a/src/x86/Gos-linux.c
++++ b/src/x86/Gos-linux.c
+@@ -281,6 +281,7 @@ x86_r_uc_addr (ucontext_t *uc, int reg)
+ HIDDEN int
+ x86_local_resume (unw_addr_space_t as, unw_cursor_t *cursor, void *arg)
+ {
++#if 0
+   struct cursor *c = (struct cursor *) cursor;
+   ucontext_t *uc = c->uc;
+ 
+@@ -302,6 +303,7 @@ x86_local_resume (unw_addr_space_t as, unw_cursor_t *cursor, void *arg)
+       Debug (8, "resuming at ip=%x via setcontext()\n", c->dwarf.ip);
+       setcontext (uc);
+     }
++#endif
+   return -UNW_EINVAL;
+ }
+ #endif
+-- 
+1.7.0.4
+
