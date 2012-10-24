@@ -473349,3 +473349,40 @@ index 8ad93ee..48425a1 100644
  		break;
  
  	default:
+From 454f2bd6d68dcbc6e19a88a3a73844d99bee47ef Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Wed, 24 Oct 2012 09:52:18 +0200
+Subject: [PATCH] input: don't reset keys after resume
+
+This basically reverts 866d7d7b4a4e1d502b as it breaks the state
+of the dock-detect key after suspend/resume of the Controller.
+
+The correct fix is to use a switch instead of a key here, but for
+now we will just use this simpler approach.
+---
+ drivers/input/input.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index da38d97..99cc574 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -1570,6 +1570,7 @@ void input_reset_device(struct input_dev *dev)
+ 	if (dev->users) {
+ 		input_dev_toggle(dev, true);
+ 
++#if 0
+ 		/*
+ 		 * Keys that have been pressed at suspend time are unlikely
+ 		 * to be still pressed when we resume.
+@@ -1577,6 +1578,7 @@ void input_reset_device(struct input_dev *dev)
+ 		spin_lock_irq(&dev->event_lock);
+ 		input_dev_release_keys(dev);
+ 		spin_unlock_irq(&dev->event_lock);
++#endif
+ 	}
+ 
+ 	mutex_unlock(&dev->mutex);
+-- 
+1.7.9.5
+
