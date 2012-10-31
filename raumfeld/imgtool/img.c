@@ -16,13 +16,32 @@
 #include "img.h"
 #include "sha256.h"
 
-#define SHA_OFFSET	(5 * 1024 * 1000)
-#define DESC_OFFSET	(SHA_OFFSET + 4096)
-#define IMG_OFFSET	(DESC_OFFSET + 4096)
-#define DESC_SIZE	(IMG_OFFSET - DESC_OFFSET)
+#define NUM_FORMATS 1
+
+#define SHA_OFFSET_V0	(5 * 1024 * 1000)
+#define DESC_OFFSET_V0	(SHA_OFFSET_V0 + 4096)
+#define IMG_OFFSET_V0	(DESC_OFFSET_V0 + 4096)
+#define DESC_SIZE_V0	(IMG_OFFSET_V0 - DESC_OFFSET_V0)
+
+struct img_layout {
+	unsigned int sha_offset;
+	unsigned int desc_offset;
+	unsigned int img_offset;
+	unsigned int desc_size;
+};
+
+static struct img_layout layouts[NUM_FORMATS] = {
+	{
+		.sha_offset	= SHA_OFFSET_V0,
+		.desc_offset	= DESC_OFFSET_V0,
+		.img_offset	= IMG_OFFSET_V0,
+		.desc_size	= DESC_SIZE_V0,
+	},
+};
+
+static struct img_layout *layout;
 
 #define DELIMITER	"-------------------------------------------------\n"
-
 
 static sha_256_t img_checksum(int fd, size_t fsize, off_t offset)
 {
@@ -42,17 +61,25 @@ static sha_256_t img_checksum(int fd, size_t fsize, off_t offset)
         return sha;
 }
 
-int img_check(int fd)
+int img_check(int fd, unsigned int version)
 {
 	int ret;
 	struct stat sb;
 	size_t fsize;
 	sha_256_t sha, img_sha;
-	char desc[DESC_SIZE];
+	char *desc;
+
+	if (version >= NUM_FORMATS) {
+		printf("Unknown format %d\n", version);
+		return -1;
+	}
+
+	layout = &layouts[version];
+	desc = alloca(layout->desc_size);
 
 	/* read the SHA256 from the image */
-	ret = lseek(fd, SHA_OFFSET, SEEK_SET);
-	if (ret != SHA_OFFSET) {
+	ret = lseek(fd, layout->sha_offset, SEEK_SET);
+	if (ret != layout->sha_offset) {
 		perror("lseek");
 		return ret;
 	}
@@ -60,8 +87,8 @@ int img_check(int fd)
 	read(fd, &img_sha, sizeof(img_sha));
 
 	/* read the description */
-	ret = lseek(fd, DESC_OFFSET, SEEK_SET);
-	if (ret != DESC_OFFSET) {
+	ret = lseek(fd, layout->desc_offset, SEEK_SET);
+	if (ret != layout->desc_offset) {
 		perror("lseek");
 		return ret;
 	}
@@ -75,10 +102,10 @@ int img_check(int fd)
 		return ret;
 	}
 
-	fsize = sb.st_size - DESC_OFFSET;
+	fsize = sb.st_size - layout->desc_offset;
 	lseek(fd, 0, SEEK_SET);
 
-        sha = img_checksum(fd, fsize, DESC_OFFSET);
+        sha = img_checksum(fd, fsize, layout->desc_offset);
 
 	/* compare given SHA256 with calculated one */
 	if (memcmp(&sha, &img_sha, sizeof(sha)) < 0) {
@@ -128,6 +155,13 @@ int img_create (const struct img_create_details *details)
 	size_t fsize;
 	sha_256_t sha;
 
+	if (details->version >= NUM_FORMATS) {
+		printf("Unknown format %d\n", details->version);
+		return -1;
+	}
+
+	layout = &layouts[details->version];
+
 	fd_out = open(details->output,
                       O_RDWR | O_CREAT,
                       S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
@@ -139,7 +173,7 @@ int img_create (const struct img_create_details *details)
 	/* first, copy the kernel */
 	printf("Copying kernel from >%s< ... ", details->uimage);
 	ret = img_copy(fd_out, details->uimage);
-	if (ret > SHA_OFFSET) {
+	if (ret > layout->sha_offset) {
 		printf("too big! (%ul bytes)\n", ret);
 		return -1;
 	}
@@ -148,9 +182,9 @@ int img_create (const struct img_create_details *details)
 
 	/* continue with description */
 	printf("Copying description from >%s< ... ", details->description);
-	lseek(fd_out, DESC_OFFSET, SEEK_SET);
+	lseek(fd_out, layout->desc_offset, SEEK_SET);
 	ret = img_copy(fd_out, details->description);
-	if (ret > IMG_OFFSET) {
+	if (ret > layout->img_offset) {
 		printf("too big! (%ul bytes)\n", ret);
 		return -1;
 	}
@@ -159,17 +193,17 @@ int img_create (const struct img_create_details *details)
 
 	/* the rootfs image */
 	printf("Copying rootfs from >%s< ... ", details->rootfs);
-	lseek(fd_out, IMG_OFFSET, SEEK_SET);
-	fsize = img_copy(fd_out, details->rootfs) + DESC_SIZE;
+	lseek(fd_out, layout->img_offset, SEEK_SET);
+	fsize = img_copy(fd_out, details->rootfs) + layout->desc_size;
 	printf("done.\n");
 
 	/* calculate the checksum */
-        sha = img_checksum (fd_out, fsize, DESC_OFFSET);
+        sha = img_checksum (fd_out, fsize, layout->desc_offset);
 	printf("SHA256 for this image: ");
 	debug_print_digest(sha, 1);
 
 	/* write it */
-	lseek(fd_out, SHA_OFFSET, SEEK_SET);
+	lseek(fd_out, layout->sha_offset, SEEK_SET);
 	write(fd_out, &sha, sizeof(sha));
 
 	/* done */

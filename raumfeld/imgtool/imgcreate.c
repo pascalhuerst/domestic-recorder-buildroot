@@ -11,6 +11,7 @@ static void usage(const char *argv0)
 	printf("        -d, --description <kernel>   Description file (required)\n");
 	printf("        -r, --rootfs <rootfs>        Rootfs image (required)\n");
 	printf("        -o, --output <file>          Output file (required)\n");
+	printf("        -v, --version <number>       Layout version (optional, defaults to 0)\n");
 	printf("        -h, --help                   This help output\n");
 }
 
@@ -29,7 +30,7 @@ int main(int argc, char **argv)
 
 	while (1) {
 		int option_index = 0;
-		int c = getopt_long (argc, argv, "k:d:r:o:h",
+		int c = getopt_long (argc, argv, "k:d:r:o:v:t:h",
 				     long_options, &option_index);
 		if (c < 0)
 			break;
@@ -46,6 +47,9 @@ int main(int argc, char **argv)
 			break;
 		case 'o':
 			details.output = optarg;
+			break;
+		case 'v':
+			details.version = strtol(optarg, 0, 10);
 			break;
 		case 'h':
 		default:

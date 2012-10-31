@@ -1,9 +1,10 @@
 #ifndef IMG_H
 #define IMG_H
 
-int img_check(int fd);
+int img_check(int fd, unsigned int version);
 
 struct img_create_details {
+	unsigned int version;
 	const char *uimage;
 	const char *description;
 	const char *rootfs;
