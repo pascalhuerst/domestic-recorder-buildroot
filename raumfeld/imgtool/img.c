@@ -16,17 +16,17 @@
 #include "img.h"
 #include "sha256.h"
 
-#define NUM_FORMATS 1
+#define NUM_FORMATS 2
 
-#define KERNEL_SIZE_V0	(5 * 1024 * 1000)
+#define KERNEL_SIZE_V0	(5 * 1024 * 1024)
 #define SHA_OFFSET_V0	KERNEL_SIZE_V0
 #define DESC_OFFSET_V0	(SHA_OFFSET_V0 + 4096)
 #define IMG_OFFSET_V0	(DESC_OFFSET_V0 + 4096)
 #define DESC_SIZE_V0	(IMG_OFFSET_V0 - DESC_OFFSET_V0)
 
-#define KERNEL_SIZE_V1	(10 * 1024 * 1000)
+#define KERNEL_SIZE_V1	(6 * 1024 * 1024)
 #define DTS_OFFSET_V1	KERNEL_SIZE_V1
-#define SHA_OFFSET_V1	(DTS_OFFSET_V1 + 128 * 1024)
+#define SHA_OFFSET_V1	(DTS_OFFSET_V1 + 256 * 1024)
 #define DESC_OFFSET_V1	(SHA_OFFSET_V1 + 4096)
 #define IMG_OFFSET_V1	(DESC_OFFSET_V1 + 4096)
 #define DESC_SIZE_V1	(IMG_OFFSET_V1 - DESC_OFFSET_V1)
@@ -191,18 +191,31 @@ int img_create (const struct img_create_details *details)
 	printf("Copying kernel from >%s< ... ", details->uimage);
 	ret = img_copy(fd_out, details->uimage);
 	if (ret > layout->sha_offset) {
-		printf("too big! (%ul bytes)\n", ret);
+		printf("too big! (%ul bytes)\n", (int) ret);
 		return -1;
 	}
 
 	printf("done.\n");
+
+	/* optionally, copy the DTS image */
+	if (layout->dts_offset > 0 && details->dts_image) {
+		printf("Copying DTS from >%s< ... ", details->dts_image);
+		lseek(fd_out, layout->dts_offset, SEEK_SET);
+		ret = img_copy(fd_out, details->dts_image);
+		if (ret > layout->desc_offset) {
+			printf("too big! (%ul bytes)\n", (int) ret);
+			return -1;
+		}
+
+		printf("done.\n");
+	}
 
 	/* continue with description */
 	printf("Copying description from >%s< ... ", details->description);
 	lseek(fd_out, layout->desc_offset, SEEK_SET);
 	ret = img_copy(fd_out, details->description);
 	if (ret > layout->img_offset) {
-		printf("too big! (%ul bytes)\n", ret);
+		printf("too big! (%ul bytes)\n", (int) ret);
 		return -1;
 	}
 

@@ -10,6 +10,7 @@ static void usage(const char *argv0)
 	printf("        -k, --kernel <kernel>        Kernel image (required)\n");
 	printf("        -d, --description <kernel>   Description file (required)\n");
 	printf("        -r, --rootfs <rootfs>        Rootfs image (required)\n");
+	printf("        -t, --dts-image <file>       Filesystem image containing the DTS files (optional)\n");
 	printf("        -o, --output <file>          Output file (required)\n");
 	printf("        -v, --version <number>       Layout version (optional, defaults to 0)\n");
 	printf("        -h, --help                   This help output\n");
@@ -19,6 +20,7 @@ static struct option long_options[] = {
 	{ "kernel",		required_argument,	0,	'k' },
 	{ "description",	required_argument,	0,	'd' },
 	{ "rootfs",		required_argument,	0,	'r' },
+	{ "dts-image",		required_argument,	0,	't' },
 	{ "output",		required_argument,	0,	'o' },
 	{ "help",		no_argument,		0,	'h' },
 	{ NULL, 0, 0, 0 }
@@ -44,6 +46,9 @@ int main(int argc, char **argv)
 			break;
 		case 'r':
 			details.rootfs = optarg;
+			break;
+		case 't':
+			details.dts_image = optarg;
 			break;
 		case 'o':
 			details.output = optarg;

@@ -9,6 +9,7 @@ struct img_create_details {
 	const char *description;
 	const char *rootfs;
 	const char *output;
+	const char *dts_image;
 };
 
 int img_create (const struct img_create_details *details);
