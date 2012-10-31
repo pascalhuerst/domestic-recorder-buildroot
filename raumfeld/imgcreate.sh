@@ -179,8 +179,10 @@ date >> $tmpdir/desc
 echo "Host $(hostname)" >> $tmpdir/desc
 
 mkdir -p binaries
-$imgcreate $kernel $tmpdir/desc $ext2_img $target_img
-
+$imgcreate	--kernel $kernel		\
+		--description $tmpdir/desc	\
+		--rootfs $ext2_img 		\
+		--output $target_ig
 
 ####### CLEANUP ########
 
