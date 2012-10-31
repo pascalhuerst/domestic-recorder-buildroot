@@ -121,17 +121,14 @@ static size_t img_copy(int out, const char *fname)
 	return off;
 }
 
-int img_create (const char *kernel,
-		const char *description,
-		const char *rootfs,
-		const char *output)
+int img_create (const struct img_create_details *details)
 {
 	int fd_out;
         size_t ret;
 	size_t fsize;
 	sha_256_t sha;
 
-	fd_out = open(output,
+	fd_out = open(details->output,
                       O_RDWR | O_CREAT,
                       S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (fd_out < 0) {
@@ -140,8 +137,8 @@ int img_create (const char *kernel,
 	}
 
 	/* first, copy the kernel */
-	printf("Copying kernel from >%s< ... ", kernel);
-	ret = img_copy(fd_out, kernel);
+	printf("Copying kernel from >%s< ... ", details->uimage);
+	ret = img_copy(fd_out, details->uimage);
 	if (ret > SHA_OFFSET) {
 		printf("too big! (%ul bytes)\n", ret);
 		return -1;
@@ -150,9 +147,9 @@ int img_create (const char *kernel,
 	printf("done.\n");
 
 	/* continue with description */
-	printf("Copying description from >%s< ... ", description);
+	printf("Copying description from >%s< ... ", details->description);
 	lseek(fd_out, DESC_OFFSET, SEEK_SET);
-	ret = img_copy(fd_out, description);
+	ret = img_copy(fd_out, details->description);
 	if (ret > IMG_OFFSET) {
 		printf("too big! (%ul bytes)\n", ret);
 		return -1;
@@ -161,9 +158,9 @@ int img_create (const char *kernel,
 	printf("done.\n");
 
 	/* the rootfs image */
-	printf("Copying rootfs from >%s< ... ", rootfs);
+	printf("Copying rootfs from >%s< ... ", details->rootfs);
 	lseek(fd_out, IMG_OFFSET, SEEK_SET);
-	fsize = img_copy(fd_out, rootfs) + DESC_SIZE;
+	fsize = img_copy(fd_out, details->rootfs) + DESC_SIZE;
 	printf("done.\n");
 
 	/* calculate the checksum */
@@ -176,7 +173,7 @@ int img_create (const char *kernel,
 	write(fd_out, &sha, sizeof(sha));
 
 	/* done */
-	printf("Image %s created.\n", output);
+	printf("Image %s created.\n", details->output);
 	close (fd_out);
 
 	return 0;

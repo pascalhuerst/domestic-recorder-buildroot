@@ -25,7 +25,7 @@ static struct option long_options[] = {
 
 int main(int argc, char **argv)
 {
-	char *kernel, *description, *rootfs, *output;
+	struct img_create_details details;
 
 	while (1) {
 		int option_index = 0;
@@ -36,16 +36,16 @@ int main(int argc, char **argv)
 
 		switch (c) {
 		case 'k':
-			kernel = optarg;
+			details.uimage = optarg;
 			break;
 		case 'd':
-			description = optarg;
+			details.description = optarg;
 			break;
 		case 'r':
-			rootfs = optarg;
+			details.rootfs = optarg;
 			break;
 		case 'o':
-			output = optarg;
+			details.output = optarg;
 			break;
 		case 'h':
 		default:
@@ -54,11 +54,11 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (!kernel || !description || !rootfs || !output) {
+	if (!details.uimage || !details.description || !details.rootfs || !details.output) {
 		usage(argv[0]);
 		return -1;
 	}
 
-	return img_create(kernel, description, rootfs, output);
+	return img_create(&details);
 }
 
