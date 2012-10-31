@@ -18,12 +18,21 @@
 
 #define NUM_FORMATS 1
 
-#define SHA_OFFSET_V0	(5 * 1024 * 1000)
+#define KERNEL_SIZE_V0	(5 * 1024 * 1000)
+#define SHA_OFFSET_V0	KERNEL_SIZE_V0
 #define DESC_OFFSET_V0	(SHA_OFFSET_V0 + 4096)
 #define IMG_OFFSET_V0	(DESC_OFFSET_V0 + 4096)
 #define DESC_SIZE_V0	(IMG_OFFSET_V0 - DESC_OFFSET_V0)
 
+#define KERNEL_SIZE_V1	(10 * 1024 * 1000)
+#define DTS_OFFSET_V1	KERNEL_SIZE_V1
+#define SHA_OFFSET_V1	(DTS_OFFSET_V1 + 128 * 1024)
+#define DESC_OFFSET_V1	(SHA_OFFSET_V1 + 4096)
+#define IMG_OFFSET_V1	(DESC_OFFSET_V1 + 4096)
+#define DESC_SIZE_V1	(IMG_OFFSET_V1 - DESC_OFFSET_V1)
+
 struct img_layout {
+	unsigned int dts_offset;
 	unsigned int sha_offset;
 	unsigned int desc_offset;
 	unsigned int img_offset;
@@ -32,10 +41,18 @@ struct img_layout {
 
 static struct img_layout layouts[NUM_FORMATS] = {
 	{
+		.dts_offset	= 0,
 		.sha_offset	= SHA_OFFSET_V0,
 		.desc_offset	= DESC_OFFSET_V0,
 		.img_offset	= IMG_OFFSET_V0,
 		.desc_size	= DESC_SIZE_V0,
+	},
+	{
+		.dts_offset	= DTS_OFFSET_V1,
+		.sha_offset	= SHA_OFFSET_V1,
+		.desc_offset	= DESC_OFFSET_V1,
+		.img_offset	= IMG_OFFSET_V1,
+		.desc_size	= DESC_SIZE_V1,
 	},
 };
 
