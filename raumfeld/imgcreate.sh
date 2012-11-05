@@ -116,6 +116,13 @@ case $target in
 	cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
 	;;
 
+    audioadapter-armada-init)
+        add_rootfs_tgz
+        ;;
+    audioadapter-armada-flash)
+        add_rootfs_tgz
+        ;;
+
     base-geode-init)
         add_rootfs_tgz
         add_raumfeld_demo

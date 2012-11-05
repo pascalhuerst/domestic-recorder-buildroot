@@ -1,8 +1,11 @@
 #!/bin/bash
 
 targets="initramfs-arm imgrootfs-arm		\
+         initramfs-armada imgrootfs-armada      \
          initramfs-geode imgrootfs-geode	\
-         audioadapter-arm remotecontrol-arm	\
+         audioadapter-arm                       \
+         audioadapter-armada                    \
+         remotecontrol-arm	                \
          base-geode"
 
 # create a timestamp

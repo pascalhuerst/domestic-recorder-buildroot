@@ -1,8 +1,11 @@
 #!/bin/bash
 
-targets="initramfs-arm imgrootfs-arm            \
-         initramfs-geode imgrootfs-geode        \
-         audioadapter-arm remotecontrol-arm     \
+targets="initramfs-arm imgrootfs-arm		\
+         initramfs-armada imgrootfs-armada      \
+         initramfs-geode imgrootfs-geode	\
+         audioadapter-arm                       \
+         audioadapter-armada                    \
+         remotecontrol-arm	                \
          base-geode"
 
 # create a timestamp
@@ -80,7 +83,7 @@ fi
 mkdir -p binaries/$target
 
 case $target in
-	initramfs-arm)
+	initramfs-arm*)
         	# copy the ARM kernel images for later use
                 cp output/images/uImage binaries/$target
 		;;
@@ -109,6 +112,20 @@ case $target in
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=binaries/initramfs-arm/uImage \
+			        --version=$version
+		done
+		;;
+
+	audioadapter-armada)
+                ROOTFS=output/images/rootfs.tar.gz
+                ZIMAGE=binaries/initramfs-arm/uImage
+		for t in $IMAGES; do
+			raumfeld/imgcreate.sh \
+				--target=$target-$t \
+				--platform=armada \
+				--base-rootfs-img=binaries/imgrootfs-armada/rootfs.ext2 \
+				--target-rootfs-tgz=$ROOTFS \
+				--kernel=binaries/initramfs-armada/uImage \
 			        --version=$version
 		done
 		;;
