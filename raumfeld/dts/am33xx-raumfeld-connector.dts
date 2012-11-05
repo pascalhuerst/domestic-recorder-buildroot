@@ -1,0 +1,180 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+/dts-v1/;
+
+/include/ "am33xx-sue-s800.dtsi"
+
+/ {
+	model = "Raumfeld Connector (AM33xx)";
+	compatible = "ti,am335x-raumfeld-connector", "ti,am33xx";
+
+	am3358_pinmux: pinmux@44e10800 {
+		spi0_pins: pinmux_spi0_pins {
+			pinctrl-single,pins = <
+				0x150 0x27	/* SPI0_CLK */
+				0x154 0x37	/* SPI0_D0  */
+				0x158 0x2f	/* SPI0_D1  */
+				0x15C 0x37	/* SPI0_CS0 */
+			>;
+		};
+
+		i2c3_pins: pinmux_i2c3_pins {
+			pinctrl-single,pins = <
+				0x178 0x63	/* I2C2_SDA */
+				0x17c 0x63	/* I2C2_SCL */
+			>;
+		};
+
+		led_pins: pinmux_led_pins {
+			pinctrl-single,pins = <
+				0x80 0x7	/* GPIO1_30 */
+				0x84 0x7	/* GPIO1_31 */
+			>;
+		};
+
+		audio_pins: pinmux_audio_pins {
+			pinctrl-single,pins = <
+				0x1ac 0x20	/* MCASP0_MCLK_OUT */
+				0x190 0x00	/* MCASP0_BCLK_OUT */
+				0x194 0x00	/* MCASP0_WCLK_OUT */
+				0x198 0x00	/* MCASP0_DATA_OUT */
+				0x1a8 0x20	/* MCASP0_DATA_IN  */
+				0x1a0 0x00	/* MCASP0_BCLK_IN  */
+				0x1a4 0x00	/* MCASP0_WCLK_IN  */
+				0x19c 0x20	/* MCASP0_MCLK_IN  */
+			>;
+		};
+	};
+
+	ocp {
+		i2c1: i2c@44e0b000 {
+			status = "okay";
+		};
+
+		i2c2: i2c@4802a000 {
+			status = "okay";
+		};
+
+		i2c3: i2c@4819c000 {
+			status = "okay";
+			pinctrl-names = "default";
+			pinctrl-0 = <&i2c3_pins>;
+
+			cs4271: cs4271@10 {
+				compatible = "cirrus,cs4271";
+				reg = <0x10>;
+				reset-gpio = <&gpio1 9 0>;
+				cirrus,amutec-eq-bmutec;
+				vd-supply = <&vdd_audio>;
+			};
+		};
+		
+		uart1: serial@44e09000 {
+			status = "okay";
+		};
+
+		spi0: spi@48030000 {
+			status = "okay";
+			ti,pindir-d0-in-d1-out;
+			pinctrl-names = "default";
+			pinctrl-0 = <&spi0_pins>;
+
+			ak4104: ak4104@0 {
+				compatible = "asahi-kasei,ak4104";
+				reg = <0>; /* CS0 */
+				spi-max-frequency = <500000>;
+				/* reset-gpio = <&gpio2 xx>; */
+			};
+		};
+
+		leds {
+			compatible = "gpio-leds";
+			pinctrl-names = "default";
+			pinctrl-0 = <&led_pins>;
+
+			d1 {
+				label = "raumfeld:1";
+				gpios = <&gpio1 31 0>;
+				linux,default-trigger = "heartbeat";
+			};
+
+			d2 {
+				label = "raumfeld:2";
+				gpios = <&gpio1 30 0>;
+				linux,default-trigger = "mmc0";
+			};
+		};
+
+		gpio-keys {
+			compatible = "gpio-keys";
+
+			f1 {
+				label = "F1";
+				gpios = <&gpio0 7 0>;
+				linux,code = <59>; /* KEY_F1 */
+				gpio-key,wakeup;
+			};
+		};
+		
+		usb_otg_hs: usb_otg_hs@47400000 {
+			status = "okay";
+		};
+	};
+
+	mcasp0: mcasp0@0x48038000 {
+		compatible = "ti,omap2-mcasp-audio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x48038000 0x3000>;
+		interrupts = <80 81>;
+		op-mode = <0>;          /* MCASP_IIS_MODE */
+		tdm-slots = <2>;
+		num-serializer = <16>;
+		serial-dir = <  1 2 0 0 /* 0: INACTIVE, 1: TX, 2: RX */
+				0 0 0 0
+				0 0 0 0
+				0 0 0 0 >;
+		tx-num-evt = <1>;
+		rx-num-evt = <1>;
+		ti,hwmods = "mcasp0";
+		asp-chan-q = <2>;  /* EVENTQ_2 */
+		tx-dma-offset = <0x46000000>;
+		rx-dma-offset = <0x46000000>;
+		dmas = <&edma 8 &edma 9>;
+		dma-names = "tx", "rx";
+	};
+
+	audio {
+		compatible = "raumfeld,am33xx-connector-audio";
+		pinctrl-names = "default";
+		pinctrl-0 = <&audio_pins>;
+		raumfeld,card-name = "Connector";
+
+		raumfeld,platform = <&mcasp0>;
+		raumfeld,cpu-dai-name = "48038000.mcasp0";
+
+		raumfeld,analog-codec = <&cs4271>;
+		raumfeld,analog-codec-dai-name = "cs4271-hifi";
+
+		raumfeld,spdif-transmitter = <&ak4104>;
+		raumfeld,spdif-transmitter-dai-name = "ak4104-hifi";
+	};
+
+        vdd_audio: vdd_audio_regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "vdd-audio";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		gpio = <&gpio1 8 0>;
+		enable-active-high;
+		regulator-boot-on;
+        };
+};
+
+&cpsw_emac0 {
+	phy_id = "4a101000.mdio:04";
+};
+
