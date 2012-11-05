@@ -9,7 +9,7 @@
 
 static void usage(const char *argv0)
 {
-	printf("Usage: %s <imgfile>\n", argv0);
+	printf("Usage: %s <imgfile> [version]\n", argv0);
 	exit(-1);
 }
 
