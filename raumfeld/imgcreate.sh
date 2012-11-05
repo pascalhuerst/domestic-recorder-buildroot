@@ -182,7 +182,7 @@ mkdir -p binaries
 $imgcreate	--kernel $kernel		\
 		--description $tmpdir/desc	\
 		--rootfs $ext2_img 		\
-		--output $target_ig
+		--output $target_img
 
 ####### CLEANUP ########
 
