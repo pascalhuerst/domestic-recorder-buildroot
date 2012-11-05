@@ -22,17 +22,18 @@ static struct option long_options[] = {
 	{ "rootfs",		required_argument,	0,	'r' },
 	{ "dts-image",		required_argument,	0,	't' },
 	{ "output",		required_argument,	0,	'o' },
+	{ "version",		required_argument,	0,	'v' },
 	{ "help",		no_argument,		0,	'h' },
 	{ NULL, 0, 0, 0 }
 };
 
 int main(int argc, char **argv)
 {
-	struct img_create_details details;
+        struct img_create_details details = { 0, };
 
 	while (1) {
 		int option_index = 0;
-		int c = getopt_long (argc, argv, "k:d:r:o:v:t:h",
+		int c = getopt_long (argc, argv, "k:d:r:t:o:v:h",
 				     long_options, &option_index);
 		if (c < 0)
 			break;
