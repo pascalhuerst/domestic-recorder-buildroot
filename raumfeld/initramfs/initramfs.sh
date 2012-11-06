@@ -5,12 +5,19 @@ export PATH="/sbin:/usr/sbin:$PATH"
 echo "Booted to initramfs."
 
 hw=`cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' '`
+offset="5128192"
 
 if [ -z "$hw" ]; then
 	hw=`cat /proc/cpuinfo | grep ^model\ name | cut -f 3 -d' '`
 fi
 
 case "$hw" in
+  AM33XX)
+		arch="armada"
+		img="update.img"
+    offset="6561792"
+                bootloader="raumfeld-am3xx.bin"
+    ;;
 	Controller)
 		arch="arm"
 		img="control.img"
@@ -115,7 +122,7 @@ else
 	mkdir /usb
 
 	mount /dev/sda1 /usb || mount /dev/sda /usb
-	losetup -o 5128192 /dev/loop0 /usb/$img
+	losetup -o $offset /dev/loop0 /usb/$img
 
 	mkdir /rootfs
 	mount -t ext2 -o ro /dev/loop0 /rootfs
