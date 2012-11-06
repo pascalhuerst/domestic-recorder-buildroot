@@ -181,8 +181,8 @@ $resize2fs $ext2_img $size
 ###### CRATE DTS IMAGE #######
 
 if [ "$build_dts" -eq 1 ]; then
-	pushd
-	cd dts/
+	pushd .
+	cd raumfeld/dts/
 	./make.sh
 	popd
 
