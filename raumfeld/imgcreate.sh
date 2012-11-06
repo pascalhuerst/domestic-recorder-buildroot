@@ -83,6 +83,9 @@ resize2fs=/sbin/resize2fs
 ext2_img=binaries/$target.ext2
 
 target_img=binaries/$target-$version.img
+img_version=0
+build_dts=0
+dts_image=
 
 test -f $kernel		|| echo "ERROR: $kernel not found"
 test -f $kernel		|| exit 1
@@ -118,9 +121,13 @@ case $target in
 
     audioadapter-armada-init)
         add_rootfs_tgz
+	img_version=1
+	build_dts=1
         ;;
     audioadapter-armada-flash)
         add_rootfs_tgz
+	img_version=1
+	build_dts=1
         ;;
 
     base-geode-init)
@@ -171,6 +178,17 @@ size=$($resize2fs -P $ext2_img | cut -d ' ' -f 7)
 size=$(expr $size + 4)
 $resize2fs $ext2_img $size
 
+###### CRATE DTS IMAGE #######
+
+if [ "$build_dts" -eq 1 ]; then
+	pushd
+	cd dts/
+	./make.sh
+	popd
+
+	dts_image=dts/dts.cramfs
+fi
+
 ###### CREATE THE IMAGE #######
 
 echo "Creating image ..."
@@ -179,7 +197,9 @@ date >> $tmpdir/desc
 echo "Host $(hostname)" >> $tmpdir/desc
 
 mkdir -p binaries
-$imgcreate	--kernel $kernel		\
+$imgcreate	--version $img_version		\
+		--dts-image $dts_image		\
+		--kernel $kernel		\
 		--description $tmpdir/desc	\
 		--rootfs $ext2_img 		\
 		--output $target_img
