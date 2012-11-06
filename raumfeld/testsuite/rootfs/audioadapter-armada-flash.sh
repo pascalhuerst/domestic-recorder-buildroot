@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# potentially update the boot-loader
+./update-uboot.sh
+
+source tests.inc
+
+cd tests
+
+./leds-blink 1 &
+pid=$!
+
+./nand || touch /tmp/test-failed
+
+if [ -f /tmp/test-failed ]; then
+	kill $pid
+	./leds-blink 2
+fi
+
+reboot
+
