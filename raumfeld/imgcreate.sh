@@ -186,7 +186,7 @@ if [ "$build_dts" -eq 1 ]; then
 	./make.sh
 	popd
 
-	dts_image=dts/dts.cramfs
+	dts_image=raumfeld/dts/dts.cramfs
 fi
 
 ###### CREATE THE IMAGE #######
