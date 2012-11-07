@@ -43501,6 +43501,19 @@ index 378bd70..741918a 100644
  	bf->bf_lastbf = bf;
  	ath_tx_fill_desc(sc, bf, txq, fi->framelen);
  	ath_tx_txqaddbuf(sc, txq, &bf_head, false);
+diff --git a/drivers/net/wireless/mwifiex/main.c b/drivers/net/wireless/mwifiex/main.c
+index eb22dd2..b3feff4 100644
+--- a/drivers/net/wireless/mwifiex/main.c
++++ b/drivers/net/wireless/mwifiex/main.c
+@@ -357,7 +357,7 @@ static void mwifiex_fw_dpc(const struct firmware *firmware, void *context)
+ 
+ 	rtnl_lock();
+ 	/* Create station interface by default */
+-	if (!mwifiex_add_virtual_intf(adapter->wiphy, "mlan%d",
++	if (!mwifiex_add_virtual_intf(adapter->wiphy, "wlan%d",
+ 				      NL80211_IFTYPE_STATION, NULL, NULL)) {
+ 		dev_err(adapter->dev, "cannot create default STA interface\n");
+ 		goto err_add_intf;
 diff --git a/drivers/net/wireless/rt2x00/rt2800lib.c b/drivers/net/wireless/rt2x00/rt2800lib.c
 index 01dc889..59474ae 100644
 --- a/drivers/net/wireless/rt2x00/rt2800lib.c
@@ -54620,7 +54633,7 @@ index 31d4483..eec086b 100644
  	.probe  = ak4104_spi_probe,
  	.remove = __devexit_p(ak4104_spi_remove),
 diff --git a/sound/soc/codecs/cs4271.c b/sound/soc/codecs/cs4271.c
-index f994af3..e5a7ea4 100644
+index f994af3..05e64a9 100644
 --- a/sound/soc/codecs/cs4271.c
 +++ b/sound/soc/codecs/cs4271.c
 @@ -27,6 +27,7 @@
@@ -54697,6 +54710,37 @@ index f994af3..e5a7ea4 100644
  #ifdef CONFIG_OF
  	if (of_match_device(cs4271_dt_ids, codec->dev))
  		gpio_nreset = of_get_named_gpio(codec->dev->of_node,
+@@ -514,22 +548,27 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+ 			cs4271->bus_type);
+ 	if (ret) {
+ 		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
+-		return ret;
++		goto err;
+ 	}
+ 
+ 	ret = snd_soc_update_bits(codec, CS4271_MODE2,
+ 				  CS4271_MODE2_PDN | CS4271_MODE2_CPEN,
+ 				  CS4271_MODE2_PDN | CS4271_MODE2_CPEN);
+ 	if (ret < 0)
+-		return ret;
++		goto err;
+ 	ret = snd_soc_update_bits(codec, CS4271_MODE2, CS4271_MODE2_PDN, 0);
+ 	if (ret < 0)
+-		return ret;
++		goto err;
+ 	/* Power-up sequence requires 85 uS */
+ 	udelay(85);
+ 
+ 	return snd_soc_add_codec_controls(codec, cs4271_snd_controls,
+ 		ARRAY_SIZE(cs4271_snd_controls));
++err:
++	if (gpio_is_valid(gpio_nreset))
++		gpio_free(gpio_nreset);
++
++	return ret;
+ }
+ 
+ static int cs4271_remove(struct snd_soc_codec *codec)
 diff --git a/sound/soc/davinci/Kconfig b/sound/soc/davinci/Kconfig
 index 9e11a14..627c877 100644
 --- a/sound/soc/davinci/Kconfig
