@@ -317,10 +317,10 @@ index 0000000..b88ee83
 +};
 diff --git a/Documentation/devicetree/bindings/mtd/gpmc-nand.txt b/Documentation/devicetree/bindings/mtd/gpmc-nand.txt
 new file mode 100644
-index 0000000..72390b4
+index 0000000..755b24f
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/mtd/gpmc-nand.txt
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,81 @@
 +Device tree bindings for GPMC connected NANDs
 +
 +GPMC connected NAND (found on OMAP boards) are represented as child nodes of
@@ -336,13 +336,26 @@ index 0000000..72390b4
 +
 +Required properties:
 +
-+ - reg: The CS line the peripheral is connected to
-+ - nand-ecc-mode: The ECC mode to use
++ - reg:		The CS line the peripheral is connected to
 +
 +Optional properties:
 +
-+ - nand-bus-width: Set this numeric value to 16 if the hardware is wired that
-+		   way. If not specified, a bus width of 8 is assumed.
++ - nand-bus-width: 		Set this numeric value to 16 if the hardware
++				is wired that way. If not specified, a bus
++				width of 8 is assumed.
++ - omap,nand-ecc-layout:	A string setting the ECC layout to use. One of:
++
++	Layouts for 1-bit ecc: stored at end of spare area:
++
++		"software"	Software method (default)
++		"hw"		Hardware method (gpmc to detect the error)
++
++	Layouts for 1-bit ecc: stored at beginning of spare area as romcode:
++
++		"hw-romcode"	gpmc method & romcode layout
++		"bch4"		4-bit BCH ecc code
++		"bch8"		8-bit BCH ecc code
++
 +
 +For inline partiton table parsing (optional):
 +
@@ -369,17 +382,17 @@ index 0000000..72390b4
 +
 +			gpmc,sync-clk = <0>;
 +			gpmc,cs-on = <0>;
-+			gpmc,cs-rd-off = <36>;
-+			gpmc,cs-wr-off = <36>;
++			gpmc,cs-rd-off = <44>;
++			gpmc,cs-wr-off = <44>;
 +			gpmc,adv-on = <6>;
-+			gpmc,adv-rd-off = <24>;
-+			gpmc,adv-wr-off = <36>;
-+			gpmc,we-off = <30>;
-+			gpmc,oe-off = <48>;
-+			gpmc,access = <54>;
-+			gpmc,rd-cycle = <72>;
-+			gpmc,wr-cycle = <72>;
-+			gpmc,wr-access = <30>;
++			gpmc,adv-rd-off = <34>;
++			gpmc,adv-wr-off = <44>;
++			gpmc,we-off = <40>;
++			gpmc,oe-off = <54>;
++			gpmc,access = <64>;
++			gpmc,rd-cycle = <82>;
++			gpmc,wr-cycle = <82>;
++			gpmc,wr-access = <40>;
 +			gpmc,wr-data-mux-bus = <0>;
 +
 +			#address-cells = <1>;
@@ -754,10 +767,10 @@ index 185d632..8d5f660 100644
 +};
 diff --git a/arch/arm/boot/dts/am335x-sue-s800.dtsi b/arch/arm/boot/dts/am335x-sue-s800.dtsi
 new file mode 100644
-index 0000000..769fd69
+index 0000000..06304cc
 --- /dev/null
 +++ b/arch/arm/boot/dts/am335x-sue-s800.dtsi
-@@ -0,0 +1,240 @@
+@@ -0,0 +1,245 @@
 +/*
 + * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
 + *
@@ -867,22 +880,27 @@ index 0000000..769fd69
 +
 +				partition@4 {
 +					label = "U-Boot";
-+					reg = <0x80000 0x1e0000>;
++					reg = <0x80000 0x100000>;
 +				};
 +
 +				partition@5 {
 +					label = "U-Boot Env";
-+					reg = <0x260000 0x20000>;
++					reg = <0x180000 0x20000>;
 +				};
 +
 +				partition@6 {
 +					label = "Kernel";
-+					reg = <0x280000 0x500000>;
++					reg = <0x1a0000 0x600000>;
 +				};
 +
 +				partition@7 {
++					label = "DTB";
++					reg = <0x7a0000 0x40000>;
++				};
++
++				partition@8 {
 +					label = "File System";
-+					reg = <0x780000 0x1000000>;
++					reg = <0x7e0000 0>;
 +				};
 +			};
 +		};
@@ -17695,7 +17713,7 @@ index d1058f1..399acab 100644
  #include "powerdomain.h"
  
 diff --git a/arch/arm/mach-omap2/gpmc-nand.c b/arch/arm/mach-omap2/gpmc-nand.c
-index 4acf497..c3616c6 100644
+index 4acf497..e23d561 100644
 --- a/arch/arm/mach-omap2/gpmc-nand.c
 +++ b/arch/arm/mach-omap2/gpmc-nand.c
 @@ -17,9 +17,12 @@
@@ -17772,7 +17790,7 @@ index 4acf497..c3616c6 100644
  
  	/* Configure GPMC */
  	if (gpmc_nand_data->devsize == NAND_BUSWIDTH_16)
-@@ -91,7 +89,29 @@ static int omap2_nand_gpmc_retime(struct omap_nand_platform_data *gpmc_nand_data
+@@ -91,7 +89,30 @@ static int omap2_nand_gpmc_retime(struct omap_nand_platform_data *gpmc_nand_data
  	return 0;
  }
  
@@ -17786,11 +17804,12 @@ index 4acf497..c3616c6 100644
 +	}
 +
 +	/*
-+	 * For now, assume 4-bit mode is only supported on OMAP3630 ES1.x, x>=1.
-+	 * Other chips may be added if confirmed to work.
++	 * For now, assume 4-bit mode is only supported on OMAP3630 ES1.x, x>=1
++	 * and AM33xx derivates. Other chips may be added if confirmed to work.
 +	 */
 +	if ((ecc_opt == OMAP_ECC_BCH4_CODE_HW) &&
-+	    (!cpu_is_omap3630() || (GET_OMAP_REVISION() == 0))) {
++	    (!cpu_is_omap3630() || (GET_OMAP_REVISION() == 0)) &&
++	    (!soc_is_am33xx())) {
 +		pr_err("BCH 4-bit mode is not supported on this CPU\n");
 +		return 0;
 +	}
@@ -17803,7 +17822,7 @@ index 4acf497..c3616c6 100644
  {
  	int err	= 0;
  	struct device *dev = &gpmc_nand_device.dev;
-@@ -112,11 +132,13 @@ int __init gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data)
+@@ -112,11 +133,13 @@ int __init gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data)
  				gpmc_get_client_irq(GPMC_IRQ_FIFOEVENTENABLE);
  	gpmc_nand_resource[2].start =
  				gpmc_get_client_irq(GPMC_IRQ_COUNT_EVENT);
@@ -17822,7 +17841,7 @@ index 4acf497..c3616c6 100644
  	}
  
  	/* Enable RD PIN Monitoring Reg */
-@@ -126,6 +148,9 @@ int __init gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data)
+@@ -126,6 +149,9 @@ int __init gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data)
  
  	gpmc_update_nand_reg(&gpmc_nand_data->reg, gpmc_nand_data->cs);
  
@@ -18296,7 +18315,7 @@ index 249a0b4..ef99011 100644
  
  static struct resource gpmc_smsc911x_resources[] = {
 diff --git a/arch/arm/mach-omap2/gpmc.c b/arch/arm/mach-omap2/gpmc.c
-index 92b5718..d8774c2 100644
+index 92b5718..0d4d991 100644
 --- a/arch/arm/mach-omap2/gpmc.c
 +++ b/arch/arm/mach-omap2/gpmc.c
 @@ -25,17 +25,20 @@
@@ -18581,7 +18600,7 @@ index 92b5718..d8774c2 100644
  }
  
  int gpmc_get_client_irq(unsigned irq_config)
-@@ -902,6 +753,148 @@ static int __devinit gpmc_mem_init(void)
+@@ -902,6 +753,159 @@ static int __devinit gpmc_mem_init(void)
  	return 0;
  }
  
@@ -18659,10 +18678,20 @@ index 92b5718..d8774c2 100644
 +}
 +
 +#ifdef CONFIG_MTD_NAND
-+static int gpmc_probe_nand_child(struct platform_device *pdev,
-+				 struct device_node *child)
++
++static const char *nand_ecc_layouts[] = {
++	[OMAP_ECC_HAMMING_CODE_DEFAULT]		= "software",
++	[OMAP_ECC_HAMMING_CODE_HW]		= "hw",
++	[OMAP_ECC_HAMMING_CODE_HW_ROMCODE]	= "hw-romcode",
++	[OMAP_ECC_BCH4_CODE_HW]			= "bch4",
++	[OMAP_ECC_BCH8_CODE_HW]			= "bch8",
++};
++
++static int __devinit gpmc_probe_nand_child(struct platform_device *pdev,
++					   struct device_node *child)
 +{
 +	u32 val;
++	const char *s;
 +	struct gpmc_timings gpmc_t;
 +	struct omap_nand_platform_data *gpmc_nand_data;
 +
@@ -18680,9 +18709,10 @@ index 92b5718..d8774c2 100644
 +	gpmc_nand_data->cs = val;
 +	gpmc_nand_data->of_node = child;
 +
-+	val = of_get_nand_ecc_mode(child);
-+	if (val >= 0)
-+		gpmc_nand_data->ecc_opt = val;
++	if (!of_property_read_string(child, "omap,nand-ecc-layout", &s))
++		for (val = 0; val < ARRAY_SIZE(nand_ecc_layouts); val++)
++			if (!strcasecmp(s, nand_ecc_layouts[val]))
++				gpmc_nand_data->ecc_opt = val;
 +
 +	val = of_get_nand_bus_width(child);
 +	if (val == 16)
@@ -18694,14 +18724,14 @@ index 92b5718..d8774c2 100644
 +	return 0;
 +}
 +#else
-+static int gpmc_probe_nand_child(struct platform_device *pdev,
-+				 struct device_node *child)
++static int __devinit gpmc_probe_nand_child(struct platform_device *pdev,
++					   struct device_node *child)
 +{
 +	return 0;
 +}
 +#endif
 +
-+static int gpmc_probe_dt(struct platform_device *pdev)
++static int __devinit gpmc_probe_dt(struct platform_device *pdev)
 +{
 +	int ret;
 +	struct device_node *child;
@@ -18721,7 +18751,7 @@ index 92b5718..d8774c2 100644
 +	return 0;
 +}
 +#else
-+static int gpmc_probe_dt(struct platform_device *pdev)
++static int __devinit gpmc_probe_dt(struct platform_device *pdev)
 +{
 +	return 0;
 +}
@@ -18730,7 +18760,7 @@ index 92b5718..d8774c2 100644
  static __devinit int gpmc_probe(struct platform_device *pdev)
  {
  	int rc;
-@@ -955,6 +948,14 @@ static __devinit int gpmc_probe(struct platform_device *pdev)
+@@ -955,6 +959,14 @@ static __devinit int gpmc_probe(struct platform_device *pdev)
  	if (IS_ERR_VALUE(gpmc_setup_irq()))
  		dev_warn(gpmc_dev, "gpmc_setup_irq failed\n");
  
@@ -18745,7 +18775,7 @@ index 92b5718..d8774c2 100644
  	return 0;
  }
  
-@@ -972,6 +973,7 @@ static struct platform_driver gpmc_driver = {
+@@ -972,6 +984,7 @@ static struct platform_driver gpmc_driver = {
  	.driver		= {
  		.name	= DEVICE_NAME,
  		.owner	= THIS_MODULE,
@@ -18753,7 +18783,7 @@ index 92b5718..d8774c2 100644
  	},
  };
  
-@@ -995,6 +997,13 @@ static int __init omap_gpmc_init(void)
+@@ -995,6 +1008,13 @@ static int __init omap_gpmc_init(void)
  	struct platform_device *pdev;
  	char *oh_name = "gpmc";
  
@@ -18767,7 +18797,7 @@ index 92b5718..d8774c2 100644
  	oh = omap_hwmod_lookup(oh_name);
  	if (!oh) {
  		pr_err("Could not look up %s\n", oh_name);
-@@ -1093,267 +1102,3 @@ void omap3_gpmc_restore_context(void)
+@@ -1093,267 +1113,3 @@ void omap3_gpmc_restore_context(void)
  	}
  }
  #endif /* CONFIG_ARCH_OMAP3 */
@@ -54725,10 +54755,10 @@ index a93679d..7eae529 100644
 +obj-$(CONFIG_SND_AM335X_SOC_RAUMFELD) += snd-soc-raumfeld.o
 diff --git a/sound/soc/davinci/am33xx-raumfeld.c b/sound/soc/davinci/am33xx-raumfeld.c
 new file mode 100644
-index 0000000..2ef452e
+index 0000000..2aaef90
 --- /dev/null
 +++ b/sound/soc/davinci/am33xx-raumfeld.c
-@@ -0,0 +1,330 @@
+@@ -0,0 +1,333 @@
 +/*
 + * ASoC driver for Raumfeld's AM33xx based audio devices
 + *
@@ -54981,6 +55011,9 @@ index 0000000..2ef452e
 +	struct device_node *node, *np = dev->of_node;
 +	struct snd_soc_am33xx_raumfeld *raumfeld;
 +	int ret;
++
++	// HACK
++	sue_init_si5351(11289600 * 2);
 +
 +	if (!np)
 +		return -ENODEV;
