@@ -85,7 +85,6 @@ ext2_img=binaries/$target.ext2
 target_img=binaries/$target-$version.img
 img_version=0
 build_dts=0
-dts_image=
 
 test -f $kernel		|| echo "ERROR: $kernel not found"
 test -f $kernel		|| exit 1
@@ -197,12 +196,20 @@ date >> $tmpdir/desc
 echo "Host $(hostname)" >> $tmpdir/desc
 
 mkdir -p binaries
-$imgcreate	--version $img_version		\
+if [ "$build_dts" -eq 1 ]; then
+    $imgcreate	--version $img_version		\
 		--dts-image $dts_image		\
 		--kernel $kernel		\
 		--description $tmpdir/desc	\
 		--rootfs $ext2_img 		\
 		--output $target_img
+else
+    $imgcreate	--version $img_version		\
+		--kernel $kernel		\
+		--description $tmpdir/desc	\
+		--rootfs $ext2_img 		\
+		--output $target_img
+fi
 
 ####### CLEANUP ########
 
