@@ -17,7 +17,7 @@ if [ ! -z "$(grep AM33XX /proc/cpuinfo)" ]; then
 fi
 
 
-/raumfeld/p0-audiotest/p0-audiotest ${TESTOPTS} 2>&1 | \
+/raumfeld/p0-audiotest/p0-audiotest $TESTOPTS 2>&1 | \
 	tee /tmp/out | \
 	/percent 216 | \
 	dialog_progress "Testing audio loopback. Please wait." $DIALOGOPTS
