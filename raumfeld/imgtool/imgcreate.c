@@ -64,6 +64,13 @@ int main(int argc, char **argv)
 		}
 	}
 
+        printf("  kernel      : %s\n", details.uimage      ?: "<none>");
+        printf("  description : %s\n", details.description ?: "<none>");
+        printf("  rootfs      : %s\n", details.rootfs      ?: "<none>");
+        printf("  dts-image   : %s\n", details.dts_image   ?: "<none>");
+        printf("  output      : %s\n", details.output      ?: "<none>");
+        printf("  version     : %d\n", details.version);
+
 	if (!details.uimage || !details.description || !details.rootfs || !details.output) {
 		usage(argv[0]);
 		return -1;
