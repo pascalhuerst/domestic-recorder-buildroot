@@ -3,13 +3,21 @@
 . ../tests.inc
 TITLE="AUDIOTEST"
 DIALOGOPTS="--title $TITLE"
+TESTOPTS=""
 
 rm -f /tmp/out
 
 killall arecord
 killall aplay
 
-/raumfeld/p0-audiotest/p0-audiotest 2>&1 | \
+
+if [ ! -z "$(grep AM33XX /proc/cpuinfo)" ]; then
+    amixer cset numid=1 124
+    TESTOPTS="-armada"
+fi
+
+
+/raumfeld/p0-audiotest/p0-audiotest ${TESTOPTS} 2>&1 | \
 	tee /tmp/out | \
 	/percent 216 | \
 	dialog_progress "Testing audio loopback. Please wait." $DIALOGOPTS
