@@ -1,0 +1,14 @@
+!#/bin/sh
+
+. ../tests.inc
+
+# set volume
+
+
+amixer cset numid=1 117
+
+echo "testing S/P Diff and analog outputs, check if there is output"
+
+aplay -D hw:0 /audiotest.wav &
+
+

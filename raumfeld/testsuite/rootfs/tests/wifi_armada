@@ -1,7 +1,5 @@
 #!/bin/sh
 
-
-
 . ../tests.inc
 
 source ./wifi_armada.inc
@@ -12,17 +10,21 @@ source ./wifi_armada.inc
 /sbin/ifconfig ${WIRELESS_IFNAME} ${IP_WIRELESS} up
 #sleep 2
 
-echo "Testing WIRELESS. Please wait. ---------------------------------- ESSID=$ESSID QUALITY=$QUALITY\n"
+echo "Testing WIRELESS. Please wait. ---------------------------------- ESSID=$ESSID QUALITY=$QUALITY"
 
 #TODO: decrease timeout
 
-CRC1=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg.md5sum | cut -f1 -d' ')
-CRC2=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg | md5sum | cut -f1 -d' ')
+CRC1=$(wget -T 2 -q -O - http://$TEST_HOST_WIRELESS/testimg.md5sum | cut -f1 -d' ')
+CRC2=$(wget -T 2 -q -O - http://$TEST_HOST_WIRELESS/testimg | md5sum | cut -f1 -d' ')
 
 if [ "$CRC1" = "$CRC2" ]; then
-	echo "OK!\n"
+        echo "OK!"
 else
-	echo "TEST FAILED\n"
-	exit 1
+        echo "TEST FAILED"
+        exit 1
 fi
+
+exit 0
+
+
 

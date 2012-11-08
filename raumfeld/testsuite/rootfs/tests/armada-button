@@ -1,0 +1,9 @@
+#!/bin/sh
+
+. ../tests.inc
+
+echo "Press the setup button."
+$INPUT_TEST key_1
+echo "done"
+
+exit 0

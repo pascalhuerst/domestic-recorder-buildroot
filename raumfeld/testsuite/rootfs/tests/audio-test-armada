@@ -1,0 +1,22 @@
+#!/bin/sh
+
+. ../tests.inc
+
+kill_leds
+./leds-blink-so 4 &
+
+killall arecord
+killall aplay
+
+amixer cset numid=1 122
+
+/raumfeld/p0-audiotest/p0-audiotest -armada
+
+if [ $? -eq 0 ]; then
+        echo "success"
+else
+        exit 1
+fi
+
+exit 0
+

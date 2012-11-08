@@ -53,6 +53,12 @@ suspend() {
 	echo mem > /sys/power/state
 }
 
+kill_leds() {
+	killall -q leds-blink
+	killall -q leds-blink-so
+}
+
+
 led_on() {
 	num=$1
 	test -d /sys/class/leds/raumfeld:$num && echo 1 > \

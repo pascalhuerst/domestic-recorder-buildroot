@@ -9,60 +9,51 @@ cd /tests
 led_off 1
 led_off 2
 
+echo "*********** Raumfeld Tests starting ********"
 
 
-./wifi
+kill_leds
+./leds-blink-so 1 &
+./armada-button
 
 
-
-if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
-
-	# TEST PROCEDURE FOR SPEAKERS
-
-	./leds-blink 2  &
-	./zerosetup-button
-	killall leds-blink
-
-	./leds-blink 4 &
-	$INPUT_TEST rotary_cw
-	killall leds-blink
-
-	./leds-blink 5 &
-	$INPUT_TEST rotary_ccw
-	killall leds-blink
-
-	led_off 1
-	led_off 2
-
-if [ ! -z "$(grep -i ": 0401" /proc/cpuinfo)" ]; then
-	# Raumfeld One
-	./wifi_managed
-
-	led_on 1
-	led_on 2
-fi
-if [ ! -z "$(grep -i ": 0201" /proc/cpuinfo)" ]; then
-	# Speaker L
-	./wifi_managed
-
-	led_on 1
-	led_on 2
+kill_leds
+./leds-blink-so 2 &
+./wifi_armada 
+if [ $? -ne 0 ]; then
+    kill_leds
+    ./leds-blink-so 2 1 &
+    exit 1
 fi
 
-	./audio
-
-	led_on 1
-	led_on 2
-
-	# loop thru audio for further production line tests
-	./audio-loopback >/dev/null 2>&1 &
-
-else
-	./wifi     		&& \
-	./audio			&& \
-	./zerosetup-button
+kill_leds
+./leds-blink-so 3 &
+./ethernet_armada 
+if [ $? -ne 0 ]; then
+    kill_leds
+    ./leds-blink-so 3 1 &
+    exit 1
 fi
 
-test_result
+kill_leds
+./leds-blink-so 4 &
+./audio-test-armada
+if [ $? -ne 0 ]; then
+    kill_leds
+    ./leds-blink-so 4 1 &
+    exit 1
+fi
 
-exit 1
+
+#./nand-armada
+
+
+./audio-speaker-armada
+
+led_on 1
+led_on 2
+
+echo "*********** Raumfeld Tests success ********"
+
+
+exit 0
