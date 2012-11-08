@@ -1,11 +1,19 @@
 #!/bin/sh
 
+exit 1
+
 source tests.inc
 
 cd /tests
 
 led_off 1
 led_off 2
+
+
+
+./wifi
+
+
 
 if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
 
