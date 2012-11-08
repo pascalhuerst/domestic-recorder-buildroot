@@ -367,7 +367,7 @@ static int open_input_dev(const char *name)
 			continue;
 		}
 
-		if (strcmp(buf, name) == 0)
+		if (strncmp(buf, name, strlen(name)) == 0)
 			break;
 	}
 
