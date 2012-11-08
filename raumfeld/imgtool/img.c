@@ -110,7 +110,7 @@ int img_check(int fd, unsigned int version)
 		return ret;
 	}
 
-	read(fd, desc, sizeof(desc));
+	read(fd, desc, layout->desc_size);
 
 	/* calculate the SHA256 checksum from the file */
 	ret = fstat(fd, &sb);
