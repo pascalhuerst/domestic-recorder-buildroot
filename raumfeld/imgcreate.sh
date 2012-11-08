@@ -83,14 +83,24 @@ resize2fs=/sbin/resize2fs
 ext2_img=binaries/$target.ext2
 
 target_img=binaries/$target-$version.img
-img_version=0
-build_dts=0
 
 test -f $kernel		|| echo "ERROR: $kernel not found"
 test -f $kernel		|| exit 1
 
 test -f $rootfstgz	|| echo "ERROR: $rootfstgz not found."
 test -f $rootfstgz	|| exit 1
+
+# decide what image format we need to create
+case $target in
+    audioadapter-armada-*)
+	img_version=1
+	build_dts=1
+        ;;
+    *)
+        img_version=0
+        build_dts=0
+        ;;
+esac
 
 ###### CREATE THE CONTENT #######
 
@@ -120,13 +130,9 @@ case $target in
 
     audioadapter-armada-init)
         add_rootfs_tgz
-	img_version=1
-	build_dts=1
         ;;
     audioadapter-armada-flash)
         add_rootfs_tgz
-	img_version=1
-	build_dts=1
         ;;
 
     base-geode-init)
