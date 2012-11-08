@@ -130,9 +130,14 @@ case $target in
 
     audioadapter-armada-init)
         add_rootfs_tgz
+        add_audiotest_wav
         ;;
     audioadapter-armada-flash)
         add_rootfs_tgz
+        ;;
+    audioadapter-armada-final)
+        add_rootfs_tgz
+        add_audiotest_wav
         ;;
 
     base-geode-init)
