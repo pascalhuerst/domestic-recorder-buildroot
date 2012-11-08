@@ -1,0 +1,28 @@
+#!/bin/sh
+
+
+
+. ../tests.inc
+
+source ./wifi_armada.inc
+
+/sbin/ifconfig ${WIRELESS_IFNAME} down
+/sbin/iwconfig ${WIRELESS_IFNAME} mode Ad-Hoc
+/sbin/iwconfig ${WIRELESS_IFNAME} essid ${ESSID}
+/sbin/ifconfig ${WIRELESS_IFNAME} ${IP_WIRELESS} up
+#sleep 2
+
+echo "Testing WIRELESS. Please wait. ---------------------------------- ESSID=$ESSID QUALITY=$QUALITY\n"
+
+#TODO: decrease timeout
+
+CRC1=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg.md5sum | cut -f1 -d' ')
+CRC2=$(wget -q -O - http://$TEST_HOST_WIRELESS/testimg | md5sum | cut -f1 -d' ')
+
+if [ "$CRC1" = "$CRC2" ]; then
+	echo "OK!\n"
+else
+	echo "TEST FAILED\n"
+	exit 1
+fi
+

@@ -1,0 +1,29 @@
+#!/bin/sh
+
+. ../tests.inc
+
+times=$1
+error=$2
+
+if [ -z "$error" ] ; then
+    
+    while [ 0 ]; do
+        redo = $(times)
+
+        while [ ! "$redo" = "0" ]; do
+  			led_on   1
+  			led_off  2
+            usleep 200000
+
+  			led_on   2
+  			led_off  1
+            usleep 200000
+            redo=$(($redo - 1))
+        done
+
+		sleep 1
+	done
+
+fi
+
+
