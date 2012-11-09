@@ -111,10 +111,10 @@
 		gpio-keys {
 			compatible = "gpio-keys";
 
-			f1 {
-				label = "F1";
+			setup {
+				label = "Setup";
 				gpios = <&gpio0 7 0>;
-				linux,code = <59>; /* KEY_F1 */
+				linux,code = <141>; /* KEY_SETUP */
 				gpio-key,wakeup;
 			};
 		};
