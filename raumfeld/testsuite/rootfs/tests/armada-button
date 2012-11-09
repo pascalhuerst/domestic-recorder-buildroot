@@ -3,7 +3,7 @@
 . ../tests.inc
 
 echo "Press the setup button."
-$INPUT_TEST key_1
+$INPUT_TEST key_setup
 echo "done"
 
 exit 0

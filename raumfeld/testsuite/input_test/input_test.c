@@ -250,19 +250,14 @@ static int test_key_3(int fd)
 	return test_key(fd, KEY_F3);
 }
 
-static int test_key_rescue(int fd)
+static int test_key_setup(int fd)
 {
-	return test_key(fd, KEY_F4);
-}
-
-static int test_dock_detect(int fd)
-{
-	return test_key(fd, KEY_F5);
+	return test_key(fd, KEY_SETUP);
 }
 
 static int test_key_power(int fd)
 {
-	return test_key(fd, KEY_F6);
+	return test_key(fd, KEY_POWER);
 }
 
 static struct test_func {
@@ -326,22 +321,16 @@ static struct test_func {
 		.proc	= test_key_3
 	},
 	{
-		.name	= "key_rescue",
-		.desc	= "rescue_key test",
+		.name	= "key_setup",
+		.desc	= "\tsetup button test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_rescue
 	},
 	{
 		.name	= "key_power",
-		.desc	= "key_power test",
+		.desc	= "\tpower button test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_power
-	},
-	{
-		.name	= "dock_detect",
-		.desc	= "dock detect test",
-		.dev	= "gpio-keys",
-		.proc	= test_dock_detect
 	},
 	{ .name = NULL }
 };
