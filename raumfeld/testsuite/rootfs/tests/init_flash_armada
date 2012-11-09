@@ -22,5 +22,6 @@ ubimkvol /dev/ubi$UBIDEV -N RootFS -s $ROOT_SIZE
 ubimkvol /dev/ubi$UBIDEV -N Updates -s $UPDATE_SIZE
 
 # copy the DTB cramfs image to its home location
+flash_erase /dev/mtd7 0 2
 nandwrite --pad /dev/mtd7 /dts.cramfs
 
