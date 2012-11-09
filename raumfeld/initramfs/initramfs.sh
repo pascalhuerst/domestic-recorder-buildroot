@@ -14,9 +14,9 @@ fi
 case "$hw" in
   AM33XX)
 		arch="armada"
-		img="update.img"
-    offset="6561792"
-                bootloader="raumfeld-am3xx.bin"
+		img="connect2.img"
+        offset="6561792"
+        bootloader="raumfeld-am3xx.bin"
     ;;
 	Controller)
 		arch="arm"
