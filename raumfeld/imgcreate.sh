@@ -53,6 +53,18 @@ add_rootfs_tgz() {
     cp $target_rootfs_tgz $tmpdir/rootfs.tgz
 }
 
+build_dtb_cramfs() {
+	pushd .
+	cd raumfeld/dts/
+	./make.sh
+	popd
+}
+
+add_dtb_cramfs() {
+	build_dtb_cramfs
+	cp raumfeld/dts/dts.cramfs $tmpdir/
+}
+
 ./buildlog.sh $*
 
 . ./getopt.inc
@@ -131,13 +143,16 @@ case $target in
     audioadapter-armada-init)
         add_rootfs_tgz
         add_audiotest_wav
+	add_dtb_cramfs
         ;;
     audioadapter-armada-flash)
         add_rootfs_tgz
+	add_dtb_cramfs
         ;;
     audioadapter-armada-final)
         add_rootfs_tgz
         add_audiotest_wav
+	add_dtb_cramfs
         ;;
 
     base-geode-init)
@@ -191,11 +206,7 @@ $resize2fs $ext2_img $size
 ###### CRATE DTS IMAGE #######
 
 if [ "$build_dts" -eq 1 ]; then
-	pushd .
-	cd raumfeld/dts/
-	./make.sh
-	popd
-
+	build_dtb_cramfs
 	dts_image=raumfeld/dts/dts.cramfs
 fi
 
