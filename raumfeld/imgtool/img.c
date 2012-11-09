@@ -39,7 +39,7 @@ struct img_layout {
 	unsigned int desc_size;
 };
 
-static struct img_layout layouts[NUM_FORMATS] = {
+static const struct img_layout const layouts[NUM_FORMATS] = {
 	{
 		.dts_offset	= 0,
 		.sha_offset	= SHA_OFFSET_V0,
@@ -55,8 +55,6 @@ static struct img_layout layouts[NUM_FORMATS] = {
 		.desc_size	= DESC_SIZE_V1,
 	},
 };
-
-static struct img_layout *layout;
 
 #define DELIMITER	"-------------------------------------------------\n"
 
@@ -80,6 +78,7 @@ static sha_256_t img_checksum(int fd, size_t fsize, off_t offset)
 
 int img_check(int fd, unsigned int version)
 {
+        const struct img_layout *layout;
 	int ret;
 	struct stat sb;
 	size_t fsize;
@@ -91,7 +90,8 @@ int img_check(int fd, unsigned int version)
 		return -1;
 	}
 
-	layout = &layouts[version];
+	layout = layouts + version;
+
 	desc = alloca(layout->desc_size);
 
 	/* read the SHA256 from the image */
@@ -167,6 +167,7 @@ static size_t img_copy(int out, const char *fname)
 
 int img_create (const struct img_create_details *details)
 {
+        const struct img_layout *layout;
 	int fd_out;
         size_t ret;
 	size_t fsize;
@@ -177,7 +178,7 @@ int img_create (const struct img_create_details *details)
 		return -1;
 	}
 
-	layout = &layouts[details->version];
+	layout = layouts + details->version;
 
 	fd_out = open(details->output,
                       O_RDWR | O_CREAT,
