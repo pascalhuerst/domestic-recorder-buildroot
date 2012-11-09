@@ -1,7 +1,5 @@
 #!/bin/sh
 
-exit 1
-
 source tests.inc
 
 cd /tests
@@ -47,11 +45,13 @@ fi
 
 #./nand-armada
 
-
-./audio-speaker-armada
+kill_leds
 
 led_on 1
 led_on 2
+
+./audio-speaker-armada
+
 
 echo "*********** Raumfeld Tests success ********"
 
