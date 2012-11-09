@@ -18316,7 +18316,7 @@ index 249a0b4..ef99011 100644
  
  static struct resource gpmc_smsc911x_resources[] = {
 diff --git a/arch/arm/mach-omap2/gpmc.c b/arch/arm/mach-omap2/gpmc.c
-index 92b5718..b9d2c54 100644
+index 92b5718..f31624c 100644
 --- a/arch/arm/mach-omap2/gpmc.c
 +++ b/arch/arm/mach-omap2/gpmc.c
 @@ -25,17 +25,20 @@
@@ -18715,7 +18715,7 @@ index 92b5718..b9d2c54 100644
 +			if (!strcasecmp(s, nand_ecc_opts[val]))
 +				gpmc_nand_data->ecc_opt = val;
 +
-+	if (!of_get_property(child, "ti,nand-ecc-use-elm", NULL))
++	if (of_get_property(child, "ti,nand-ecc-use-elm", NULL))
 +		gpmc_nand_data->is_elm_used = 1;
 +
 +	val = of_get_nand_bus_width(child);
