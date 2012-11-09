@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+mount -t ubifs ubi:RootFS /mnt
+
+cd /mnt
+zcat /rootfs.tgz | tar -xvf -
+
+# 'move' the uImage from the rootfs to its own partition
+nandwrite --pad /dev/mtd6 boot/uImage
+rm boot/uImage
+
+cd /
+umount /mnt
+

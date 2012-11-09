@@ -3,8 +3,8 @@
 set -e
 
 UBIDEV=0
-UBIMTD=3
-ROOT_SIZE=81MiB
+UBIMTD=8
+ROOT_SIZE=199MiB
 UPDATE_SIZE=39MiB
 
 # first, detach the volume attached by the kernel
@@ -12,7 +12,7 @@ UPDATE_SIZE=39MiB
 ubidetach /dev/ubi_ctrl -d $UBIDEV || true
 
 # erase the whole thing
-ubiformat /dev/mtd3     
+ubiformat /dev/mtd$UBIMTD
 
 # re-attach the partition
 ubiattach /dev/ubi_ctrl -d $UBIDEV -m $UBIMTD
