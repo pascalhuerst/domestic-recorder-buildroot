@@ -98,13 +98,11 @@
 			d1 {
 				label = "raumfeld:1";
 				gpios = <&gpio1 31 0>;
-				linux,default-trigger = "heartbeat";
 			};
 
 			d2 {
 				label = "raumfeld:2";
 				gpios = <&gpio1 30 0>;
-				linux,default-trigger = "mmc0";
 			};
 		};
 
