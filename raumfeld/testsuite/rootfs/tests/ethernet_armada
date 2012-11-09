@@ -6,8 +6,8 @@
 
 echo "Testing ETHERNET. Please wait."
 
-CRC1=$(wget -q -T 2 -O - http://$TEST_HOST_ETHERNET/testimg.md5sum | cut -f1 -d' ')
-CRC2=$(wget -q -T 2 -O - http://$TEST_HOST_ETHERNET/testimg | md5sum | cut -f1 -d' ')
+CRC1=$(wget -q -T 5 -t 1 -O - http://$TEST_HOST_ETHERNET/testimg.md5sum | cut -f1 -d' ')
+CRC2=$(wget -q -T 5 -t 1 -O - http://$TEST_HOST_ETHERNET/testimg | md5sum | cut -f1 -d' ')
 
 if [ "$CRC1" = "$CRC2" ]; then
         echo "OK!"
