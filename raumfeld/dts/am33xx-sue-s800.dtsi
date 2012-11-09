@@ -123,12 +123,12 @@
 
 				partition@7 {
 					label = "DTB";
-					reg = <0x7a0000 0x100000>;
+					reg = <0x7a0000 0x40000>;
 				};
 
 				partition@8 {
 					label = "File System";
-					reg = <0x8a0000 0>;
+					reg = <0x7e0000 0>;
 				};
 			};
 		};
