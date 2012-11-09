@@ -20,3 +20,7 @@ ubiattach /dev/ubi_ctrl -d $UBIDEV -m $UBIMTD
 # create the volume
 ubimkvol /dev/ubi$UBIDEV -N RootFS -s $ROOT_SIZE
 ubimkvol /dev/ubi$UBIDEV -N Updates -s $UPDATE_SIZE
+
+# copy the DTB cramfs image to its home location
+nandwrite --pad /dev/mtd7 /dts.cramfs
+
