@@ -317,7 +317,7 @@ index 0000000..b88ee83
 +};
 diff --git a/Documentation/devicetree/bindings/mtd/gpmc-nand.txt b/Documentation/devicetree/bindings/mtd/gpmc-nand.txt
 new file mode 100644
-index 0000000..755b24f
+index 0000000..31807db
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/mtd/gpmc-nand.txt
 @@ -0,0 +1,81 @@
@@ -343,12 +343,12 @@ index 0000000..755b24f
 + - nand-bus-width: 		Set this numeric value to 16 if the hardware
 +				is wired that way. If not specified, a bus
 +				width of 8 is assumed.
-+ - omap,nand-ecc-layout:	A string setting the ECC layout to use. One of:
++ - omap,nand-ecc-opt:		A string setting the ECC layout to use. One of:
 +
 +	Layouts for 1-bit ecc: stored at end of spare area:
 +
 +		"software"	Software method (default)
-+		"hw"		Hardware method (gpmc to detect the error)
++		"hw"		Hardware method (let gpmc do the error detection)
 +
 +	Layouts for 1-bit ecc: stored at beginning of spare area as romcode:
 +
@@ -378,7 +378,7 @@ index 0000000..755b24f
 +		nand@0,0 {
 +			reg = <0 0 0>; /* CS0, offset 0 */
 +			nand-bus-width = <16>;
-+			nand-ecc-mode = "none";
++			omap,nand-ecc-opt = "none";
 +
 +			gpmc,sync-clk = <0>;
 +			gpmc,cs-on = <0>;
@@ -767,10 +767,10 @@ index 185d632..8d5f660 100644
 +};
 diff --git a/arch/arm/boot/dts/am335x-sue-s800.dtsi b/arch/arm/boot/dts/am335x-sue-s800.dtsi
 new file mode 100644
-index 0000000..06304cc
+index 0000000..bb835aa
 --- /dev/null
 +++ b/arch/arm/boot/dts/am335x-sue-s800.dtsi
-@@ -0,0 +1,245 @@
+@@ -0,0 +1,246 @@
 +/*
 + * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
 + *
@@ -838,7 +838,8 @@ index 0000000..06304cc
 +			nand@0,0 {
 +				reg = <0 0 0>; /* CS0 */
 +				nand-bus-width = <8>;
-+				nand-ecc-mode = "none";
++				ti,nand-ecc-opt = "bch8";
++				ti,nand-ecc-use-elm = <1>;
 +
 +				gpmc,sync-clk = <0>;
 +				gpmc,cs-on = <0>;
@@ -18315,7 +18316,7 @@ index 249a0b4..ef99011 100644
  
  static struct resource gpmc_smsc911x_resources[] = {
 diff --git a/arch/arm/mach-omap2/gpmc.c b/arch/arm/mach-omap2/gpmc.c
-index 92b5718..0d4d991 100644
+index 92b5718..b9d2c54 100644
 --- a/arch/arm/mach-omap2/gpmc.c
 +++ b/arch/arm/mach-omap2/gpmc.c
 @@ -25,17 +25,20 @@
@@ -18600,7 +18601,7 @@ index 92b5718..0d4d991 100644
  }
  
  int gpmc_get_client_irq(unsigned irq_config)
-@@ -902,6 +753,159 @@ static int __devinit gpmc_mem_init(void)
+@@ -902,6 +753,162 @@ static int __devinit gpmc_mem_init(void)
  	return 0;
  }
  
@@ -18679,7 +18680,7 @@ index 92b5718..0d4d991 100644
 +
 +#ifdef CONFIG_MTD_NAND
 +
-+static const char *nand_ecc_layouts[] = {
++static const char *nand_ecc_opts[] = {
 +	[OMAP_ECC_HAMMING_CODE_DEFAULT]		= "software",
 +	[OMAP_ECC_HAMMING_CODE_HW]		= "hw",
 +	[OMAP_ECC_HAMMING_CODE_HW_ROMCODE]	= "hw-romcode",
@@ -18709,10 +18710,13 @@ index 92b5718..0d4d991 100644
 +	gpmc_nand_data->cs = val;
 +	gpmc_nand_data->of_node = child;
 +
-+	if (!of_property_read_string(child, "omap,nand-ecc-layout", &s))
-+		for (val = 0; val < ARRAY_SIZE(nand_ecc_layouts); val++)
-+			if (!strcasecmp(s, nand_ecc_layouts[val]))
++	if (!of_property_read_string(child, "ti,nand-ecc-opt", &s))
++		for (val = 0; val < ARRAY_SIZE(nand_ecc_opts); val++)
++			if (!strcasecmp(s, nand_ecc_opts[val]))
 +				gpmc_nand_data->ecc_opt = val;
++
++	if (!of_get_property(child, "ti,nand-ecc-use-elm", NULL))
++		gpmc_nand_data->is_elm_used = 1;
 +
 +	val = of_get_nand_bus_width(child);
 +	if (val == 16)
@@ -18760,7 +18764,7 @@ index 92b5718..0d4d991 100644
  static __devinit int gpmc_probe(struct platform_device *pdev)
  {
  	int rc;
-@@ -955,6 +959,14 @@ static __devinit int gpmc_probe(struct platform_device *pdev)
+@@ -955,6 +962,14 @@ static __devinit int gpmc_probe(struct platform_device *pdev)
  	if (IS_ERR_VALUE(gpmc_setup_irq()))
  		dev_warn(gpmc_dev, "gpmc_setup_irq failed\n");
  
@@ -18775,7 +18779,7 @@ index 92b5718..0d4d991 100644
  	return 0;
  }
  
-@@ -972,6 +984,7 @@ static struct platform_driver gpmc_driver = {
+@@ -972,6 +987,7 @@ static struct platform_driver gpmc_driver = {
  	.driver		= {
  		.name	= DEVICE_NAME,
  		.owner	= THIS_MODULE,
@@ -18783,7 +18787,7 @@ index 92b5718..0d4d991 100644
  	},
  };
  
-@@ -995,6 +1008,13 @@ static int __init omap_gpmc_init(void)
+@@ -995,6 +1011,13 @@ static int __init omap_gpmc_init(void)
  	struct platform_device *pdev;
  	char *oh_name = "gpmc";
  
@@ -18797,7 +18801,7 @@ index 92b5718..0d4d991 100644
  	oh = omap_hwmod_lookup(oh_name);
  	if (!oh) {
  		pr_err("Could not look up %s\n", oh_name);
-@@ -1093,267 +1113,3 @@ void omap3_gpmc_restore_context(void)
+@@ -1093,267 +1116,3 @@ void omap3_gpmc_restore_context(void)
  	}
  }
  #endif /* CONFIG_ARCH_OMAP3 */
@@ -48606,7 +48610,7 @@ index e40d764..c9c1ac4 100644
  	if (csr & MUSB_CSR0_P_DATAEND) {
  		/*
 diff --git a/drivers/usb/musb/musb_host.c b/drivers/usb/musb/musb_host.c
-index 3df6a76..e9f0fd9 100644
+index 3df6a76..822cdc1 100644
 --- a/drivers/usb/musb/musb_host.c
 +++ b/drivers/usb/musb/musb_host.c
 @@ -740,7 +740,7 @@ static void musb_ep_program(struct musb *musb, u8 epnum,
@@ -48618,6 +48622,17 @@ index 3df6a76..e9f0fd9 100644
  		musb_writew(mbase, MUSB_INTRTXE, int_txe & ~(1 << epnum));
  
  		/* general endpoint setup */
+@@ -2432,8 +2432,8 @@ static int musb_bus_suspend(struct usb_hcd *hcd)
+ 	}
+ 
+ 	if (musb->is_active) {
+-		WARNING("trying to suspend as %s while active\n",
+-				otg_state_string(musb->xceiv->state));
++		//WARNING("trying to suspend as %s while active\n",
++		//		otg_state_string(musb->xceiv->state));
+ 		return -EBUSY;
+ 	} else
+ 		return 0;
 diff --git a/drivers/usb/musb/omap2430.c b/drivers/usb/musb/omap2430.c
 index a538fe1..dddd8f7 100644
 --- a/drivers/usb/musb/omap2430.c
