@@ -5,11 +5,11 @@ set -e
 TARGETS=am33xx-raumfeld-connector
 
 DIR=$(mktemp -d)
-DTC=/usr/bin/dtc
 
-# take buildroot's mkfs.ubifs
+# take buildroot's dtc and mkcramfs
 HOST_DIR=../../output/host/
 MKFS=${HOST_DIR}/usr/bin/mkcramfs
+DTC=${HOST_DIR}/usr/bin/dtc
 
 
 # this is hack
