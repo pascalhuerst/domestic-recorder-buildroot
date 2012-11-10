@@ -2,6 +2,5 @@
 
 . ../tests.inc
 
-./init_flash_armada
-./copy_rootfs_armada
+./init_flash_armada && ./copy_rootfs_armada
 
