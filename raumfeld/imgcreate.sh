@@ -53,6 +53,7 @@ add_rootfs_tgz() {
 }
 
 build_dtb_cramfs() {
+    make host-cramfs
     pushd .
     cd raumfeld/dts/
     ./make.sh
