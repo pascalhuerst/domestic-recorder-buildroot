@@ -42,8 +42,16 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+kill_leds
+./leds-blink 1 &
+./nand-armada
+if [ $? -ne 0 ]; then
+    kill_leds
+    ./leds-blink-so 5 1 &
+    exit 1
+fi
 
-#./nand-armada
+
 
 kill_leds
 
