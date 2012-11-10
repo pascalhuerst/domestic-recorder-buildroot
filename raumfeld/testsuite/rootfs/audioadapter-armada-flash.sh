@@ -1,21 +1,31 @@
 #!/bin/sh
 
 # potentially update the boot-loader
-./update-uboot.sh
+
+#disabled u boot for now
+#./update-uboot.sh
 
 source tests.inc
 
+led_off 1
+led_off 2
+
 cd tests
 
+kill_leds
 ./leds-blink 1 &
-pid=$!
-
-./nand || touch /tmp/test-failed
-
-if [ -f /tmp/test-failed ]; then
-	kill $pid
-	./leds-blink 2
+./nand_armada
+if [ $? -ne 0 ]; then
+    kill_leds
+    ./leds-blink-so 5 1 &
+    exit 1
 fi
+
+
+kill_leds
+
+led_on 1
+led_on 2
 
 reboot
 
