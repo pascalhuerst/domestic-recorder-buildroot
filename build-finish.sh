@@ -108,7 +108,6 @@ case $target in
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
-				--platform=arm \
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
@@ -122,7 +121,6 @@ case $target in
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
-				--platform=armada \
 				--base-rootfs-img=binaries/imgrootfs-armada/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
@@ -137,7 +135,6 @@ case $target in
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
-				--platform=arm \
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
@@ -152,7 +149,6 @@ case $target in
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
-				--platform=geode \
 				--base-rootfs-img=binaries/imgrootfs-geode/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \

@@ -19,7 +19,6 @@ set -e
 echo_usage() {
 cat << __EOF__ >&2
 Usage: $0 --target=<target>
-	--platform=<platform>
 	--base-rootfs-img=<base-rootfs-img>
 	--target-rootfs-tgz=<target-rootfs-tgz>
 	--kernel=<kernel>
@@ -71,7 +70,6 @@ add_dtb_cramfs() {
 getopt $*
 
 if [ -z "$target" ]		|| \
-   [ -z "$platform" ]		|| \
    [ -z "$base_rootfs_img" ]	|| \
    [ -z "$kernel" ]		|| \
    [ -z "$target_rootfs_tgz" ];
