@@ -103,7 +103,7 @@ case $target in
 
 	audioadapter-arm)
                 ROOTFS=output/images/rootfs.tar.gz
-                ZIMAGE=binaries/initramfs-arm/uImage
+                KERNEL=binaries/initramfs-arm/uImage
                 BOOTLOADERS=raumfeld/U-Boot/raumfeld-connector.bin,raumfeld/U-Boot/raumfeld-speaker.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
@@ -111,28 +111,28 @@ case $target in
 				--platform=arm \
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
-				--kernel=binaries/initramfs-arm/uImage \
+				--kernel=$KERNEL \
 			        --version=$version
 		done
 		;;
 
 	audioadapter-armada)
                 ROOTFS=output/images/rootfs.tar.gz
-                ZIMAGE=binaries/initramfs-arm/uImage
+                KERNEL=binaries/initramfs-armada/uImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--platform=armada \
 				--base-rootfs-img=binaries/imgrootfs-armada/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
-				--kernel=binaries/initramfs-armada/uImage \
+				--kernel=$KERNEL \
 			        --version=$version
 		done
 		;;
 
 	remotecontrol-arm)
                 ROOTFS=output/images/rootfs.tar.gz
-                ZIMAGE=binaries/initramfs-arm/uImage
+                KERNEL=binaries/initramfs-arm/uImage
                 BOOTLOADERS=raumfeld/U-Boot/raumfeld-controller.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
@@ -140,14 +140,14 @@ case $target in
 				--platform=arm \
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
-				--kernel=binaries/initramfs-arm/uImage \
+				--kernel=$KERNEL \
 			        --version=$version
 		done
 		;;
 
 	base-geode)
                 ROOTFS=output/images/rootfs.tar.gz
-                ZIMAGE=binaries/initramfs-geode/bzImage
+                KERNEL=binaries/initramfs-geode/bzImage
                 BOOTLOADERS=raumfeld/Coreboot/raumfeld-base.rom
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
@@ -155,7 +155,7 @@ case $target in
 				--platform=geode \
 				--base-rootfs-img=binaries/imgrootfs-geode/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
-				--kernel=$ZIMAGE \
+				--kernel=$KERNEL \
 				--version=$version
 		done
                 ;;
@@ -167,6 +167,6 @@ if [ -n "$ROOTFS" ]; then
     raumfeld/updatecreate.sh \
 	--target=$target \
 	--targz=$ROOTFS \
-        --kexec=$ZIMAGE \
+        --kexec=$KERNEL \
         --bootloaders=$BOOTLOADERS
 fi
