@@ -324,7 +324,7 @@ static struct test_func {
 		.name	= "key_setup",
 		.desc	= "\tsetup button test",
 		.dev	= "gpio-keys",
-		.proc	= test_key_rescue
+		.proc	= test_key_setup
 	},
 	{
 		.name	= "key_power",
