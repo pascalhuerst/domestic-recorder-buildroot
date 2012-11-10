@@ -12,7 +12,7 @@ UPDATE_SIZE=39MiB
 ubidetach /dev/ubi_ctrl -d $UBIDEV || true
 
 # erase the whole thing
-ubiformat /dev/mtd$UBIMTD
+ubiformat /dev/mtd$UBIMTD -s 512 -O 2048
 
 # re-attach the partition
 ubiattach /dev/ubi_ctrl -d $UBIDEV -m $UBIMTD
