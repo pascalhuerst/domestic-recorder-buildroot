@@ -44,7 +44,7 @@ fi
 
 kill_leds
 ./leds-blink 1 &
-./nand-armada
+./nand_armada
 if [ $? -ne 0 ]; then
     kill_leds
     ./leds-blink-so 5 1 &
