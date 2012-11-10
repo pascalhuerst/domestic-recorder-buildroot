@@ -5,7 +5,7 @@ set -e
 UBIDEV=0
 DTBMTD=7
 UBIMTD=8
-ROOT_SIZE=196MiB
+ROOT_SIZE=194MiB
 UPDATE_SIZE=39MiB
 
 # first, detach the volume attached by the kernel
