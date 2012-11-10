@@ -53,15 +53,15 @@ add_rootfs_tgz() {
 }
 
 build_dtb_cramfs() {
-	pushd .
-	cd raumfeld/dts/
-	./make.sh
-	popd
+    pushd .
+    cd raumfeld/dts/
+    ./make.sh
+    popd
 }
 
 add_dtb_cramfs() {
-	build_dtb_cramfs
-	cp raumfeld/dts/dts.cramfs $tmpdir/
+    build_dtb_cramfs
+    cp raumfeld/dts/dts.cramfs $tmpdir/
 }
 
 ./buildlog.sh $*
