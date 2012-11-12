@@ -1,0 +1,7 @@
+config BR2_PACKAGE_ETHWATCH
+	bool "ethwatch"
+	help
+	  Raumfeld ethwatch daemon
+          
+	  http://www.raumfeld.com/
+

@@ -12,6 +12,7 @@ config BR2_PACKAGE_RAUMFELD_BRANCH
 	help
 	  branch to checkout from the bazaar repository
 
+source "package/raumfeld/ethwatch/Config.in"
 source "package/raumfeld/libraumfeld/Config.in"
 source "package/raumfeld/libraumfeldcpp/Config.in"
 source "package/raumfeld/sly-toolkit/Config.in"
