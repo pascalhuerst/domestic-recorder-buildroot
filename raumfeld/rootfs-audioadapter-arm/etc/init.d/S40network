@@ -3,21 +3,34 @@
 # Start the network....
 #
 
+ETHWATCH=/usr/sbin/ethwatch
+
 case "$1" in
   start)
  	echo "Starting network..."
 	ifconfig eth0 up
 	/sbin/ifup -a
-
+        
+        if [ -x $ETHWATCH ]; then
+            $ETHWATCH &
+        fi
 	;;
+
   stop)
 	echo -n "Stopping network..."
 	/sbin/ifdown -a
+
+        if [ -f /var/run/ethwatch.pid ]; then
+            kill $(cat /var/run/ethwatch.pid)
+            rm -f /var/run/ethwatch.pid
+        fi
 	;;
+
   restart|reload)
 	"$0" stop
 	"$0" start
 	;;
+
   *)
 	echo $"Usage: $0 {start|stop|restart}"
 	exit 1
