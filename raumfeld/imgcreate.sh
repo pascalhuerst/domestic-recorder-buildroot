@@ -76,7 +76,10 @@ if [ -z "$target" ]		|| \
    [ -z "$target_rootfs_tgz" ];
 then echo_usage; fi
 
-test -z "$version" && version=$(date +%F-%T)
+if [ -z "$version" ]; then
+	version=$(date +%F-%T)
+	auto_version=1
+fi
 
 ###### BUILD BINARIES #######
 echo "building prerequisites ..."
@@ -241,4 +244,10 @@ rm -fr $ext2_img
 echo "Image ready:"
 $imginfo --version $img_version $target_img
 ls -hl $target_img
+
+if [ "$auto_version" -eq 1 ]; then
+	cd binaries
+	ln -svf $target-$version.img $target-LATEST.img
+	cd ..
+fi
 
