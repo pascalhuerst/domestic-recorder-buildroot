@@ -89,7 +89,7 @@ make -C raumfeld/imgtool
 
 ###### CHECK PARMS #######
 
-tmpdir=$(tempfile)-$PPID
+tmpdir=$(mktemp)-$PPID
 testdir=raumfeld/testsuite/
 imgcreate=raumfeld/imgtool/imgcreate
 imginfo=raumfeld/imgtool/imginfo
