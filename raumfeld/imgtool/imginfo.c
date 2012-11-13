@@ -10,7 +10,7 @@
 
 static void usage(const char *argv0)
 {
-	printf("Usage: %s [options] <imgfile> [version]\n", argv0);
+	printf("Usage: %s [options] <imgfile>\n", argv0);
 	printf("        -v, --version <number>       Layout version (optional, defaults to 0)\n");
 	printf("        -h, --help                   This help output\n");
 }
