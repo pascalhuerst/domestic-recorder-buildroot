@@ -239,6 +239,6 @@ rm -fr $tmpdir
 rm -fr $ext2_img
 
 echo "Image ready:"
-$imginfo $target_img
+$imginfo --version $img_version $target_img
 ls -hl $target_img
 
