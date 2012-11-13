@@ -10,6 +10,8 @@ if [ -z "$hw" ]; then
     hw=`cat /proc/cpuinfo | grep ^model\ name | cut -f 3 -d' '`
 fi
 
+offset="5128192"  # default value
+
 case "$hw" in
     AM33XX)
 	arch="armada"
@@ -20,19 +22,16 @@ case "$hw" in
     Controller)
 	arch="arm"
 	img="control.img"
-        offset="5128192"
         bootloader="raumfeld-controller.bin"
 	;;
     Connector)
 	arch="arm"
 	img="connect.img"
-        offset="5128192"
         bootloader="raumfeld-connector.bin"
 	;;
     Speaker)
 	arch="arm"
 	img="speaker.img"
-        offset="5128192"
         bootloader="raumfeld-speaker.bin"
 	;;
     Geode*)
