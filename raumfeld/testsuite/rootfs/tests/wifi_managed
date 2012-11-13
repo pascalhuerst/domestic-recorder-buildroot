@@ -6,6 +6,11 @@
 TITLE="WIRELESS-MANAGED"
 DIALOGOPTS="--title $TITLE"
 
+ESSID=$1
+if [ -z "$ESSID" ]; then
+	ESSID=RaumfeldFactoryTest
+fi
+
 killall leds-blink
 ./leds-blink 6 &
 
