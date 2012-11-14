@@ -49,6 +49,7 @@ endif
 
 ifeq ($(ARCH),arm)
   CROSS = ARM
+  EXTRA_MAKE_OPTS = ARM_TYPE=$(call qstrip,$(BR2_ARM_TYPE))
 endif
 ifeq ($(ARCH),i586)
   CROSS = GEODE
@@ -56,7 +57,7 @@ endif
 
 
 define $(2)_BUILD_CMDS
-  $(MAKE) -C $$($(2)_SOURCE_DIR) CROSS=$$(CROSS) DEST=$(TARGET_DIR)/raumfeld CROSS_PREFIX=$(BASE_DIR)
+  $(MAKE) -C $$($(2)_SOURCE_DIR) CROSS=$$(CROSS) $$(EXTRA_MAKE_OPTS) DEST=$(TARGET_DIR)/raumfeld CROSS_PREFIX=$(BASE_DIR)
 endef
 
 define $(2)_CLEAN_CMDS
