@@ -11,12 +11,13 @@ if [ -z "$hw" ]; then
 fi
 
 offset="5128192"  # default value
+offset_v2="8658944"
 
 case "$hw" in
     AM33XX)
 	arch="armada"
 	img="connect2.img"
-        offset="6561792"
+        offset=$offset_v2
         bootloader="raumfeld-am3xx.bin"
         ;;
     Controller)
