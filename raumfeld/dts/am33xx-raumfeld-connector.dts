@@ -25,8 +25,8 @@
 
 		i2c3_pins: pinmux_i2c3_pins {
 			pinctrl-single,pins = <
-				0x178 0x63	/* I2C2_SDA */
-				0x17c 0x63	/* I2C2_SCL */
+				0x178 0x23	/* I2C2_SDA */
+				0x17c 0x23	/* I2C2_SCL */
 			>;
 		};
 
@@ -39,15 +39,15 @@
 
 		audio_pins: pinmux_audio_pins {
 			pinctrl-single,pins = <
-				0x1ac 0x20	/* MCASP0_MCLK_OUT */
-				0x190 0x00	/* MCASP0_BCLK_OUT */
-				0x194 0x00	/* MCASP0_WCLK_OUT */
-				0x198 0x00	/* MCASP0_DATA_OUT */
-				0x1a8 0x20	/* MCASP0_DATA_IN  */
-				0x078 0x06	/* MCASP0_BCLK_IN  */
-				0x1a4 0x00	/* MCASP0_WCLK_IN  */
-				0x19c 0x20	/* MCASP0_MCLK_IN  */
-				0x1a0 0x07	/* MCASP0_BCLK_IN -> GPIO */
+				0x1ac 0x28	/* MCASP0_MCLK_OUT */
+				0x190 0x08	/* MCASP0_BCLK_OUT */
+				0x194 0x08	/* MCASP0_WCLK_OUT */
+				0x198 0x08	/* MCASP0_DATA_OUT */
+				0x1a8 0x28	/* MCASP0_DATA_IN  */
+				0x078 0x26	/* MCASP0_BCLK_IN  */
+				0x1a4 0x28	/* MCASP0_WCLK_IN  */
+				0x19c 0x28	/* MCASP0_MCLK_IN  */
+				0x1a0 0x27	/* MCASP0_BCLK_IN -> GPIO */
 			>;
 		};
 	};
@@ -65,6 +65,7 @@
 			status = "okay";
 			pinctrl-names = "default";
 			pinctrl-0 = <&i2c3_pins>;
+			clock-frequency = <100000>;
 
 			cs4271: cs4271@10 {
 				compatible = "cirrus,cs4271";
