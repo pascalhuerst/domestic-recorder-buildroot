@@ -54690,7 +54690,7 @@ index 31d4483..eec086b 100644
  	.probe  = ak4104_spi_probe,
  	.remove = __devexit_p(ak4104_spi_remove),
 diff --git a/sound/soc/codecs/cs4271.c b/sound/soc/codecs/cs4271.c
-index f994af3..b6b6a19 100644
+index f994af3..ae7b64d 100644
 --- a/sound/soc/codecs/cs4271.c
 +++ b/sound/soc/codecs/cs4271.c
 @@ -27,6 +27,7 @@
@@ -54710,7 +54710,34 @@ index f994af3..b6b6a19 100644
  };
  
  /*
-@@ -434,17 +437,36 @@ static struct snd_soc_dai_driver cs4271_dai = {
+@@ -403,11 +406,26 @@ static const struct snd_kcontrol_new cs4271_snd_controls[] = {
+ 		7, 1, 1),
+ };
+ 
++static int cs4271_startup(struct snd_pcm_substream *subs,
++			   struct snd_soc_dai *codec_dai)
++{
++	int ret;
++	struct snd_soc_codec *codec = codec_dai->codec;
++
++	ret = snd_soc_update_bits(codec, CS4271_MODE2, CS4271_MODE2_PDN,
++				  CS4271_MODE2_PDN);
++	if (ret < 0)
++		return ret;
++
++	return snd_soc_update_bits(codec, CS4271_MODE2, CS4271_MODE2_PDN, 0);
++}
++
+ static const struct snd_soc_dai_ops cs4271_dai_ops = {
+ 	.hw_params	= cs4271_hw_params,
+ 	.set_sysclk	= cs4271_set_dai_sysclk,
+ 	.set_fmt	= cs4271_set_dai_fmt,
+ 	.digital_mute	= cs4271_digital_mute,
++	.startup	= cs4271_startup,
+ };
+ 
+ static struct snd_soc_dai_driver cs4271_dai = {
+@@ -434,17 +452,36 @@ static struct snd_soc_dai_driver cs4271_dai = {
  static int cs4271_soc_suspend(struct snd_soc_codec *codec)
  {
  	int ret;
@@ -54748,7 +54775,7 @@ index f994af3..b6b6a19 100644
  	/* Restore codec state */
  	ret = snd_soc_cache_sync(codec);
  	if (ret < 0)
-@@ -474,18 +496,40 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -474,18 +511,40 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  	struct cs4271_platform_data *cs4271plat = codec->dev->platform_data;
  	int ret;
  	int gpio_nreset = -EINVAL;
@@ -54793,7 +54820,7 @@ index f994af3..b6b6a19 100644
  			gpio_nreset = -EINVAL;
  	if (gpio_nreset >= 0) {
  		/* Reset codec */
-@@ -528,6 +572,11 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -528,6 +587,11 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  	/* Power-up sequence requires 85 uS */
  	udelay(85);
  
@@ -54805,7 +54832,7 @@ index f994af3..b6b6a19 100644
  	return snd_soc_add_codec_controls(codec, cs4271_snd_controls,
  		ARRAY_SIZE(cs4271_snd_controls));
  }
-@@ -535,15 +584,10 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -535,15 +599,10 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  static int cs4271_remove(struct snd_soc_codec *codec)
  {
  	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
@@ -54881,10 +54908,10 @@ index a93679d..7eae529 100644
 +obj-$(CONFIG_SND_AM335X_SOC_RAUMFELD) += snd-soc-raumfeld.o
 diff --git a/sound/soc/davinci/am33xx-raumfeld.c b/sound/soc/davinci/am33xx-raumfeld.c
 new file mode 100644
-index 0000000..58d576e
+index 0000000..309080b
 --- /dev/null
 +++ b/sound/soc/davinci/am33xx-raumfeld.c
-@@ -0,0 +1,330 @@
+@@ -0,0 +1,337 @@
 +/*
 + * ASoC driver for Raumfeld's AM33xx based audio devices
 + *
@@ -54907,6 +54934,7 @@ index 0000000..58d576e
 +#include <sound/pcm.h>
 +#include <sound/pcm_params.h>
 +#include <sound/soc.h>
++#include <linux/pinctrl/consumer.h>
 +
 +struct snd_soc_am33xx_raumfeld {
 +	struct snd_soc_card card;
@@ -55134,6 +55162,7 @@ index 0000000..58d576e
 +	struct device *dev = &pdev->dev;
 +	struct device_node *node, *np = dev->of_node;
 +	struct snd_soc_am33xx_raumfeld *raumfeld;
++	struct pinctrl *pinctrl;
 +	int ret;
 +
 +	sue_init_si5351(11289600 * 2);
@@ -55145,6 +55174,11 @@ index 0000000..58d576e
 +				GFP_KERNEL);
 +	if (!raumfeld)
 +		return -ENOMEM;
++
++	/* request pin mux */
++	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
++	if (IS_ERR(pinctrl))
++		dev_warn(&pdev->dev, "pins are not configured from the driver\n");
 +
 +	raumfeld->card.dai_link = raumfeld_dai_links;
 +	raumfeld->card.num_links = ARRAY_SIZE(raumfeld_dai_links);
@@ -55240,7 +55274,7 @@ index 6fac5af..591f547 100644
  }
  
 diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
-index 714e51e..6790def 100644
+index 714e51e..0062a9d 100644
 --- a/sound/soc/davinci/davinci-mcasp.c
 +++ b/sound/soc/davinci/davinci-mcasp.c
 @@ -199,6 +199,7 @@
@@ -55275,6 +55309,15 @@ index 714e51e..6790def 100644
  
  /*
   * DAVINCI_MCASP_XRSRCTL_BASE_REG -  Serializer Control Register Bits
+@@ -431,7 +435,7 @@ static void mcasp_stop_rx(struct davinci_audio_dev *dev)
+ 
+ static void mcasp_stop_tx(struct davinci_audio_dev *dev)
+ {
+-	mcasp_set_reg(dev->base + DAVINCI_MCASP_GBLCTLX_REG, 0);
++	mcasp_clr_bits(dev->base + DAVINCI_MCASP_GBLCTLX_REG, ~(1 << 8));
+ 	mcasp_set_reg(dev->base + DAVINCI_MCASP_TXSTAT_REG, 0xFFFFFFFF);
+ }
+ 
 @@ -473,6 +477,23 @@ static int davinci_mcasp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
  	struct davinci_audio_dev *dev = snd_soc_dai_get_drvdata(cpu_dai);
  	void __iomem *base = dev->base;
