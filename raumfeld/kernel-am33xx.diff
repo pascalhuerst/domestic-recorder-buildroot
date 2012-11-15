@@ -54920,8 +54920,6 @@ index 0000000..2aaef90
 +	struct i2c_msg msg;
 +	int i, ret, size;
 +
-+	printk(KERN_ERR " %s() :: %d\n", __func__, freq);
-+	
 +	if (!adapter) {
 +		printk(KERN_ERR "%s(): no adapter!?\n", __func__);
 +		return -EIO;
@@ -54961,7 +54959,7 @@ index 0000000..2aaef90
 +		ret = i2c_transfer(adapter, &msg, 1);
 +		mdelay(1);
 +		if (ret < 0) {
-+			printk(KERN_ERR " %s() write #%d failed\n", __func__, i);	
++			printk(KERN_ERR " %s() write #%d failed: %d\n", __func__, i, ret);	
 +			return ret;
 +		}
 +	}
