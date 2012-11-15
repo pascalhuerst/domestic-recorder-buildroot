@@ -44,9 +44,10 @@
 				0x194 0x00	/* MCASP0_WCLK_OUT */
 				0x198 0x00	/* MCASP0_DATA_OUT */
 				0x1a8 0x20	/* MCASP0_DATA_IN  */
-				0x1a0 0x00	/* MCASP0_BCLK_IN  */
+				0x078 0x06	/* MCASP0_BCLK_IN  */
 				0x1a4 0x00	/* MCASP0_WCLK_IN  */
 				0x19c 0x20	/* MCASP0_MCLK_IN  */
+				0x1a0 0x07	/* MCASP0_BCLK_IN -> GPIO */
 			>;
 		};
 	};
@@ -99,12 +100,12 @@
 
 			d1 {
 				label = "raumfeld:1";
-				gpios = <&gpio3 10 0>;
+				gpios = <&gpio3 4 0>;
 			};
 
 			d2 {
 				label = "raumfeld:2";
-				gpios = <&gpio3 4 0>;
+				gpios = <&gpio3 10 0>;
 			};
 		};
 
