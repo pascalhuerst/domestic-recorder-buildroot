@@ -453,6 +453,19 @@ index 0000000..b902ee3
 +	reg = <0>;
 +	spi-max-frequency = <5000000>;
 +};
+diff --git a/Documentation/devicetree/bindings/sound/cs4271.txt b/Documentation/devicetree/bindings/sound/cs4271.txt
+index c81b5fd..a850fb9 100644
+--- a/Documentation/devicetree/bindings/sound/cs4271.txt
++++ b/Documentation/devicetree/bindings/sound/cs4271.txt
+@@ -18,6 +18,8 @@ Optional properties:
+ 
+  - reset-gpio: 	a GPIO spec to define which pin is connected to the chip's
+ 		!RESET pin
++ - cirrus,amuteb-eq-bmutec:	When given, the Codec's AMUTEB=BMUTEC flag
++				is enabled.
+ 
+ Examples:
+ 
 diff --git a/Documentation/devicetree/bindings/spi/omap-spi.txt b/Documentation/devicetree/bindings/spi/omap-spi.txt
 index 81df374..8178792 100644
 --- a/Documentation/devicetree/bindings/spi/omap-spi.txt
@@ -52777,6 +52790,18 @@ index bc05668..93896ad 100644
  
  #define snd_card_set_dev(card, devptr) ((card)->dev = (devptr))
  
+diff --git a/include/sound/cs4271.h b/include/sound/cs4271.h
+index 50a059e..6d9e15e 100644
+--- a/include/sound/cs4271.h
++++ b/include/sound/cs4271.h
+@@ -19,6 +19,7 @@
+ 
+ struct cs4271_platform_data {
+ 	int gpio_nreset;	/* GPIO driving Reset pin, if any */
++	int amutec_eq_bmutec:1;	/* flag to enable AMUTEC=BMUTEC */
+ };
+ 
+ #endif /* __CS4271_H */
 diff --git a/include/trace/events/xen.h b/include/trace/events/xen.h
 index 15ba03b..d06b6da 100644
 --- a/include/trace/events/xen.h
@@ -54648,7 +54673,7 @@ index 31d4483..eec086b 100644
  	.probe  = ak4104_spi_probe,
  	.remove = __devexit_p(ak4104_spi_remove),
 diff --git a/sound/soc/codecs/cs4271.c b/sound/soc/codecs/cs4271.c
-index f994af3..b137e1a 100644
+index f994af3..b6b6a19 100644
 --- a/sound/soc/codecs/cs4271.c
 +++ b/sound/soc/codecs/cs4271.c
 @@ -27,6 +27,7 @@
@@ -54706,10 +54731,12 @@ index f994af3..b137e1a 100644
  	/* Restore codec state */
  	ret = snd_soc_cache_sync(codec);
  	if (ret < 0)
-@@ -475,6 +497,18 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -474,18 +496,40 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+ 	struct cs4271_platform_data *cs4271plat = codec->dev->platform_data;
  	int ret;
  	int gpio_nreset = -EINVAL;
- 
++	int amutec_eq_bmutec = 0;
++
 +	cs4271->vd_supply = devm_regulator_get(codec->dev, "vd");
 +	if (IS_ERR(cs4271->vd_supply)) {
 +		dev_warn(codec->dev, "missing vd supply\n");
@@ -54721,12 +54748,27 @@ index f994af3..b137e1a 100644
 +			return ret;
 +		}
 +	}
-+
+ 
  #ifdef CONFIG_OF
- 	if (of_match_device(cs4271_dt_ids, codec->dev))
+-	if (of_match_device(cs4271_dt_ids, codec->dev))
++	if (of_match_device(cs4271_dt_ids, codec->dev)) {
  		gpio_nreset = of_get_named_gpio(codec->dev->of_node,
-@@ -485,7 +519,7 @@ static int cs4271_probe(struct snd_soc_codec *codec)
- 		gpio_nreset = cs4271plat->gpio_nreset;
+ 						"reset-gpio", 0);
++
++		if (!of_get_property(codec->dev->of_node,
++				     "cirrus,amutec-eq-bmutec", NULL))
++			amutec_eq_bmutec = 1;
++	}
+ #endif
+ 
+-	if (cs4271plat && gpio_is_valid(cs4271plat->gpio_nreset))
+-		gpio_nreset = cs4271plat->gpio_nreset;
++	if (cs4271plat) {
++		if (gpio_is_valid(cs4271plat->gpio_nreset))
++			gpio_nreset = cs4271plat->gpio_nreset;
++
++		amutec_eq_bmutec = cs4271plat->amutec_eq_bmutec;
++	}
  
  	if (gpio_nreset >= 0)
 -		if (gpio_request(gpio_nreset, "CS4271 Reset"))
@@ -54734,7 +54776,19 @@ index f994af3..b137e1a 100644
  			gpio_nreset = -EINVAL;
  	if (gpio_nreset >= 0) {
  		/* Reset codec */
-@@ -535,15 +569,10 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -528,6 +572,11 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+ 	/* Power-up sequence requires 85 uS */
+ 	udelay(85);
+ 
++	if (amutec_eq_bmutec)
++		snd_soc_update_bits(codec, CS4271_MODE2,
++				    CS4271_MODE2_MUTECAEQUB,
++				    CS4271_MODE2_MUTECAEQUB);
++
+ 	return snd_soc_add_codec_controls(codec, cs4271_snd_controls,
+ 		ARRAY_SIZE(cs4271_snd_controls));
+ }
+@@ -535,15 +584,10 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  static int cs4271_remove(struct snd_soc_codec *codec)
  {
  	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
