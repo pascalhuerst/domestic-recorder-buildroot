@@ -17,7 +17,7 @@ kill_leds
 
 kill_leds
 ./leds-blink-so 2 &
-./wifi_armada 
+./wifi_managed_ping factory_test
 if [ $? -ne 0 ]; then
     kill_leds
     ./leds-blink-so 2 1 &

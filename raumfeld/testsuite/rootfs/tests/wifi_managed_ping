@@ -1,0 +1,51 @@
+#!/bin/sh
+
+. ../tests.inc
+TITLE="WIRELESS-MANAGED"
+DIALOGOPTS="--title $TITLE"
+
+ESSID=$1
+WIRELESS_IFNAME=wlan0
+
+if [ -z "$TEST_HOST_WIRELESS" ]; then
+	echo "Usage: $0 <essid> <ip-address>"
+	exit 1
+fi
+
+echo "Testing WIRELESS in managed mode. Now connecting to $ESSID"
+
+killall dhclient
+
+ln -s /tmp /var/run
+wpa_supplicant -Dwext -i${WIRELESS_IFNAME} -c/etc/wpa_supplicant.conf -B -P/tmp/wpa_supplicant.run
+
+/sbin/ifconfig ${WIRELESS_IFNAME} down
+/sbin/iwconfig ${WIRELESS_IFNAME} mode Managed
+/sbin/iwconfig ${WIRELESS_IFNAME} essid ${ESSID}
+/sbin/ifconfig ${WIRELESS_IFNAME} ${IP_WIRELESS} up
+
+/usr/sbin/dhclient -sf /dhclient-script ${WIRELESS_IFNAME}
+
+# get default gw
+set $(netstat -rn | grep ^0.0.0.0 | head -n 1)
+GATEWAY=$2
+
+if [ -z "$GATEWAY" ]; then
+	echo "unable to obtain default gateway. FAIL!"
+	exit 1
+fi
+
+QUALITY=$(iwconfig ${WIRELESS_IFNAME} | grep -i "dBm" | cut -f3 -d= | cut -f1 -d' ')
+MIN_QUALITY=-60
+
+if [ ${MIN_QUALITY} -gt ${QUALITY} ]; then
+  echo "SIGNAL LEVEL $QUALITY TOO WEAK ($MIN_QUALITY required) -- ESSID ${ESSID}"
+  exit 1
+fi
+
+ping -c 5 -s 555 ${GATEWAY}
+RET=$?
+
+/sbin/ifconfig ${WIRELESS_IFNAME} down
+exit $RET
+
