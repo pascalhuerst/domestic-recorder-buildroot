@@ -2,18 +2,25 @@
 
 . ../tests.inc
 
-/sbin/ifconfig eth0 ${IP_ETHERNET}
+ETH=eth0
 
 echo "Testing ETHERNET. Please wait."
+killall dhclient
+ifconfig ${ETH} up
+/usr/sbin/dhclient -sf /dhclient-script ${ETH}
 
-CRC1=$(wget -q -T 5 -t 1 -O - http://$TEST_HOST_ETHERNET/testimg.md5sum | cut -f1 -d' ')
-CRC2=$(wget -q -T 5 -t 1 -O - http://$TEST_HOST_ETHERNET/testimg | md5sum | cut -f1 -d' ')
+# get default gw
+set $(netstat -rn | grep ^0.0.0.0 | head -n 1)
+GATEWAY=$2
 
-if [ "$CRC1" = "$CRC2" ]; then
-        echo "OK!"
-else
-        echo "TEST FAILED!"
-        exit 1
+if [ -z "$GATEWAY" ]; then
+	echo "unable to obtain default gateway. FAIL!"
+	exit 1
 fi
 
-exit 0
+ping -c 5 -s 1000 $GATEWAY
+RET=$?
+
+ifconfig ${ETH} down
+
+exit $RET
