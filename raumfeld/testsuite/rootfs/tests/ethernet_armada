@@ -18,7 +18,7 @@ if [ -z "$GATEWAY" ]; then
 	exit 1
 fi
 
-ping -c 5 -s 1000 $GATEWAY
+ping -w 10 -c 5 -s 1000 $GATEWAY
 RET=$?
 
 ifconfig ${ETH} down
