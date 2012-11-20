@@ -17,7 +17,7 @@ revision=$(dmidecode -t bios | grep BIOS\ Revision)
 # with the old BIOS, dmidecode is not able to get the revision
 
 case "x$revision" in
-    x|'xBIOS Revision 3.0'|'xBIOS Revision 4.0')
+    x|'x\tBIOS Revision 3.0'|'x\tBIOS Revision 4.0')
         echo $revision
         echo "Updating the BIOS, cross your fingers ..."
         flashrom -p internal:boardmismatch=force -w raumfeld-base.rom
