@@ -1,85 +1,3 @@
-diff --git a/Documentation/devicetree/bindings/bus/ti-gpmc.txt b/Documentation/devicetree/bindings/bus/ti-gpmc.txt
-new file mode 100644
-index 0000000..ba3d6a5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/bus/ti-gpmc.txt
-@@ -0,0 +1,76 @@
-+Device tree bindings for OMAP general purpose memory controllers (GPMC)
-+
-+The actual devices are instantiated from the child nodes of a GPMC node.
-+
-+Required properties:
-+
-+ - compatible:		Should be set to "ti,gpmc"
-+ - reg:			A resource specifier for the register space
-+			(see the example below)
-+ - ti,hwmods:		Should be set to "ti,gpmc" until the DT transition is
-+			completed.
-+ - #address-cells:	Must be set to 2 to allow memory address translation
-+ - #size-cells:		Must be set to 1 to allow CS address passing
-+ - num-cs:		The maximum number of chip-select lines that controller
-+			can support.
-+ - num-waitpins:	The maximum number of wait pins that controller can
-+			support.
-+ - ranges:		Must be set up to reflect the memory layout with four
-+			integer values for each chip-select line in use:
-+
-+			   <cs-number> 0 <physical address of mapping> <size>
-+
-+			Note that this property is not currently parsed.
-+			Calculated values derived from the contents of the
-+			per-CS register GPMC_CONFIG7 (as set up by the
-+			bootloader) are used. That will change in the future,
-+			so be sure to fill the correct values here.
-+
-+Timing properties for child nodes. All are optional and default to 0.
-+
-+ - gpmc,sync-clk:	Minimum clock period for synchronous mode, in picoseconds
-+
-+ Chip-select signal timings corresponding to GPMC_CONFIG2:
-+ - gpmc,cs-on:		Assertion time
-+ - gpmc,cs-rd-off:	Read deassertion time
-+ - gpmc,cs-wr-off:	Write deassertion time
-+
-+ ADV signal timings corresponding to GPMC_CONFIG3:
-+ - gpmc,adv-on:		Assertion time
-+ - gpmc,adv-rd-off:	Read deassertion time
-+ - gpmc,adv-wr-off:	Write deassertion time
-+
-+ WE signals timings corresponding to GPMC_CONFIG4:
-+ - gpmc,we-on:		Assertion time
-+ - gpmc,we-off:		Deassertion time
-+
-+ OE signals timings corresponding to GPMC_CONFIG4:
-+ - gpmc,oe-on:		Assertion time
-+ - gpmc,oe-off:		Deassertion time
-+
-+ Access time and cycle time timings corresponding to GPMC_CONFIG5:
-+ - gpmc,page-burst-access: Multiple access word delay
-+ - gpmc,access:		Start-cycle to first data valid delay
-+ - gpmc,rd-cycle:	Total read cycle time
-+ - gpmc,wr-cycle:	Total write cycle time
-+
-+The following are only on OMAP3430:
-+ - gpmc,wr-access
-+ - gpmc,wr-data-mux-bus
-+
-+
-+Example for an AM33xx board:
-+
-+	gpmc: gpmc@50000000 {
-+		compatible = "ti,gpmc";
-+		ti,hwmods = "gpmc";
-+		reg = <0x50000000 0x2000>;
-+		interrupts = <100>;
-+
-+		num-cs = <8>;
-+		#address-cells = <2>;
-+		#size-cells = <1>;
-+		ranges = <0 0 0x08000000 0x10000000>; /* CS0 @addr 0x8000000, size 0x10000000 */
-+
-+		/* child nodes go here */
-+	};
 diff --git a/Documentation/devicetree/bindings/dma/dma.txt b/Documentation/devicetree/bindings/dma/dma.txt
 new file mode 100644
 index 0000000..8f504e6
@@ -317,10 +235,10 @@ index 0000000..b88ee83
 +};
 diff --git a/Documentation/devicetree/bindings/mtd/gpmc-nand.txt b/Documentation/devicetree/bindings/mtd/gpmc-nand.txt
 new file mode 100644
-index 0000000..31807db
+index 0000000..20aa5b9
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/mtd/gpmc-nand.txt
-@@ -0,0 +1,81 @@
+@@ -0,0 +1,84 @@
 +Device tree bindings for GPMC connected NANDs
 +
 +GPMC connected NAND (found on OMAP boards) are represented as child nodes of
@@ -343,7 +261,7 @@ index 0000000..31807db
 + - nand-bus-width: 		Set this numeric value to 16 if the hardware
 +				is wired that way. If not specified, a bus
 +				width of 8 is assumed.
-+ - omap,nand-ecc-opt:		A string setting the ECC layout to use. One of:
++ - ti,nand-ecc-opt:		A string setting the ECC layout to use. One of:
 +
 +	Layouts for 1-bit ecc: stored at end of spare area:
 +
@@ -356,6 +274,8 @@ index 0000000..31807db
 +		"bch4"		4-bit BCH ecc code
 +		"bch8"		8-bit BCH ecc code
 +
++ - ti,nand-ecc-use-elm:		Property without value to specify that the
++				hardware error correction mode should be used.
 +
 +For inline partiton table parsing (optional):
 +
@@ -378,7 +298,8 @@ index 0000000..31807db
 +		nand@0,0 {
 +			reg = <0 0 0>; /* CS0, offset 0 */
 +			nand-bus-width = <16>;
-+			omap,nand-ecc-opt = "none";
++			ti,nand-ecc-opt = "none";
++			ti,nand-ecc-use-elm;
 +
 +			gpmc,sync-clk = <0>;
 +			gpmc,cs-on = <0>;
@@ -1164,10 +1085,10 @@ index 0000000..bb39bb4
 +
 diff --git a/arch/arm/boot/dts/am33xx-sue-s800.dtsi b/arch/arm/boot/dts/am33xx-sue-s800.dtsi
 new file mode 100644
-index 0000000..faa892c
+index 0000000..078c340
 --- /dev/null
 +++ b/arch/arm/boot/dts/am33xx-sue-s800.dtsi
-@@ -0,0 +1,246 @@
+@@ -0,0 +1,245 @@
 +/*
 + * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
 + *
@@ -1235,8 +1156,7 @@ index 0000000..faa892c
 +			nand@0,0 {
 +				reg = <0 0 0>; /* CS0 */
 +				nand-bus-width = <8>;
-+				ti,nand-ecc-opt = "bch8";
-+				ti,nand-ecc-use-elm = <1>;
++				nand-ecc-mode = "none";
 +
 +				gpmc,sync-clk = <0>;
 +				gpmc,cs-on = <0>;
@@ -18346,7 +18266,7 @@ index 249a0b4..ef99011 100644
  
  static struct resource gpmc_smsc911x_resources[] = {
 diff --git a/arch/arm/mach-omap2/gpmc.c b/arch/arm/mach-omap2/gpmc.c
-index 92b5718..f31624c 100644
+index 92b5718..971a2bf 100644
 --- a/arch/arm/mach-omap2/gpmc.c
 +++ b/arch/arm/mach-omap2/gpmc.c
 @@ -25,17 +25,20 @@
@@ -18817,21 +18737,18 @@ index 92b5718..f31624c 100644
  	},
  };
  
-@@ -995,6 +1011,13 @@ static int __init omap_gpmc_init(void)
+@@ -995,6 +1011,10 @@ static int __init omap_gpmc_init(void)
  	struct platform_device *pdev;
  	char *oh_name = "gpmc";
  
-+	/*
-+	 * if the board boots up with a populated DT, do not
-+	 * manually add the device from this initcall
-+	 */
++	/* If dtb is there, the devices will be created dynamically */
 +	if (of_have_populated_dt())
 +		return -ENODEV;
 +
  	oh = omap_hwmod_lookup(oh_name);
  	if (!oh) {
  		pr_err("Could not look up %s\n", oh_name);
-@@ -1093,267 +1116,3 @@ void omap3_gpmc_restore_context(void)
+@@ -1093,267 +1113,3 @@ void omap3_gpmc_restore_context(void)
  	}
  }
  #endif /* CONFIG_ARCH_OMAP3 */
@@ -54908,10 +54825,10 @@ index a93679d..7eae529 100644
 +obj-$(CONFIG_SND_AM335X_SOC_RAUMFELD) += snd-soc-raumfeld.o
 diff --git a/sound/soc/davinci/am33xx-raumfeld.c b/sound/soc/davinci/am33xx-raumfeld.c
 new file mode 100644
-index 0000000..309080b
+index 0000000..f4b6ffc
 --- /dev/null
 +++ b/sound/soc/davinci/am33xx-raumfeld.c
-@@ -0,0 +1,337 @@
+@@ -0,0 +1,339 @@
 +/*
 + * ASoC driver for Raumfeld's AM33xx based audio devices
 + *
@@ -55047,6 +54964,8 @@ index 0000000..309080b
 +		printk(KERN_ERR "%s(): unsupported freq %d!\n", __func__, freq);
 +		return -EINVAL;
 +	}
++
++	memset(&msg, 0, sizeof(msg));
 +
 +	msg.addr = 0x60;
 +	msg.buf = buf;
