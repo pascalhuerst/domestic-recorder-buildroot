@@ -12,17 +12,19 @@ esac
 
 # check if an update is needed
 
-revision=$(dmidecode -t bios | grep BIOS\ Revision)
+bios=$(dmidecode -t bios | grep BIOS\ Revision)
+revision=$(echo $bios | sed -e 's/\s*BIOS Revision //')
 
-# with the old BIOS, dmidecode is not able to get the revision
+# with the old BIOS, dmidecode is not even able to get the revision,
+# so we also match the empty string
 
 case "x$revision" in
-    x|'x\tBIOS Revision 3.0'|'x\tBIOS Revision 4.0')
-        echo $revision
+    x|'x3.0'|'x4.0')
+        echo $bios
         echo "Updating the BIOS, cross your fingers ..."
         flashrom -p internal:boardmismatch=force -w raumfeld-base.rom
         ;;
     *)
-        echo "$revision, not updating."
+        echo "$bios, not updating."
         ;;
 esac
