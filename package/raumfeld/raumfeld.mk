@@ -120,6 +120,7 @@ ifndef $(2)_AUTORECONF
   $(2)_AUTORECONF = YES
 endif
 
+
 ifeq ($$($(2)_BRANCH),trunk)
 $(2)_SITE = $$(call qstrip,$$(BR2_PACKAGE_RAUMFELD_REPOSITORY))/$$($(2)_MODULE)/trunk
 else
@@ -171,10 +172,6 @@ raumfeld-cross-package = $(call inner-raumfeld-cross-package,$(call pkgname),$(c
 ################################################################################
 
 RAUMFELD_DIRCLEAN_TARGETS =
-
-ifeq ($(ARCH),arm)
-  TARGET_CONFIGURE_OPTS += ARM_TYPE="$(call qstrip,$(BR2_ARM_TYPE))"
-endif
 
 include package/raumfeld/*/*.mk
 
