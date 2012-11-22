@@ -13,7 +13,7 @@ esac
 # check if an update is needed
 
 bios=$(dmidecode -t bios | grep BIOS\ Revision)
-revision=$(echo $bios | sed -e 's/\s*BIOS Revision //')
+revision=$(echo $bios | sed -e 's/\s*BIOS Revision: //')
 
 # with the old BIOS, dmidecode is not even able to get the revision,
 # so we also match the empty string
