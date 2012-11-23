@@ -329,10 +329,10 @@ index 0000000..b88ee83
 +};
 diff --git a/Documentation/devicetree/bindings/mtd/gpmc-nand.txt b/Documentation/devicetree/bindings/mtd/gpmc-nand.txt
 new file mode 100644
-index 0000000..8e7c960
+index 0000000..2e8cee1
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/mtd/gpmc-nand.txt
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,87 @@
 +Device tree bindings for GPMC connected NANDs
 +
 +GPMC connected NAND (found on OMAP boards) are represented as child nodes of
@@ -369,7 +369,10 @@ index 0000000..8e7c960
 +		"bch8"		8-bit BCH ecc code
 +
 + - ti,nand-ecc-use-elm:		Property without value to specify that the
-+				hardware error correction mode should be used.
++				hardware error location module should be used
++				for error correction. Note that in order for
++				this to work, the hardware must feature an ELM
++				block, and the driver for it must be enabled.
 +
 +For inline partiton table parsing (optional):
 +
@@ -392,7 +395,7 @@ index 0000000..8e7c960
 +		nand@0,0 {
 +			reg = <0 0 0>; /* CS0, offset 0 */
 +			nand-bus-width = <16>;
-+			ti,nand-ecc-opt = "none";
++			ti,nand-ecc-opt = "bch8";
 +			ti,nand-ecc-use-elm;
 +
 +			gpmc,sync-clk = <0>;
@@ -18442,7 +18445,7 @@ index 36ec649..f1c0ec9 100644
  extern const struct soc_enum arizona_lhpf2_mode;
  extern const struct soc_enum arizona_lhpf3_mode;
 diff --git a/sound/soc/codecs/cs4271.c b/sound/soc/codecs/cs4271.c
-index f994af3..ae7b64d 100644
+index f994af3..a9c6c79 100644
 --- a/sound/soc/codecs/cs4271.c
 +++ b/sound/soc/codecs/cs4271.c
 @@ -27,6 +27,7 @@
@@ -18462,7 +18465,7 @@ index f994af3..ae7b64d 100644
  };
  
  /*
-@@ -403,11 +406,26 @@ static const struct snd_kcontrol_new cs4271_snd_controls[] = {
+@@ -403,11 +406,39 @@ static const struct snd_kcontrol_new cs4271_snd_controls[] = {
  		7, 1, 1),
  };
  
@@ -18471,6 +18474,19 @@ index f994af3..ae7b64d 100644
 +{
 +	int ret;
 +	struct snd_soc_codec *codec = codec_dai->codec;
++
++	/*
++	 * Put the codec in soft reset and back again in case it's not
++	 * currently streaming data. This way of bringing the codec in
++	 * sync to the current clocks is not explicitly documented in
++	 * the data sheet, but it seems to work fine.
++	 */
++
++	if ((subs->stream == SNDRV_PCM_STREAM_PLAYBACK &&
++	     codec_dai->capture_active) ||
++	    (subs->stream == SNDRV_PCM_STREAM_CAPTURE &&
++	     codec_dai->playback_active))
++		return 0;
 +
 +	ret = snd_soc_update_bits(codec, CS4271_MODE2, CS4271_MODE2_PDN,
 +				  CS4271_MODE2_PDN);
@@ -18489,7 +18505,7 @@ index f994af3..ae7b64d 100644
  };
  
  static struct snd_soc_dai_driver cs4271_dai = {
-@@ -434,17 +452,36 @@ static struct snd_soc_dai_driver cs4271_dai = {
+@@ -434,17 +465,36 @@ static struct snd_soc_dai_driver cs4271_dai = {
  static int cs4271_soc_suspend(struct snd_soc_codec *codec)
  {
  	int ret;
@@ -18527,7 +18543,7 @@ index f994af3..ae7b64d 100644
  	/* Restore codec state */
  	ret = snd_soc_cache_sync(codec);
  	if (ret < 0)
-@@ -474,18 +511,40 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -474,18 +524,40 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  	struct cs4271_platform_data *cs4271plat = codec->dev->platform_data;
  	int ret;
  	int gpio_nreset = -EINVAL;
@@ -18572,7 +18588,7 @@ index f994af3..ae7b64d 100644
  			gpio_nreset = -EINVAL;
  	if (gpio_nreset >= 0) {
  		/* Reset codec */
-@@ -528,6 +587,11 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -528,6 +600,11 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  	/* Power-up sequence requires 85 uS */
  	udelay(85);
  
@@ -18584,7 +18600,7 @@ index f994af3..ae7b64d 100644
  	return snd_soc_add_codec_controls(codec, cs4271_snd_controls,
  		ARRAY_SIZE(cs4271_snd_controls));
  }
-@@ -535,15 +599,10 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -535,15 +612,10 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  static int cs4271_remove(struct snd_soc_codec *codec)
  {
  	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
