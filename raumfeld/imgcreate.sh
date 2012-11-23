@@ -52,17 +52,12 @@ add_rootfs_tgz() {
     cp $target_rootfs_tgz $tmpdir/rootfs.tgz
 }
 
-build_dtb_cramfs() {
-    make host-cramfs
-    pushd .
-    cd raumfeld/dts/
-    ./make.sh
-    popd
-}
-
 add_dtb_cramfs() {
-    build_dtb_cramfs
-    cp raumfeld/dts/dts.cramfs $tmpdir/
+    make host-cramfs
+    DIR=$(mktemp -d)
+    make HOSTDIR=output/host DESTDIR=${DIR}/ -C raumfeld/dts
+    output/host/usr/bin/mkcramfs ${DIR} $tmpdir/dts.cramfs
+    rm -fr ${DIR}
 }
 
 ./buildlog.sh $*
