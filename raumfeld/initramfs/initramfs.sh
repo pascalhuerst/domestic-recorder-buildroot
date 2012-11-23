@@ -57,7 +57,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     mkdir -p /update
 
     case "$arch" in
-	arm)
+	arm|armada)
 	    mount -t ubifs -o rw ubi:RootFS /mnt
 	    mount -t ubifs -o ro ubi0:Updates /update
 	    update=/update/$img
@@ -94,6 +94,14 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
             umount /update
 	    umount /mnt
 	    ;;
+	armada)
+            umount /update
+            umount /mnt
+            # 'move' the uImage from the rootfs to its own partition
+            flash_erase /dev/mtd6 0 48
+            nandwrite --pad /dev/mtd6 /boot/uImage
+            rm /boot/uImage
+            ;;
 	geode)
             sleep 5
             umount /mnt/boot
