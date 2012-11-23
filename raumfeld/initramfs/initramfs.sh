@@ -18,7 +18,6 @@ case "$hw" in
 	arch="armada"
 	img="connect2.img"
         offset=$offset_v2
-        bootloader="raumfeld-am3xx.bin"
         ;;
     Controller)
 	arch="arm"
