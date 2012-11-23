@@ -17,27 +17,27 @@ case "$hw" in
     AM33XX)
 	arch="armada"
 	img="connect2.img"
-        offset=$offset_v2
-        ;;
+	offset=$offset_v2
+	;;
     Controller)
 	arch="arm"
 	img="control.img"
-        bootloader="raumfeld-controller.bin"
+	bootloader="raumfeld-controller.bin"
 	;;
     Connector)
 	arch="arm"
 	img="connect.img"
-        bootloader="raumfeld-connector.bin"
+	bootloader="raumfeld-connector.bin"
 	;;
     Speaker)
 	arch="arm"
 	img="speaker.img"
-        bootloader="raumfeld-speaker.bin"
+	bootloader="raumfeld-speaker.bin"
 	;;
     Geode*)
 	arch="geode"
 	img="base.img"
-        bios="raumfeld-base.rom"
+	bios="raumfeld-base.rom"
 	;;
     *)
 	img="uImage"
@@ -73,15 +73,15 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     esac
 
     if [ -n "$bootloader" ]; then
-        gunzip -c $update | tar x ./tmp/$bootloader
+	gunzip -c $update | tar x ./tmp/$bootloader
 	echo "Checking the boot-loader ..."
-        (cd /tmp; /update-uboot.sh; rm -f $bootloader)
+	(cd /tmp; /update-uboot.sh; rm -f $bootloader)
     fi
 
     if [ -n "$bios" ]; then
-        gunzip -c $update | tar x ./tmp/$bios
+	gunzip -c $update | tar x ./tmp/$bios
 	echo "Checking the BIOS ..."
-        (cd /tmp; /update-coreboot.sh; rm -f $bios)
+	(cd /tmp; /update-coreboot.sh; rm -f $bios)
     fi
 
     cd /mnt
@@ -91,21 +91,21 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 
     case "$arch" in
 	arm)
-            umount /update
+	    umount /update
 	    umount /mnt
 	    ;;
 	armada)
-            umount /update
-            umount /mnt
-            # 'move' the uImage from the rootfs to its own partition
-            flash_erase /dev/mtd6 0 48
-            nandwrite --pad /dev/mtd6 /boot/uImage
-            rm /boot/uImage
-            ;;
+	    umount /update
+	    umount /mnt
+	    # 'move' the uImage from the rootfs to its own partition
+	    flash_erase /dev/mtd6 0 48
+	    nandwrite --pad /dev/mtd6 /boot/uImage
+	    rm /boot/uImage
+	    ;;
 	geode)
-            sleep 5
-            umount /mnt/boot
-            umount /mnt
+	    sleep 5
+	    umount /mnt/boot
+	    umount /mnt
 	    ;;
 	*)
 	    echo "unknown architecture '$arch'"
