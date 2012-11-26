@@ -8,6 +8,10 @@
 	model = "Raumfeld Connector (AM33xx)";
 	compatible = "ti,am335x-raumfeld-connector", "ti,am33xx";
 
+	chosen {
+		bootargs = "console=ttyO0,115200n8";
+	};
+
 	am3358_pinmux: pinmux@44e10800 {
 		spi0_pins: pinmux_spi0_pins {
 			pinctrl-single,pins = <
