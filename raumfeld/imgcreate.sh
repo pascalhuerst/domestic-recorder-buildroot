@@ -106,11 +106,10 @@ test -f $rootfstgz	|| exit 1
 case $target in
     audioadapter-armada-*)
 	img_version=1
-	build_dts=1
+        dts_image=raumfeld/dts/dts.cramfs
         ;;
     *)
         img_version=0
-        build_dts=0
         ;;
 esac
 
@@ -203,13 +202,6 @@ size=$($resize2fs -P $ext2_img | cut -d ' ' -f 7)
 size=$(expr $size + 4)
 $resize2fs $ext2_img $size
 
-###### CRATE DTS IMAGE #######
-
-if [ "$build_dts" -eq 1 ]; then
-	build_dtb_cramfs
-	dts_image=raumfeld/dts/dts.cramfs
-fi
-
 ###### CREATE THE IMAGE #######
 
 echo "Creating image ..."
@@ -218,7 +210,7 @@ date >> $tmpdir/desc
 echo "Host $(hostname)" >> $tmpdir/desc
 
 mkdir -p binaries
-if [ "$build_dts" -eq 1 ]; then
+if [ -n "$dts_image" ]; then
     $imgcreate	--version $img_version		\
 		--dts-image $dts_image		\
 		--kernel $kernel		\
