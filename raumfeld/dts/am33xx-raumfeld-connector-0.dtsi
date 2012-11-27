@@ -108,6 +108,7 @@
 			d2 {
 				label = "raumfeld:2";
 				gpios = <&gpio3 10 0>;
+				default-state = "on";
 			};
 		};
 
