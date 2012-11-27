@@ -14892,7 +14892,7 @@ index e40d764..c9c1ac4 100644
  	if (csr & MUSB_CSR0_P_DATAEND) {
  		/*
 diff --git a/drivers/usb/musb/musb_host.c b/drivers/usb/musb/musb_host.c
-index 3df6a76..e9f0fd9 100644
+index 3df6a76..a5ae2dc 100644
 --- a/drivers/usb/musb/musb_host.c
 +++ b/drivers/usb/musb/musb_host.c
 @@ -740,7 +740,7 @@ static void musb_ep_program(struct musb *musb, u8 epnum,
@@ -14904,6 +14904,20 @@ index 3df6a76..e9f0fd9 100644
  		musb_writew(mbase, MUSB_INTRTXE, int_txe & ~(1 << epnum));
  
  		/* general endpoint setup */
+@@ -2431,11 +2431,13 @@ static int musb_bus_suspend(struct usb_hcd *hcd)
+ 		break;
+ 	}
+ 
++#if 0
+ 	if (musb->is_active) {
+ 		WARNING("trying to suspend as %s while active\n",
+ 				otg_state_string(musb->xceiv->state));
+ 		return -EBUSY;
+ 	} else
++#endif
+ 		return 0;
+ }
+ 
 diff --git a/drivers/usb/musb/omap2430.c b/drivers/usb/musb/omap2430.c
 index a538fe1..dddd8f7 100644
 --- a/drivers/usb/musb/omap2430.c
