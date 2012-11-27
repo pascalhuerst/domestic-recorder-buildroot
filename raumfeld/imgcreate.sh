@@ -55,8 +55,9 @@ add_rootfs_tgz() {
 add_dtb_cramfs() {
     make host-cramfs
     DIR=$(mktemp -d)
-    make HOSTDIR=output/host DESTDIR=${DIR}/ -C raumfeld/dts
-    output/host/usr/bin/mkcramfs ${DIR} $tmpdir/dts.cramfs
+    HOSTDIR=$(pwd)/output/host
+    make HOSTDIR=${HOSTDIR} DESTDIR=${DIR}/ -C raumfeld/dts
+    ${HOSTDIR}/usr/bin/mkcramfs ${DIR} $tmpdir/dts.cramfs
     rm -fr ${DIR}
 }
 
