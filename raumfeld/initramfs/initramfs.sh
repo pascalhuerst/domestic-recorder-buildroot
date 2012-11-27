@@ -106,6 +106,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	    sleep 5
 	    umount /mnt/boot
 	    umount /mnt
+	    sleep 5
 	    ;;
 	*)
 	    echo "unknown architecture '$arch'"
