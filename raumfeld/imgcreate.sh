@@ -102,11 +102,15 @@ test -f $kernel		|| exit 1
 test -f $rootfstgz	|| echo "ERROR: $rootfstgz not found."
 test -f $rootfstgz	|| exit 1
 
+# create directory to hold temporary files
+mkdir $tmpdir
+echo "Operating in $tmpdir"
+
 # decide what image format we need to create
 case $target in
     audioadapter-armada-*)
 	img_version=1
-        dts_image=raumfeld/dts/dts.cramfs
+        dts_image=$tmpdir/dts.cramfs
         ;;
     *)
         img_version=0
@@ -114,9 +118,6 @@ case $target in
 esac
 
 ###### CREATE THE CONTENT #######
-
-mkdir $tmpdir
-echo "Operating in $tmpdir"
 
 cp -a raumfeld/testsuite/rootfs/* $tmpdir/
 
