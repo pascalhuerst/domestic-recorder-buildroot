@@ -162,6 +162,7 @@
 			bus-width = <4>;
 			vmmc-supply = <&ldo2_reg>;
 			vmmc_aux-supply = <&vmmc>;
+			ti,swakeup-not-implemented;
 			status = "okay";
 		};
 
