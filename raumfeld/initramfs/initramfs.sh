@@ -96,11 +96,11 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	    ;;
 	armada)
 	    umount /update
-	    umount /mnt
 	    # 'move' the uImage from the rootfs to its own partition
 	    flash_erase /dev/mtd6 0 48
-	    nandwrite --pad /dev/mtd6 /boot/uImage
-	    rm /boot/uImage
+	    nandwrite --pad /dev/mtd6 /mnt/boot/uImage
+	    rm /mnt/boot/uImage
+	    umount /mnt
 	    ;;
 	geode)
 	    sleep 5
