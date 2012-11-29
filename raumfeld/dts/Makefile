@@ -1,6 +1,5 @@
 
 DTC=$(HOSTDIR)/usr/bin/dtc
-MKCRAMFS=${HOSTDIR}/usr/bin/mkcramfs
 
 TARGETS = am33xx-raumfeld-connector-0-0.dtb
 
