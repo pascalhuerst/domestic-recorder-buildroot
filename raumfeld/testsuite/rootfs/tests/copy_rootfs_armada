@@ -8,7 +8,7 @@ cd /mnt
 zcat /rootfs.tgz | tar -xvf -
 
 # 'move' the uImage from the rootfs to its own partition
-flash_erase /dev/mtd6 0 48
+flash_erase /dev/mtd6 0 0
 nandwrite --pad /dev/mtd6 boot/uImage
 rm boot/uImage
 
