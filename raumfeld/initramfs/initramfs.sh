@@ -94,20 +94,29 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	    umount /update
 	    umount /mnt
 	    ;;
+
 	armada)
 	    umount /update
+
 	    # 'move' the uImage from the rootfs to its own partition
-	    flash_erase /dev/mtd6 0 48
+	    flash_erase /dev/mtd6 0 0
 	    nandwrite --pad /dev/mtd6 /mnt/boot/uImage
 	    rm /mnt/boot/uImage
+
+            # copy the dts.cramfs to its own partition
+            flash_erase /dev/mtd7 0 0
+            nandwrite --pad /dev/mtd7 /mnt/tmp/dts.cramfs
+
 	    umount /mnt
 	    ;;
+
 	geode)
 	    sleep 5
 	    umount /mnt/boot
 	    umount /mnt
 	    sleep 5
 	    ;;
+
 	*)
 	    echo "unknown architecture '$arch'"
 	    ;;

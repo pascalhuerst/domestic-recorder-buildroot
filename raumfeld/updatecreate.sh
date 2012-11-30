@@ -26,7 +26,7 @@ if [ ! -f "$kexec" ]; then
 fi
 
 # create a temporary tgz that contains the kexec kernel at the beginning,
-# followed by device-tree blobs (optionally) and boot-loaders (optionally)
+# followed by dts.cramfs (optionally) and boot-loaders (optionally)
 
 tmp=$(mktemp).tar
 tmpgz=$tmp.gz
@@ -35,8 +35,12 @@ tmpdir=$(mktemp -d)
 mkdir -p $tmpdir/tmp
 cp $kexec $tmpdir/tmp/raumfeld-update.zImage
 if [ $target = audioadapter-armada ]; then
-  HOSTDIR=$(pwd)/output/host
-  make -C raumfeld/dts HOSTDIR=${HOSTDIR} DESTDIR=$tmpdir/tmp/
+    make host-cramfs
+    DIR=$(mktemp -d)
+    HOSTDIR=$(pwd)/output/host
+    make HOSTDIR=${HOSTDIR} DESTDIR=${DIR}/ -C raumfeld/dts
+    ${HOSTDIR}/usr/bin/mkcramfs ${DIR} $tmpdir/tmp/dts.cramfs
+    rm -fr ${DIR}
 fi
 for bootloader in $(echo $bootloaders | tr ',' ' '); do
     cp $bootloader $tmpdir/tmp
