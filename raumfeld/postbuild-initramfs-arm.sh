@@ -22,3 +22,4 @@ null::sysinit:/bin/mount -a
 console::sysinit:/initramfs.sh
 __END__
 
+raumfeld/postbuild-initramfs-cleanup.sh $*
