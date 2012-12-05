@@ -11810,10 +11810,10 @@ index 02cd29a..44610d8 100644
  MACHINE_END
 diff --git a/arch/arm/mach-omap2/board-am335xevm.c b/arch/arm/mach-omap2/board-am335xevm.c
 new file mode 100644
-index 0000000..dc0ec90
+index 0000000..ac9ee7f
 --- /dev/null
 +++ b/arch/arm/mach-omap2/board-am335xevm.c
-@@ -0,0 +1,4669 @@
+@@ -0,0 +1,4633 @@
 +/*
 + * Code for AM335X EVM.
 + *
@@ -11860,10 +11860,11 @@ index 0000000..dc0ec90
 +#include <linux/input/ti_tscadc.h>
 +
 +#include <sound/tlv320aic3x.h>
-+#include <sound/cs4271.h>
 +
 +/* LCD controller is similar to DA850 */
 +#include <video/da8xx-fb.h>
++#include <media/gpio-ir-recv.h>
++#include <media/rc-map.h>
 +
 +#include <mach/hardware.h>
 +#include <mach/board-am335xevm.h>
@@ -12725,9 +12726,9 @@ index 0000000..dc0ec90
 +
 +static struct pinmux_config i2c2_pin_mux[] = {
 +	{"uart1_ctsn.i2c2_sda",    OMAP_MUX_MODE3 | AM33XX_SLEWCTRL_SLOW |
-+					AM33XX_PULL_ENBL | AM33XX_INPUT_EN},
++					AM33XX_PIN_INPUT_PULLUP},
 +	{"uart1_rtsn.i2c2_scl",   OMAP_MUX_MODE3 | AM33XX_SLEWCTRL_SLOW |
-+					AM33XX_PULL_ENBL | AM33XX_INPUT_EN},
++					AM33XX_PIN_INPUT_PULLUP},
 +	{NULL, 0},
 +};
 +
@@ -12750,19 +12751,16 @@ index 0000000..dc0ec90
 +};
 +
 +static struct pinmux_config mcasp0_stream800_pin_mux[] = {
-+       {"mcasp0_ahclkx.mcasp0_ahclkx", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLDOWN},	/* MCLK_OUT */
-+       {"mcasp0_aclkx.mcasp0_aclkx", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT},		/* BCLK_OUT */
-+       {"mcasp0_fsx.mcasp0_fsx", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT},			/* WCLK_OUT */
++       {"mcasp0_aclkx.mcasp0_aclkx", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
++       {"mcasp0_fsx.mcasp0_fsx", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
 +       //{"mcasp0_ahclkr.mcasp0_axr2", OMAP_MUX_MODE2 | AM33XX_PIN_INPUT_PULLDOWN},
 +       //{"mcasp0_ahclkx.mcasp0_axr3", OMAP_MUX_MODE1 | AM33XX_PIN_INPUT_PULLDOWN},
-+
-+       {"mcasp0_axr0.mcasp0_axr0", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},			/* DATA_OUT */
-+       {"mcasp0_axr1.mcasp0_axr1", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLDOWN},		/* DATA_IN  */
-+
-+       {"mcasp0_aclkr.mcasp0_aclkr", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT},		/* BLK_IN   */
-+       {"mcasp0_fsr.mcasp0_fsr", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT},			/* WCLK_IN  */
-+       {"mcasp0_ahclkr.mcasp0_ahclkr", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLDOWN},	/* MCLK_IN  */
-+
++       {"mcasp0_axr0.mcasp0_axr0", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
++       {"mcasp0_ahclkx.mcasp0_ahclkx", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLDOWN},
++       {"mcasp0_aclkr.mcasp0_aclkr", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
++       {"mcasp0_fsr.mcasp0_fsr", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
++       {"mcasp0_ahclkr.mcasp0_ahclkr", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLDOWN},
++       {"mcasp0_axr1.mcasp0_axr1", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLDOWN},
 +       {NULL, 0},
 +};
 +
@@ -13069,6 +13067,8 @@ index 0000000..dc0ec90
 +	{"mcasp0_aclkx.gpio3_14", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
 +	{"mcasp0_ahclkr.gpio3_17", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
 +	{"mcasp0_aclkr.gpio3_18", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
++	{"gpmc_ben1.gpio1_28", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
++	{"gpmc_clk.gpio2_1", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
 +	{"mcasp0_fsr.gpio3_19", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
 +	{"mcasp0_axr1.gpio3_20", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
 +	{"mcasp0_ahclkx.gpio3_21", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
@@ -13117,16 +13117,19 @@ index 0000000..dc0ec90
 +	{"ecap0_in_pwm0_out.gpio0_7", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
 +	{"xdma_event_intr0.gpio0_19", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
 +	{"uart0_ctsn.gpio1_8", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
++	{"uart1_ctsn.gpio0_12", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
++	{"gpmc_clk.gpio2_1", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
++	{"uart0_rtsn.gpio1_9", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
 +	{NULL, 0},
 +};
 +
 +/* Configure GPIO for Stream800 keys */
 +static struct gpio_keys_button stream800_gpio_keys[] = {
 +	{
-+		.code			= KEY_SETUP,
++		.code			= KEY_WAKEUP,
 +		.gpio			= GPIO_TO_PIN(0, 7),
 +		.active_low		= true,
-+		.desc			= "setup",
++		.desc			= "play-stop",
 +		.type			= EV_KEY,
 +		.wakeup			= 1,
 +	},
@@ -13137,6 +13140,14 @@ index 0000000..dc0ec90
 +		.desc			= "eth-wake-up",
 +		.type			= EV_KEY,
 +		.wakeup			= 1,
++	},
++	{
++		.code			= KEY_WPS_BUTTON,
++		.gpio			= GPIO_TO_PIN(1, 9),
++		.active_low		= true,
++		.desc			= "wps",
++		.type			= EV_KEY,
++		.wakeup			= 0,
 +	},
 +};
 +
@@ -13153,6 +13164,21 @@ index 0000000..dc0ec90
 +	},
 +};
 +
++static struct gpio_ir_recv_platform_data stream800_ir_receiver_info = {
++	.gpio_nr = GPIO_TO_PIN(0, 12),
++	.active_low = true,
++	.map_name = RC_MAP_RC6_PHILIPS,
++	.allowed_protos = RC_TYPE_RC6,
++};
++
++static struct platform_device stream800_ir_receiver = {
++	.name 	= "gpio-rc-recv",
++	.id = -1,
++	.dev 	= {
++		.platform_data = &stream800_ir_receiver_info
++	},
++};
++
 +/* Register Stream800 GPIOs in devices */
 +static void gpio_stream800_init(int evm_id, int profile)
 +{
@@ -13162,6 +13188,9 @@ index 0000000..dc0ec90
 +	err = platform_device_register(&stream800_keys);
 +	if (err)
 +		pr_err("Failed to register buttons on Stream800 board\n");
++	err = platform_device_register(&stream800_ir_receiver);
++	if (err)
++		pr_err("Failed to register IR receiver on Stream800 board\n");
 +}
 +
 +
@@ -13514,32 +13543,6 @@ index 0000000..dc0ec90
 +#define BEAGLEBONE_USR3_LED  GPIO_TO_PIN(1, 23)
 +#define BEAGLEBONE_USR4_LED  GPIO_TO_PIN(1, 24)
 +
-+static struct gpio_led raumfeld_gpio_leds[] = {
-+	{
-+		.name			= "raumfeld:1",
-+		//.default_trigger	= "heartbeat",
-+		.gpio			= GPIO_TO_PIN(1, 31),
-+	},
-+	{
-+		.name			= "raumfeld:2",
-+		//.default_trigger	= "heartbeat",
-+		.gpio			= GPIO_TO_PIN(1, 30),
-+	},
-+};
-+
-+static struct gpio_led_platform_data raumfeld_gpio_led_info = {
-+	.leds		= raumfeld_gpio_leds,
-+	.num_leds	= ARRAY_SIZE(raumfeld_gpio_leds),
-+};
-+
-+static struct platform_device raumfeld_leds_gpio = {
-+	.name	= "leds-gpio",
-+	.id	= -1,
-+	.dev	= {
-+		.platform_data  = &raumfeld_gpio_led_info,
-+	},
-+};
-+
 +static struct gpio_led bone_gpio_leds[] = {
 +	{
 +		.name			= "beaglebone::usr0",
@@ -13718,18 +13721,6 @@ index 0000000..dc0ec90
 +    {"gpmc_a8.rgmii2_rd3", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT}, // USR3
 +    /* Grounding gpio1_6 (pin 3 Conn A) signals bone tester to start diag tests */
 +    {"gpmc_ad6.gpio1_6", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLUP},
-+	{NULL, 0},
-+};
-+
-+static struct pinmux_config raumfeld_pin_mux[] = {
-+	/* LEDs */
-+	{"gpmc_csn1.gpio1_30", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
-+	{"gpmc_csn2.gpio1_31", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
-+	/* Codec reset */
-+	{"uart0_rtsn.gpio1_9",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
-+	{"spi0_d1.gpio1_9",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
-+	/* audio pwr end */
-+	{"spi1_d0.gpio1_8",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
 +	{NULL, 0},
 +};
 +
@@ -14033,15 +14024,6 @@ index 0000000..dc0ec90
 +		pr_err("failed to register BeagleBone LEDS\n");
 +}
 +
-+static void raumfeld_leds_init(int evm_id, int profile )
-+{
-+	int err;
-+	setup_pin_mux(raumfeld_pin_mux);
-+	err = platform_device_register(&raumfeld_leds_gpio);
-+	if (err)
-+		pr_err("failed to register Raumfeld LEDS\n");
-+}
-+
 +static void dvileds_init(int evm_id, int profile )
 +{
 +	int err;
@@ -14329,7 +14311,7 @@ index 0000000..dc0ec90
 +		&am335x_nand_timings);
 +	if (!pdata)
 +		return;
-+	pdata->ecc_opt = OMAP_ECC_HAMMING_CODE_DEFAULT;
++	pdata->ecc_opt =OMAP_ECC_BCH8_CODE_HW;
 +	pdata->elm_used = true;
 +	gpmc_device[0].pdata = pdata;
 +	gpmc_device[0].flag = GPMC_DEVICE_NAND;
@@ -15201,22 +15183,11 @@ index 0000000..dc0ec90
 +        },
 +};
 +
-+static struct cs4271_platform_data cs4271_pdata = {
-+	.gpio_nreset = GPIO_TO_PIN(1, 9),
-+};
-+
-+static struct i2c_board_info __initdata stream800_am335x_i2c2_boardinfo[] = {
-+	{
-+		I2C_BOARD_INFO("cs4271", 0x10),
-+		.platform_data = &cs4271_pdata,
-+	},
-+};
-+
 +static void i2c2_init(int evm_id, int profile)
 +{
 +        setup_pin_mux(i2c2_pin_mux);
-+        omap_register_i2c_bus(3, 100, stream800_am335x_i2c2_boardinfo,
-+                        ARRAY_SIZE(stream800_am335x_i2c2_boardinfo));
++        omap_register_i2c_bus(3, 100, cape_i2c_boardinfo,
++                        ARRAY_SIZE(cape_i2c_boardinfo));
 +        return;
 +}
 +
@@ -15242,8 +15213,7 @@ index 0000000..dc0ec90
 +	am335x_mmc[1].nonremovable = true;
 +	am335x_mmc[1].gpio_cd = -EINVAL;
 +	am335x_mmc[1].gpio_wp = -EINVAL;
-+	am335x_mmc[1].caps = MMC_CAP_4_BIT_DATA | MMC_CAP_POWER_OFF_CARD
-+				| MMC_PM_KEEP_POWER;
++	am335x_mmc[1].caps = MMC_CAP_4_BIT_DATA | MMC_PM_KEEP_POWER;
 +	am335x_mmc[1].ocr_mask = MMC_VDD_32_33 | MMC_VDD_33_34; /* 3V3 */
 +
 +	/* mmc will be initialized when mmc0_init is called */
@@ -15671,20 +15641,18 @@ index 0000000..dc0ec90
 +static struct evm_dev_cfg sue_stream800_board_dev_cfg[] = {
 +	{tps65217_init,		DEV_ON_BASEBOARD, PROFILE_ALL},
 +	{tsc_init,		DEV_ON_BASEBOARD, PROFILE_ALL},
-+	//{lcd_stream800_init,	DEV_ON_BASEBOARD, PROFILE_ALL},
++	{lcd_stream800_init,	DEV_ON_BASEBOARD, PROFILE_ALL},
 +	{rgmii1_init,		DEV_ON_BASEBOARD, PROFILE_0},
 +	{rmii1_init,		DEV_ON_BASEBOARD, PROFILE_1},
-+	//{rgmii2_init,		DEV_ON_BASEBOARD, PROFILE_ALL},
++	{rgmii2_init,		DEV_ON_BASEBOARD, PROFILE_ALL},
 +	{usb0_init,		DEV_ON_BASEBOARD, PROFILE_ALL},
-+	//{usb1_init,		DEV_ON_BASEBOARD, PROFILE_ALL},
++	{usb1_init,		DEV_ON_BASEBOARD, PROFILE_ALL},
 +	{evm_nand_init, 	DEV_ON_BASEBOARD, PROFILE_ALL},
 +	{i2c1_init,		DEV_ON_BASEBOARD, PROFILE_ALL},
-+	{i2c2_init,		DEV_ON_BASEBOARD, PROFILE_ALL},
 +	{mmc1_stream800_init,	DEV_ON_BASEBOARD, PROFILE_ALL},
 +	{mmc0_init,		DEV_ON_BASEBOARD, PROFILE_ALL},
 +	{gpio_stream800_init,	DEV_ON_BASEBOARD, PROFILE_ALL},
 +	{mcasp0_stream800_init,   DEV_ON_BASEBOARD, PROFILE_ALL},
-+	{raumfeld_leds_init,	DEV_ON_BASEBOARD, PROFILE_ALL},
 +
 +	{NULL, 0, 0},
 +};
@@ -15762,8 +15730,7 @@ index 0000000..dc0ec90
 +	am335x_mmc[0].nonremovable = true;
 +	am335x_mmc[0].gpio_cd = -EINVAL;
 +	am335x_mmc[0].gpio_wp = -EINVAL;
-+	am335x_mmc[0].caps = MMC_CAP_4_BIT_DATA | MMC_CAP_POWER_OFF_CARD
-+				| MMC_PM_KEEP_POWER;
++	am335x_mmc[0].caps = MMC_CAP_4_BIT_DATA | MMC_PM_KEEP_POWER;
 +
 +	_configure_device(SUE_STREAM800_L1_TEST, sue_stream800_test_board_dev_cfg, profile);
 +
@@ -15771,16 +15738,6 @@ index 0000000..dc0ec90
 +	regulator_has_full_constraints();
 +
 +	am33xx_evmid_fillup(SUE_STREAM800_L1_TEST);
-+}
-+
-+static void raumfeld_connector_audio_enable(void)
-+{
-+	int gpio = GPIO_TO_PIN(1, 8);
-+	int status = gpio_request(gpio, "audio analog pwr_en");
-+	if (status < 0)
-+		pr_err("Failed to request gpio for audio pwr_en");
-+
-+	gpio_direction_output(gpio, 1);
 +}
 +
 +static void setup_sue_stream800_evm(void)
@@ -15792,8 +15749,7 @@ index 0000000..dc0ec90
 +	am335x_mmc[0].nonremovable = true;
 +	am335x_mmc[0].gpio_cd = -EINVAL;
 +	am335x_mmc[0].gpio_wp = -EINVAL;
-+	am335x_mmc[0].caps = MMC_CAP_4_BIT_DATA | MMC_CAP_POWER_OFF_CARD
-+				| MMC_PM_KEEP_POWER;
++	am335x_mmc[0].caps = MMC_CAP_4_BIT_DATA | MMC_PM_KEEP_POWER;
 +
 +#ifdef SUE_DEFAULT_BOARD
 +#if SUE_DEFAULT_BOARD == SUE_STREAM800_L0_EVM
@@ -15808,9 +15764,6 @@ index 0000000..dc0ec90
 +	#endif
 +#endif
 +#endif
-+
-+	raumfeld_connector_audio_enable();
-+
 +	_configure_device(id, sue_stream800_board_dev_cfg, profile);
 +
 +	/* TPS65217 regulator has full constraints */
@@ -16196,9 +16149,9 @@ index 0000000..dc0ec90
 +	},
 +#ifdef SUE_DEFAULT_BOARD
 +#if SUE_DEFAULT_BOARD != SUE_STREAM800_L1_TEST
-+	//{
-+	//	I2C_BOARD_INFO("si5351x", 0x60),
-+	//},
++	{
++		I2C_BOARD_INFO("si5351x", 0x60),
++	}
 +#endif
 +#endif
 +};
@@ -16227,7 +16180,7 @@ index 0000000..dc0ec90
 +	.mode           = (MUSB_OTG << 4) | MUSB_HOST,
 +#endif
 +#if SUE_DEFAULT_BOARD == SUE_STREAM800_L1_TEST
-+	.mode           = (MUSB_OTG << 4) | MUSB_HOST,
++	.mode           = (MUSB_HOST << 4) | MUSB_HOST,
 +#endif
 +#endif
 +	.power		= 500,
@@ -16358,6 +16311,11 @@ index 0000000..dc0ec90
 +{
 +	struct clk *ck_32;
 +
++#ifdef SUE_DEFAULT_BOARD
++	/* reset WIFI */
++	gpio_request_one(64, GPIOF_OUT_INIT_LOW, "pdn");
++#endif
++
 +	ck_32 = clk_get(NULL, "clkout2_ck");
 +	if (IS_ERR(ck_32)) {
 +		pr_err("Cannot clk_get ck_32\n");
@@ -16365,6 +16323,12 @@ index 0000000..dc0ec90
 +	}
 +
 +	clk_enable(ck_32);
++
++#ifdef SUE_DEFAULT_BOARD
++	/* release WIFI reset */
++	udelay(1000);
++	gpio_set_value(64, 1);
++#endif
 +
 +	setup_pin_mux(clkout2_pin_mux);
 +}
@@ -24065,7 +24029,7 @@ index 0000000..cfdbb86
 +}
 +#endif /* CONFIG_CPU_IDLE */
 diff --git a/arch/arm/mach-omap2/devices.c b/arch/arm/mach-omap2/devices.c
-index c15cfad..c2961df 100644
+index c15cfad..a9df88d 100644
 --- a/arch/arm/mach-omap2/devices.c
 +++ b/arch/arm/mach-omap2/devices.c
 @@ -8,6 +8,7 @@
@@ -24177,7 +24141,7 @@ index c15cfad..c2961df 100644
 +	return 0;
 +}
 +
-+#if defined(CONFIG_SND_AM335X_SOC_EVM) || defined(CONFIG_SND_AM335X_SOC_RAUMFELD) || \
++#if defined(CONFIG_SND_AM335X_SOC_EVM) || \
 +				defined(CONFIG_SND_AM335X_SOC_EVM_MODULE)
 +
 +static struct resource am335x_mcasp0_resource[] = {
@@ -24728,7 +24692,7 @@ index c15cfad..c2961df 100644
  	omap_init_camera();
  	omap_init_mbox();
  	omap_init_mcspi();
-@@ -690,11 +1237,318 @@ static int __init omap2_init_devices(void)
+@@ -690,11 +1237,323 @@ static int __init omap2_init_devices(void)
  	omap_init_sham();
  	omap_init_aes();
  	omap_init_vout();
@@ -24946,14 +24910,19 @@ index c15cfad..c2961df 100644
 +	}
 +
 +	switch (am33xx_evmid) {
++		case SUE_STREAM800_L1_TEST:
++			am33xx_cpsw_slaves[0].mac_addr[0] = 0x00;
++			am33xx_cpsw_slaves[0].mac_addr[1] = 0x11;
++			am33xx_cpsw_slaves[0].mac_addr[2] = 0x22;
++			am33xx_cpsw_slaves[0].mac_addr[3] = 0x33;
++			am33xx_cpsw_slaves[0].mac_addr[4] = 0x44;
++			am33xx_cpsw_slaves[0].mac_addr[5] = 0x55;
++			/* no break, should continue */
 +		case SUE_STREAM800_L0_EVM:
 +		case SUE_STREAM800_L1_EVM:
-+		case SUE_STREAM800_L1_TEST:
-+			if (is_valid_ether_addr(am33xx_macid1) && is_valid_ether_addr(am33xx_macid0))
-+				for (i = 0; i < ETH_ALEN; i++) {
-+					am33xx_cpsw_slaves[1].mac_addr[i] = am33xx_macid1[i];
-+					am33xx_cpsw_slaves[0].mac_addr[i] = am33xx_macid0[i];
-+				}
++			/* suppose that cpsw works in switch mode with one mac address */
++			for (i = 0; i < ETH_ALEN; i++)
++				am33xx_cpsw_slaves[1].mac_addr[i] = am33xx_cpsw_slaves[0].mac_addr[i];
 +			break;
 +		default:
 +			break;
@@ -25048,7 +25017,7 @@ index c15cfad..c2961df 100644
  #if defined(CONFIG_OMAP_WATCHDOG) || defined(CONFIG_OMAP_WATCHDOG_MODULE)
  static int __init omap_init_wdt(void)
  {
-@@ -720,3 +1574,27 @@ static int __init omap_init_wdt(void)
+@@ -720,3 +1579,27 @@ static int __init omap_init_wdt(void)
  }
  subsys_initcall(omap_init_wdt);
  #endif
@@ -52373,6 +52342,33 @@ index 759c0bb..31c234c 100644
  	led_trigger_unregister(&heartbeat_led_trigger);
  }
  
+diff --git a/drivers/media/rc/Kconfig b/drivers/media/rc/Kconfig
+index aeb7f43..6f63ded 100644
+--- a/drivers/media/rc/Kconfig
++++ b/drivers/media/rc/Kconfig
+@@ -256,4 +256,13 @@ config RC_LOOPBACK
+ 	   To compile this driver as a module, choose M here: the module will
+ 	   be called rc_loopback.
+ 
++config IR_GPIO_CIR
++	tristate "GPIO IR remote control"
++	depends on RC_CORE
++	---help---
++	   Say Y if you want to use GPIO based IR Receiver.
++
++	   To compile this driver as a module, choose M here: the module will
++	   be called gpio-ir-recv.
++
+ endif #RC_CORE
+diff --git a/drivers/media/rc/Makefile b/drivers/media/rc/Makefile
+index 2156e78..9b3568e 100644
+--- a/drivers/media/rc/Makefile
++++ b/drivers/media/rc/Makefile
+@@ -25,3 +25,4 @@ obj-$(CONFIG_IR_REDRAT3) += redrat3.o
+ obj-$(CONFIG_IR_STREAMZAP) += streamzap.o
+ obj-$(CONFIG_IR_WINBOND_CIR) += winbond-cir.o
+ obj-$(CONFIG_RC_LOOPBACK) += rc-loopback.o
++obj-$(CONFIG_IR_GPIO_CIR) += gpio-ir-recv.o
 diff --git a/drivers/media/rc/ene_ir.c b/drivers/media/rc/ene_ir.c
 index ed77c6d..bef5296 100644
 --- a/drivers/media/rc/ene_ir.c
@@ -52399,6 +52395,497 @@ index fd108d9..6f978e8 100644
  	int tx_len;				/* current len of tx buffer */
  	int tx_done;				/* done transmitting */
  						/* one more sample pending*/
+diff --git a/drivers/media/rc/gpio-ir-recv.c b/drivers/media/rc/gpio-ir-recv.c
+new file mode 100644
+index 0000000..f913c71
+--- /dev/null
++++ b/drivers/media/rc/gpio-ir-recv.c
+@@ -0,0 +1,209 @@
++/* Copyright (c) 2012, Code Aurora Forum. All rights reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 and
++ * only version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/interrupt.h>
++#include <linux/gpio.h>
++#include <linux/slab.h>
++#include <linux/platform_device.h>
++#include <linux/irq.h>
++#include <media/rc-core.h>
++#include <media/gpio-ir-recv.h>
++
++#define GPIO_IR_DRIVER_NAME	"gpio-rc-recv"
++#define GPIO_IR_DEVICE_NAME	"gpio_ir_recv"
++
++struct gpio_rc_dev {
++	struct rc_dev *rcdev;
++	int gpio_nr;
++	bool active_low;
++};
++
++static irqreturn_t gpio_ir_recv_irq(int irq, void *dev_id)
++{
++	struct gpio_rc_dev *gpio_dev = dev_id;
++	int gval;
++	int rc = 0;
++	enum raw_event_type type = IR_SPACE;
++
++	gval = gpio_get_value_cansleep(gpio_dev->gpio_nr);
++
++	if (gval < 0)
++		goto err_get_value;
++
++	if (gpio_dev->active_low)
++		gval = !gval;
++
++	if (gval == 1)
++		type = IR_PULSE;
++
++	rc = ir_raw_event_store_edge(gpio_dev->rcdev, type);
++	if (rc < 0)
++		goto err_get_value;
++
++	ir_raw_event_handle(gpio_dev->rcdev);
++
++err_get_value:
++	return IRQ_HANDLED;
++}
++
++static int __devinit gpio_ir_recv_probe(struct platform_device *pdev)
++{
++	struct gpio_rc_dev *gpio_dev;
++	struct rc_dev *rcdev;
++	const struct gpio_ir_recv_platform_data *pdata =
++					pdev->dev.platform_data;
++	int rc;
++
++	if (!pdata)
++		return -EINVAL;
++
++	if (pdata->gpio_nr < 0)
++		return -EINVAL;
++
++	gpio_dev = kzalloc(sizeof(struct gpio_rc_dev), GFP_KERNEL);
++	if (!gpio_dev)
++		return -ENOMEM;
++
++	rcdev = rc_allocate_device();
++	if (!rcdev) {
++		rc = -ENOMEM;
++		goto err_allocate_device;
++	}
++
++	rcdev->priv = gpio_dev;
++	rcdev->driver_type = RC_DRIVER_IR_RAW;
++	rcdev->input_name = GPIO_IR_DEVICE_NAME;
++	rcdev->input_id.bustype = BUS_HOST;
++	rcdev->driver_name = GPIO_IR_DRIVER_NAME;
++	if (pdata->allowed_protos)
++		rcdev->allowed_protos = pdata->allowed_protos;
++	else
++		rcdev->allowed_protos = RC_TYPE_ALL;
++	rcdev->map_name = pdata->map_name ? pdata->map_name : RC_MAP_EMPTY;
++
++	gpio_dev->rcdev = rcdev;
++	gpio_dev->gpio_nr = pdata->gpio_nr;
++	gpio_dev->active_low = pdata->active_low;
++
++	rc = gpio_request(pdata->gpio_nr, "gpio-ir-recv");
++	if (rc < 0)
++		goto err_gpio_request;
++	rc  = gpio_direction_input(pdata->gpio_nr);
++	if (rc < 0)
++		goto err_gpio_direction_input;
++
++	rc = rc_register_device(rcdev);
++	if (rc < 0) {
++		dev_err(&pdev->dev, "failed to register rc device\n");
++		goto err_register_rc_device;
++	}
++
++	platform_set_drvdata(pdev, gpio_dev);
++
++	rc = request_any_context_irq(gpio_to_irq(pdata->gpio_nr),
++				gpio_ir_recv_irq,
++			IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,
++					"gpio-ir-recv-irq", gpio_dev);
++	if (rc < 0)
++		goto err_request_irq;
++
++	return 0;
++
++err_request_irq:
++	platform_set_drvdata(pdev, NULL);
++	rc_unregister_device(rcdev);
++err_register_rc_device:
++err_gpio_direction_input:
++	gpio_free(pdata->gpio_nr);
++err_gpio_request:
++	rc_free_device(rcdev);
++	rcdev = NULL;
++err_allocate_device:
++	kfree(gpio_dev);
++	return rc;
++}
++
++static int __devexit gpio_ir_recv_remove(struct platform_device *pdev)
++{
++	struct gpio_rc_dev *gpio_dev = platform_get_drvdata(pdev);
++
++	free_irq(gpio_to_irq(gpio_dev->gpio_nr), gpio_dev);
++	platform_set_drvdata(pdev, NULL);
++	rc_unregister_device(gpio_dev->rcdev);
++	gpio_free(gpio_dev->gpio_nr);
++	rc_free_device(gpio_dev->rcdev);
++	kfree(gpio_dev);
++	return 0;
++}
++
++#ifdef CONFIG_PM
++static int gpio_ir_recv_suspend(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct gpio_rc_dev *gpio_dev = platform_get_drvdata(pdev);
++
++	if (device_may_wakeup(dev))
++		enable_irq_wake(gpio_to_irq(gpio_dev->gpio_nr));
++	else
++		disable_irq(gpio_to_irq(gpio_dev->gpio_nr));
++
++	return 0;
++}
++
++static int gpio_ir_recv_resume(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct gpio_rc_dev *gpio_dev = platform_get_drvdata(pdev);
++
++	if (device_may_wakeup(dev))
++		disable_irq_wake(gpio_to_irq(gpio_dev->gpio_nr));
++	else
++		enable_irq(gpio_to_irq(gpio_dev->gpio_nr));
++
++	return 0;
++}
++
++static const struct dev_pm_ops gpio_ir_recv_pm_ops = {
++	.suspend        = gpio_ir_recv_suspend,
++	.resume         = gpio_ir_recv_resume,
++};
++#endif
++
++static struct platform_driver gpio_ir_recv_driver = {
++	.probe  = gpio_ir_recv_probe,
++	.remove = __devexit_p(gpio_ir_recv_remove),
++	.driver = {
++		.name   = GPIO_IR_DRIVER_NAME,
++		.owner  = THIS_MODULE,
++#ifdef CONFIG_PM
++		.pm	= &gpio_ir_recv_pm_ops,
++#endif
++	},
++};
++
++static int __init gpio_ir_recv_init(void)
++{
++	return platform_driver_register(&gpio_ir_recv_driver);
++}
++module_init(gpio_ir_recv_init);
++
++static void __exit gpio_ir_recv_exit(void)
++{
++	platform_driver_unregister(&gpio_ir_recv_driver);
++}
++module_exit(gpio_ir_recv_exit);
++
++MODULE_DESCRIPTION("GPIO IR Receiver driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/media/rc/ir-rc6-decoder.c b/drivers/media/rc/ir-rc6-decoder.c
+index 140fb67..4cfdd7f 100644
+--- a/drivers/media/rc/ir-rc6-decoder.c
++++ b/drivers/media/rc/ir-rc6-decoder.c
+@@ -18,24 +18,31 @@
+ /*
+  * This decoder currently supports:
+  * RC6-0-16	(standard toggle bit in header)
++ * RC6-6A-20	(no toggle bit)
+  * RC6-6A-24	(no toggle bit)
+  * RC6-6A-32	(MCE version with toggle bit in body)
+  */
+ 
+-#define RC6_UNIT		444444	/* us */
++#define RC6_UNIT		444444	/* nanosecs */
+ #define RC6_HEADER_NBITS	4	/* not including toggle bit */
+ #define RC6_0_NBITS		16
+-#define RC6_6A_SMALL_NBITS	24
+-#define RC6_6A_LARGE_NBITS	32
++#define RC6_6A_32_NBITS		32
++#define RC6_6A_NBITS		128	/* Variable 8..128 */
+ #define RC6_PREFIX_PULSE	(6 * RC6_UNIT)
+ #define RC6_PREFIX_SPACE	(2 * RC6_UNIT)
+ #define RC6_BIT_START		(1 * RC6_UNIT)
+ #define RC6_BIT_END		(1 * RC6_UNIT)
+ #define RC6_TOGGLE_START	(2 * RC6_UNIT)
+ #define RC6_TOGGLE_END		(2 * RC6_UNIT)
++#define RC6_SUFFIX_SPACE	(6 * RC6_UNIT)
+ #define RC6_MODE_MASK		0x07	/* for the header bits */
+ #define RC6_STARTBIT_MASK	0x08	/* for the header bits */
+ #define RC6_6A_MCE_TOGGLE_MASK	0x8000	/* for the body bits */
++#define RC6_6A_LCC_MASK		0xffff0000 /* RC6-6A-32 long customer code mask */
++#define RC6_6A_MCE_CC		0x800f0000 /* MCE customer code */
++#ifndef CHAR_BIT
++#define CHAR_BIT 8	/* Normally in <limits.h> */
++#endif
+ 
+ enum rc6_mode {
+ 	RC6_MODE_0,
+@@ -125,6 +132,7 @@ again:
+ 			break;
+ 
+ 		data->state = STATE_HEADER_BIT_START;
++		data->header = 0;
+ 		return 0;
+ 
+ 	case STATE_HEADER_BIT_START:
+@@ -171,20 +179,14 @@ again:
+ 		data->state = STATE_BODY_BIT_START;
+ 		decrease_duration(&ev, RC6_TOGGLE_END);
+ 		data->count = 0;
++		data->body = 0;
+ 
+ 		switch (rc6_mode(data)) {
+ 		case RC6_MODE_0:
+ 			data->wanted_bits = RC6_0_NBITS;
+ 			break;
+ 		case RC6_MODE_6A:
+-			/* This might look weird, but we basically
+-			   check the value of the first body bit to
+-			   determine the number of bits in mode 6A */
+-			if ((!ev.pulse && !geq_margin(ev.duration, RC6_UNIT, RC6_UNIT / 2)) ||
+-			    geq_margin(ev.duration, RC6_UNIT, RC6_UNIT / 2))
+-				data->wanted_bits = RC6_6A_LARGE_NBITS;
+-			else
+-				data->wanted_bits = RC6_6A_SMALL_NBITS;
++			data->wanted_bits = RC6_6A_NBITS;
+ 			break;
+ 		default:
+ 			IR_dprintk(1, "RC6 unknown mode\n");
+@@ -193,15 +195,21 @@ again:
+ 		goto again;
+ 
+ 	case STATE_BODY_BIT_START:
+-		if (!eq_margin(ev.duration, RC6_BIT_START, RC6_UNIT / 2))
+-			break;
+-
+-		data->body <<= 1;
+-		if (ev.pulse)
+-			data->body |= 1;
+-		data->count++;
+-		data->state = STATE_BODY_BIT_END;
+-		return 0;
++		if (eq_margin(ev.duration, RC6_BIT_START, RC6_UNIT / 2)) {
++			/* Discard LSB's that won't fit in data->body */
++			if (data->count++ < CHAR_BIT * sizeof data->body) {
++				data->body <<= 1;
++				if (ev.pulse)
++					data->body |= 1;
++			}
++			data->state = STATE_BODY_BIT_END;
++			return 0;
++		} else if (RC6_MODE_6A == rc6_mode(data) && !ev.pulse &&
++				geq_margin(ev.duration, RC6_SUFFIX_SPACE, RC6_UNIT / 2)) {
++			data->state = STATE_FINISHED;
++			goto again;
++		}
++		break;
+ 
+ 	case STATE_BODY_BIT_END:
+ 		if (!is_transition(&ev, &dev->raw->prev_ev))
+@@ -221,20 +229,27 @@ again:
+ 
+ 		switch (rc6_mode(data)) {
+ 		case RC6_MODE_0:
+-			scancode = data->body & 0xffff;
++			scancode = data->body;
+ 			toggle = data->toggle;
+ 			IR_dprintk(1, "RC6(0) scancode 0x%04x (toggle: %u)\n",
+ 				   scancode, toggle);
+ 			break;
+ 		case RC6_MODE_6A:
+-			if (data->wanted_bits == RC6_6A_LARGE_NBITS) {
+-				toggle = data->body & RC6_6A_MCE_TOGGLE_MASK ? 1 : 0;
+-				scancode = data->body & ~RC6_6A_MCE_TOGGLE_MASK;
++			if (data->count > CHAR_BIT * sizeof data->body) {
++				IR_dprintk(1, "RC6 too many (%u) data bits\n",
++					data->count);
++				goto out;
++			}
++
++			scancode = data->body;
++			if (data->count == RC6_6A_32_NBITS &&
++					(scancode & RC6_6A_LCC_MASK) == RC6_6A_MCE_CC) {
++				/* MCE RC */
++				toggle = (scancode & RC6_6A_MCE_TOGGLE_MASK) ? 1 : 0;
++				scancode &= ~RC6_6A_MCE_TOGGLE_MASK;
+ 			} else {
+ 				toggle = 0;
+-				scancode = data->body & 0xffffff;
+ 			}
+-
+ 			IR_dprintk(1, "RC6(6A) scancode 0x%08x (toggle: %u)\n",
+ 				   scancode, toggle);
+ 			break;
+diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
+index 36e4d5e..dad990e 100644
+--- a/drivers/media/rc/keymaps/Makefile
++++ b/drivers/media/rc/keymaps/Makefile
+@@ -89,4 +89,5 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+ 			rc-videomate-s350.o \
+ 			rc-videomate-tv-pvr.o \
+ 			rc-winfast.o \
+-			rc-winfast-usbii-deluxe.o
++			rc-winfast-usbii-deluxe.o \
++			rc-philips.o
+diff --git a/drivers/media/rc/keymaps/rc-philips.c b/drivers/media/rc/keymaps/rc-philips.c
+new file mode 100644
+index 0000000..04a768b
+--- /dev/null
++++ b/drivers/media/rc/keymaps/rc-philips.c
+@@ -0,0 +1,102 @@
++/* rc-rc6-mce.c - Keytable for Philips remotes.
++ *
++ * Copyright (c) 2010 by Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <media/rc-map.h>
++#include <linux/module.h>
++
++static struct rc_map_table rc6_philips[] = {
++
++	/* first remote */
++	{ 0x350c, KEY_POWER2 },
++	{ 0x043f, KEY_DVD },
++	{ 0x356d, KEY_RED },
++	{ 0x356e, KEY_GREEN },
++	{ 0x356f, KEY_YELLOW },
++	{ 0x3570, KEY_BLUE },
++
++	{ 0x352c, KEY_OK },
++	{ 0x3558, KEY_UP },
++	{ 0x3559, KEY_DOWN },
++	{ 0x355a, KEY_LEFT },
++	{ 0x355b, KEY_RIGHT },
++
++	{ 0x3520, KEY_NEXT },
++	{ 0x3521, KEY_PREVIOUS },
++
++	{ 0x3500, KEY_NUMERIC_0 },
++	{ 0x3501, KEY_NUMERIC_1 },
++	{ 0x3502, KEY_NUMERIC_2 },
++	{ 0x3503, KEY_NUMERIC_3 },
++	{ 0x3504, KEY_NUMERIC_4 },
++	{ 0x3505, KEY_NUMERIC_5 },
++	{ 0x3506, KEY_NUMERIC_6 },
++	{ 0x3507, KEY_NUMERIC_7 },
++	{ 0x3508, KEY_NUMERIC_8 },
++	{ 0x3509, KEY_NUMERIC_9 },
++
++	{ 0x3530, KEY_PLAYPAUSE },
++	{ 0x3531, KEY_STOP },
++	{ 0x3583, KEY_ESC },
++
++	/* second remote */
++	{ 0x326d, KEY_RED },
++	{ 0x326e, KEY_GREEN },
++	{ 0x326f, KEY_YELLOW },
++	{ 0x3270, KEY_BLUE },
++
++	{ 0x325c, KEY_OK },
++	{ 0x3258, KEY_UP },
++	{ 0x3259, KEY_DOWN },
++	{ 0x325a, KEY_LEFT },
++	{ 0x325b, KEY_RIGHT },
++
++	{ 0x3220, KEY_NEXT },
++	{ 0x3221, KEY_PREVIOUS },
++
++	{ 0x3200, KEY_NUMERIC_0 },
++	{ 0x3201, KEY_NUMERIC_1 },
++	{ 0x3202, KEY_NUMERIC_2 },
++	{ 0x3203, KEY_NUMERIC_3 },
++	{ 0x3204, KEY_NUMERIC_4 },
++	{ 0x3205, KEY_NUMERIC_5 },
++	{ 0x3206, KEY_NUMERIC_6 },
++	{ 0x3207, KEY_NUMERIC_7 },
++	{ 0x3208, KEY_NUMERIC_8 },
++	{ 0x3209, KEY_NUMERIC_9 },
++
++	{ 0x322c, KEY_PLAYPAUSE },
++	{ 0x3231, KEY_STOP },
++	{ 0x3283, KEY_ESC },
++};
++
++static struct rc_map_list rc6_mce_map = {
++	.map = {
++		.scan    = rc6_philips,
++		.size    = ARRAY_SIZE(rc6_philips),
++		.rc_type = RC_TYPE_RC6,
++		.name    = RC_MAP_RC6_PHILIPS,
++	}
++};
++
++static int __init init_rc_map_rc6_mce(void)
++{
++	return rc_map_register(&rc6_mce_map);
++}
++
++static void __exit exit_rc_map_rc6_mce(void)
++{
++	rc_map_unregister(&rc6_mce_map);
++}
++
++module_init(init_rc_map_rc6_mce)
++module_exit(exit_rc_map_rc6_mce)
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>");
+diff --git a/drivers/media/rc/rc-main.c b/drivers/media/rc/rc-main.c
+index 29f9000..c86238d 100644
+--- a/drivers/media/rc/rc-main.c
++++ b/drivers/media/rc/rc-main.c
+@@ -26,7 +26,7 @@
+ #define IR_TAB_MAX_SIZE	8192
+ 
+ /* FIXME: IR_KEYPRESS_TIMEOUT should be protocol specific */
+-#define IR_KEYPRESS_TIMEOUT 250
++#define IR_KEYPRESS_TIMEOUT 200
+ 
+ /* Used to keep track of known keymaps */
+ static LIST_HEAD(rc_map_list);
+@@ -1085,7 +1085,7 @@ int rc_register_device(struct rc_dev *dev)
+ 	 * to avoid wrong repetition of the keycodes. Note that this must be
+ 	 * set after the call to input_register_device().
+ 	 */
+-	dev->input_dev->rep[REP_DELAY] = 500;
++	dev->input_dev->rep[REP_DELAY] = 250;
+ 
+ 	/*
+ 	 * As a repeat event on protocols like RC-5 and NEC take as long as
 diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
 index f1391c2..d2c55e8 100644
 --- a/drivers/mfd/Kconfig
@@ -60029,10 +60516,10 @@ index 2333215..fc0c3b4 100644
 +obj-$(CONFIG_AT803X_PHY)	+= at803x.o
 diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
 new file mode 100644
-index 0000000..73d5676
+index 0000000..9f79f61
 --- /dev/null
 +++ b/drivers/net/phy/at803x.c
-@@ -0,0 +1,201 @@
+@@ -0,0 +1,178 @@
 +/*
 + * drivers/net/phy/at803x.c
 + *
@@ -60046,81 +60533,57 @@ index 0000000..73d5676
 + * under  the terms of  the GNU General  Public License as published by the
 + * Free Software Foundation;  either version 2 of the  License, or (at your
 + * option) any later version.
-+ *
 + */
++
 +#include <linux/phy.h>
 +#include <linux/module.h>
 +#include <linux/string.h>
++#include <linux/netdevice.h>
 +#include <linux/etherdevice.h>
 +
-+
-+#define AT803x_INTR_ENABLE 0x12
-+#define AT803x_INTR_STATUS 0x13
-+#define WOL_ENABLE 0x01         /* WAKE ON LAN INTERRUPT */
-+#define DEVICE_ADDR 0x03
-+#define LOC_MAC_ADDR_0_15_OFFSET 0x804C
-+#define LOC_MAC_ADDR_16_31_OFFSET 0x804B
-+#define LOC_MAC_ADDR_32_47_OFFSET 0x804A
-+#define MMD_ACCESS_CONTROL 0x0D
-+#define MMD_ACCESS_CONTROL_DATA 0x0E
-+#define FUNC_DATA 0x4003
++#define AT803X_INTR_ENABLE			0x12
++#define AT803X_INTR_STATUS			0x13
++#define AT803X_WOL_ENABLE			0x01
++#define AT803X_DEVICE_ADDR			0x03
++#define AT803X_LOC_MAC_ADDR_0_15_OFFSET		0x804C
++#define AT803X_LOC_MAC_ADDR_16_31_OFFSET	0x804B
++#define AT803X_LOC_MAC_ADDR_32_47_OFFSET	0x804A
++#define AT803X_MMD_ACCESS_CONTROL		0x0D
++#define AT803X_MMD_ACCESS_CONTROL_DATA		0x0E
++#define AT803X_FUNC_DATA			0x4003
 +
 +MODULE_DESCRIPTION("Atheros 803x PHY driver");
-+MODULE_AUTHOR("Ujhelyi Matus");
++MODULE_AUTHOR("Matus Ujhelyi");
 +MODULE_LICENSE("GPL");
 +
-+unsigned static int mac[ETH_ALEN];
-+static char *phy_mac_str = "00:00:00:00:00:00";
-+
-+module_param(phy_mac_str, charp, S_IRUGO);
-+MODULE_PARM_DESC(phy_mac_str, "MAC string for wake on lan");
-+
-+
-+static int at803x_parse_phy_mac(void)
++static void at803x_set_wol_mac_addr(struct phy_device *phydev)
 +{
-+	int i;
++	struct net_device *ndev = phydev->attached_dev;
++	const u8 *mac;
++	unsigned int i, offsets[] = {
++		AT803X_LOC_MAC_ADDR_32_47_OFFSET,
++		AT803X_LOC_MAC_ADDR_16_31_OFFSET,
++		AT803X_LOC_MAC_ADDR_0_15_OFFSET,
++	};
 +
-+	if (6 != sscanf(phy_mac_str,
-+					"%02x:%02x:%02x:%02x:%02x:%02x",
-+					&mac[0], &mac[1], &mac[2],
-+					&mac[3], &mac[4], &mac[5])) {
-+		goto err1;
-+	}
++	if (!ndev)
++		return;
 +
-+	for (i = 0; i < ETH_ALEN; i++)
-+		mac[i] = (u8)(mac[i] & 0xFF);
++	mac = (const u8 *) ndev->dev_addr;
 +
 +	if (!is_valid_ether_addr(mac))
-+		goto err1;
++		return;
 +
-+
-+	return 0;
-+
-+ err1:
-+	pr_warning("Cannot parse correct MAC for PHY\n");
-+	for (i = 0; i < ETH_ALEN; ++i)
-+		mac[i] = 0;
-+
-+	return -1;
-+}
-+
-+static int at803x_set_wol_mac_addr(struct phy_device *phydev)
-+{
-+	phy_write(phydev, MMD_ACCESS_CONTROL, DEVICE_ADDR);
-+	phy_write(phydev, MMD_ACCESS_CONTROL_DATA, LOC_MAC_ADDR_0_15_OFFSET);
-+	phy_write(phydev, MMD_ACCESS_CONTROL, FUNC_DATA);
-+	phy_write(phydev, MMD_ACCESS_CONTROL_DATA, mac[5] + (mac[4] * 0x100));
-+
-+	phy_write(phydev, MMD_ACCESS_CONTROL, DEVICE_ADDR);
-+	phy_write(phydev, MMD_ACCESS_CONTROL_DATA, LOC_MAC_ADDR_16_31_OFFSET);
-+	phy_write(phydev, MMD_ACCESS_CONTROL, FUNC_DATA);
-+	phy_write(phydev, MMD_ACCESS_CONTROL_DATA, mac[3] + (mac[2] * 0x100));
-+
-+	phy_write(phydev, MMD_ACCESS_CONTROL, DEVICE_ADDR);
-+	phy_write(phydev, MMD_ACCESS_CONTROL_DATA, LOC_MAC_ADDR_32_47_OFFSET);
-+	phy_write(phydev, MMD_ACCESS_CONTROL, FUNC_DATA);
-+	phy_write(phydev, MMD_ACCESS_CONTROL_DATA, mac[1] + (mac[0] * 0x100));
-+	return 0;
++	for (i = 0; i < 3; i++) {
++		phy_write(phydev, AT803X_MMD_ACCESS_CONTROL,
++				  AT803X_DEVICE_ADDR);
++		phy_write(phydev, AT803X_MMD_ACCESS_CONTROL_DATA,
++				  offsets[i]);
++		phy_write(phydev, AT803X_MMD_ACCESS_CONTROL,
++				  AT803X_FUNC_DATA);
++		phy_write(phydev, AT803X_MMD_ACCESS_CONTROL_DATA,
++				  mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
++	}
 +}
 +
 +static int at803x_config_init(struct phy_device *phydev)
@@ -60129,18 +60592,15 @@ index 0000000..73d5676
 +	u32 features;
 +	int status;
 +
-+	features = (SUPPORTED_TP | SUPPORTED_MII
-+			| SUPPORTED_AUI | SUPPORTED_FIBRE |
-+			SUPPORTED_BNC);
++	features = SUPPORTED_TP | SUPPORTED_MII | SUPPORTED_AUI |
++		   SUPPORTED_FIBRE | SUPPORTED_BNC;
 +
 +	val = phy_read(phydev, MII_BMSR);
-+
 +	if (val < 0)
 +		return val;
 +
 +	if (val & BMSR_ANEGCAPABLE)
 +		features |= SUPPORTED_Autoneg;
-+
 +	if (val & BMSR_100FULL)
 +		features |= SUPPORTED_100baseT_Full;
 +	if (val & BMSR_100HALF)
@@ -60152,7 +60612,6 @@ index 0000000..73d5676
 +
 +	if (val & BMSR_ESTATEN) {
 +		val = phy_read(phydev, MII_ESTATUS);
-+
 +		if (val < 0)
 +			return val;
 +
@@ -60164,10 +60623,11 @@ index 0000000..73d5676
 +
 +	phydev->supported = features;
 +	phydev->advertising = features;
-+	/* WAKE ON LAN ENABLE */
++
++	/* enable WOL */
 +	at803x_set_wol_mac_addr(phydev);
-+	status = phy_write(phydev, AT803x_INTR_ENABLE, WOL_ENABLE);
-+	status = phy_read(phydev, AT803x_INTR_STATUS);
++	status = phy_write(phydev, AT803X_INTR_ENABLE, AT803X_WOL_ENABLE);
++	status = phy_read(phydev, AT803X_INTR_STATUS);
 +
 +	return 0;
 +}
@@ -60182,7 +60642,9 @@ index 0000000..73d5676
 +	.flags		= PHY_HAS_INTERRUPT,
 +	.config_aneg	= &genphy_config_aneg,
 +	.read_status	= &genphy_read_status,
-+	.driver		= { .owner = THIS_MODULE,},
++	.driver		= {
++		.owner = THIS_MODULE,
++	},
 +};
 +
 +/* ATHEROS 8030 */
@@ -60195,13 +60657,14 @@ index 0000000..73d5676
 +	.flags		= PHY_HAS_INTERRUPT,
 +	.config_aneg	= &genphy_config_aneg,
 +	.read_status	= &genphy_read_status,
-+	.driver		= { .owner = THIS_MODULE,},
++	.driver		= {
++		.owner = THIS_MODULE,
++	},
 +};
 +
 +static int __init atheros_init(void)
 +{
 +	int ret;
-+	ret = at803x_parse_phy_mac();
 +
 +	ret = phy_driver_register(&at8035_driver);
 +	if (ret)
@@ -60210,6 +60673,7 @@ index 0000000..73d5676
 +	ret = phy_driver_register(&at8030_driver);
 +	if (ret)
 +		goto err2;
++
 +	return 0;
 +
 + err2:
@@ -60256,6 +60720,127 @@ index 83a5a5a..8b84789 100644
  		return ERR_PTR(-ENODEV);
  	}
  	phydev = to_phy_device(d);
+diff --git a/drivers/net/wireless/mwifiex/11n_rxreorder.c b/drivers/net/wireless/mwifiex/11n_rxreorder.c
+index 7aa9aa0..c5cf2fd 100644
+--- a/drivers/net/wireless/mwifiex/11n_rxreorder.c
++++ b/drivers/net/wireless/mwifiex/11n_rxreorder.c
+@@ -267,7 +267,8 @@ mwifiex_11n_create_rx_reorder_tbl(struct mwifiex_private *priv, u8 *ta,
+ 	else
+ 		last_seq = priv->rx_seq[tid];
+ 
+-	if (last_seq >= new_node->start_win)
++	if (last_seq != MWIFIEX_DEF_11N_RX_SEQ_NUM &&
++	    last_seq >= new_node->start_win)
+ 		new_node->start_win = last_seq + 1;
+ 
+ 	new_node->win_size = win_size;
+@@ -611,5 +612,9 @@ void mwifiex_11n_cleanup_reorder_tbl(struct mwifiex_private *priv)
+ 	spin_unlock_irqrestore(&priv->rx_reorder_tbl_lock, flags);
+ 
+ 	INIT_LIST_HEAD(&priv->rx_reorder_tbl_ptr);
+-	memset(priv->rx_seq, 0, sizeof(priv->rx_seq));
++	mwifiex_reset_11n_rx_seq_num(priv);
++}
++
++void mwifiex_reset_11n_rx_seq_num(struct mwifiex_private *priv){
++	memset(priv->rx_seq, 0xff, sizeof(priv->rx_seq));
+ }
+diff --git a/drivers/net/wireless/mwifiex/11n_rxreorder.h b/drivers/net/wireless/mwifiex/11n_rxreorder.h
+index 033c8ad..c4728b2 100644
+--- a/drivers/net/wireless/mwifiex/11n_rxreorder.h
++++ b/drivers/net/wireless/mwifiex/11n_rxreorder.h
+@@ -37,6 +37,10 @@
+ 
+ #define ADDBA_RSP_STATUS_ACCEPT 0
+ 
++#define MWIFIEX_DEF_11N_RX_SEQ_NUM	0xffff
++
++void mwifiex_reset_11n_rx_seq_num(struct mwifiex_private *priv);
++
+ int mwifiex_11n_rx_reorder_pkt(struct mwifiex_private *,
+ 			       u16 seqNum,
+ 			       u16 tid, u8 *ta,
+diff --git a/drivers/net/wireless/mwifiex/cfg80211.c b/drivers/net/wireless/mwifiex/cfg80211.c
+index 462c710..727c129 100644
+--- a/drivers/net/wireless/mwifiex/cfg80211.c
++++ b/drivers/net/wireless/mwifiex/cfg80211.c
+@@ -545,9 +545,9 @@ mwifiex_dump_station_info(struct mwifiex_private *priv,
+ 
+ 	/*
+ 	 * Bit 0 in tx_htinfo indicates that current Tx rate is 11n rate. Valid
+-	 * MCS index values for us are 0 to 7.
++	 * MCS index values for us are 0 to 15.
+ 	 */
+-	if ((priv->tx_htinfo & BIT(0)) && (priv->tx_rate < 8)) {
++	if ((priv->tx_htinfo & BIT(0)) && (priv->tx_rate < 16)) {
+ 		sinfo->txrate.mcs = priv->tx_rate;
+ 		sinfo->txrate.flags |= RATE_INFO_FLAGS_MCS;
+ 		/* 40MHz rate */
+@@ -1177,11 +1177,11 @@ struct net_device *mwifiex_add_virtual_intf(struct wiphy *wiphy,
+ 	void *mdev_priv;
+ 
+ 	if (!priv)
+-		return NULL;
++		return ERR_PTR(-EFAULT);
+ 
+ 	adapter = priv->adapter;
+ 	if (!adapter)
+-		return NULL;
++		return ERR_PTR(-EFAULT);
+ 
+ 	switch (type) {
+ 	case NL80211_IFTYPE_UNSPECIFIED:
+@@ -1190,7 +1190,7 @@ struct net_device *mwifiex_add_virtual_intf(struct wiphy *wiphy,
+ 		if (priv->bss_mode) {
+ 			wiphy_err(wiphy, "cannot create multiple"
+ 					" station/adhoc interfaces\n");
+-			return NULL;
++			return ERR_PTR(-EINVAL);
+ 		}
+ 
+ 		if (type == NL80211_IFTYPE_UNSPECIFIED)
+@@ -1208,14 +1208,15 @@ struct net_device *mwifiex_add_virtual_intf(struct wiphy *wiphy,
+ 		break;
+ 	default:
+ 		wiphy_err(wiphy, "type not supported\n");
+-		return NULL;
++		return ERR_PTR(-EINVAL);
+ 	}
+ 
+ 	dev = alloc_netdev_mq(sizeof(struct mwifiex_private *), name,
+ 			      ether_setup, 1);
+ 	if (!dev) {
+ 		wiphy_err(wiphy, "no memory available for netdevice\n");
+-		goto error;
++		priv->bss_mode = NL80211_IFTYPE_UNSPECIFIED;
++		return ERR_PTR(-ENOMEM);
+ 	}
+ 
+ 	dev_net_set(dev, wiphy_net(wiphy));
+@@ -1240,7 +1241,9 @@ struct net_device *mwifiex_add_virtual_intf(struct wiphy *wiphy,
+ 	/* Register network device */
+ 	if (register_netdevice(dev)) {
+ 		wiphy_err(wiphy, "cannot register virtual network device\n");
+-		goto error;
++		free_netdev(dev);
++		priv->bss_mode = NL80211_IFTYPE_UNSPECIFIED;
++		return ERR_PTR(-EFAULT);
+ 	}
+ 
+ 	sema_init(&priv->async_sem, 1);
+@@ -1252,12 +1255,6 @@ struct net_device *mwifiex_add_virtual_intf(struct wiphy *wiphy,
+ 	mwifiex_dev_debugfs_init(priv);
+ #endif
+ 	return dev;
+-error:
+-	if (dev && (dev->reg_state == NETREG_UNREGISTERED))
+-		free_netdev(dev);
+-	priv->bss_mode = NL80211_IFTYPE_UNSPECIFIED;
+-
+-	return NULL;
+ }
+ EXPORT_SYMBOL_GPL(mwifiex_add_virtual_intf);
+ 
 diff --git a/drivers/net/wireless/mwifiex/fw.h b/drivers/net/wireless/mwifiex/fw.h
 index 0cc5d73..d1ae1d3 100644
 --- a/drivers/net/wireless/mwifiex/fw.h
@@ -60587,6 +61172,36 @@ index 1679c25..12a8cbb 100644
  	if (mwifiex_set_hs_params(mwifiex_get_priv(adapter,
  						       MWIFIEX_BSS_ROLE_STA),
  				  HostCmd_ACT_GEN_SET, MWIFIEX_SYNC_CMD,
+diff --git a/drivers/net/wireless/mwifiex/wmm.c b/drivers/net/wireless/mwifiex/wmm.c
+index 6c239c3..06fcf1e 100644
+--- a/drivers/net/wireless/mwifiex/wmm.c
++++ b/drivers/net/wireless/mwifiex/wmm.c
+@@ -406,6 +406,8 @@ mwifiex_wmm_init(struct mwifiex_adapter *adapter)
+ 		priv->add_ba_param.tx_win_size = MWIFIEX_AMPDU_DEF_TXWINSIZE;
+ 		priv->add_ba_param.rx_win_size = MWIFIEX_AMPDU_DEF_RXWINSIZE;
+ 
++		mwifiex_reset_11n_rx_seq_num(priv);
++
+ 		atomic_set(&priv->wmm.tx_pkts_queued, 0);
+ 		atomic_set(&priv->wmm.highest_queued_prio, HIGH_PRIO_TID);
+ 	}
+@@ -1209,10 +1211,12 @@ mwifiex_dequeue_tx_packet(struct mwifiex_adapter *adapter)
+ 		return 0;
+ 	}
+ 
+-	if (!ptr->is_11n_enabled || mwifiex_is_ba_stream_setup(priv, ptr, tid)
+-	    || ((priv->sec_info.wpa_enabled
+-		  || priv->sec_info.wpa2_enabled) && !priv->wpa_is_gtk_set)
+-		) {
++	if (!ptr->is_11n_enabled ||
++	    mwifiex_is_ba_stream_setup(priv, ptr, tid) ||
++	    priv->wps.session_enable ||
++	    ((priv->sec_info.wpa_enabled ||
++	      priv->sec_info.wpa2_enabled) &&
++	     !priv->wpa_is_gtk_set)) {
+ 		mwifiex_send_single_packet(priv, ptr, ptr_index, flags);
+ 		/* ra_list_spinlock has been freed in
+ 		   mwifiex_send_single_packet() */
 diff --git a/drivers/net/wireless/wl12xx/Kconfig b/drivers/net/wireless/wl12xx/Kconfig
 index 3fe388b..f3162eb 100644
 --- a/drivers/net/wireless/wl12xx/Kconfig
@@ -81794,6 +82409,48 @@ index 4b69739..e6911c6 100644
  };
  
  /* Platform does not support level trigger interrupts */
+diff --git a/include/media/gpio-ir-recv.h b/include/media/gpio-ir-recv.h
+new file mode 100644
+index 0000000..9d1c54b
+--- /dev/null
++++ b/include/media/gpio-ir-recv.h
+@@ -0,0 +1,24 @@
++/* Copyright (c) 2012, Code Aurora Forum. All rights reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 and
++ * only version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __GPIO_IR_RECV_H__
++#define __GPIO_IR_RECV_H__
++
++struct gpio_ir_recv_platform_data {
++	int gpio_nr;
++	bool active_low;
++	u64 allowed_protos;
++	const char *map_name;
++};
++
++#endif /* __GPIO_IR_RECV_H__ */
++
+diff --git a/include/media/rc-map.h b/include/media/rc-map.h
+index 26a3bd0..2628ec6 100644
+--- a/include/media/rc-map.h
++++ b/include/media/rc-map.h
+@@ -131,6 +131,7 @@ void rc_map_init(void);
+ #define RC_MAP_HAUPPAUGE                 "rc-hauppauge"
+ #define RC_MAP_RC5_TV                    "rc-rc5-tv"
+ #define RC_MAP_RC6_MCE                   "rc-rc6-mce"
++#define RC_MAP_RC6_PHILIPS               "rc-philips"
+ #define RC_MAP_REAL_AUDIO_220_32_KEYS    "rc-real-audio-220-32-keys"
+ #define RC_MAP_SNAPSTREAM_FIREFLY        "rc-snapstream-firefly"
+ #define RC_MAP_STREAMZAP                 "rc-streamzap"
 diff --git a/include/video/da8xx-fb.h b/include/video/da8xx-fb.h
 index 89d43b3..6a6a69f 100644
 --- a/include/video/da8xx-fb.h
@@ -82055,19 +82712,6 @@ index a2c7842..5e58f8f 100644
  
  # Amp
  obj-$(CONFIG_SND_SOC_LM4857)	+= snd-soc-lm4857.o
-diff --git a/sound/soc/codecs/cs4271.c b/sound/soc/codecs/cs4271.c
-index 69fde15..62c06d0 100644
---- a/sound/soc/codecs/cs4271.c
-+++ b/sound/soc/codecs/cs4271.c
-@@ -334,6 +334,8 @@ static int cs4271_hw_params(struct snd_pcm_substream *substream,
- 	else
- 		val = CS4271_MODE1_MODE_4X;
- 
-+printk(" ===> %s() mclk %d val %d rate %d master %d\n", __func__, cs4271->mclk, val, cs4271->rate, cs4271->master);
-+
- 	ratio = cs4271->mclk / cs4271->rate;
- 	for (i = 0; i < CS4171_NR_RATIOS; i++)
- 		if ((cs4271_clk_tab[i].master == cs4271->master) &&
 diff --git a/sound/soc/codecs/si5351x_clock_sourced_dai.c b/sound/soc/codecs/si5351x_clock_sourced_dai.c
 new file mode 100644
 index 0000000..dd64d5f
@@ -82615,7 +83259,7 @@ index 87d5ef1..fc32b7f 100644
  out:
  	return ret;
 diff --git a/sound/soc/davinci/Kconfig b/sound/soc/davinci/Kconfig
-index 9e11a14..e4f357f 100644
+index 9e11a14..a1d42f2 100644
 --- a/sound/soc/davinci/Kconfig
 +++ b/sound/soc/davinci/Kconfig
 @@ -6,6 +6,14 @@ config SND_DAVINCI_SOC
@@ -82633,7 +83277,7 @@ index 9e11a14..e4f357f 100644
  config SND_DAVINCI_SOC_I2S
  	tristate
  
-@@ -21,10 +29,32 @@ config SND_DAVINCI_SOC_EVM
+@@ -21,10 +29,22 @@ config SND_DAVINCI_SOC_EVM
  	depends on MACH_DAVINCI_EVM || MACH_DAVINCI_DM355_EVM || MACH_DAVINCI_DM365_EVM
  	select SND_DAVINCI_SOC_I2S
  	select SND_SOC_TLV320AIC3X
@@ -82653,24 +83297,14 @@ index 9e11a14..e4f357f 100644
 +	  Say Y if you want to add support for SoC audio on
 +	  AM335X EVM
 +
-+config  SND_AM335X_SOC_RAUMFELD
-+	tristate "SoC Audio support for AM335X based Raumfeld devices"
-+	depends on SND_AM33XX_SOC
-+	select SND_DAVINCI_SOC_MCASP
-+	select SND_SOC_CS4271
-+	select SND_SOC_SI5351X
-+	help
-+	  Say Y if you want to add support for SoC audio on AM335X EVM
-+	  based Raumfeld devices.
-+
  choice
  	prompt "DM365 codec select"
  	depends on SND_DAVINCI_SOC_EVM
 diff --git a/sound/soc/davinci/Makefile b/sound/soc/davinci/Makefile
-index a93679d..d9f3d66 100644
+index a93679d..a7af786 100644
 --- a/sound/soc/davinci/Makefile
 +++ b/sound/soc/davinci/Makefile
-@@ -5,16 +5,20 @@ snd-soc-davinci-mcasp-objs:= davinci-mcasp.o
+@@ -5,6 +5,7 @@ snd-soc-davinci-mcasp-objs:= davinci-mcasp.o
  snd-soc-davinci-vcif-objs:= davinci-vcif.o
  
  obj-$(CONFIG_SND_DAVINCI_SOC) += snd-soc-davinci.o
@@ -82678,18 +83312,11 @@ index a93679d..d9f3d66 100644
  obj-$(CONFIG_SND_DAVINCI_SOC_I2S) += snd-soc-davinci-i2s.o
  obj-$(CONFIG_SND_DAVINCI_SOC_MCASP) += snd-soc-davinci-mcasp.o
  obj-$(CONFIG_SND_DAVINCI_SOC_VCIF) += snd-soc-davinci-vcif.o
- 
- # DAVINCI Machine Support
- snd-soc-evm-objs := davinci-evm.o
-+snd-soc-raumfeld-objs := davinci-raumfeld.o
- snd-soc-sffsdr-objs := davinci-sffsdr.o
- 
- obj-$(CONFIG_SND_DAVINCI_SOC_EVM) += snd-soc-evm.o
+@@ -17,4 +18,5 @@ obj-$(CONFIG_SND_DAVINCI_SOC_EVM) += snd-soc-evm.o
  obj-$(CONFIG_SND_DM6467_SOC_EVM) += snd-soc-evm.o
  obj-$(CONFIG_SND_DA830_SOC_EVM) += snd-soc-evm.o
  obj-$(CONFIG_SND_DA850_SOC_EVM) += snd-soc-evm.o
 +obj-$(CONFIG_SND_AM335X_SOC_EVM) += snd-soc-evm.o
-+obj-$(CONFIG_SND_AM335X_SOC_RAUMFELD) += snd-soc-raumfeld.o
  obj-$(CONFIG_SND_DAVINCI_SOC_SFFSDR) += snd-soc-sffsdr.o
 diff --git a/sound/soc/davinci/davinci-evm.c b/sound/soc/davinci/davinci-evm.c
 index f78c3f0..25157fa 100644
@@ -82957,7 +83584,7 @@ index 300e121..81a3e16 100644
  #include "davinci-pcm.h"
  #include "davinci-i2s.h"
 diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
-index 7173df2..29b07e5 100644
+index 7173df2..cdadf47 100644
 --- a/sound/soc/davinci/davinci-mcasp.c
 +++ b/sound/soc/davinci/davinci-mcasp.c
 @@ -21,7 +21,8 @@
@@ -83171,7 +83798,7 @@ index 7173df2..29b07e5 100644
  		mask = 0x0fffffff;
  		break;
  
-@@ -559,17 +622,30 @@ static int davinci_config_channel_size(struct davinci_audio_dev *dev,
+@@ -559,17 +622,25 @@ static int davinci_config_channel_size(struct davinci_audio_dev *dev,
  		return -EINVAL;
  	}
  
@@ -83180,12 +83807,7 @@ index 7173df2..29b07e5 100644
 -	mcasp_mod_bits(dev->base + DAVINCI_MCASP_TXFMT_REG,
 +	if(dev->deviceType == MCASP_I2S_OUTPUT_DEVICE){
 +		fmt = 0x0F;			//pad to 32bit
-+	}
-+		
-+	fmt = 0x0F;			//pad to 32bit
-+
-+printk(KERN_ERR " %s() ::: channel_size %d, fmt %02x rotate %d mask %08x\n", __func__, channel_size, fmt, rotate, mask);
-+ 
++	} 
 +	pr_debug("fmt:%d,ch_size:%d\n", fmt, channel_size);
 +	if (dev->playback) {
 +		mcasp_mod_bits(dev->base + DAVINCI_MCASP_TXFMT_REG,
@@ -83212,7 +83834,7 @@ index 7173df2..29b07e5 100644
  	return 0;
  }
  
-@@ -613,20 +689,36 @@ static void davinci_hw_common_param(struct davinci_audio_dev *dev, int stream)
+@@ -613,20 +684,36 @@ static void davinci_hw_common_param(struct davinci_audio_dev *dev, int stream)
  		if (dev->txnumevt * tx_ser > 64)
  			dev->txnumevt = 1;
  
@@ -83254,7 +83876,7 @@ index 7173df2..29b07e5 100644
  	}
  }
  
-@@ -639,13 +731,24 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
+@@ -639,13 +726,22 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
  	for (i = 0; i < active_slots; i++)
  		mask |= (1 << i);
  
@@ -83277,12 +83899,10 @@ index 7173df2..29b07e5 100644
 +			mcasp_set_bits(dev->base + DAVINCI_MCASP_AHCLKXCTL_REG,
 +				AHCLKXPOL);
 +		}
-+
-+printk(" >>> %s() --- DAVINCI_MCASP_TXTDM_REG => %08x\n", __func__, mask);
  		mcasp_set_reg(dev->base + DAVINCI_MCASP_TXTDM_REG, mask);
  		mcasp_set_bits(dev->base + DAVINCI_MCASP_TXFMT_REG, TXORD);
  
-@@ -655,14 +758,24 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
+@@ -655,14 +751,24 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
  		else
  			printk(KERN_ERR "playback tdm slot %d not supported\n",
  				dev->tdm_slots);
@@ -83302,15 +83922,15 @@ index 7173df2..29b07e5 100644
 -		mcasp_set_bits(dev->base + DAVINCI_MCASP_AHCLKRCTL_REG,
 +		if (!dev->deviceType) {
 +			mcasp_set_bits(dev->base + DAVINCI_MCASP_AHCLKRCTL_REG,
- 				AHCLKRE);
++				AHCLKRE);
 +		} else {
 +			mcasp_clr_bits(dev->base + DAVINCI_MCASP_AHCLKRCTL_REG,
-+				AHCLKRE);
+ 				AHCLKRE);
 +		}
  		mcasp_set_reg(dev->base + DAVINCI_MCASP_RXTDM_REG, mask);
  
  		if ((dev->tdm_slots >= 2) && (dev->tdm_slots <= 32))
-@@ -671,8 +784,13 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
+@@ -671,8 +777,13 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
  		else
  			printk(KERN_ERR "capture tdm slot %d not supported\n",
  				dev->tdm_slots);
@@ -83326,7 +83946,7 @@ index 7173df2..29b07e5 100644
  	}
  }
  
-@@ -731,6 +849,11 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
+@@ -731,6 +842,11 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
  	else
  		davinci_hw_param(dev, substream->stream);
  
@@ -83338,7 +83958,7 @@ index 7173df2..29b07e5 100644
  	switch (params_format(params)) {
  	case SNDRV_PCM_FORMAT_U8:
  	case SNDRV_PCM_FORMAT_S8:
-@@ -743,7 +866,13 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
+@@ -743,7 +859,13 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
  		dma_params->data_type = 2;
  		word_length = DAVINCI_AUDIO_WORD_16;
  		break;
@@ -83353,7 +83973,7 @@ index 7173df2..29b07e5 100644
  	case SNDRV_PCM_FORMAT_U32_LE:
  	case SNDRV_PCM_FORMAT_S32_LE:
  		dma_params->data_type = 4;
-@@ -755,6 +884,8 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
+@@ -755,6 +877,8 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
  		return -EINVAL;
  	}
  
@@ -83362,7 +83982,7 @@ index 7173df2..29b07e5 100644
  	if (dev->version == MCASP_VERSION_2 && !fifo_level)
  		dma_params->acnt = 4;
  	else
-@@ -763,6 +894,8 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
+@@ -763,6 +887,8 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
  	dma_params->fifo_level = fifo_level;
  	davinci_config_channel_size(dev, word_length);
  
@@ -83371,7 +83991,7 @@ index 7173df2..29b07e5 100644
  	return 0;
  }
  
-@@ -776,20 +909,18 @@ static int davinci_mcasp_trigger(struct snd_pcm_substream *substream,
+@@ -776,20 +902,18 @@ static int davinci_mcasp_trigger(struct snd_pcm_substream *substream,
  	case SNDRV_PCM_TRIGGER_RESUME:
  	case SNDRV_PCM_TRIGGER_START:
  	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
@@ -83399,7 +84019,7 @@ index 7173df2..29b07e5 100644
  		break;
  
  	case SNDRV_PCM_TRIGGER_STOP:
-@@ -821,40 +952,46 @@ static struct snd_soc_dai_ops davinci_mcasp_dai_ops = {
+@@ -821,40 +945,46 @@ static struct snd_soc_dai_ops davinci_mcasp_dai_ops = {
  
  };
  
@@ -83465,7 +84085,7 @@ index 7173df2..29b07e5 100644
  	},
  
  };
-@@ -887,15 +1024,14 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
+@@ -887,15 +1017,14 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
  	}
  
  	pdata = pdev->dev.platform_data;
@@ -83486,7 +84106,7 @@ index 7173df2..29b07e5 100644
  	dev->base = ioremap(mem->start, resource_size(mem));
  	if (!dev->base) {
  		dev_err(&pdev->dev, "ioremap failed\n");
-@@ -911,16 +1047,35 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
+@@ -911,16 +1040,35 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
  	dev->version = pdata->version;
  	dev->txnumevt = pdata->txnumevt;
  	dev->rxnumevt = pdata->rxnumevt;
@@ -83525,7 +84145,7 @@ index 7173df2..29b07e5 100644
  	if (!res) {
  		dev_err(&pdev->dev, "no DMA resource\n");
  		ret = -ENODEV;
-@@ -933,30 +1088,41 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
+@@ -933,30 +1081,41 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
  	dma_data->asp_chan_q = pdata->asp_chan_q;
  	dma_data->ram_chan_q = pdata->ram_chan_q;
  	dma_data->sram_size = pdata->sram_size_capture;
@@ -83574,7 +84194,7 @@ index 7173df2..29b07e5 100644
  	release_mem_region(mem->start, resource_size(mem));
  err_release_data:
  	kfree(dev);
-@@ -970,21 +1136,129 @@ static int davinci_mcasp_remove(struct platform_device *pdev)
+@@ -970,21 +1129,129 @@ static int davinci_mcasp_remove(struct platform_device *pdev)
  	struct resource *mem;
  
  	snd_soc_unregister_dai(&pdev->dev);
@@ -83857,333 +84477,6 @@ index c0d6c9b..2c3eadd 100644
  
  
  struct davinci_pcm_dma_params {
-diff --git a/sound/soc/davinci/davinci-raumfeld.c b/sound/soc/davinci/davinci-raumfeld.c
-new file mode 100644
-index 0000000..20bae7d
---- /dev/null
-+++ b/sound/soc/davinci/davinci-raumfeld.c
-@@ -0,0 +1,287 @@
-+/*
-+ * ASoC driver for TI DAVINCI EVM platform
-+ *
-+ * Author:      Vladimir Barinov, <vbarinov@embeddedalley.com>
-+ * Copyright:   (C) 2007 MontaVista Software, Inc., <source@mvista.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+
-+#include <linux/module.h>
-+#include <linux/moduleparam.h>
-+#include <linux/timer.h>
-+#include <linux/interrupt.h>
-+#include <linux/platform_device.h>
-+#include <linux/i2c.h>
-+#include <linux/delay.h>
-+#include <sound/core.h>
-+#include <sound/pcm.h>
-+#include <sound/pcm_params.h>
-+#include <sound/soc.h>
-+
-+#include <asm/dma.h>
-+#include <asm/mach-types.h>
-+
-+#include <asm/hardware/asp.h>
-+#include <mach/edma.h>
-+#include <mach/board-am335xevm.h>
-+
-+#include "davinci-pcm.h"
-+#include "davinci-i2s.h"
-+#include "davinci-mcasp.h"
-+
-+
-+static uint8_t clk0_clk1_12288000[]= {
-+0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x4f, 0x4f, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x00, 0x00, 0x0c, 0x35, 0x00, 0x0d, 0xba, 0x00, 
-+0x06, 0x7e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x1e, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x01, 0x42, 0xec, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0xd2, 0x60, 0x60, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+};
-+
-+static uint8_t clk0_clk1_11289600[] = {
-+0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x6f, 0x4f, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x00, 0x00, 0xf5, 0xe1, 0x00, 0x0c, 0x1d, 0x50, 
-+0xd7, 0x83, 0x0c, 0x35, 0x00, 0x0b, 0x8c, 0x00, 0x02, 0x04, 0x00, 0x01, 0x00, 0x1c, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x01, 0x42, 0x9f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0xd2, 0x60, 0x60, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 
-+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-+};
-+
-+
-+static int sue_init_si5351(int freq)
-+{
-+	struct i2c_adapter *adapter = i2c_get_adapter(1);
-+	uint8_t *regs = NULL, buf[2];
-+	struct i2c_msg msg;
-+	int i, ret, size;
-+
-+	printk(KERN_ERR " %s() :: %d\n", __func__, freq);
-+	
-+	if (!adapter) {
-+		printk(KERN_ERR "%s(): no adapter!?\n", __func__);
-+		return -EIO;
-+	}
-+
-+	if (freq == 12288000) {
-+		regs = clk0_clk1_12288000;
-+		size = sizeof(clk0_clk1_12288000);
-+	} else if (freq == 11289600) {
-+		regs = clk0_clk1_11289600;
-+		size = sizeof(clk0_clk1_11289600);
-+	} else {
-+		printk(KERN_ERR "%s(): unsupported freq %d!\n", __func__, freq);
-+		return -EINVAL;
-+	}
-+
-+	msg.addr = 0x60;
-+	msg.buf = buf;
-+	msg.len = sizeof(buf);
-+
-+	for (i = 0; i < 183; i++) {
-+		buf[0] = i;
-+		buf[1] = regs[i];
-+		ret = i2c_transfer(adapter, &msg, 1);
-+		mdelay(1);
-+		if (ret < 0) {
-+			printk(KERN_ERR " %s() write #%d failed\n", __func__, i);	
-+			return ret;
-+		}
-+	}
-+
-+	printk(KERN_ERR " >>> %s(): SENT %d bytes\n", __func__, size);
-+
-+	return 0;
-+}
-+
-+static int sue_i2s_hw_params(struct snd_pcm_substream *substream,
-+				struct snd_pcm_hw_params *params)
-+{
-+	/* SUE */
-+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-+	struct snd_soc_dai *codec_dai = rtd->codec_dai;
-+	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
-+	int ret = 0;
-+	unsigned int ahclkx_div;
-+	unsigned int div;
-+	static unsigned int xdiv=1,rdiv=1;
-+	unsigned int clk;
-+	unsigned int framerate;
-+	unsigned int bitrate;
-+	unsigned int dai_fmt;
-+	unsigned int playback;
-+
-+	framerate = params_rate(params);
-+
-+	playback = (substream->stream == SNDRV_PCM_STREAM_PLAYBACK);
-+	pr_info("SUE HW params entered. params:%d, playback:%d",framerate, playback);
-+
-+	ahclkx_div = 1;
-+	dai_fmt = 0;
-+
-+	switch (framerate) {
-+//	not supported - High clock divider is not aplicable when clock are externally sourced
-+//	case 8000:
-+//		ahclkx_div = 3;
-+	case 16000:
-+	case 32000:
-+	case 48000:
-+	case 96000:
-+	case 192000:
-+		clk = 12288000;
-+		break;
-+//	not supported - High clock divider is not aplicable when clock are externally sourced
-+//	case 11025:
-+//		ahclkx_div = 2;
-+	case 22050:
-+	case 44100:
-+	case 88200:
-+	case 176000:
-+		clk = 11289600;
-+		break;
-+	default:
-+		printk(KERN_DEBUG "SUE Audio: Not supported samplerate %d\n",params_rate(params));
-+		return -1;
-+	}
-+
-+	pr_info("clk:%d",clk);
-+	/* setup the clock frequency */
-+
-+	sue_init_si5351(clk);
-+
-+	ret = snd_soc_dai_set_sysclk(codec_dai, 0, clk, SND_SOC_CLOCK_OUT);
-+	if (ret < 0)
-+		return ret;
-+
-+	bitrate = 32;
-+
-+	switch (params_format(params)){
-+	case SNDRV_PCM_FORMAT_U8:
-+	case SNDRV_PCM_FORMAT_S8:
-+	case SNDRV_PCM_FORMAT_U16_LE:
-+	case SNDRV_PCM_FORMAT_S16_LE:
-+	case SNDRV_PCM_FORMAT_U32_LE:
-+	case SNDRV_PCM_FORMAT_S32_LE:
-+		break;
-+	case SNDRV_PCM_FORMAT_U24_LE:
-+	case SNDRV_PCM_FORMAT_S24_LE:
-+	case SNDRV_PCM_FORMAT_U24_3LE:
-+	case SNDRV_PCM_FORMAT_S24_3LE:
-+		if(playback)
-+			break;
-+	default:
-+		printk(KERN_DEBUG "SUE Audio: Not supported bitrate %d\n",params_format(params));
-+		return -1;
-+	}
-+
-+	div = clk / (bitrate * framerate * 2 * ahclkx_div);
-+
-+	if(playback){
-+		xdiv = div;
-+	}else{
-+		rdiv = div;
-+	}
-+	pr_info("xdiv:%d, div:%d, ahclkx_div:%d",xdiv,div,ahclkx_div);
-+	dai_fmt= SND_SOC_DAIFMT_CBM_CFM | SND_SOC_DAIFMT_NB_NF |
-+		 SND_SOC_DAIFMT_CLK_XDIV(xdiv-1) |
-+		 SND_SOC_DAIFMT_CLK_RDIV(rdiv-1) ;
-+	pr_info("dai_fmt:%.8x",dai_fmt);
-+
-+	/* setup the CPU DAI */
-+	ret = snd_soc_dai_set_fmt(cpu_dai, dai_fmt);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* setup the CODEC DAI */
-+	dai_fmt = SND_SOC_DAIFMT_I2S | \
-+		  SND_SOC_DAIFMT_CBM_CFM | \
-+		  SND_SOC_DAIFMT_NB_NF;
-+
-+	ret = snd_soc_dai_set_fmt(codec_dai, dai_fmt);
-+	if (ret < 0)
-+		return ret;
-+
-+	pr_err("sue_i2s_hw_params returned= %d\n",ret);
-+	return ret;
-+}
-+
-+static struct snd_soc_ops sue_ops = {
-+	.hw_params = sue_i2s_hw_params,
-+};
-+
-+static int evm_aic3x_init(struct snd_soc_pcm_runtime *rtd)
-+{
-+	return 0;
-+}
-+
-+static struct snd_soc_dai_link stream800_dai[] = {
-+	{
-+		.platform_name = "davinci-pcm-audio",
-+		.name = "audio",
-+		.stream_name = "I2S",
-+		.cpu_dai_name = "davinci-mcasp.0",
-+		.codec_dai_name = "cs4271-hifi",
-+		.codec_name = "cs4271.3-0010",
-+		.init = evm_aic3x_init,
-+		.ops = &sue_ops,
-+	},
-+};
-+
-+static struct snd_soc_card snd_soc_stream800_connector = {
-+	.name		= "Connector",
-+	.dai_link	= stream800_dai,
-+	.num_links	= ARRAY_SIZE(stream800_dai),
-+};
-+
-+static struct platform_device *evm_snd_device;
-+
-+static int __init evm_init(void)
-+{
-+	int ret;
-+
-+	evm_snd_device = platform_device_alloc("soc-audio", -1);
-+	if (!evm_snd_device) {
-+		return -ENOMEM;
-+	}
-+
-+	platform_set_drvdata(evm_snd_device, &snd_soc_stream800_connector);
-+	ret = platform_device_add(evm_snd_device);
-+	if (ret)
-+		platform_device_put(evm_snd_device);
-+
-+	return ret;
-+}
-+
-+static void __exit evm_exit(void)
-+{
-+	platform_device_unregister(evm_snd_device);
-+}
-+
-+module_init(evm_init);
-+module_exit(evm_exit);
-+
-+MODULE_AUTHOR("Daniel Mack");
-+MODULE_DESCRIPTION("TI DAVINCI Raumfeld ASoC driver");
-+MODULE_LICENSE("GPL");
-diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index a25fa63..21be7c2 100644
---- a/sound/soc/soc-core.c
-+++ b/sound/soc/soc-core.c
-@@ -21,6 +21,7 @@
-  *   o Add more codecs and platforms to ensure good API coverage.
-  *   o Support TDM on PCM and I2S
-  */
-+#define DEBUG
- 
- #include <linux/module.h>
- #include <linux/moduleparam.h>
-@@ -779,11 +780,13 @@ find_codec:
- 
- 	/* no, then find CODEC from registered CODECs*/
- 	list_for_each_entry(codec, &codec_list, list) {
-+		printk(" %s() :%d >%s< >%s<\n", __func__, __LINE__, codec->name, dai_link->codec_name);
- 		if (!strcmp(codec->name, dai_link->codec_name)) {
- 			rtd->codec = codec;
- 
- 			/* CODEC found, so find CODEC DAI from registered DAIs from this CODEC*/
- 			list_for_each_entry(codec_dai, &dai_list, list) {
-+				printk(" %s() :%d >%s< >%s<\n", __func__, __LINE__, codec_dai->name, dai_link->codec_dai_name);
- 				if (codec->dev == codec_dai->dev &&
- 						!strcmp(codec_dai->name, dai_link->codec_dai_name)) {
- 					rtd->codec_dai = codec_dai;
-@@ -811,6 +814,7 @@ find_platform:
- 
- 	/* no, then find one from the set of registered platforms */
- 	list_for_each_entry(platform, &platform_list, list) {
-+		printk(" %s() :%d >%s< >%s<\n", __func__, __LINE__, platform->name, platform_name);
- 		if (!strcmp(platform->name, platform_name)) {
- 			rtd->platform = platform;
- 			goto out;
 diff --git a/tools/perf/util/hist.c b/tools/perf/util/hist.c
 index e0a0970..216e33a 100644
 --- a/tools/perf/util/hist.c
