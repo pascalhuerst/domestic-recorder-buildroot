@@ -73,6 +73,7 @@
 				reg = <0x10>;
 				reset-gpio = <&gpio1 19 0>;
 				cirrus,amutec-eq-bmutec;
+				cirrus,enable-soft-reset;
 				vd-supply = <&vdd_audio>;
 			};
 		};
