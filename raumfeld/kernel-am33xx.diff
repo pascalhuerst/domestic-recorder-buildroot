@@ -1,9 +1,9 @@
 diff --git a/Documentation/devicetree/bindings/bus/ti-gpmc.txt b/Documentation/devicetree/bindings/bus/ti-gpmc.txt
 new file mode 100644
-index 0000000..ba3d6a5
+index 0000000..c97fbef
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/bus/ti-gpmc.txt
-@@ -0,0 +1,76 @@
+@@ -0,0 +1,77 @@
 +Device tree bindings for OMAP general purpose memory controllers (GPMC)
 +
 +The actual devices are instantiated from the child nodes of a GPMC node.
@@ -17,20 +17,20 @@ index 0000000..ba3d6a5
 +			completed.
 + - #address-cells:	Must be set to 2 to allow memory address translation
 + - #size-cells:		Must be set to 1 to allow CS address passing
-+ - num-cs:		The maximum number of chip-select lines that controller
++ - gpmc,num-cs:		The maximum number of chip-select lines that controller
 +			can support.
-+ - num-waitpins:	The maximum number of wait pins that controller can
++ - gpmc,num-waitpins:	The maximum number of wait pins that controller can
 +			support.
 + - ranges:		Must be set up to reflect the memory layout with four
 +			integer values for each chip-select line in use:
 +
 +			   <cs-number> 0 <physical address of mapping> <size>
 +
-+			Note that this property is not currently parsed.
-+			Calculated values derived from the contents of the
-+			per-CS register GPMC_CONFIG7 (as set up by the
-+			bootloader) are used. That will change in the future,
-+			so be sure to fill the correct values here.
++			Currently, calculated values derived from the contents
++			of the per-CS register GPMC_CONFIG7 (as set up by the
++			bootloader) are used for the physical address decoding.
++			As this will change in the future, filling correct
++			values here is a requirement.
 +
 +Timing properties for child nodes. All are optional and default to 0.
 +
@@ -60,7 +60,7 @@ index 0000000..ba3d6a5
 + - gpmc,rd-cycle:	Total read cycle time
 + - gpmc,wr-cycle:	Total write cycle time
 +
-+The following are only on OMAP3430:
++The following are only applicable to OMAP3+ and AM335x:
 + - gpmc,wr-access
 + - gpmc,wr-data-mux-bus
 +
@@ -73,7 +73,8 @@ index 0000000..ba3d6a5
 +		reg = <0x50000000 0x2000>;
 +		interrupts = <100>;
 +
-+		num-cs = <8>;
++		gpmc,num-cs = <8>;
++		gpmc,num-waitpins = <2>;
 +		#address-cells = <2>;
 +		#size-cells = <1>;
 +		ranges = <0 0 0x08000000 0x10000000>; /* CS0 @addr 0x8000000, size 0x10000000 */
@@ -313,10 +314,10 @@ index 0000000..b88ee83
 +};
 diff --git a/Documentation/devicetree/bindings/mtd/gpmc-nand.txt b/Documentation/devicetree/bindings/mtd/gpmc-nand.txt
 new file mode 100644
-index 0000000..2e8cee1
+index 0000000..63734dc
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/mtd/gpmc-nand.txt
-@@ -0,0 +1,87 @@
+@@ -0,0 +1,76 @@
 +Device tree bindings for GPMC connected NANDs
 +
 +GPMC connected NAND (found on OMAP boards) are represented as child nodes of
@@ -339,24 +340,14 @@ index 0000000..2e8cee1
 + - nand-bus-width: 		Set this numeric value to 16 if the hardware
 +				is wired that way. If not specified, a bus
 +				width of 8 is assumed.
++
 + - ti,nand-ecc-opt:		A string setting the ECC layout to use. One of:
 +
-+	Layouts for 1-bit ecc: stored at end of spare area:
-+
 +		"sw"		Software method (default)
-+		"hw"		Hardware method (let gpmc do the error detection)
-+
-+	Layouts for 1-bit ecc: stored at beginning of spare area as romcode:
-+
-+		"hw-romcode"	gpmc method & romcode layout
++		"hw"		Hardware method
++		"hw-romcode"	gpmc hamming mode method & romcode layout
 +		"bch4"		4-bit BCH ecc code
 +		"bch8"		8-bit BCH ecc code
-+
-+ - ti,nand-ecc-use-elm:		Property without value to specify that the
-+				hardware error location module should be used
-+				for error correction. Note that in order for
-+				this to work, the hardware must feature an ELM
-+				block, and the driver for it must be enabled.
 +
 +For inline partiton table parsing (optional):
 +
@@ -370,17 +361,16 @@ index 0000000..2e8cee1
 +		ti,hwmods = "gpmc";
 +		reg = <0x50000000 0x1000000>;
 +		interrupts = <100>;
-+		num-cs = <8>;
-+		num-waitpins = <8>;
++		gpmc,num-cs = <8>;
++		gpmc,num-waitpins = <2>;
 +		#address-cells = <2>;
 +		#size-cells = <1>;
-+		ranges = <0 0 0x08000000 0x10000000>;	/* CS0: NAND */
++		ranges = <0 0 0x08000000 0x2000>;	/* CS0: NAND */
 +
 +		nand@0,0 {
 +			reg = <0 0 0>; /* CS0, offset 0 */
 +			nand-bus-width = <16>;
 +			ti,nand-ecc-opt = "bch8";
-+			ti,nand-ecc-use-elm;
 +
 +			gpmc,sync-clk = <0>;
 +			gpmc,cs-on = <0>;
@@ -488,18 +478,52 @@ index 0000000..9c5a994
 +	atmel,audio-codec = <&wm8731>;
 +};
 diff --git a/Documentation/devicetree/bindings/sound/cs4271.txt b/Documentation/devicetree/bindings/sound/cs4271.txt
-index c81b5fd..a850fb9 100644
+index c81b5fd..e2cd1d7 100644
 --- a/Documentation/devicetree/bindings/sound/cs4271.txt
 +++ b/Documentation/devicetree/bindings/sound/cs4271.txt
-@@ -18,6 +18,8 @@ Optional properties:
+@@ -18,6 +18,20 @@ Optional properties:
  
   - reset-gpio: 	a GPIO spec to define which pin is connected to the chip's
  		!RESET pin
 + - cirrus,amuteb-eq-bmutec:	When given, the Codec's AMUTEB=BMUTEC flag
 +				is enabled.
++ - cirrus,enable-soft-reset:
++	The CS4271 requires its LRCLK and MCLK to be stable before its RESET
++	line is de-asserted. That also means that clocks cannot be changed
++	without putting the chip back into hardware reset, which also requires
++	a complete re-initialization of all registers.
++
++	One (undocumented) workaround is to assert and de-assert the PDN bit
++	in the MODE2 register. This workaround can be enabled with this DT
++	property.
++
++	Note that this is not needed in case the clocks are stable
++	throughout the entire runtime of the codec.
  
  Examples:
  
+diff --git a/Documentation/devicetree/bindings/sound/omap-abe-twl6040.txt b/Documentation/devicetree/bindings/sound/omap-abe-twl6040.txt
+index 65dec87..fd40c85 100644
+--- a/Documentation/devicetree/bindings/sound/omap-abe-twl6040.txt
++++ b/Documentation/devicetree/bindings/sound/omap-abe-twl6040.txt
+@@ -12,7 +12,7 @@ Required properties:
+ 
+ Optional properties:
+ - ti,dmic: phandle for the OMAP dmic node if the machine have it connected
+-- ti,jack_detection: Need to be set to <1> if the board capable to detect jack
++- ti,jack_detection: Need to be present if the board capable to detect jack
+   insertion, removal.
+ 
+ Available audio endpoints for the audio-routing table:
+@@ -59,7 +59,7 @@ sound {
+ 	compatible = "ti,abe-twl6040";
+ 	ti,model = "SDP4430";
+ 
+-	ti,jack-detection = <1>;
++	ti,jack-detection;
+ 	ti,mclk-freq = <38400000>;
+ 
+ 	ti,mcpdm = <&mcpdm>;
 diff --git a/Documentation/devicetree/bindings/spi/omap-spi.txt b/Documentation/devicetree/bindings/spi/omap-spi.txt
 index 81df374..8178792 100644
 --- a/Documentation/devicetree/bindings/spi/omap-spi.txt
@@ -612,10 +636,10 @@ index 9de2b9f..261b6d5 100644
  stericsson	ST-Ericsson
  ti	Texas Instruments
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index ade7e92..6737b69 100644
+index 9759fec..be22f68 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -924,6 +924,7 @@ config ARCH_DAVINCI
+@@ -925,6 +925,7 @@ config ARCH_DAVINCI
  	select GENERIC_IRQ_CHIP
  	select HAVE_IDE
  	select NEED_MACH_GPIO_H
@@ -8584,7 +8608,7 @@ index a0b4a428..72bb41b 100644
  
  #endif /* __OMAP_COMMON_BOARD_DEVICES__ */
 diff --git a/arch/arm/mach-omap2/gpmc-nand.c b/arch/arm/mach-omap2/gpmc-nand.c
-index 4acf497..e23d561 100644
+index 4acf497..c8a72ba 100644
 --- a/arch/arm/mach-omap2/gpmc-nand.c
 +++ b/arch/arm/mach-omap2/gpmc-nand.c
 @@ -17,9 +17,12 @@
@@ -8666,7 +8690,7 @@ index 4acf497..e23d561 100644
  }
  
 -int __init gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data)
-+static bool __init gpmc_hwecc_bch_capable(enum omap_ecc ecc_opt)
++static bool gpmc_hwecc_bch_capable(enum omap_ecc ecc_opt)
 +{
 +	/* support only OMAP3 class */
 +	if (!cpu_is_omap34xx() && !soc_is_am33xx()) {
@@ -8688,8 +8712,8 @@ index 4acf497..e23d561 100644
 +	return 1;
 +}
 +
-+int __init gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data,
-+			  struct gpmc_timings *gpmc_t)
++int gpmc_nand_init(struct omap_nand_platform_data *gpmc_nand_data,
++		   struct gpmc_timings *gpmc_t)
  {
  	int err	= 0;
  	struct device *dev = &gpmc_nand_device.dev;
@@ -9186,7 +9210,7 @@ index 249a0b4..ef99011 100644
  
  static struct resource gpmc_smsc911x_resources[] = {
 diff --git a/arch/arm/mach-omap2/gpmc.c b/arch/arm/mach-omap2/gpmc.c
-index 92b5718..585a1ab 100644
+index 92b5718..4c6e4d3 100644
 --- a/arch/arm/mach-omap2/gpmc.c
 +++ b/arch/arm/mach-omap2/gpmc.c
 @@ -25,17 +25,23 @@
@@ -9470,12 +9494,15 @@ index 92b5718..585a1ab 100644
  }
  
  int gpmc_get_client_irq(unsigned irq_config)
-@@ -902,6 +756,162 @@ static int __devinit gpmc_mem_init(void)
+@@ -902,7 +756,177 @@ static int __devinit gpmc_mem_init(void)
  	return 0;
  }
  
+-static __devinit int gpmc_probe(struct platform_device *pdev)
 +#ifdef CONFIG_OF
 +static struct of_device_id gpmc_dt_ids[] = {
++	{ .compatible = "ti,omap2420-gpmc" },
++	{ .compatible = "ti,am3358-gpmc" },
 +	{ .compatible = "ti,gpmc" },
 +	{ }
 +};
@@ -9557,8 +9584,8 @@ index 92b5718..585a1ab 100644
 +	[OMAP_ECC_BCH8_CODE_HW]			= "bch8",
 +};
 +
-+static int __devinit gpmc_probe_nand_child(struct platform_device *pdev,
-+					   struct device_node *child)
++static int gpmc_probe_nand_child(struct platform_device *pdev,
++				 struct device_node *child)
 +{
 +	u32 val;
 +	const char *s;
@@ -9579,13 +9606,25 @@ index 92b5718..585a1ab 100644
 +	gpmc_nand_data->cs = val;
 +	gpmc_nand_data->of_node = child;
 +
-+	if (!of_property_read_string(child, "ti,nand-ecc-opt", &s))
++	if (!of_property_read_string(child, "ti,nand-ecc-opt", &s)) {
 +		for (val = 0; val < ARRAY_SIZE(nand_ecc_opts); val++)
-+			if (!strcasecmp(s, nand_ecc_opts[val]))
++			if (!strcasecmp(s, nand_ecc_opts[val])) {
 +				gpmc_nand_data->ecc_opt = val;
++				break;
++			}
 +
-+	if (of_get_property(child, "ti,nand-ecc-use-elm", NULL))
-+		gpmc_nand_data->is_elm_used = true;
++		/*
++		 *  AM335x RBL compatibility mode - dependns on runtime
++		 * detection of the error location module.
++		 */
++		if (!strcasecmp(s, "bch8-am335xrbl-compatible")) {
++			gpmc_nand_data->ecc_opt = OMAP_ECC_BCH8_CODE_HW;
++			gpmc_nand_data->is_elm_used = true;
++		}
++	}
++
++	// HACK!
++	gpmc_nand_data->is_elm_used = true;
 +
 +	val = of_get_nand_bus_width(child);
 +	if (val == 16)
@@ -9597,14 +9636,14 @@ index 92b5718..585a1ab 100644
 +	return 0;
 +}
 +#else
-+static int __devinit gpmc_probe_nand_child(struct platform_device *pdev,
-+					   struct device_node *child)
++static int gpmc_probe_nand_child(struct platform_device *pdev,
++				 struct device_node *child)
 +{
 +	return 0;
 +}
 +#endif
 +
-+static int __devinit gpmc_probe_dt(struct platform_device *pdev)
++static int gpmc_probe_dt(struct platform_device *pdev)
 +{
 +	int ret;
 +	struct device_node *child;
@@ -9624,16 +9663,17 @@ index 92b5718..585a1ab 100644
 +	return 0;
 +}
 +#else
-+static int __devinit gpmc_probe_dt(struct platform_device *pdev)
++static int gpmc_probe_dt(struct platform_device *pdev)
 +{
 +	return 0;
 +}
 +#endif
 +
- static __devinit int gpmc_probe(struct platform_device *pdev)
++static int __devinit gpmc_probe(struct platform_device *pdev)
  {
  	int rc;
-@@ -955,6 +965,14 @@ static __devinit int gpmc_probe(struct platform_device *pdev)
+ 	u32 l;
+@@ -955,6 +979,14 @@ static __devinit int gpmc_probe(struct platform_device *pdev)
  	if (IS_ERR_VALUE(gpmc_setup_irq()))
  		dev_warn(gpmc_dev, "gpmc_setup_irq failed\n");
  
@@ -9648,7 +9688,7 @@ index 92b5718..585a1ab 100644
  	return 0;
  }
  
-@@ -972,6 +990,7 @@ static struct platform_driver gpmc_driver = {
+@@ -972,6 +1004,7 @@ static struct platform_driver gpmc_driver = {
  	.driver		= {
  		.name	= DEVICE_NAME,
  		.owner	= THIS_MODULE,
@@ -9656,19 +9696,21 @@ index 92b5718..585a1ab 100644
  	},
  };
  
-@@ -994,6 +1013,11 @@ static int __init omap_gpmc_init(void)
- 	struct omap_hwmod *oh;
+@@ -995,6 +1028,13 @@ static int __init omap_gpmc_init(void)
  	struct platform_device *pdev;
  	char *oh_name = "gpmc";
-+return 0;
-+
-+	/* If dtb is there, the devices will be created dynamically */
+ 
++	/*
++	 * if the board boots up with a populated DT, do not
++	 * manually add the device from this initcall
++	 */
 +	if (of_have_populated_dt())
 +		return -ENODEV;
- 
++
  	oh = omap_hwmod_lookup(oh_name);
  	if (!oh) {
-@@ -1093,267 +1117,3 @@ void omap3_gpmc_restore_context(void)
+ 		pr_err("Could not look up %s\n", oh_name);
+@@ -1093,267 +1133,3 @@ void omap3_gpmc_restore_context(void)
  	}
  }
  #endif /* CONFIG_ARCH_OMAP3 */
@@ -10439,6 +10481,105 @@ index 8b4e4f2..9a487a9 100644
  
  struct omap_mmc_dev_attr {
  	u8 flags;
+diff --git a/arch/sparc/boot/piggyback.c b/arch/sparc/boot/piggyback.c
+index c0a798f..bb7c951 100644
+--- a/arch/sparc/boot/piggyback.c
++++ b/arch/sparc/boot/piggyback.c
+@@ -81,18 +81,18 @@ static void usage(void)
+ 
+ static int start_line(const char *line)
+ {
+-	if (strcmp(line + 8, " T _start\n") == 0)
++	if (strcmp(line + 10, " _start\n") == 0)
+ 		return 1;
+-	else if (strcmp(line + 16, " T _start\n") == 0)
++	else if (strcmp(line + 18, " _start\n") == 0)
+ 		return 1;
+ 	return 0;
+ }
+ 
+ static int end_line(const char *line)
+ {
+-	if (strcmp(line + 8, " A _end\n") == 0)
++	if (strcmp(line + 10, " _end\n") == 0)
+ 		return 1;
+-	else if (strcmp (line + 16, " A _end\n") == 0)
++	else if (strcmp (line + 18, " _end\n") == 0)
+ 		return 1;
+ 	return 0;
+ }
+@@ -100,8 +100,8 @@ static int end_line(const char *line)
+ /*
+  * Find address for start and end in System.map.
+  * The file looks like this:
+- * f0004000 T _start
+- * f0379f79 A _end
++ * f0004000 ... _start
++ * f0379f79 ... _end
+  * 1234567890123456
+  * ^coloumn 1
+  * There is support for 64 bit addresses too.
+diff --git a/arch/sparc/kernel/sys32.S b/arch/sparc/kernel/sys32.S
+index 44025f4..8475a47 100644
+--- a/arch/sparc/kernel/sys32.S
++++ b/arch/sparc/kernel/sys32.S
+@@ -47,7 +47,7 @@ STUB:	sra	REG1, 0, REG1; \
+ 	sra	REG4, 0, REG4
+ 
+ SIGN1(sys32_exit, sparc_exit, %o0)
+-SIGN1(sys32_exit_group, sys_exit_group, %o0)
++SIGN1(sys32_exit_group, sparc_exit_group, %o0)
+ SIGN1(sys32_wait4, compat_sys_wait4, %o2)
+ SIGN1(sys32_creat, sys_creat, %o1)
+ SIGN1(sys32_mknod, sys_mknod, %o1)
+diff --git a/arch/sparc/kernel/syscalls.S b/arch/sparc/kernel/syscalls.S
+index 7f5f65d..bf23477 100644
+--- a/arch/sparc/kernel/syscalls.S
++++ b/arch/sparc/kernel/syscalls.S
+@@ -118,10 +118,20 @@ ret_from_syscall:
+ 	ba,pt	%xcc, ret_sys_call
+ 	 ldx	[%sp + PTREGS_OFF + PT_V9_I0], %o0
+ 
++	.globl	sparc_exit_group
++	.type	sparc_exit_group,#function
++sparc_exit_group:
++	sethi	%hi(sys_exit_group), %g7
++	ba,pt	%xcc, 1f
++	 or	%g7, %lo(sys_exit_group), %g7
++	.size	sparc_exit_group,.-sparc_exit_group
++
+ 	.globl	sparc_exit
+ 	.type	sparc_exit,#function
+ sparc_exit:
+-	rdpr	%pstate, %g2
++	sethi	%hi(sys_exit), %g7
++	or	%g7, %lo(sys_exit), %g7
++1:	rdpr	%pstate, %g2
+ 	wrpr	%g2, PSTATE_IE, %pstate
+ 	rdpr	%otherwin, %g1
+ 	rdpr	%cansave, %g3
+@@ -129,7 +139,7 @@ sparc_exit:
+ 	wrpr	%g3, 0x0, %cansave
+ 	wrpr	%g0, 0x0, %otherwin
+ 	wrpr	%g2, 0x0, %pstate
+-	ba,pt	%xcc, sys_exit
++	jmpl	%g7, %g0
+ 	 stb	%g0, [%g6 + TI_WSAVED]
+ 	.size	sparc_exit,.-sparc_exit
+ 
+diff --git a/arch/sparc/kernel/systbls_64.S b/arch/sparc/kernel/systbls_64.S
+index 1c9af9f..017b74a 100644
+--- a/arch/sparc/kernel/systbls_64.S
++++ b/arch/sparc/kernel/systbls_64.S
+@@ -133,7 +133,7 @@ sys_call_table:
+ /*170*/	.word sys_lsetxattr, sys_fsetxattr, sys_getxattr, sys_lgetxattr, sys_getdents
+ 	.word sys_setsid, sys_fchdir, sys_fgetxattr, sys_listxattr, sys_llistxattr
+ /*180*/	.word sys_flistxattr, sys_removexattr, sys_lremovexattr, sys_nis_syscall, sys_ni_syscall
+-	.word sys_setpgid, sys_fremovexattr, sys_tkill, sys_exit_group, sys_newuname
++	.word sys_setpgid, sys_fremovexattr, sys_tkill, sparc_exit_group, sys_newuname
+ /*190*/	.word sys_init_module, sys_sparc64_personality, sys_remap_file_pages, sys_epoll_create, sys_epoll_ctl
+ 	.word sys_epoll_wait, sys_ioprio_set, sys_getppid, sys_nis_syscall, sys_sgetmask
+ /*200*/	.word sys_ssetmask, sys_nis_syscall, sys_newlstat, sys_uselib, sys_nis_syscall
 diff --git a/drivers/base/regmap/internal.h b/drivers/base/regmap/internal.h
 index 80f9ab9..ac869d2 100644
 --- a/drivers/base/regmap/internal.h
@@ -11029,6 +11170,320 @@ index 05aea3c..47ba7bf 100644
  			dst = sg_dma_address(sg);
  			src_bidx = 0;
  			src_cidx = 0;
+diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
+index 7c0f1ec..104a7c3 100644
+--- a/drivers/input/misc/Kconfig
++++ b/drivers/input/misc/Kconfig
+@@ -72,6 +72,16 @@ config INPUT_AD714X_SPI
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad714x-spi.
+ 
++config INPUT_ARIZONA_HAPTICS
++	tristate "Arizona haptics support"
++	depends on MFD_ARIZONA && SND_SOC
++	select INPUT_FF_MEMLESS
++	help
++	  Say Y to enable support for the haptics module in Arizona CODECs.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called arizona-haptics.
++
+ config INPUT_BMA150
+ 	tristate "BMA150/SMB380 acceleration sensor support"
+ 	depends on I2C
+diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
+index 83fe6f5..5ea769e 100644
+--- a/drivers/input/misc/Makefile
++++ b/drivers/input/misc/Makefile
+@@ -14,6 +14,7 @@ obj-$(CONFIG_INPUT_ADXL34X)		+= adxl34x.o
+ obj-$(CONFIG_INPUT_ADXL34X_I2C)		+= adxl34x-i2c.o
+ obj-$(CONFIG_INPUT_ADXL34X_SPI)		+= adxl34x-spi.o
+ obj-$(CONFIG_INPUT_APANEL)		+= apanel.o
++obj-$(CONFIG_INPUT_ARIZONA_HAPTICS)	+= arizona-haptics.o
+ obj-$(CONFIG_INPUT_ATI_REMOTE2)		+= ati_remote2.o
+ obj-$(CONFIG_INPUT_ATLAS_BTNS)		+= atlas_btns.o
+ obj-$(CONFIG_INPUT_BFIN_ROTARY)		+= bfin_rotary.o
+diff --git a/drivers/input/misc/arizona-haptics.c b/drivers/input/misc/arizona-haptics.c
+new file mode 100644
+index 0000000..7a04f54
+--- /dev/null
++++ b/drivers/input/misc/arizona-haptics.c
+@@ -0,0 +1,255 @@
++/*
++ * Arizona haptics driver
++ *
++ * Copyright 2012 Wolfson Microelectronics plc
++ *
++ * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/input.h>
++#include <linux/slab.h>
++
++#include <sound/soc.h>
++#include <sound/soc-dapm.h>
++
++#include <linux/mfd/arizona/core.h>
++#include <linux/mfd/arizona/pdata.h>
++#include <linux/mfd/arizona/registers.h>
++
++struct arizona_haptics {
++	struct arizona *arizona;
++	struct input_dev *input_dev;
++	struct work_struct work;
++
++	struct mutex mutex;
++	u8 intensity;
++};
++
++static void arizona_haptics_work(struct work_struct *work)
++{
++	struct arizona_haptics *haptics = container_of(work,
++						       struct arizona_haptics,
++						       work);
++	struct arizona *arizona = haptics->arizona;
++	struct mutex *dapm_mutex = &arizona->dapm->card->dapm_mutex;
++	int ret;
++
++	if (!haptics->arizona->dapm) {
++		dev_err(arizona->dev, "No DAPM context\n");
++		return;
++	}
++
++	if (haptics->intensity) {
++		ret = regmap_update_bits(arizona->regmap,
++					 ARIZONA_HAPTICS_PHASE_2_INTENSITY,
++					 ARIZONA_PHASE2_INTENSITY_MASK,
++					 haptics->intensity);
++		if (ret != 0) {
++			dev_err(arizona->dev, "Failed to set intensity: %d\n",
++				ret);
++			return;
++		}
++
++		/* This enable sequence will be a noop if already enabled */
++		ret = regmap_update_bits(arizona->regmap,
++					 ARIZONA_HAPTICS_CONTROL_1,
++					 ARIZONA_HAP_CTRL_MASK,
++					 1 << ARIZONA_HAP_CTRL_SHIFT);
++		if (ret != 0) {
++			dev_err(arizona->dev, "Failed to start haptics: %d\n",
++				ret);
++			return;
++		}
++
++		mutex_lock_nested(dapm_mutex, SND_SOC_DAPM_CLASS_RUNTIME);
++
++		ret = snd_soc_dapm_enable_pin(arizona->dapm, "HAPTICS");
++		if (ret != 0) {
++			dev_err(arizona->dev, "Failed to start HAPTICS: %d\n",
++				ret);
++			mutex_unlock(dapm_mutex);
++			return;
++		}
++
++		ret = snd_soc_dapm_sync(arizona->dapm);
++		if (ret != 0) {
++			dev_err(arizona->dev, "Failed to sync DAPM: %d\n",
++				ret);
++			mutex_unlock(dapm_mutex);
++			return;
++		}
++
++		mutex_unlock(dapm_mutex);
++
++	} else {
++		/* This disable sequence will be a noop if already enabled */
++		mutex_lock_nested(dapm_mutex, SND_SOC_DAPM_CLASS_RUNTIME);
++
++		ret = snd_soc_dapm_disable_pin(arizona->dapm, "HAPTICS");
++		if (ret != 0) {
++			dev_err(arizona->dev, "Failed to disable HAPTICS: %d\n",
++				ret);
++			mutex_unlock(dapm_mutex);
++			return;
++		}
++
++		ret = snd_soc_dapm_sync(arizona->dapm);
++		if (ret != 0) {
++			dev_err(arizona->dev, "Failed to sync DAPM: %d\n",
++				ret);
++			mutex_unlock(dapm_mutex);
++			return;
++		}
++
++		mutex_unlock(dapm_mutex);
++
++		ret = regmap_update_bits(arizona->regmap,
++					 ARIZONA_HAPTICS_CONTROL_1,
++					 ARIZONA_HAP_CTRL_MASK,
++					 1 << ARIZONA_HAP_CTRL_SHIFT);
++		if (ret != 0) {
++			dev_err(arizona->dev, "Failed to stop haptics: %d\n",
++				ret);
++			return;
++		}
++	}
++}
++
++static int arizona_haptics_play(struct input_dev *input, void *data,
++				struct ff_effect *effect)
++{
++	struct arizona_haptics *haptics = input_get_drvdata(input);
++	struct arizona *arizona = haptics->arizona;
++
++	if (!arizona->dapm) {
++		dev_err(arizona->dev, "No DAPM context\n");
++		return -EBUSY;
++	}
++
++	if (effect->u.rumble.strong_magnitude) {
++		/* Scale the magnitude into the range the device supports */
++		if (arizona->pdata.hap_act) {
++			haptics->intensity =
++				effect->u.rumble.strong_magnitude >> 9;
++			if (effect->direction < 0x8000)
++				haptics->intensity += 0x7f;
++		} else {
++			haptics->intensity =
++				effect->u.rumble.strong_magnitude >> 8;
++		}
++	} else {
++		haptics->intensity = 0;
++	}
++
++	schedule_work(&haptics->work);
++
++	return 0;
++}
++
++static void arizona_haptics_close(struct input_dev *input)
++{
++	struct arizona_haptics *haptics = input_get_drvdata(input);
++	struct mutex *dapm_mutex = &haptics->arizona->dapm->card->dapm_mutex;
++
++	cancel_work_sync(&haptics->work);
++
++	mutex_lock_nested(dapm_mutex, SND_SOC_DAPM_CLASS_RUNTIME);
++
++	if (haptics->arizona->dapm)
++		snd_soc_dapm_disable_pin(haptics->arizona->dapm, "HAPTICS");
++
++	mutex_unlock(dapm_mutex);
++}
++
++static int arizona_haptics_probe(struct platform_device *pdev)
++{
++	struct arizona *arizona = dev_get_drvdata(pdev->dev.parent);
++	struct arizona_haptics *haptics;
++	int ret;
++
++	haptics = devm_kzalloc(&pdev->dev, sizeof(*haptics), GFP_KERNEL);
++	if (!haptics)
++		return -ENOMEM;
++
++	haptics->arizona = arizona;
++
++	ret = regmap_update_bits(arizona->regmap, ARIZONA_HAPTICS_CONTROL_1,
++				 ARIZONA_HAP_ACT, arizona->pdata.hap_act);
++	if (ret != 0) {
++		dev_err(arizona->dev, "Failed to set haptics actuator: %d\n",
++			ret);
++		return ret;
++	}
++
++	INIT_WORK(&haptics->work, arizona_haptics_work);
++
++	haptics->input_dev = input_allocate_device();
++	if (haptics->input_dev == NULL) {
++		dev_err(arizona->dev, "Failed to allocate input device\n");
++		return -ENOMEM;
++	}
++
++	input_set_drvdata(haptics->input_dev, haptics);
++
++	haptics->input_dev->name = "arizona:haptics";
++	haptics->input_dev->dev.parent = pdev->dev.parent;
++	haptics->input_dev->close = arizona_haptics_close;
++	__set_bit(FF_RUMBLE, haptics->input_dev->ffbit);
++
++	ret = input_ff_create_memless(haptics->input_dev, NULL,
++				      arizona_haptics_play);
++	if (ret < 0) {
++		dev_err(arizona->dev, "input_ff_create_memless() failed: %d\n",
++			ret);
++		goto err_ialloc;
++	}
++
++	ret = input_register_device(haptics->input_dev);
++	if (ret < 0) {
++		dev_err(arizona->dev, "couldn't register input device: %d\n",
++			ret);
++		goto err_iff;
++	}
++
++	platform_set_drvdata(pdev, haptics);
++
++	return 0;
++
++err_iff:
++	if (haptics->input_dev)
++		input_ff_destroy(haptics->input_dev);
++err_ialloc:
++	input_free_device(haptics->input_dev);
++
++	return ret;
++}
++
++static int arizona_haptics_remove(struct platform_device *pdev)
++{
++	struct arizona_haptics *haptics = platform_get_drvdata(pdev);
++
++	input_unregister_device(haptics->input_dev);
++
++	return 0;
++}
++
++static struct platform_driver arizona_haptics_driver = {
++	.probe		= arizona_haptics_probe,
++	.remove		= arizona_haptics_remove,
++	.driver		= {
++		.name	= "arizona-haptics",
++		.owner	= THIS_MODULE,
++	},
++};
++module_platform_driver(arizona_haptics_driver);
++
++MODULE_ALIAS("platform:arizona-haptics");
++MODULE_DESCRIPTION("Arizona haptics driver");
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
+diff --git a/drivers/mfd/arizona-core.c b/drivers/mfd/arizona-core.c
+index f4f9bf8..dae9db0 100644
+--- a/drivers/mfd/arizona-core.c
++++ b/drivers/mfd/arizona-core.c
+@@ -272,6 +272,7 @@ static struct mfd_cell early_devs[] = {
+ static struct mfd_cell wm5102_devs[] = {
+ 	{ .name = "arizona-extcon" },
+ 	{ .name = "arizona-gpio" },
++	{ .name = "arizona-haptics" },
+ 	{ .name = "arizona-micsupp" },
+ 	{ .name = "arizona-pwm" },
+ 	{ .name = "wm5102-codec" },
+@@ -280,6 +281,7 @@ static struct mfd_cell wm5102_devs[] = {
+ static struct mfd_cell wm5110_devs[] = {
+ 	{ .name = "arizona-extcon" },
+ 	{ .name = "arizona-gpio" },
++	{ .name = "arizona-haptics" },
+ 	{ .name = "arizona-micsupp" },
+ 	{ .name = "arizona-pwm" },
+ 	{ .name = "wm5110-codec" },
 diff --git a/drivers/mfd/wm8994-core.c b/drivers/mfd/wm8994-core.c
 index 8fefc96..45a20c5 100644
 --- a/drivers/mfd/wm8994-core.c
@@ -13208,6 +13663,66 @@ index 1961be9..959f465 100644
  	kfree(c);
  
  	return 0;
+diff --git a/drivers/mtd/ubi/wl.c b/drivers/mtd/ubi/wl.c
+index da7b449..2144f61 100644
+--- a/drivers/mtd/ubi/wl.c
++++ b/drivers/mtd/ubi/wl.c
+@@ -498,7 +498,7 @@ out:
+  * @ubi: UBI device description object
+  *
+  * This function returns a physical eraseblock in case of success and a
+- * negative error code in case of failure. Might sleep.
++ * negative error code in case of failure.
+  */
+ static int __wl_get_peb(struct ubi_device *ubi)
+ {
+@@ -540,13 +540,6 @@ retry:
+ 	 * ubi_wl_get_peb() after removing e from the pool. */
+ 	prot_queue_add(ubi, e);
+ #endif
+-	err = ubi_self_check_all_ff(ubi, e->pnum, ubi->vid_hdr_aloffset,
+-				    ubi->peb_size - ubi->vid_hdr_aloffset);
+-	if (err) {
+-		ubi_err("new PEB %d does not contain all 0xFF bytes", e->pnum);
+-		return err;
+-	}
+-
+ 	return e->pnum;
+ }
+ 
+@@ -679,17 +672,30 @@ static struct ubi_wl_entry *get_peb_for_wl(struct ubi_device *ubi)
+ #else
+ static struct ubi_wl_entry *get_peb_for_wl(struct ubi_device *ubi)
+ {
+-	return find_wl_entry(ubi, &ubi->free, WL_FREE_MAX_DIFF);
++	struct ubi_wl_entry *e;
++
++	e = find_wl_entry(ubi, &ubi->free, WL_FREE_MAX_DIFF);
++	self_check_in_wl_tree(ubi, e, &ubi->free);
++	rb_erase(&e->u.rb, &ubi->free);
++
++	return e;
+ }
+ 
+ int ubi_wl_get_peb(struct ubi_device *ubi)
+ {
+-	int peb;
++	int peb, err;
+ 
+ 	spin_lock(&ubi->wl_lock);
+ 	peb = __wl_get_peb(ubi);
+ 	spin_unlock(&ubi->wl_lock);
+ 
++	err = ubi_self_check_all_ff(ubi, peb, ubi->vid_hdr_aloffset,
++				    ubi->peb_size - ubi->vid_hdr_aloffset);
++	if (err) {
++		ubi_err("new PEB %d does not contain all 0xFF bytes", peb);
++		return err;
++	}
++
+ 	return peb;
+ }
+ #endif
 diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
 index df55e24..fb1a692 100644
 --- a/drivers/net/ethernet/ti/cpsw.c
@@ -13726,6 +14241,65 @@ index 0b614e3..6009714 100644
  };
  
  static int __init rtc_init(void)
+diff --git a/drivers/scsi/megaraid/megaraid_sas.h b/drivers/scsi/megaraid/megaraid_sas.h
+index 16b7a72..3b2365c 100644
+--- a/drivers/scsi/megaraid/megaraid_sas.h
++++ b/drivers/scsi/megaraid/megaraid_sas.h
+@@ -1276,7 +1276,7 @@ struct megasas_evt_detail {
+ } __attribute__ ((packed));
+ 
+ struct megasas_aen_event {
+-	struct work_struct hotplug_work;
++	struct delayed_work hotplug_work;
+ 	struct megasas_instance *instance;
+ };
+ 
+diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
+index d2c5366..e4f2baa 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_base.c
++++ b/drivers/scsi/megaraid/megaraid_sas_base.c
+@@ -2060,9 +2060,9 @@ megasas_service_aen(struct megasas_instance *instance, struct megasas_cmd *cmd)
+ 		} else {
+ 			ev->instance = instance;
+ 			instance->ev = ev;
+-			INIT_WORK(&ev->hotplug_work, megasas_aen_polling);
+-			schedule_delayed_work(
+-				(struct delayed_work *)&ev->hotplug_work, 0);
++			INIT_DELAYED_WORK(&ev->hotplug_work,
++					  megasas_aen_polling);
++			schedule_delayed_work(&ev->hotplug_work, 0);
+ 		}
+ 	}
+ }
+@@ -4352,8 +4352,7 @@ megasas_suspend(struct pci_dev *pdev, pm_message_t state)
+ 	/* cancel the delayed work if this work still in queue */
+ 	if (instance->ev != NULL) {
+ 		struct megasas_aen_event *ev = instance->ev;
+-		cancel_delayed_work_sync(
+-			(struct delayed_work *)&ev->hotplug_work);
++		cancel_delayed_work_sync(&ev->hotplug_work);
+ 		instance->ev = NULL;
+ 	}
+ 
+@@ -4545,8 +4544,7 @@ static void __devexit megasas_detach_one(struct pci_dev *pdev)
+ 	/* cancel the delayed work if this work still in queue*/
+ 	if (instance->ev != NULL) {
+ 		struct megasas_aen_event *ev = instance->ev;
+-		cancel_delayed_work_sync(
+-			(struct delayed_work *)&ev->hotplug_work);
++		cancel_delayed_work_sync(&ev->hotplug_work);
+ 		instance->ev = NULL;
+ 	}
+ 
+@@ -5190,7 +5188,7 @@ static void
+ megasas_aen_polling(struct work_struct *work)
+ {
+ 	struct megasas_aen_event *ev =
+-		container_of(work, struct megasas_aen_event, hotplug_work);
++		container_of(work, struct megasas_aen_event, hotplug_work.work);
+ 	struct megasas_instance *instance = ev->instance;
+ 	union megasas_evt_class_locale class_locale;
+ 	struct  Scsi_Host *host;
 diff --git a/drivers/spi/spi-omap2-mcspi.c b/drivers/spi/spi-omap2-mcspi.c
 index 3542fdc..d1c5828 100644
 --- a/drivers/spi/spi-omap2-mcspi.c
@@ -16121,6 +16695,76 @@ index 0000000..0ce5c11
 +#define ST7735_GMCTRP1	0xE0
 +#define ST7735_GMCTRN1	0xE1
 +#define ST7735_PWCTR6	0xFC
+diff --git a/fs/buffer.c b/fs/buffer.c
+index 3586fb0..ec0aca8 100644
+--- a/fs/buffer.c
++++ b/fs/buffer.c
+@@ -2893,6 +2893,55 @@ static void end_bio_bh_io_sync(struct bio *bio, int err)
+ 	bio_put(bio);
+ }
+ 
++/*
++ * This allows us to do IO even on the odd last sectors
++ * of a device, even if the bh block size is some multiple
++ * of the physical sector size.
++ *
++ * We'll just truncate the bio to the size of the device,
++ * and clear the end of the buffer head manually.
++ *
++ * Truly out-of-range accesses will turn into actual IO
++ * errors, this only handles the "we need to be able to
++ * do IO at the final sector" case.
++ */
++static void guard_bh_eod(int rw, struct bio *bio, struct buffer_head *bh)
++{
++	sector_t maxsector;
++	unsigned bytes;
++
++	maxsector = i_size_read(bio->bi_bdev->bd_inode) >> 9;
++	if (!maxsector)
++		return;
++
++	/*
++	 * If the *whole* IO is past the end of the device,
++	 * let it through, and the IO layer will turn it into
++	 * an EIO.
++	 */
++	if (unlikely(bio->bi_sector >= maxsector))
++		return;
++
++	maxsector -= bio->bi_sector;
++	bytes = bio->bi_size;
++	if (likely((bytes >> 9) <= maxsector))
++		return;
++
++	/* Uhhuh. We've got a bh that straddles the device size! */
++	bytes = maxsector << 9;
++
++	/* Truncate the bio.. */
++	bio->bi_size = bytes;
++	bio->bi_io_vec[0].bv_len = bytes;
++
++	/* ..and clear the end of the buffer for reads */
++	if ((rw & RW_MASK) == READ) {
++		void *kaddr = kmap_atomic(bh->b_page);
++		memset(kaddr + bh_offset(bh) + bytes, 0, bh->b_size - bytes);
++		kunmap_atomic(kaddr);
++	}
++}
++
+ int submit_bh(int rw, struct buffer_head * bh)
+ {
+ 	struct bio *bio;
+@@ -2929,6 +2978,9 @@ int submit_bh(int rw, struct buffer_head * bh)
+ 	bio->bi_end_io = end_bio_bh_io_sync;
+ 	bio->bi_private = bh;
+ 
++	/* Take care of bh's that straddle the end of the device */
++	guard_bh_eod(rw, bio, bh);
++
+ 	bio_get(bio);
+ 	submit_bio(rw, bio);
+ 
 diff --git a/include/linux/atmel-ssc.h b/include/linux/atmel-ssc.h
 index 4eb3175..deb0ae5 100644
 --- a/include/linux/atmel-ssc.h
@@ -16183,6 +16827,70 @@ index d3201e4..11d9e25 100644
  
  /* --- Helper iov-locking functions --- */
  
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index a123b13..7d8dfc7 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -701,6 +701,13 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+ #define COMPACTION_BUILD 0
+ #endif
+ 
++/* This helps us to avoid #ifdef CONFIG_SYMBOL_PREFIX */
++#ifdef CONFIG_SYMBOL_PREFIX
++#define SYMBOL_PREFIX CONFIG_SYMBOL_PREFIX
++#else
++#define SYMBOL_PREFIX ""
++#endif
++
+ /* Rebuild everything on CONFIG_FTRACE_MCOUNT_RECORD */
+ #ifdef CONFIG_FTRACE_MCOUNT_RECORD
+ # define REBUILD_DUE_TO_FTRACE_MCOUNT_RECORD
+diff --git a/include/linux/mfd/arizona/core.h b/include/linux/mfd/arizona/core.h
+index dd231ac..a580363 100644
+--- a/include/linux/mfd/arizona/core.h
++++ b/include/linux/mfd/arizona/core.h
+@@ -78,6 +78,8 @@ enum arizona_type {
+ 
+ #define ARIZONA_NUM_IRQ                   50
+ 
++struct snd_soc_dapm_context;
++
+ struct arizona {
+ 	struct regmap *regmap;
+ 	struct device *dev;
+@@ -98,6 +100,8 @@ struct arizona {
+ 
+ 	struct mutex clk_lock;
+ 	int clk32k_ref;
++
++	struct snd_soc_dapm_context *dapm;
+ };
+ 
+ int arizona_clk32k_enable(struct arizona *arizona);
+diff --git a/include/linux/mfd/arizona/pdata.h b/include/linux/mfd/arizona/pdata.h
+index 7ab4429..8b1d1da 100644
+--- a/include/linux/mfd/arizona/pdata.h
++++ b/include/linux/mfd/arizona/pdata.h
+@@ -62,6 +62,9 @@
+ 
+ #define ARIZONA_MAX_OUTPUT 6
+ 
++#define ARIZONA_HAP_ACT_ERM 0
++#define ARIZONA_HAP_ACT_LRA 2
++
+ #define ARIZONA_MAX_PDM_SPK 2
+ 
+ struct regulator_init_data;
+@@ -114,6 +117,9 @@ struct arizona_pdata {
+ 
+ 	/** PDM speaker format */
+ 	unsigned int spk_fmt[ARIZONA_MAX_PDM_SPK];
++
++	/** Haptic actuator type */
++	unsigned int hap_act;
+ };
+ 
+ #endif
 diff --git a/include/linux/mfd/davinci_voicecodec.h b/include/linux/mfd/davinci_voicecodec.h
 index 0ab6132..7dd6524 100644
 --- a/include/linux/mfd/davinci_voicecodec.h
@@ -16313,11 +17021,28 @@ index 0000000..67158dd
 +#endif
 +
 +#endif /* __LINUX_OF_DMA_H */
+diff --git a/include/linux/platform_data/asoc-s3c.h b/include/linux/platform_data/asoc-s3c.h
+index aa9875f..8827259 100644
+--- a/include/linux/platform_data/asoc-s3c.h
++++ b/include/linux/platform_data/asoc-s3c.h
+@@ -38,12 +38,6 @@ struct samsung_i2s {
+ #define QUIRK_NEED_RSTCLR	(1 << 3)
+ 	/* Quirks of the I2S controller */
+ 	u32 quirks;
+-
+-	/*
+-	 * Array of clock names that can be used to generate I2S signals.
+-	 * Also corresponds to clocks of I2SMOD[10]
+-	 */
+-	const char **src_clk;
+ 	dma_addr_t idma_addr;
+ };
+ 
 diff --git a/include/linux/platform_data/davinci_asp.h b/include/linux/platform_data/davinci_asp.h
-index d0c5825..f3d6e4f 100644
+index d0c5825..8db5ae0 100644
 --- a/include/linux/platform_data/davinci_asp.h
 +++ b/include/linux/platform_data/davinci_asp.h
-@@ -16,6 +16,8 @@
+@@ -16,12 +16,13 @@
  #ifndef __DAVINCI_ASP_H
  #define __DAVINCI_ASP_H
  
@@ -16326,7 +17051,13 @@ index d0c5825..f3d6e4f 100644
  struct snd_platform_data {
  	u32 tx_dma_offset;
  	u32 rx_dma_offset;
-@@ -30,6 +32,7 @@ struct snd_platform_data {
+ 	int asp_chan_q;	/* event queue number for ASP channel */
+ 	int ram_chan_q;	/* event queue number for RAM channel */
+-	unsigned int codec_fmt;
+ 	/*
+ 	 * Allowing this is more efficient and eliminates left and right swaps
+ 	 * caused by underruns, but will swap the left and right channels
+@@ -30,6 +31,7 @@ struct snd_platform_data {
  	unsigned enable_channel_combine:1;
  	unsigned sram_size_playback;
  	unsigned sram_size_capture;
@@ -16601,7 +17332,7 @@ index 0000000..12bb90f
 +struct device *elm_request(enum bch_ecc bch_type);
 +#endif /* __ELM_H */
 diff --git a/include/linux/platform_data/mtd-nand-omap2.h b/include/linux/platform_data/mtd-nand-omap2.h
-index 1a68c1e..9aace2d 100644
+index 1a68c1e..485abb0 100644
 --- a/include/linux/platform_data/mtd-nand-omap2.h
 +++ b/include/linux/platform_data/mtd-nand-omap2.h
 @@ -8,9 +8,13 @@
@@ -16619,7 +17350,7 @@ index 1a68c1e..9aace2d 100644
  enum nand_io {
  	NAND_OMAP_PREFETCH_POLLED = 0,	/* prefetch polled mode, default */
  	NAND_OMAP_POLLED,		/* polled mode, without prefetch */
-@@ -18,26 +22,48 @@ enum nand_io {
+@@ -18,26 +22,47 @@ enum nand_io {
  	NAND_OMAP_PREFETCH_IRQ		/* prefetch enabled irq mode */
  };
  
@@ -16666,11 +17397,7 @@ index 1a68c1e..9aace2d 100644
  
 -/* minimum size for IO mapping */
 -#define	NAND_IO_SIZE	4
-+	/* for passing the partitions */
-+	struct device_node	*of_node;
-+	bool			is_elm_used;
-+};
- 
+-
 -#if defined(CONFIG_MTD_NAND_OMAP2) || defined(CONFIG_MTD_NAND_OMAP2_MODULE)
 -extern int gpmc_nand_init(struct omap_nand_platform_data *d);
 -#else
@@ -16678,6 +17405,10 @@ index 1a68c1e..9aace2d 100644
 -{
 -	return 0;
 -}
++	/* for passing the partitions */
++	struct device_node	*of_node;
++	bool			is_elm_used;
++};
  #endif
 diff --git a/include/linux/platform_data/mtd-onenand-omap2.h b/include/linux/platform_data/mtd-onenand-omap2.h
 index 2858667..685af7e 100644
@@ -16796,14 +17527,29 @@ index e3bcc3f..9f228d7 100644
  	unsigned int range_min;
  	unsigned int range_max;
 diff --git a/include/sound/cs4271.h b/include/sound/cs4271.h
-index 50a059e..6d9e15e 100644
+index 50a059e..70f4535 100644
 --- a/include/sound/cs4271.h
 +++ b/include/sound/cs4271.h
-@@ -19,6 +19,7 @@
+@@ -19,6 +19,22 @@
  
  struct cs4271_platform_data {
  	int gpio_nreset;	/* GPIO driving Reset pin, if any */
-+	int amutec_eq_bmutec:1;	/* flag to enable AMUTEC=BMUTEC */
++	bool amutec_eq_bmutec;	/* flag to enable AMUTEC=BMUTEC */
++
++	/*
++	 * The CS4271 requires its LRCLK and MCLK to be stable before its RESET
++	 * line is de-asserted. That also means that clocks cannot be changed
++	 * without putting the chip back into hardware reset, which also requires
++	 * a complete re-initialization of all registers.
++	 *
++	 * One (undocumented) workaround is to assert and de-assert the PDN bit
++	 * in the MODE2 register. This workaround can be enabled with the
++	 * following flag.
++	 *
++	 * Note that this is not needed in case the clocks are stable
++	 * throughout the entire runtime of the codec.
++	 */
++	bool enable_soft_reset;
  };
  
  #endif /* __CS4271_H */
@@ -16843,43 +17589,1201 @@ index c009f70..24e5d99 100644
  };
  
  #endif
+diff --git a/kernel/modsign_pubkey.c b/kernel/modsign_pubkey.c
+index 4646eb2..767e559 100644
+--- a/kernel/modsign_pubkey.c
++++ b/kernel/modsign_pubkey.c
+@@ -21,10 +21,10 @@ struct key *modsign_keyring;
+ extern __initdata const u8 modsign_certificate_list[];
+ extern __initdata const u8 modsign_certificate_list_end[];
+ asm(".section .init.data,\"aw\"\n"
+-    "modsign_certificate_list:\n"
++    SYMBOL_PREFIX "modsign_certificate_list:\n"
+     ".incbin \"signing_key.x509\"\n"
+     ".incbin \"extra_certificates\"\n"
+-    "modsign_certificate_list_end:"
++    SYMBOL_PREFIX "modsign_certificate_list_end:"
+     );
+ 
+ /*
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 084aa47..1dae900 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -1361,8 +1361,8 @@ static void __queue_delayed_work(int cpu, struct workqueue_struct *wq,
+ 
+ 	WARN_ON_ONCE(timer->function != delayed_work_timer_fn ||
+ 		     timer->data != (unsigned long)dwork);
+-	BUG_ON(timer_pending(timer));
+-	BUG_ON(!list_empty(&work->entry));
++	WARN_ON_ONCE(timer_pending(timer));
++	WARN_ON_ONCE(!list_empty(&work->entry));
+ 
+ 	/*
+ 	 * If @delay is 0, queue @dwork->work immediately.  This is for
 diff --git a/sound/soc/atmel/Kconfig b/sound/soc/atmel/Kconfig
-index 72b09cf..397ec75 100644
+index 72b09cf..d1b691b 100644
 --- a/sound/soc/atmel/Kconfig
 +++ b/sound/soc/atmel/Kconfig
-@@ -16,8 +16,7 @@ config SND_ATMEL_SOC_SSC
+@@ -6,6 +6,14 @@ config SND_ATMEL_SOC
+ 	  the ATMEL SSC interface. You will also need
+ 	  to select the audio interfaces to support below.
+ 
++config SND_ATMEL_SOC_PDC
++	tristate
++	depends on SND_ATMEL_SOC
++
++config SND_ATMEL_SOC_DMA
++	tristate
++	depends on SND_ATMEL_SOC
++
+ config SND_ATMEL_SOC_SSC
+ 	tristate
+ 	depends on SND_ATMEL_SOC
+@@ -16,8 +24,8 @@ config SND_ATMEL_SOC_SSC
  
  config SND_AT91_SOC_SAM9G20_WM8731
  	tristate "SoC Audio support for WM8731-based At91sam9g20 evaluation board"
 -	depends on ATMEL_SSC && ARCH_AT91SAM9G20 && SND_ATMEL_SOC && \
 -                   AT91_PROGRAMMABLE_CLOCKS
 +	depends on ATMEL_SSC && SND_ATMEL_SOC && AT91_PROGRAMMABLE_CLOCKS
++	select SND_ATMEL_SOC_PDC
  	select SND_ATMEL_SOC_SSC
  	select SND_SOC_WM8731
  	help
+@@ -27,6 +35,7 @@ config SND_AT91_SOC_SAM9G20_WM8731
+ config SND_AT91_SOC_AFEB9260
+ 	tristate "SoC Audio support for AFEB9260 board"
+ 	depends on ATMEL_SSC && ARCH_AT91 && MACH_AFEB9260 && SND_ATMEL_SOC
++	select SND_ATMEL_SOC_PDC
+ 	select SND_ATMEL_SOC_SSC
+ 	select SND_SOC_TLV320AIC23
+ 	help
+diff --git a/sound/soc/atmel/Makefile b/sound/soc/atmel/Makefile
+index a5c0bf1..41967cc 100644
+--- a/sound/soc/atmel/Makefile
++++ b/sound/soc/atmel/Makefile
+@@ -1,8 +1,12 @@
+ # AT91 Platform Support
+ snd-soc-atmel-pcm-objs := atmel-pcm.o
++snd-soc-atmel-pcm-pdc-objs := atmel-pcm-pdc.o
++snd-soc-atmel-pcm-dma-objs := atmel-pcm-dma.o
+ snd-soc-atmel_ssc_dai-objs := atmel_ssc_dai.o
+ 
+ obj-$(CONFIG_SND_ATMEL_SOC) += snd-soc-atmel-pcm.o
++obj-$(CONFIG_SND_ATMEL_SOC_PDC) += snd-soc-atmel-pcm-pdc.o
++obj-$(CONFIG_SND_ATMEL_SOC_DMA) += snd-soc-atmel-pcm-dma.o
+ obj-$(CONFIG_SND_ATMEL_SOC_SSC) += snd-soc-atmel_ssc_dai.o
+ 
+ # AT91 Machine Support
+diff --git a/sound/soc/atmel/atmel-pcm-dma.c b/sound/soc/atmel/atmel-pcm-dma.c
+new file mode 100644
+index 0000000..30184a4
+--- /dev/null
++++ b/sound/soc/atmel/atmel-pcm-dma.c
+@@ -0,0 +1,240 @@
++/*
++ * atmel-pcm-dma.c  --  ALSA PCM DMA support for the Atmel SoC.
++ *
++ *  Copyright (C) 2012 Atmel
++ *
++ * Author: Bo Shen <voice.shen@atmel.com>
++ *
++ * Based on atmel-pcm by:
++ * Sedji Gaouaou <sedji.gaouaou@atmel.com>
++ * Copyright 2008 Atmel
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/dma-mapping.h>
++#include <linux/dmaengine.h>
++#include <linux/atmel-ssc.h>
++#include <linux/platform_data/dma-atmel.h>
++
++#include <sound/core.h>
++#include <sound/pcm.h>
++#include <sound/pcm_params.h>
++#include <sound/soc.h>
++#include <sound/dmaengine_pcm.h>
++
++#include "atmel-pcm.h"
++
++/*--------------------------------------------------------------------------*\
++ * Hardware definition
++\*--------------------------------------------------------------------------*/
++static const struct snd_pcm_hardware atmel_pcm_dma_hardware = {
++	.info			= SNDRV_PCM_INFO_MMAP |
++				  SNDRV_PCM_INFO_MMAP_VALID |
++				  SNDRV_PCM_INFO_INTERLEAVED |
++				  SNDRV_PCM_INFO_RESUME |
++				  SNDRV_PCM_INFO_PAUSE,
++	.formats		= SNDRV_PCM_FMTBIT_S16_LE,
++	.period_bytes_min	= 256,		/* lighting DMA overhead */
++	.period_bytes_max	= 2 * 0xffff,	/* if 2 bytes format */
++	.periods_min		= 8,
++	.periods_max		= 1024,		/* no limit */
++	.buffer_bytes_max	= ATMEL_SSC_DMABUF_SIZE,
++};
++
++/**
++ * atmel_pcm_dma_irq: SSC interrupt handler for DMAENGINE enabled SSC
++ *
++ * We use DMAENGINE to send/receive data to/from SSC so this ISR is only to
++ * check if any overrun occured.
++ */
++static void atmel_pcm_dma_irq(u32 ssc_sr,
++	struct snd_pcm_substream *substream)
++{
++	struct atmel_pcm_dma_params *prtd;
++
++	prtd = snd_dmaengine_pcm_get_data(substream);
++
++	if (ssc_sr & prtd->mask->ssc_error) {
++		if (snd_pcm_running(substream))
++			pr_warn("atmel-pcm: buffer %s on %s (SSC_SR=%#x)\n",
++				substream->stream == SNDRV_PCM_STREAM_PLAYBACK
++				? "underrun" : "overrun", prtd->name,
++				ssc_sr);
++
++		/* stop RX and capture: will be enabled again at restart */
++		ssc_writex(prtd->ssc->regs, SSC_CR, prtd->mask->ssc_disable);
++		snd_pcm_stop(substream, SNDRV_PCM_STATE_XRUN);
++
++		/* now drain RHR and read status to remove xrun condition */
++		ssc_readx(prtd->ssc->regs, SSC_RHR);
++		ssc_readx(prtd->ssc->regs, SSC_SR);
++	}
++}
++
++/*--------------------------------------------------------------------------*\
++ * DMAENGINE operations
++\*--------------------------------------------------------------------------*/
++static bool filter(struct dma_chan *chan, void *slave)
++{
++	struct at_dma_slave *sl = slave;
++
++	if (sl->dma_dev == chan->device->dev) {
++		chan->private = sl;
++		return true;
++	} else {
++		return false;
++	}
++}
++
++static int atmel_pcm_configure_dma(struct snd_pcm_substream *substream,
++	struct snd_pcm_hw_params *params)
++{
++	struct atmel_pcm_dma_params *prtd;
++	struct ssc_device *ssc;
++	struct dma_chan *dma_chan;
++	struct dma_slave_config slave_config;
++	int ret;
++
++	prtd = snd_dmaengine_pcm_get_data(substream);
++	ssc = prtd->ssc;
++
++	ret = snd_hwparams_to_dma_slave_config(substream, params,
++			&slave_config);
++	if (ret) {
++		pr_err("atmel-pcm: hwparams to dma slave configure failed\n");
++		return ret;
++	}
++
++	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
++		slave_config.dst_addr = (dma_addr_t)ssc->phybase + SSC_THR;
++		slave_config.dst_maxburst = 1;
++	} else {
++		slave_config.src_addr = (dma_addr_t)ssc->phybase + SSC_RHR;
++		slave_config.src_maxburst = 1;
++	}
++
++	slave_config.device_fc = false;
++
++	dma_chan = snd_dmaengine_pcm_get_chan(substream);
++	if (dmaengine_slave_config(dma_chan, &slave_config)) {
++		pr_err("atmel-pcm: failed to configure dma channel\n");
++		ret = -EBUSY;
++		return ret;
++	}
++
++	return 0;
++}
++
++static int atmel_pcm_hw_params(struct snd_pcm_substream *substream,
++	struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct atmel_pcm_dma_params *prtd;
++	struct ssc_device *ssc;
++	struct at_dma_slave *sdata = NULL;
++	int ret;
++
++	snd_pcm_set_runtime_buffer(substream, &substream->dma_buffer);
++
++	prtd = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
++	ssc = prtd->ssc;
++	if (ssc->pdev)
++		sdata = ssc->pdev->dev.platform_data;
++
++	ret = snd_dmaengine_pcm_open(substream, filter, sdata);
++	if (ret) {
++		pr_err("atmel-pcm: dmaengine pcm open failed\n");
++		return -EINVAL;
++	}
++
++	snd_dmaengine_pcm_set_data(substream, prtd);
++
++	ret = atmel_pcm_configure_dma(substream, params);
++	if (ret) {
++		pr_err("atmel-pcm: failed to configure dmai\n");
++		goto err;
++	}
++
++	prtd->dma_intr_handler = atmel_pcm_dma_irq;
++
++	return 0;
++err:
++	snd_dmaengine_pcm_close(substream);
++	return ret;
++}
++
++static int atmel_pcm_dma_prepare(struct snd_pcm_substream *substream)
++{
++	struct atmel_pcm_dma_params *prtd;
++
++	prtd = snd_dmaengine_pcm_get_data(substream);
++
++	ssc_writex(prtd->ssc->regs, SSC_IER, prtd->mask->ssc_error);
++	ssc_writex(prtd->ssc->regs, SSC_CR, prtd->mask->ssc_enable);
++
++	return 0;
++}
++
++static int atmel_pcm_open(struct snd_pcm_substream *substream)
++{
++	snd_soc_set_runtime_hwparams(substream, &atmel_pcm_dma_hardware);
++
++	return 0;
++}
++
++static int atmel_pcm_close(struct snd_pcm_substream *substream)
++{
++	snd_dmaengine_pcm_close(substream);
++
++	return 0;
++}
++
++static struct snd_pcm_ops atmel_pcm_ops = {
++	.open		= atmel_pcm_open,
++	.close		= atmel_pcm_close,
++	.ioctl		= snd_pcm_lib_ioctl,
++	.hw_params	= atmel_pcm_hw_params,
++	.prepare	= atmel_pcm_dma_prepare,
++	.trigger	= snd_dmaengine_pcm_trigger,
++	.pointer	= snd_dmaengine_pcm_pointer_no_residue,
++	.mmap		= atmel_pcm_mmap,
++};
++
++static struct snd_soc_platform_driver atmel_soc_platform = {
++	.ops		= &atmel_pcm_ops,
++	.pcm_new	= atmel_pcm_new,
++	.pcm_free	= atmel_pcm_free,
++};
++
++int atmel_pcm_dma_platform_register(struct device *dev)
++{
++	return snd_soc_register_platform(dev, &atmel_soc_platform);
++}
++EXPORT_SYMBOL(atmel_pcm_dma_platform_register);
++
++void atmel_pcm_dma_platform_unregister(struct device *dev)
++{
++	snd_soc_unregister_platform(dev);
++}
++EXPORT_SYMBOL(atmel_pcm_dma_platform_unregister);
++
++MODULE_AUTHOR("Bo Shen <voice.shen@atmel.com>");
++MODULE_DESCRIPTION("Atmel DMA based PCM module");
++MODULE_LICENSE("GPL");
+diff --git a/sound/soc/atmel/atmel-pcm-pdc.c b/sound/soc/atmel/atmel-pcm-pdc.c
+new file mode 100644
+index 0000000..6a293c7
+--- /dev/null
++++ b/sound/soc/atmel/atmel-pcm-pdc.c
+@@ -0,0 +1,401 @@
++/*
++ * atmel-pcm.c  --  ALSA PCM interface for the Atmel atmel SoC.
++ *
++ *  Copyright (C) 2005 SAN People
++ *  Copyright (C) 2008 Atmel
++ *
++ * Authors: Sedji Gaouaou <sedji.gaouaou@atmel.com>
++ *
++ * Based on at91-pcm. by:
++ * Frank Mandarino <fmandarino@endrelia.com>
++ * Copyright 2006 Endrelia Technologies Inc.
++ *
++ * Based on pxa2xx-pcm.c by:
++ *
++ * Author:	Nicolas Pitre
++ * Created:	Nov 30, 2004
++ * Copyright:	(C) 2004 MontaVista Software, Inc.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/dma-mapping.h>
++#include <linux/atmel_pdc.h>
++#include <linux/atmel-ssc.h>
++
++#include <sound/core.h>
++#include <sound/pcm.h>
++#include <sound/pcm_params.h>
++#include <sound/soc.h>
++
++#include "atmel-pcm.h"
++
++
++/*--------------------------------------------------------------------------*\
++ * Hardware definition
++\*--------------------------------------------------------------------------*/
++/* TODO: These values were taken from the AT91 platform driver, check
++ *	 them against real values for AT32
++ */
++static const struct snd_pcm_hardware atmel_pcm_hardware = {
++	.info			= SNDRV_PCM_INFO_MMAP |
++				  SNDRV_PCM_INFO_MMAP_VALID |
++				  SNDRV_PCM_INFO_INTERLEAVED |
++				  SNDRV_PCM_INFO_PAUSE,
++	.formats		= SNDRV_PCM_FMTBIT_S16_LE,
++	.period_bytes_min	= 32,
++	.period_bytes_max	= 8192,
++	.periods_min		= 2,
++	.periods_max		= 1024,
++	.buffer_bytes_max	= ATMEL_SSC_DMABUF_SIZE,
++};
++
++
++/*--------------------------------------------------------------------------*\
++ * Data types
++\*--------------------------------------------------------------------------*/
++struct atmel_runtime_data {
++	struct atmel_pcm_dma_params *params;
++	dma_addr_t dma_buffer;		/* physical address of dma buffer */
++	dma_addr_t dma_buffer_end;	/* first address beyond DMA buffer */
++	size_t period_size;
++
++	dma_addr_t period_ptr;		/* physical address of next period */
++
++	/* PDC register save */
++	u32 pdc_xpr_save;
++	u32 pdc_xcr_save;
++	u32 pdc_xnpr_save;
++	u32 pdc_xncr_save;
++};
++
++/*--------------------------------------------------------------------------*\
++ * ISR
++\*--------------------------------------------------------------------------*/
++static void atmel_pcm_dma_irq(u32 ssc_sr,
++	struct snd_pcm_substream *substream)
++{
++	struct atmel_runtime_data *prtd = substream->runtime->private_data;
++	struct atmel_pcm_dma_params *params = prtd->params;
++	static int count;
++
++	count++;
++
++	if (ssc_sr & params->mask->ssc_endbuf) {
++		pr_warn("atmel-pcm: buffer %s on %s (SSC_SR=%#x, count=%d)\n",
++				substream->stream == SNDRV_PCM_STREAM_PLAYBACK
++				? "underrun" : "overrun",
++				params->name, ssc_sr, count);
++
++		/* re-start the PDC */
++		ssc_writex(params->ssc->regs, ATMEL_PDC_PTCR,
++			   params->mask->pdc_disable);
++		prtd->period_ptr += prtd->period_size;
++		if (prtd->period_ptr >= prtd->dma_buffer_end)
++			prtd->period_ptr = prtd->dma_buffer;
++
++		ssc_writex(params->ssc->regs, params->pdc->xpr,
++			   prtd->period_ptr);
++		ssc_writex(params->ssc->regs, params->pdc->xcr,
++			   prtd->period_size / params->pdc_xfer_size);
++		ssc_writex(params->ssc->regs, ATMEL_PDC_PTCR,
++			   params->mask->pdc_enable);
++	}
++
++	if (ssc_sr & params->mask->ssc_endx) {
++		/* Load the PDC next pointer and counter registers */
++		prtd->period_ptr += prtd->period_size;
++		if (prtd->period_ptr >= prtd->dma_buffer_end)
++			prtd->period_ptr = prtd->dma_buffer;
++
++		ssc_writex(params->ssc->regs, params->pdc->xnpr,
++			   prtd->period_ptr);
++		ssc_writex(params->ssc->regs, params->pdc->xncr,
++			   prtd->period_size / params->pdc_xfer_size);
++	}
++
++	snd_pcm_period_elapsed(substream);
++}
++
++
++/*--------------------------------------------------------------------------*\
++ * PCM operations
++\*--------------------------------------------------------------------------*/
++static int atmel_pcm_hw_params(struct snd_pcm_substream *substream,
++	struct snd_pcm_hw_params *params)
++{
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	struct atmel_runtime_data *prtd = runtime->private_data;
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++
++	/* this may get called several times by oss emulation
++	 * with different params */
++
++	snd_pcm_set_runtime_buffer(substream, &substream->dma_buffer);
++	runtime->dma_bytes = params_buffer_bytes(params);
++
++	prtd->params = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
++	prtd->params->dma_intr_handler = atmel_pcm_dma_irq;
++
++	prtd->dma_buffer = runtime->dma_addr;
++	prtd->dma_buffer_end = runtime->dma_addr + runtime->dma_bytes;
++	prtd->period_size = params_period_bytes(params);
++
++	pr_debug("atmel-pcm: "
++		"hw_params: DMA for %s initialized "
++		"(dma_bytes=%u, period_size=%u)\n",
++		prtd->params->name,
++		runtime->dma_bytes,
++		prtd->period_size);
++	return 0;
++}
++
++static int atmel_pcm_hw_free(struct snd_pcm_substream *substream)
++{
++	struct atmel_runtime_data *prtd = substream->runtime->private_data;
++	struct atmel_pcm_dma_params *params = prtd->params;
++
++	if (params != NULL) {
++		ssc_writex(params->ssc->regs, SSC_PDC_PTCR,
++			   params->mask->pdc_disable);
++		prtd->params->dma_intr_handler = NULL;
++	}
++
++	return 0;
++}
++
++static int atmel_pcm_prepare(struct snd_pcm_substream *substream)
++{
++	struct atmel_runtime_data *prtd = substream->runtime->private_data;
++	struct atmel_pcm_dma_params *params = prtd->params;
++
++	ssc_writex(params->ssc->regs, SSC_IDR,
++		   params->mask->ssc_endx | params->mask->ssc_endbuf);
++	ssc_writex(params->ssc->regs, ATMEL_PDC_PTCR,
++		   params->mask->pdc_disable);
++	return 0;
++}
++
++static int atmel_pcm_trigger(struct snd_pcm_substream *substream,
++	int cmd)
++{
++	struct snd_pcm_runtime *rtd = substream->runtime;
++	struct atmel_runtime_data *prtd = rtd->private_data;
++	struct atmel_pcm_dma_params *params = prtd->params;
++	int ret = 0;
++
++	pr_debug("atmel-pcm:buffer_size = %ld,"
++		"dma_area = %p, dma_bytes = %u\n",
++		rtd->buffer_size, rtd->dma_area, rtd->dma_bytes);
++
++	switch (cmd) {
++	case SNDRV_PCM_TRIGGER_START:
++		prtd->period_ptr = prtd->dma_buffer;
++
++		ssc_writex(params->ssc->regs, params->pdc->xpr,
++			   prtd->period_ptr);
++		ssc_writex(params->ssc->regs, params->pdc->xcr,
++			   prtd->period_size / params->pdc_xfer_size);
++
++		prtd->period_ptr += prtd->period_size;
++		ssc_writex(params->ssc->regs, params->pdc->xnpr,
++			   prtd->period_ptr);
++		ssc_writex(params->ssc->regs, params->pdc->xncr,
++			   prtd->period_size / params->pdc_xfer_size);
++
++		pr_debug("atmel-pcm: trigger: "
++			"period_ptr=%lx, xpr=%u, "
++			"xcr=%u, xnpr=%u, xncr=%u\n",
++			(unsigned long)prtd->period_ptr,
++			ssc_readx(params->ssc->regs, params->pdc->xpr),
++			ssc_readx(params->ssc->regs, params->pdc->xcr),
++			ssc_readx(params->ssc->regs, params->pdc->xnpr),
++			ssc_readx(params->ssc->regs, params->pdc->xncr));
++
++		ssc_writex(params->ssc->regs, SSC_IER,
++			   params->mask->ssc_endx | params->mask->ssc_endbuf);
++		ssc_writex(params->ssc->regs, SSC_PDC_PTCR,
++			   params->mask->pdc_enable);
++
++		pr_debug("sr=%u imr=%u\n",
++			ssc_readx(params->ssc->regs, SSC_SR),
++			ssc_readx(params->ssc->regs, SSC_IER));
++		break;		/* SNDRV_PCM_TRIGGER_START */
++
++	case SNDRV_PCM_TRIGGER_STOP:
++	case SNDRV_PCM_TRIGGER_SUSPEND:
++	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
++		ssc_writex(params->ssc->regs, ATMEL_PDC_PTCR,
++			   params->mask->pdc_disable);
++		break;
++
++	case SNDRV_PCM_TRIGGER_RESUME:
++	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
++		ssc_writex(params->ssc->regs, ATMEL_PDC_PTCR,
++			   params->mask->pdc_enable);
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static snd_pcm_uframes_t atmel_pcm_pointer(
++	struct snd_pcm_substream *substream)
++{
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	struct atmel_runtime_data *prtd = runtime->private_data;
++	struct atmel_pcm_dma_params *params = prtd->params;
++	dma_addr_t ptr;
++	snd_pcm_uframes_t x;
++
++	ptr = (dma_addr_t) ssc_readx(params->ssc->regs, params->pdc->xpr);
++	x = bytes_to_frames(runtime, ptr - prtd->dma_buffer);
++
++	if (x == runtime->buffer_size)
++		x = 0;
++
++	return x;
++}
++
++static int atmel_pcm_open(struct snd_pcm_substream *substream)
++{
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	struct atmel_runtime_data *prtd;
++	int ret = 0;
++
++	snd_soc_set_runtime_hwparams(substream, &atmel_pcm_hardware);
++
++	/* ensure that buffer size is a multiple of period size */
++	ret = snd_pcm_hw_constraint_integer(runtime,
++						SNDRV_PCM_HW_PARAM_PERIODS);
++	if (ret < 0)
++		goto out;
++
++	prtd = kzalloc(sizeof(struct atmel_runtime_data), GFP_KERNEL);
++	if (prtd == NULL) {
++		ret = -ENOMEM;
++		goto out;
++	}
++	runtime->private_data = prtd;
++
++ out:
++	return ret;
++}
++
++static int atmel_pcm_close(struct snd_pcm_substream *substream)
++{
++	struct atmel_runtime_data *prtd = substream->runtime->private_data;
++
++	kfree(prtd);
++	return 0;
++}
++
++static struct snd_pcm_ops atmel_pcm_ops = {
++	.open		= atmel_pcm_open,
++	.close		= atmel_pcm_close,
++	.ioctl		= snd_pcm_lib_ioctl,
++	.hw_params	= atmel_pcm_hw_params,
++	.hw_free	= atmel_pcm_hw_free,
++	.prepare	= atmel_pcm_prepare,
++	.trigger	= atmel_pcm_trigger,
++	.pointer	= atmel_pcm_pointer,
++	.mmap		= atmel_pcm_mmap,
++};
++
++
++/*--------------------------------------------------------------------------*\
++ * ASoC platform driver
++\*--------------------------------------------------------------------------*/
++#ifdef CONFIG_PM
++static int atmel_pcm_suspend(struct snd_soc_dai *dai)
++{
++	struct snd_pcm_runtime *runtime = dai->runtime;
++	struct atmel_runtime_data *prtd;
++	struct atmel_pcm_dma_params *params;
++
++	if (!runtime)
++		return 0;
++
++	prtd = runtime->private_data;
++	params = prtd->params;
++
++	/* disable the PDC and save the PDC registers */
++
++	ssc_writel(params->ssc->regs, PDC_PTCR, params->mask->pdc_disable);
++
++	prtd->pdc_xpr_save = ssc_readx(params->ssc->regs, params->pdc->xpr);
++	prtd->pdc_xcr_save = ssc_readx(params->ssc->regs, params->pdc->xcr);
++	prtd->pdc_xnpr_save = ssc_readx(params->ssc->regs, params->pdc->xnpr);
++	prtd->pdc_xncr_save = ssc_readx(params->ssc->regs, params->pdc->xncr);
++
++	return 0;
++}
++
++static int atmel_pcm_resume(struct snd_soc_dai *dai)
++{
++	struct snd_pcm_runtime *runtime = dai->runtime;
++	struct atmel_runtime_data *prtd;
++	struct atmel_pcm_dma_params *params;
++
++	if (!runtime)
++		return 0;
++
++	prtd = runtime->private_data;
++	params = prtd->params;
++
++	/* restore the PDC registers and enable the PDC */
++	ssc_writex(params->ssc->regs, params->pdc->xpr, prtd->pdc_xpr_save);
++	ssc_writex(params->ssc->regs, params->pdc->xcr, prtd->pdc_xcr_save);
++	ssc_writex(params->ssc->regs, params->pdc->xnpr, prtd->pdc_xnpr_save);
++	ssc_writex(params->ssc->regs, params->pdc->xncr, prtd->pdc_xncr_save);
++
++	ssc_writel(params->ssc->regs, PDC_PTCR, params->mask->pdc_enable);
++	return 0;
++}
++#else
++#define atmel_pcm_suspend	NULL
++#define atmel_pcm_resume	NULL
++#endif
++
++static struct snd_soc_platform_driver atmel_soc_platform = {
++	.ops		= &atmel_pcm_ops,
++	.pcm_new	= atmel_pcm_new,
++	.pcm_free	= atmel_pcm_free,
++	.suspend	= atmel_pcm_suspend,
++	.resume		= atmel_pcm_resume,
++};
++
++int atmel_pcm_pdc_platform_register(struct device *dev)
++{
++	return snd_soc_register_platform(dev, &atmel_soc_platform);
++}
++EXPORT_SYMBOL(atmel_pcm_pdc_platform_register);
++
++void atmel_pcm_pdc_platform_unregister(struct device *dev)
++{
++	snd_soc_unregister_platform(dev);
++}
++EXPORT_SYMBOL(atmel_pcm_pdc_platform_unregister);
++
++MODULE_AUTHOR("Sedji Gaouaou <sedji.gaouaou@atmel.com>");
++MODULE_DESCRIPTION("Atmel PCM module");
++MODULE_LICENSE("GPL");
 diff --git a/sound/soc/atmel/atmel-pcm.c b/sound/soc/atmel/atmel-pcm.c
-index 9b84f98..40e17d1 100644
+index 9b84f98..e99f181 100644
 --- a/sound/soc/atmel/atmel-pcm.c
 +++ b/sound/soc/atmel/atmel-pcm.c
-@@ -473,28 +473,17 @@ static struct snd_soc_platform_driver atmel_soc_platform = {
- 	.resume		= atmel_pcm_resume,
- };
+@@ -32,80 +32,25 @@
+  */
  
--static int __devinit atmel_soc_platform_probe(struct platform_device *pdev)
-+int atmel_pcm_platform_register(struct device *dev)
+ #include <linux/module.h>
+-#include <linux/init.h>
+-#include <linux/platform_device.h>
+-#include <linux/slab.h>
+ #include <linux/dma-mapping.h>
+-#include <linux/atmel_pdc.h>
+-#include <linux/atmel-ssc.h>
+-
+-#include <sound/core.h>
+ #include <sound/pcm.h>
+-#include <sound/pcm_params.h>
+ #include <sound/soc.h>
+-
+ #include "atmel-pcm.h"
+ 
+-
+-/*--------------------------------------------------------------------------*\
+- * Hardware definition
+-\*--------------------------------------------------------------------------*/
+-/* TODO: These values were taken from the AT91 platform driver, check
+- *	 them against real values for AT32
+- */
+-static const struct snd_pcm_hardware atmel_pcm_hardware = {
+-	.info			= SNDRV_PCM_INFO_MMAP |
+-				  SNDRV_PCM_INFO_MMAP_VALID |
+-				  SNDRV_PCM_INFO_INTERLEAVED |
+-				  SNDRV_PCM_INFO_PAUSE,
+-	.formats		= SNDRV_PCM_FMTBIT_S16_LE,
+-	.period_bytes_min	= 32,
+-	.period_bytes_max	= 8192,
+-	.periods_min		= 2,
+-	.periods_max		= 1024,
+-	.buffer_bytes_max	= 32 * 1024,
+-};
+-
+-
+-/*--------------------------------------------------------------------------*\
+- * Data types
+-\*--------------------------------------------------------------------------*/
+-struct atmel_runtime_data {
+-	struct atmel_pcm_dma_params *params;
+-	dma_addr_t dma_buffer;		/* physical address of dma buffer */
+-	dma_addr_t dma_buffer_end;	/* first address beyond DMA buffer */
+-	size_t period_size;
+-
+-	dma_addr_t period_ptr;		/* physical address of next period */
+-
+-	/* PDC register save */
+-	u32 pdc_xpr_save;
+-	u32 pdc_xcr_save;
+-	u32 pdc_xnpr_save;
+-	u32 pdc_xncr_save;
+-};
+-
+-
+-/*--------------------------------------------------------------------------*\
+- * Helper functions
+-\*--------------------------------------------------------------------------*/
+ static int atmel_pcm_preallocate_dma_buffer(struct snd_pcm *pcm,
+ 	int stream)
  {
--	return snd_soc_register_platform(&pdev->dev, &atmel_soc_platform);
-+	return snd_soc_register_platform(dev, &atmel_soc_platform);
+ 	struct snd_pcm_substream *substream = pcm->streams[stream].substream;
+ 	struct snd_dma_buffer *buf = &substream->dma_buffer;
+-	size_t size = atmel_pcm_hardware.buffer_bytes_max;
++	size_t size = ATMEL_SSC_DMABUF_SIZE;
+ 
+ 	buf->dev.type = SNDRV_DMA_TYPE_DEV;
+ 	buf->dev.dev = pcm->card->dev;
+ 	buf->private_data = NULL;
+ 	buf->area = dma_alloc_coherent(pcm->card->dev, size,
+-					  &buf->addr, GFP_KERNEL);
+-	pr_debug("atmel-pcm:"
+-		"preallocate_dma_buffer: area=%p, addr=%p, size=%d\n",
+-		(void *) buf->area,
+-		(void *) buf->addr,
+-		size);
++			&buf->addr, GFP_KERNEL);
++	pr_debug("atmel-pcm: alloc dma buffer: area=%p, addr=%p, size=%d\n",
++			(void *)buf->area, (void *)buf->addr, size);
+ 
+ 	if (!buf->area)
+ 		return -ENOMEM;
+@@ -113,258 +58,19 @@ static int atmel_pcm_preallocate_dma_buffer(struct snd_pcm *pcm,
+ 	buf->bytes = size;
+ 	return 0;
  }
-+EXPORT_SYMBOL(atmel_pcm_platform_register);
+-/*--------------------------------------------------------------------------*\
+- * ISR
+-\*--------------------------------------------------------------------------*/
+-static void atmel_pcm_dma_irq(u32 ssc_sr,
+-	struct snd_pcm_substream *substream)
+-{
+-	struct atmel_runtime_data *prtd = substream->runtime->private_data;
+-	struct atmel_pcm_dma_params *params = prtd->params;
+-	static int count;
+-
+-	count++;
+-
+-	if (ssc_sr & params->mask->ssc_endbuf) {
+-		pr_warning("atmel-pcm: buffer %s on %s"
+-				" (SSC_SR=%#x, count=%d)\n",
+-				substream->stream == SNDRV_PCM_STREAM_PLAYBACK
+-				? "underrun" : "overrun",
+-				params->name, ssc_sr, count);
+-
+-		/* re-start the PDC */
+-		ssc_writex(params->ssc->regs, ATMEL_PDC_PTCR,
+-			   params->mask->pdc_disable);
+-		prtd->period_ptr += prtd->period_size;
+-		if (prtd->period_ptr >= prtd->dma_buffer_end)
+-			prtd->period_ptr = prtd->dma_buffer;
+-
+-		ssc_writex(params->ssc->regs, params->pdc->xpr,
+-			   prtd->period_ptr);
+-		ssc_writex(params->ssc->regs, params->pdc->xcr,
+-			   prtd->period_size / params->pdc_xfer_size);
+-		ssc_writex(params->ssc->regs, ATMEL_PDC_PTCR,
+-			   params->mask->pdc_enable);
+-	}
+-
+-	if (ssc_sr & params->mask->ssc_endx) {
+-		/* Load the PDC next pointer and counter registers */
+-		prtd->period_ptr += prtd->period_size;
+-		if (prtd->period_ptr >= prtd->dma_buffer_end)
+-			prtd->period_ptr = prtd->dma_buffer;
+-
+-		ssc_writex(params->ssc->regs, params->pdc->xnpr,
+-			   prtd->period_ptr);
+-		ssc_writex(params->ssc->regs, params->pdc->xncr,
+-			   prtd->period_size / params->pdc_xfer_size);
+-	}
+-
+-	snd_pcm_period_elapsed(substream);
+-}
+-
+-
+-/*--------------------------------------------------------------------------*\
+- * PCM operations
+-\*--------------------------------------------------------------------------*/
+-static int atmel_pcm_hw_params(struct snd_pcm_substream *substream,
+-	struct snd_pcm_hw_params *params)
+-{
+-	struct snd_pcm_runtime *runtime = substream->runtime;
+-	struct atmel_runtime_data *prtd = runtime->private_data;
+-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+-
+-	/* this may get called several times by oss emulation
+-	 * with different params */
+-
+-	snd_pcm_set_runtime_buffer(substream, &substream->dma_buffer);
+-	runtime->dma_bytes = params_buffer_bytes(params);
+-
+-	prtd->params = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
+-	prtd->params->dma_intr_handler = atmel_pcm_dma_irq;
+-
+-	prtd->dma_buffer = runtime->dma_addr;
+-	prtd->dma_buffer_end = runtime->dma_addr + runtime->dma_bytes;
+-	prtd->period_size = params_period_bytes(params);
+-
+-	pr_debug("atmel-pcm: "
+-		"hw_params: DMA for %s initialized "
+-		"(dma_bytes=%u, period_size=%u)\n",
+-		prtd->params->name,
+-		runtime->dma_bytes,
+-		prtd->period_size);
+-	return 0;
+-}
+-
+-static int atmel_pcm_hw_free(struct snd_pcm_substream *substream)
+-{
+-	struct atmel_runtime_data *prtd = substream->runtime->private_data;
+-	struct atmel_pcm_dma_params *params = prtd->params;
+-
+-	if (params != NULL) {
+-		ssc_writex(params->ssc->regs, SSC_PDC_PTCR,
+-			   params->mask->pdc_disable);
+-		prtd->params->dma_intr_handler = NULL;
+-	}
+-
+-	return 0;
+-}
+-
+-static int atmel_pcm_prepare(struct snd_pcm_substream *substream)
+-{
+-	struct atmel_runtime_data *prtd = substream->runtime->private_data;
+-	struct atmel_pcm_dma_params *params = prtd->params;
+-
+-	ssc_writex(params->ssc->regs, SSC_IDR,
+-		   params->mask->ssc_endx | params->mask->ssc_endbuf);
+-	ssc_writex(params->ssc->regs, ATMEL_PDC_PTCR,
+-		   params->mask->pdc_disable);
+-	return 0;
+-}
+-
+-static int atmel_pcm_trigger(struct snd_pcm_substream *substream,
+-	int cmd)
+-{
+-	struct snd_pcm_runtime *rtd = substream->runtime;
+-	struct atmel_runtime_data *prtd = rtd->private_data;
+-	struct atmel_pcm_dma_params *params = prtd->params;
+-	int ret = 0;
+-
+-	pr_debug("atmel-pcm:buffer_size = %ld,"
+-		"dma_area = %p, dma_bytes = %u\n",
+-		rtd->buffer_size, rtd->dma_area, rtd->dma_bytes);
+-
+-	switch (cmd) {
+-	case SNDRV_PCM_TRIGGER_START:
+-		prtd->period_ptr = prtd->dma_buffer;
+-
+-		ssc_writex(params->ssc->regs, params->pdc->xpr,
+-			   prtd->period_ptr);
+-		ssc_writex(params->ssc->regs, params->pdc->xcr,
+-			   prtd->period_size / params->pdc_xfer_size);
+-
+-		prtd->period_ptr += prtd->period_size;
+-		ssc_writex(params->ssc->regs, params->pdc->xnpr,
+-			   prtd->period_ptr);
+-		ssc_writex(params->ssc->regs, params->pdc->xncr,
+-			   prtd->period_size / params->pdc_xfer_size);
+-
+-		pr_debug("atmel-pcm: trigger: "
+-			"period_ptr=%lx, xpr=%u, "
+-			"xcr=%u, xnpr=%u, xncr=%u\n",
+-			(unsigned long)prtd->period_ptr,
+-			ssc_readx(params->ssc->regs, params->pdc->xpr),
+-			ssc_readx(params->ssc->regs, params->pdc->xcr),
+-			ssc_readx(params->ssc->regs, params->pdc->xnpr),
+-			ssc_readx(params->ssc->regs, params->pdc->xncr));
+-
+-		ssc_writex(params->ssc->regs, SSC_IER,
+-			   params->mask->ssc_endx | params->mask->ssc_endbuf);
+-		ssc_writex(params->ssc->regs, SSC_PDC_PTCR,
+-			   params->mask->pdc_enable);
+-
+-		pr_debug("sr=%u imr=%u\n",
+-			ssc_readx(params->ssc->regs, SSC_SR),
+-			ssc_readx(params->ssc->regs, SSC_IER));
+-		break;		/* SNDRV_PCM_TRIGGER_START */
+-
+-	case SNDRV_PCM_TRIGGER_STOP:
+-	case SNDRV_PCM_TRIGGER_SUSPEND:
+-	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+-		ssc_writex(params->ssc->regs, ATMEL_PDC_PTCR,
+-			   params->mask->pdc_disable);
+-		break;
+-
+-	case SNDRV_PCM_TRIGGER_RESUME:
+-	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+-		ssc_writex(params->ssc->regs, ATMEL_PDC_PTCR,
+-			   params->mask->pdc_enable);
+-		break;
+-
+-	default:
+-		ret = -EINVAL;
+-	}
  
--static int __devexit atmel_soc_platform_remove(struct platform_device *pdev)
-+void atmel_pcm_platform_unregister(struct device *dev)
+-	return ret;
+-}
+-
+-static snd_pcm_uframes_t atmel_pcm_pointer(
+-	struct snd_pcm_substream *substream)
+-{
+-	struct snd_pcm_runtime *runtime = substream->runtime;
+-	struct atmel_runtime_data *prtd = runtime->private_data;
+-	struct atmel_pcm_dma_params *params = prtd->params;
+-	dma_addr_t ptr;
+-	snd_pcm_uframes_t x;
+-
+-	ptr = (dma_addr_t) ssc_readx(params->ssc->regs, params->pdc->xpr);
+-	x = bytes_to_frames(runtime, ptr - prtd->dma_buffer);
+-
+-	if (x == runtime->buffer_size)
+-		x = 0;
+-
+-	return x;
+-}
+-
+-static int atmel_pcm_open(struct snd_pcm_substream *substream)
+-{
+-	struct snd_pcm_runtime *runtime = substream->runtime;
+-	struct atmel_runtime_data *prtd;
+-	int ret = 0;
+-
+-	snd_soc_set_runtime_hwparams(substream, &atmel_pcm_hardware);
+-
+-	/* ensure that buffer size is a multiple of period size */
+-	ret = snd_pcm_hw_constraint_integer(runtime,
+-						SNDRV_PCM_HW_PARAM_PERIODS);
+-	if (ret < 0)
+-		goto out;
+-
+-	prtd = kzalloc(sizeof(struct atmel_runtime_data), GFP_KERNEL);
+-	if (prtd == NULL) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
+-	runtime->private_data = prtd;
+-
+- out:
+-	return ret;
+-}
+-
+-static int atmel_pcm_close(struct snd_pcm_substream *substream)
+-{
+-	struct atmel_runtime_data *prtd = substream->runtime->private_data;
+-
+-	kfree(prtd);
+-	return 0;
+-}
+-
+-static int atmel_pcm_mmap(struct snd_pcm_substream *substream,
++int atmel_pcm_mmap(struct snd_pcm_substream *substream,
+ 	struct vm_area_struct *vma)
  {
+ 	return remap_pfn_range(vma, vma->vm_start,
+ 		       substream->dma_buffer.addr >> PAGE_SHIFT,
+ 		       vma->vm_end - vma->vm_start, vma->vm_page_prot);
+ }
++EXPORT_SYMBOL_GPL(atmel_pcm_mmap);
+ 
+-static struct snd_pcm_ops atmel_pcm_ops = {
+-	.open		= atmel_pcm_open,
+-	.close		= atmel_pcm_close,
+-	.ioctl		= snd_pcm_lib_ioctl,
+-	.hw_params	= atmel_pcm_hw_params,
+-	.hw_free	= atmel_pcm_hw_free,
+-	.prepare	= atmel_pcm_prepare,
+-	.trigger	= atmel_pcm_trigger,
+-	.pointer	= atmel_pcm_pointer,
+-	.mmap		= atmel_pcm_mmap,
+-};
+-
+-
+-/*--------------------------------------------------------------------------*\
+- * ASoC platform driver
+-\*--------------------------------------------------------------------------*/
+ static u64 atmel_pcm_dmamask = DMA_BIT_MASK(32);
+ 
+-static int atmel_pcm_new(struct snd_soc_pcm_runtime *rtd)
++int atmel_pcm_new(struct snd_soc_pcm_runtime *rtd)
+ {
+ 	struct snd_card *card = rtd->card->snd_card;
+ 	struct snd_pcm *pcm = rtd->pcm;
+@@ -376,6 +82,7 @@ static int atmel_pcm_new(struct snd_soc_pcm_runtime *rtd)
+ 		card->dev->coherent_dma_mask = DMA_BIT_MASK(32);
+ 
+ 	if (pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream) {
++		pr_debug("atmel-pcm: allocating PCM playback DMA buffer\n");
+ 		ret = atmel_pcm_preallocate_dma_buffer(pcm,
+ 			SNDRV_PCM_STREAM_PLAYBACK);
+ 		if (ret)
+@@ -383,8 +90,7 @@ static int atmel_pcm_new(struct snd_soc_pcm_runtime *rtd)
+ 	}
+ 
+ 	if (pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream) {
+-		pr_debug("atmel-pcm:"
+-				"Allocating PCM capture DMA buffer\n");
++		pr_debug("atmel-pcm: allocating PCM capture DMA buffer\n");
+ 		ret = atmel_pcm_preallocate_dma_buffer(pcm,
+ 			SNDRV_PCM_STREAM_CAPTURE);
+ 		if (ret)
+@@ -393,8 +99,9 @@ static int atmel_pcm_new(struct snd_soc_pcm_runtime *rtd)
+  out:
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(atmel_pcm_new);
+ 
+-static void atmel_pcm_free_dma_buffers(struct snd_pcm *pcm)
++void atmel_pcm_free(struct snd_pcm *pcm)
+ {
+ 	struct snd_pcm_substream *substream;
+ 	struct snd_dma_buffer *buf;
+@@ -413,89 +120,5 @@ static void atmel_pcm_free_dma_buffers(struct snd_pcm *pcm)
+ 		buf->area = NULL;
+ 	}
+ }
++EXPORT_SYMBOL_GPL(atmel_pcm_free);
+ 
+-#ifdef CONFIG_PM
+-static int atmel_pcm_suspend(struct snd_soc_dai *dai)
+-{
+-	struct snd_pcm_runtime *runtime = dai->runtime;
+-	struct atmel_runtime_data *prtd;
+-	struct atmel_pcm_dma_params *params;
+-
+-	if (!runtime)
+-		return 0;
+-
+-	prtd = runtime->private_data;
+-	params = prtd->params;
+-
+-	/* disable the PDC and save the PDC registers */
+-
+-	ssc_writel(params->ssc->regs, PDC_PTCR, params->mask->pdc_disable);
+-
+-	prtd->pdc_xpr_save = ssc_readx(params->ssc->regs, params->pdc->xpr);
+-	prtd->pdc_xcr_save = ssc_readx(params->ssc->regs, params->pdc->xcr);
+-	prtd->pdc_xnpr_save = ssc_readx(params->ssc->regs, params->pdc->xnpr);
+-	prtd->pdc_xncr_save = ssc_readx(params->ssc->regs, params->pdc->xncr);
+-
+-	return 0;
+-}
+-
+-static int atmel_pcm_resume(struct snd_soc_dai *dai)
+-{
+-	struct snd_pcm_runtime *runtime = dai->runtime;
+-	struct atmel_runtime_data *prtd;
+-	struct atmel_pcm_dma_params *params;
+-
+-	if (!runtime)
+-		return 0;
+-
+-	prtd = runtime->private_data;
+-	params = prtd->params;
+-
+-	/* restore the PDC registers and enable the PDC */
+-	ssc_writex(params->ssc->regs, params->pdc->xpr, prtd->pdc_xpr_save);
+-	ssc_writex(params->ssc->regs, params->pdc->xcr, prtd->pdc_xcr_save);
+-	ssc_writex(params->ssc->regs, params->pdc->xnpr, prtd->pdc_xnpr_save);
+-	ssc_writex(params->ssc->regs, params->pdc->xncr, prtd->pdc_xncr_save);
+-
+-	ssc_writel(params->ssc->regs, PDC_PTCR, params->mask->pdc_enable);
+-	return 0;
+-}
+-#else
+-#define atmel_pcm_suspend	NULL
+-#define atmel_pcm_resume	NULL
+-#endif
+-
+-static struct snd_soc_platform_driver atmel_soc_platform = {
+-	.ops		= &atmel_pcm_ops,
+-	.pcm_new	= atmel_pcm_new,
+-	.pcm_free	= atmel_pcm_free_dma_buffers,
+-	.suspend	= atmel_pcm_suspend,
+-	.resume		= atmel_pcm_resume,
+-};
+-
+-static int __devinit atmel_soc_platform_probe(struct platform_device *pdev)
+-{
+-	return snd_soc_register_platform(&pdev->dev, &atmel_soc_platform);
+-}
+-
+-static int __devexit atmel_soc_platform_remove(struct platform_device *pdev)
+-{
 -	snd_soc_unregister_platform(&pdev->dev);
 -	return 0;
-+	snd_soc_unregister_platform(dev);
- }
+-}
 -
 -static struct platform_driver atmel_pcm_driver = {
 -	.driver = {
@@ -16892,24 +18796,69 @@ index 9b84f98..40e17d1 100644
 -};
 -
 -module_platform_driver(atmel_pcm_driver);
-+EXPORT_SYMBOL(atmel_pcm_platform_unregister);
- 
- MODULE_AUTHOR("Sedji Gaouaou <sedji.gaouaou@atmel.com>");
- MODULE_DESCRIPTION("Atmel PCM module");
+-
+-MODULE_AUTHOR("Sedji Gaouaou <sedji.gaouaou@atmel.com>");
+-MODULE_DESCRIPTION("Atmel PCM module");
+-MODULE_LICENSE("GPL");
 diff --git a/sound/soc/atmel/atmel-pcm.h b/sound/soc/atmel/atmel-pcm.h
-index 5e0a95e..e6d67b3 100644
+index 5e0a95e..bb45d20 100644
 --- a/sound/soc/atmel/atmel-pcm.h
 +++ b/sound/soc/atmel/atmel-pcm.h
-@@ -80,4 +80,7 @@ struct atmel_pcm_dma_params {
+@@ -36,6 +36,8 @@
+ 
+ #include <linux/atmel-ssc.h>
+ 
++#define ATMEL_SSC_DMABUF_SIZE	(64 * 1024)
++
+ /*
+  * Registers and status bits that are required by the PCM driver.
+  */
+@@ -50,6 +52,7 @@ struct atmel_pdc_regs {
+ struct atmel_ssc_mask {
+ 	u32	ssc_enable;		/* SSC recv/trans enable */
+ 	u32	ssc_disable;		/* SSC recv/trans disable */
++	u32	ssc_error;		/* SSC error conditions */
+ 	u32	ssc_endx;		/* SSC ENDTX or ENDRX */
+ 	u32	ssc_endbuf;		/* SSC TXBUFE or RXBUFF */
+ 	u32	pdc_enable;		/* PDC recv/trans enable */
+@@ -80,4 +83,35 @@ struct atmel_pcm_dma_params {
  #define ssc_readx(base, reg)            (__raw_readl((base) + (reg)))
  #define ssc_writex(base, reg, value)    __raw_writel((value), (base) + (reg))
  
-+int atmel_pcm_platform_register(struct device *dev);
-+void atmel_pcm_platform_unregister(struct device *dev);
++int atmel_pcm_new(struct snd_soc_pcm_runtime *rtd);
++void atmel_pcm_free(struct snd_pcm *pcm);
++int atmel_pcm_mmap(struct snd_pcm_substream *substream,
++		struct vm_area_struct *vma);
++
++#ifdef CONFIG_SND_ATMEL_SOC_PDC
++int atmel_pcm_pdc_platform_register(struct device *dev);
++void atmel_pcm_pdc_platform_unregister(struct device *dev);
++#else
++static inline int atmel_pcm_pdc_platform_register(struct device *dev)
++{
++	return 0;
++}
++static inline void atmel_pcm_pdc_platform_unregister(struct device *dev)
++{
++}
++#endif
++
++#ifdef CONFIG_SND_ATMEL_SOC_DMA
++int atmel_pcm_dma_platform_register(struct device *dev);
++void atmel_pcm_dma_platform_unregister(struct device *dev);
++#else
++static inline int atmel_pcm_dma_platform_register(struct device *dev)
++{
++	return 0;
++}
++static inline void atmel_pcm_dma_platform_unregister(struct device *dev)
++{
++}
++#endif
 +
  #endif /* _ATMEL_PCM_H */
 diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
-index 354341e..7932c05 100644
+index 354341e..1c76634 100644
 --- a/sound/soc/atmel/atmel_ssc_dai.c
 +++ b/sound/soc/atmel/atmel_ssc_dai.c
 @@ -48,11 +48,7 @@
@@ -16984,7 +18933,7 @@ index 354341e..7932c05 100644
  	return 0;
  }
  
-@@ -728,48 +702,8 @@ static const struct snd_soc_dai_ops atmel_ssc_dai_ops = {
+@@ -728,30 +702,8 @@ static const struct snd_soc_dai_ops atmel_ssc_dai_ops = {
  	.set_clkdiv	= atmel_ssc_set_dai_clkdiv,
  };
  
@@ -17010,6 +18959,19 @@ index 354341e..7932c05 100644
 -#if NUM_SSC_DEVICES == 3
 -	{
 -		.name = "atmel-ssc-dai.1",
++static struct snd_soc_dai_driver atmel_ssc_dai = {
+ 		.probe = atmel_ssc_probe,
+-		.remove = atmel_ssc_remove,
+ 		.suspend = atmel_ssc_suspend,
+ 		.resume = atmel_ssc_resume,
+ 		.playback = {
+@@ -765,50 +717,50 @@ static struct snd_soc_dai_driver atmel_ssc_dai[NUM_SSC_DEVICES] = {
+ 			.rates = ATMEL_SSC_RATES,
+ 			.formats = ATMEL_SSC_FORMATS,},
+ 		.ops = &atmel_ssc_dai_ops,
+-	},
+-	{
+-		.name = "atmel-ssc-dai.2",
 -		.probe = atmel_ssc_probe,
 -		.remove = atmel_ssc_remove,
 -		.suspend = atmel_ssc_suspend,
@@ -17026,19 +18988,6 @@ index 354341e..7932c05 100644
 -			.formats = ATMEL_SSC_FORMATS,},
 -		.ops = &atmel_ssc_dai_ops,
 -	},
--	{
--		.name = "atmel-ssc-dai.2",
-+static struct snd_soc_dai_driver atmel_ssc_dai = {
- 		.probe = atmel_ssc_probe,
--		.remove = atmel_ssc_remove,
- 		.suspend = atmel_ssc_suspend,
- 		.resume = atmel_ssc_resume,
- 		.playback = {
-@@ -783,32 +717,37 @@ static struct snd_soc_dai_driver atmel_ssc_dai[NUM_SSC_DEVICES] = {
- 			.rates = ATMEL_SSC_RATES,
- 			.formats = ATMEL_SSC_FORMATS,},
- 		.ops = &atmel_ssc_dai_ops,
--	},
 -#endif
  };
  
@@ -17049,6 +18998,8 @@ index 354341e..7932c05 100644
 -	BUG_ON(pdev->id >= ARRAY_SIZE(atmel_ssc_dai));
 -	return snd_soc_register_dai(&pdev->dev, &atmel_ssc_dai[pdev->id]);
 -}
++	struct platform_device *pdev = to_platform_device(dev);
++	struct ssc_device *ssc = platform_get_drvdata(pdev);
 +	int ret;
 +
 +	ret = snd_soc_register_dai(dev, &atmel_ssc_dai);
@@ -17057,7 +19008,11 @@ index 354341e..7932c05 100644
 +		goto err;
 +	}
 +
-+	ret = atmel_pcm_platform_register(dev);
++	if (ssc->pdata->use_dma)
++		ret = atmel_pcm_dma_platform_register(dev);
++	else
++		ret = atmel_pcm_pdc_platform_register(dev);
++
 +	if (ret) {
 +		dev_err(dev, "Could not register PCM: %d\n", ret);
 +		goto err_unregister_dai;
@@ -17067,31 +19022,37 @@ index 354341e..7932c05 100644
 -{
 -	snd_soc_unregister_dai(&pdev->dev);
  	return 0;
--}
++
++err_unregister_dai:
++	snd_soc_unregister_dai(dev);
++err:
++	return ret;
+ }
  
 -static struct platform_driver asoc_ssc_driver = {
 -	.driver = {
 -			.name = "atmel-ssc-dai",
 -			.owner = THIS_MODULE,
 -	},
-+err_unregister_dai:
-+	snd_soc_unregister_dai(dev);
-+err:
-+	return ret;
-+}
++static void asoc_ssc_exit(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct ssc_device *ssc = platform_get_drvdata(pdev);
  
 -	.probe = asoc_ssc_probe,
 -	.remove = __devexit_p(asoc_ssc_remove),
 -};
-+static void asoc_ssc_exit(struct device *dev)
-+{
-+	atmel_pcm_platform_unregister(dev);
++	if (ssc->pdata->use_dma)
++		atmel_pcm_dma_platform_unregister(dev);
++	else
++		atmel_pcm_pdc_platform_unregister(dev);
++
 +	snd_soc_unregister_dai(dev);
 +}
  
  /**
   * atmel_ssc_set_audio - Allocate the specified SSC for audio use.
-@@ -816,50 +755,32 @@ static struct platform_driver asoc_ssc_driver = {
+@@ -816,50 +768,32 @@ static struct platform_driver asoc_ssc_driver = {
  int atmel_ssc_set_audio(int ssc_id)
  {
  	struct ssc_device *ssc;
@@ -17604,6 +19565,38 @@ index 31d4483..4b11b82 100644
  	},
  	.probe  = ak4104_spi_probe,
  	.remove = __devexit_p(ak4104_spi_remove),
+diff --git a/sound/soc/codecs/ak4535.c b/sound/soc/codecs/ak4535.c
+index 618fdc3..fc55810 100644
+--- a/sound/soc/codecs/ak4535.c
++++ b/sound/soc/codecs/ak4535.c
+@@ -447,7 +447,7 @@ static __devinit int ak4535_i2c_probe(struct i2c_client *i2c,
+ 	if (ak4535 == NULL)
+ 		return -ENOMEM;
+ 
+-	ak4535->regmap = regmap_init_i2c(i2c, &ak4535_regmap);
++	ak4535->regmap = devm_regmap_init_i2c(i2c, &ak4535_regmap);
+ 	if (IS_ERR(ak4535->regmap)) {
+ 		ret = PTR_ERR(ak4535->regmap);
+ 		dev_err(&i2c->dev, "Failed to init regmap: %d\n", ret);
+@@ -458,18 +458,13 @@ static __devinit int ak4535_i2c_probe(struct i2c_client *i2c,
+ 
+ 	ret = snd_soc_register_codec(&i2c->dev,
+ 			&soc_codec_dev_ak4535, &ak4535_dai, 1);
+-	if (ret != 0)
+-		regmap_exit(ak4535->regmap);
+ 
+ 	return ret;
+ }
+ 
+ static __devexit int ak4535_i2c_remove(struct i2c_client *client)
+ {
+-	struct ak4535_priv *ak4535 = i2c_get_clientdata(client);
+-
+ 	snd_soc_unregister_codec(&client->dev);
+-	regmap_exit(ak4535->regmap);
+ 	return 0;
+ }
+ 
 diff --git a/sound/soc/codecs/ak4642.c b/sound/soc/codecs/ak4642.c
 index b3e24f2..546466a 100644
 --- a/sound/soc/codecs/ak4642.c
@@ -17656,8 +19649,61 @@ index b3e24f2..546466a 100644
  }
  
  static __devexit int ak4642_i2c_remove(struct i2c_client *client)
+diff --git a/sound/soc/codecs/arizona.c b/sound/soc/codecs/arizona.c
+index 054967d..87cfaa3 100644
+--- a/sound/soc/codecs/arizona.c
++++ b/sound/soc/codecs/arizona.c
+@@ -380,6 +380,18 @@ int arizona_set_sysclk(struct snd_soc_codec *codec, int clk_id,
+ 	case 49152000:
+ 		val |= 3 << ARIZONA_SYSCLK_FREQ_SHIFT;
+ 		break;
++	case 67737600:
++	case 73728000:
++		val |= 4 << ARIZONA_SYSCLK_FREQ_SHIFT;
++		break;
++	case 90316800:
++	case 98304000:
++		val |= 5 << ARIZONA_SYSCLK_FREQ_SHIFT;
++		break;
++	case 135475200:
++	case 147456000:
++		val |= 6 << ARIZONA_SYSCLK_FREQ_SHIFT;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -925,6 +937,9 @@ int arizona_set_fll(struct arizona_fll *fll, int source,
+ 	bool ena;
+ 	int ret;
+ 
++	if (fll->fref == Fref && fll->fout == Fout)
++		return 0;
++
+ 	ret = regmap_read(arizona->regmap, fll->base + 1, &reg);
+ 	if (ret != 0) {
+ 		arizona_fll_err(fll, "Failed to read current state: %d\n",
+@@ -970,6 +985,9 @@ int arizona_set_fll(struct arizona_fll *fll, int source,
+ 		if (ena)
+ 			pm_runtime_put_autosuspend(arizona->dev);
+ 
++		fll->fref = Fref;
++		fll->fout = Fout;
++
+ 		return 0;
+ 	}
+ 
+@@ -1002,6 +1020,9 @@ int arizona_set_fll(struct arizona_fll *fll, int source,
+ 	if (ret == 0)
+ 		arizona_fll_warn(fll, "Timed out waiting for lock\n");
+ 
++	fll->fref = Fref;
++	fll->fout = Fout;
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(arizona_set_fll);
 diff --git a/sound/soc/codecs/arizona.h b/sound/soc/codecs/arizona.h
-index 36ec649..f1c0ec9 100644
+index 36ec649..84c415d 100644
 --- a/sound/soc/codecs/arizona.h
 +++ b/sound/soc/codecs/arizona.h
 @@ -17,6 +17,8 @@
@@ -17771,8 +19817,17 @@ index 36ec649..f1c0ec9 100644
  extern const struct soc_enum arizona_lhpf1_mode;
  extern const struct soc_enum arizona_lhpf2_mode;
  extern const struct soc_enum arizona_lhpf3_mode;
+@@ -146,6 +191,8 @@ struct arizona_fll {
+ 	unsigned int vco_mult;
+ 	struct completion lock;
+ 	struct completion ok;
++	unsigned int fref;
++	unsigned int fout;
+ 
+ 	char lock_name[ARIZONA_FLL_NAME_LEN];
+ 	char clock_ok_name[ARIZONA_FLL_NAME_LEN];
 diff --git a/sound/soc/codecs/cs4271.c b/sound/soc/codecs/cs4271.c
-index e3f0a7f..a9c6c79 100644
+index e3f0a7f..2b01474 100644
 --- a/sound/soc/codecs/cs4271.c
 +++ b/sound/soc/codecs/cs4271.c
 @@ -27,6 +27,7 @@
@@ -17783,16 +19838,18 @@ index e3f0a7f..a9c6c79 100644
  #include <sound/pcm.h>
  #include <sound/soc.h>
  #include <sound/tlv.h>
-@@ -167,6 +168,8 @@ struct cs4271_private {
+@@ -167,6 +168,10 @@ struct cs4271_private {
  	int				gpio_nreset;
  	/* GPIO that disable serial bus, if any */
  	int				gpio_disable;
++	/* enable soft reset workaround */
++	bool				enable_soft_reset;
 +	/* power supply */
 +	struct regulator		*vd_supply;
  };
  
  /*
-@@ -403,11 +406,39 @@ static const struct snd_kcontrol_new cs4271_snd_controls[] = {
+@@ -403,11 +408,43 @@ static const struct snd_kcontrol_new cs4271_snd_controls[] = {
  		7, 1, 1),
  };
  
@@ -17801,6 +19858,10 @@ index e3f0a7f..a9c6c79 100644
 +{
 +	int ret;
 +	struct snd_soc_codec *codec = codec_dai->codec;
++	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
++
++	if (!cs4271->enable_soft_reset)
++		return 0;
 +
 +	/*
 +	 * Put the codec in soft reset and back again in case it's not
@@ -17832,7 +19893,7 @@ index e3f0a7f..a9c6c79 100644
  };
  
  static struct snd_soc_dai_driver cs4271_dai = {
-@@ -434,17 +465,36 @@ static struct snd_soc_dai_driver cs4271_dai = {
+@@ -434,17 +471,36 @@ static struct snd_soc_dai_driver cs4271_dai = {
  static int cs4271_soc_suspend(struct snd_soc_codec *codec)
  {
  	int ret;
@@ -17870,11 +19931,11 @@ index e3f0a7f..a9c6c79 100644
  	/* Restore codec state */
  	ret = snd_soc_cache_sync(codec);
  	if (ret < 0)
-@@ -474,15 +524,37 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -474,15 +530,42 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  	struct cs4271_platform_data *cs4271plat = codec->dev->platform_data;
  	int ret;
  	int gpio_nreset = -EINVAL;
-+	int amutec_eq_bmutec = 0;
++	bool amutec_eq_bmutec = false;
 +
 +	cs4271->vd_supply = devm_regulator_get(codec->dev, "vd");
 +	if (IS_ERR(cs4271->vd_supply)) {
@@ -17894,9 +19955,13 @@ index e3f0a7f..a9c6c79 100644
  		gpio_nreset = of_get_named_gpio(codec->dev->of_node,
  						"reset-gpio", 0);
 +
-+		if (!of_get_property(codec->dev->of_node,
++		if (of_get_property(codec->dev->of_node,
 +				     "cirrus,amutec-eq-bmutec", NULL))
-+			amutec_eq_bmutec = 1;
++			amutec_eq_bmutec = true;
++
++		if (of_get_property(codec->dev->of_node,
++				     "cirrus,enable-soft-reset", NULL))
++			cs4271->enable_soft_reset = true;
 +	}
  #endif
  
@@ -17907,11 +19972,12 @@ index e3f0a7f..a9c6c79 100644
 +			gpio_nreset = cs4271plat->gpio_nreset;
 +
 +		amutec_eq_bmutec = cs4271plat->amutec_eq_bmutec;
++		cs4271->enable_soft_reset = cs4271plat->enable_soft_reset;
 +	}
  
  	if (gpio_nreset >= 0)
  		if (devm_gpio_request(codec->dev, gpio_nreset, "CS4271 Reset"))
-@@ -528,6 +600,11 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -528,6 +611,11 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  	/* Power-up sequence requires 85 uS */
  	udelay(85);
  
@@ -17923,6 +19989,71 @@ index e3f0a7f..a9c6c79 100644
  	return snd_soc_add_codec_controls(codec, cs4271_snd_controls,
  		ARRAY_SIZE(cs4271_snd_controls));
  }
+diff --git a/sound/soc/codecs/da7210.c b/sound/soc/codecs/da7210.c
+index af5db70..843c1eb 100644
+--- a/sound/soc/codecs/da7210.c
++++ b/sound/soc/codecs/da7210.c
+@@ -1231,7 +1231,7 @@ static int __devinit da7210_i2c_probe(struct i2c_client *i2c,
+ 
+ 	i2c_set_clientdata(i2c, da7210);
+ 
+-	da7210->regmap = regmap_init_i2c(i2c, &da7210_regmap_config_i2c);
++	da7210->regmap = devm_regmap_init_i2c(i2c, &da7210_regmap_config_i2c);
+ 	if (IS_ERR(da7210->regmap)) {
+ 		ret = PTR_ERR(da7210->regmap);
+ 		dev_err(&i2c->dev, "regmap_init() failed: %d\n", ret);
+@@ -1245,24 +1245,15 @@ static int __devinit da7210_i2c_probe(struct i2c_client *i2c,
+ 
+ 	ret =  snd_soc_register_codec(&i2c->dev,
+ 			&soc_codec_dev_da7210, &da7210_dai, 1);
+-	if (ret < 0) {
++	if (ret < 0)
+ 		dev_err(&i2c->dev, "Failed to register codec: %d\n", ret);
+-		goto err_regmap;
+-	}
+-	return ret;
+-
+-err_regmap:
+-	regmap_exit(da7210->regmap);
+ 
+ 	return ret;
+ }
+ 
+ static int __devexit da7210_i2c_remove(struct i2c_client *client)
+ {
+-	struct da7210_priv *da7210 = i2c_get_clientdata(client);
+-
+ 	snd_soc_unregister_codec(&client->dev);
+-	regmap_exit(da7210->regmap);
+ 	return 0;
+ }
+ 
+@@ -1346,24 +1337,15 @@ static int __devinit da7210_spi_probe(struct spi_device *spi)
+ 	if (ret != 0)
+ 		dev_warn(&spi->dev, "Failed to apply regmap patch: %d\n", ret);
+ 
+-	ret =  snd_soc_register_codec(&spi->dev,
++	ret = snd_soc_register_codec(&spi->dev,
+ 			&soc_codec_dev_da7210, &da7210_dai, 1);
+-	if (ret < 0)
+-		goto err_regmap;
+-
+-	return ret;
+-
+-err_regmap:
+-	regmap_exit(da7210->regmap);
+ 
+ 	return ret;
+ }
+ 
+ static int __devexit da7210_spi_remove(struct spi_device *spi)
+ {
+-	struct da7210_priv *da7210 = spi_get_drvdata(spi);
+ 	snd_soc_unregister_codec(&spi->dev);
+-	regmap_exit(da7210->regmap);
+ 	return 0;
+ }
+ 
 diff --git a/sound/soc/codecs/da9055.c b/sound/soc/codecs/da9055.c
 index f379b08..d3a6de2 100644
 --- a/sound/soc/codecs/da9055.c
@@ -18311,6 +20442,77 @@ index 85d9cab..9ad1da3 100644
  	platform_set_drvdata(pdev, NULL);
  
  	return 0;
+diff --git a/sound/soc/codecs/lm49453.c b/sound/soc/codecs/lm49453.c
+index 99b0a9d..096b6aa 100644
+--- a/sound/soc/codecs/lm49453.c
++++ b/sound/soc/codecs/lm49453.c
+@@ -1497,7 +1497,7 @@ static __devinit int lm49453_i2c_probe(struct i2c_client *i2c,
+ 
+ 	i2c_set_clientdata(i2c, lm49453);
+ 
+-	lm49453->regmap = regmap_init_i2c(i2c, &lm49453_regmap_config);
++	lm49453->regmap = devm_regmap_init_i2c(i2c, &lm49453_regmap_config);
+ 	if (IS_ERR(lm49453->regmap)) {
+ 		ret = PTR_ERR(lm49453->regmap);
+ 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
+@@ -1508,21 +1508,15 @@ static __devinit int lm49453_i2c_probe(struct i2c_client *i2c,
+ 	ret =  snd_soc_register_codec(&i2c->dev,
+ 				      &soc_codec_dev_lm49453,
+ 				      lm49453_dai, ARRAY_SIZE(lm49453_dai));
+-	if (ret < 0) {
++	if (ret < 0)
+ 		dev_err(&i2c->dev, "Failed to register codec: %d\n", ret);
+-		regmap_exit(lm49453->regmap);
+-		return ret;
+-	}
+ 
+ 	return ret;
+ }
+ 
+ static int __devexit lm49453_i2c_remove(struct i2c_client *client)
+ {
+-	struct lm49453_priv *lm49453 = i2c_get_clientdata(client);
+-
+ 	snd_soc_unregister_codec(&client->dev);
+-	regmap_exit(lm49453->regmap);
+ 	return 0;
+ }
+ 
+diff --git a/sound/soc/codecs/max9768.c b/sound/soc/codecs/max9768.c
+index 17b3ec2..a777de6 100644
+--- a/sound/soc/codecs/max9768.c
++++ b/sound/soc/codecs/max9768.c
+@@ -187,7 +187,7 @@ static int __devinit max9768_i2c_probe(struct i2c_client *client,
+ 
+ 	i2c_set_clientdata(client, max9768);
+ 
+-	max9768->regmap = regmap_init_i2c(client, &max9768_i2c_regmap_config);
++	max9768->regmap = devm_regmap_init_i2c(client, &max9768_i2c_regmap_config);
+ 	if (IS_ERR(max9768->regmap)) {
+ 		err = PTR_ERR(max9768->regmap);
+ 		goto err_gpio_free;
+@@ -195,12 +195,10 @@ static int __devinit max9768_i2c_probe(struct i2c_client *client,
+ 
+ 	err = snd_soc_register_codec(&client->dev, &max9768_codec_driver, NULL, 0);
+ 	if (err)
+-		goto err_regmap_free;
++		goto err_gpio_free;
+ 
+ 	return 0;
+ 
+- err_regmap_free:
+-	regmap_exit(max9768->regmap);
+  err_gpio_free:
+ 	if (gpio_is_valid(max9768->shdn_gpio))
+ 		gpio_free(max9768->shdn_gpio);
+@@ -215,7 +213,6 @@ static int __devexit max9768_i2c_remove(struct i2c_client *client)
+ 	struct max9768 *max9768 = i2c_get_clientdata(client);
+ 
+ 	snd_soc_unregister_codec(&client->dev);
+-	regmap_exit(max9768->regmap);
+ 
+ 	if (gpio_is_valid(max9768->shdn_gpio))
+ 		gpio_free(max9768->shdn_gpio);
 diff --git a/sound/soc/codecs/max98088.c b/sound/soc/codecs/max98088.c
 index 3264a51..b858264 100644
 --- a/sound/soc/codecs/max98088.c
@@ -19279,7 +21481,7 @@ index aae2b24..3577422 100644
  #define AIC32X4_DSP_MODE		0x01
  #define AIC32X4_RIGHT_JUSTIFIED_MODE	0x02
 diff --git a/sound/soc/codecs/wm0010.c b/sound/soc/codecs/wm0010.c
-index 99afc00..3c3a7b1 100644
+index 99afc00..40256b5 100644
 --- a/sound/soc/codecs/wm0010.c
 +++ b/sound/soc/codecs/wm0010.c
 @@ -31,6 +31,9 @@
@@ -19813,8 +22015,29 @@ index 99afc00..3c3a7b1 100644
  	return 0;
  
  abort:
+@@ -784,7 +862,6 @@ static irqreturn_t wm0010_irq(int irq, void *data)
+ 	struct wm0010_priv *wm0010 = data;
+ 
+ 	switch (wm0010->state) {
+-	case WM0010_POWER_OFF:
+ 	case WM0010_OUT_OF_RESET:
+ 	case WM0010_BOOTROM:
+ 	case WM0010_STAGE2:
+diff --git a/sound/soc/codecs/wm2000.c b/sound/soc/codecs/wm2000.c
+index 683dc43..02750ab 100644
+--- a/sound/soc/codecs/wm2000.c
++++ b/sound/soc/codecs/wm2000.c
+@@ -646,7 +646,7 @@ static const struct snd_kcontrol_new wm2000_controls[] = {
+ static int wm2000_anc_power_event(struct snd_soc_dapm_widget *w,
+ 				  struct snd_kcontrol *kcontrol, int event)
+ {
+-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
++	struct snd_soc_codec *codec = w->codec;
+ 	struct wm2000_priv *wm2000 = dev_get_drvdata(codec->dev);
+ 
+ 	if (SND_SOC_DAPM_EVENT_ON(event))
 diff --git a/sound/soc/codecs/wm2200.c b/sound/soc/codecs/wm2200.c
-index eab64a1..1730df8 100644
+index eab64a1..ff45b02 100644
 --- a/sound/soc/codecs/wm2200.c
 +++ b/sound/soc/codecs/wm2200.c
 @@ -15,6 +15,7 @@
@@ -20146,7 +22369,7 @@ index eab64a1..1730df8 100644
  };
  
  static const unsigned int wm2200_dig_vu[] = {
-@@ -2011,7 +2200,7 @@ static __devinit int wm2200_i2c_probe(struct i2c_client *i2c,
+@@ -2011,14 +2200,30 @@ static __devinit int wm2200_i2c_probe(struct i2c_client *i2c,
  	wm2200->dev = &i2c->dev;
  	init_completion(&wm2200->fll_lock);
  
@@ -20155,18 +22378,19 @@ index eab64a1..1730df8 100644
  	if (IS_ERR(wm2200->regmap)) {
  		ret = PTR_ERR(wm2200->regmap);
  		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
-@@ -2019,6 +2208,22 @@ static __devinit int wm2200_i2c_probe(struct i2c_client *i2c,
- 		goto err;
- 	}
- 
+ 			ret);
+-		goto err;
++		return ret;
++	}
++
 +	for (i = 0; i < 2; i++) {
 +		wm2200->dsp[i].type = WMFW_ADSP1;
 +		wm2200->dsp[i].part = "wm2200";
 +		wm2200->dsp[i].num = i + 1;
 +		wm2200->dsp[i].dev = &i2c->dev;
 +		wm2200->dsp[i].regmap = wm2200->regmap;
-+	}
-+
+ 	}
+ 
 +	wm2200->dsp[0].base = WM2200_DSP1_CONTROL_1;
 +	wm2200->dsp[0].mem = wm2200_dsp1_regions;
 +	wm2200->dsp[0].num_mems = ARRAY_SIZE(wm2200_dsp1_regions);
@@ -20178,7 +22402,7 @@ index eab64a1..1730df8 100644
  	if (pdata)
  		wm2200->pdata = *pdata;
  
-@@ -2027,8 +2232,9 @@ static __devinit int wm2200_i2c_probe(struct i2c_client *i2c,
+@@ -2027,12 +2232,13 @@ static __devinit int wm2200_i2c_probe(struct i2c_client *i2c,
  	for (i = 0; i < ARRAY_SIZE(wm2200->core_supplies); i++)
  		wm2200->core_supplies[i].supply = wm2200_core_supply_names[i];
  
@@ -20190,7 +22414,17 @@ index eab64a1..1730df8 100644
  	if (ret != 0) {
  		dev_err(&i2c->dev, "Failed to request core supplies: %d\n",
  			ret);
-@@ -2044,8 +2250,9 @@ static __devinit int wm2200_i2c_probe(struct i2c_client *i2c,
+-		goto err_regmap;
++		return ret;
+ 	}
+ 
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(wm2200->core_supplies),
+@@ -2040,12 +2246,13 @@ static __devinit int wm2200_i2c_probe(struct i2c_client *i2c,
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to enable core supplies: %d\n",
+ 			ret);
+-		goto err_core;
++		return ret;
  	}
  
  	if (wm2200->pdata.ldo_ena) {
@@ -20214,7 +22448,7 @@ index eab64a1..1730df8 100644
  		if (ret < 0) {
  			dev_err(&i2c->dev, "Failed to request /RESET %d: %d\n",
  				wm2200->pdata.reset, ret);
-@@ -2166,23 +2374,16 @@ static __devinit int wm2200_i2c_probe(struct i2c_client *i2c,
+@@ -2166,24 +2374,14 @@ static __devinit int wm2200_i2c_probe(struct i2c_client *i2c,
  err_pm_runtime:
  	pm_runtime_disable(&i2c->dev);
  err_reset:
@@ -20232,15 +22466,16 @@ index eab64a1..1730df8 100644
  err_enable:
  	regulator_bulk_disable(ARRAY_SIZE(wm2200->core_supplies),
  			       wm2200->core_supplies);
- err_core:
+-err_core:
 -	regulator_bulk_free(ARRAY_SIZE(wm2200->core_supplies),
 -			    wm2200->core_supplies);
- err_regmap:
+-err_regmap:
 -	regmap_exit(wm2200->regmap);
- err:
+-err:
  	return ret;
  }
-@@ -2194,17 +2395,10 @@ static __devexit int wm2200_i2c_remove(struct i2c_client *i2c)
+ 
+@@ -2194,17 +2392,10 @@ static __devexit int wm2200_i2c_remove(struct i2c_client *i2c)
  	snd_soc_unregister_codec(&i2c->dev);
  	if (i2c->irq)
  		free_irq(i2c->irq, wm2200);
@@ -20274,7 +22509,7 @@ index 7f56758..9f57996 100644
  	{ WM5100_AUDIO_IF_1_11, 1 },
  	{ WM5100_AUDIO_IF_1_12, 2 },
 diff --git a/sound/soc/codecs/wm5102.c b/sound/soc/codecs/wm5102.c
-index 7394e73..b18fd2e 100644
+index 7394e73..ed33cae 100644
 --- a/sound/soc/codecs/wm5102.c
 +++ b/sound/soc/codecs/wm5102.c
 @@ -31,6 +31,7 @@
@@ -20293,23 +22528,44 @@ index 7394e73..b18fd2e 100644
 +	{ .type = WMFW_ADSP2_PM, .base = 0x100000 },
 +	{ .type = WMFW_ADSP2_ZM, .base = 0x180000 },
 +	{ .type = WMFW_ADSP2_XM, .base = 0x190000 },
-+	{ .type = WMFW_ADSP2_YM, .base = 0x1a0000 },
++	{ .type = WMFW_ADSP2_YM, .base = 0x1a8000 },
 +};
 +
  static const struct reg_default wm5102_sysclk_reva_patch[] = {
  	{ 0x3000, 0x2225 },
  	{ 0x3001, 0x3a03 },
-@@ -687,6 +695,9 @@ ARIZONA_MIXER_CONTROLS("LHPF2", ARIZONA_HPLP2MIX_INPUT_1_SOURCE),
+@@ -632,6 +640,15 @@ ARIZONA_MIXER_CONTROLS("EQ2", ARIZONA_EQ2MIX_INPUT_1_SOURCE),
+ ARIZONA_MIXER_CONTROLS("EQ3", ARIZONA_EQ3MIX_INPUT_1_SOURCE),
+ ARIZONA_MIXER_CONTROLS("EQ4", ARIZONA_EQ4MIX_INPUT_1_SOURCE),
+ 
++SND_SOC_BYTES_MASK("EQ1 Coefficeints", ARIZONA_EQ1_1, 21,
++		   ARIZONA_EQ1_ENA_MASK),
++SND_SOC_BYTES_MASK("EQ2 Coefficeints", ARIZONA_EQ2_1, 21,
++		   ARIZONA_EQ2_ENA_MASK),
++SND_SOC_BYTES_MASK("EQ3 Coefficeints", ARIZONA_EQ3_1, 21,
++		   ARIZONA_EQ3_ENA_MASK),
++SND_SOC_BYTES_MASK("EQ4 Coefficeints", ARIZONA_EQ4_1, 21,
++		   ARIZONA_EQ4_ENA_MASK),
++
+ SOC_SINGLE_TLV("EQ1 B1 Volume", ARIZONA_EQ1_1, ARIZONA_EQ1_B1_GAIN_SHIFT,
+ 	       24, 0, eq_tlv),
+ SOC_SINGLE_TLV("EQ1 B2 Volume", ARIZONA_EQ1_1, ARIZONA_EQ1_B2_GAIN_SHIFT,
+@@ -687,6 +704,14 @@ ARIZONA_MIXER_CONTROLS("LHPF2", ARIZONA_HPLP2MIX_INPUT_1_SOURCE),
  ARIZONA_MIXER_CONTROLS("LHPF3", ARIZONA_HPLP3MIX_INPUT_1_SOURCE),
  ARIZONA_MIXER_CONTROLS("LHPF4", ARIZONA_HPLP4MIX_INPUT_1_SOURCE),
  
++SND_SOC_BYTES("LHPF1 Coefficients", ARIZONA_HPLPF1_2, 1),
++SND_SOC_BYTES("LHPF2 Coefficients", ARIZONA_HPLPF2_2, 1),
++SND_SOC_BYTES("LHPF3 Coefficients", ARIZONA_HPLPF3_2, 1),
++SND_SOC_BYTES("LHPF4 Coefficients", ARIZONA_HPLPF4_2, 1),
++
 +ARIZONA_MIXER_CONTROLS("DSP1L", ARIZONA_DSP1LMIX_INPUT_1_SOURCE),
 +ARIZONA_MIXER_CONTROLS("DSP1R", ARIZONA_DSP1RMIX_INPUT_1_SOURCE),
 +
  SOC_ENUM("LHPF1 Mode", arizona_lhpf1_mode),
  SOC_ENUM("LHPF2 Mode", arizona_lhpf2_mode),
  SOC_ENUM("LHPF3 Mode", arizona_lhpf3_mode),
-@@ -708,14 +719,6 @@ ARIZONA_MIXER_CONTROLS("SPKOUTR", ARIZONA_OUT4RMIX_INPUT_1_SOURCE),
+@@ -708,14 +733,6 @@ ARIZONA_MIXER_CONTROLS("SPKOUTR", ARIZONA_OUT4RMIX_INPUT_1_SOURCE),
  ARIZONA_MIXER_CONTROLS("SPKDAT1L", ARIZONA_OUT5LMIX_INPUT_1_SOURCE),
  ARIZONA_MIXER_CONTROLS("SPKDAT1R", ARIZONA_OUT5RMIX_INPUT_1_SOURCE),
  
@@ -20324,7 +22580,7 @@ index 7394e73..b18fd2e 100644
  SOC_SINGLE("SPKDAT1 High Performance Switch", ARIZONA_OUTPUT_PATH_CONFIG_5L,
  	   ARIZONA_OUT5_OSR_SHIFT, 1, 0),
  
-@@ -745,17 +748,6 @@ SOC_DOUBLE_R_TLV("SPKDAT1 Digital Volume", ARIZONA_DAC_DIGITAL_VOLUME_5L,
+@@ -745,17 +762,6 @@ SOC_DOUBLE_R_TLV("SPKDAT1 Digital Volume", ARIZONA_DAC_DIGITAL_VOLUME_5L,
  		 ARIZONA_DAC_DIGITAL_VOLUME_5R, ARIZONA_OUT5L_VOL_SHIFT,
  		 0xbf, 0, digital_tlv),
  
@@ -20342,7 +22598,7 @@ index 7394e73..b18fd2e 100644
  SOC_DOUBLE("SPKDAT1 Switch", ARIZONA_PDM_SPK1_CTRL_1, ARIZONA_SPK1L_MUTE_SHIFT,
  	   ARIZONA_SPK1R_MUTE_SHIFT, 1, 1),
  
-@@ -819,11 +811,15 @@ ARIZONA_MIXER_ENUMS(AIF2TX2, ARIZONA_AIF2TX2MIX_INPUT_1_SOURCE);
+@@ -819,11 +825,15 @@ ARIZONA_MIXER_ENUMS(AIF2TX2, ARIZONA_AIF2TX2MIX_INPUT_1_SOURCE);
  ARIZONA_MIXER_ENUMS(AIF3TX1, ARIZONA_AIF3TX1MIX_INPUT_1_SOURCE);
  ARIZONA_MIXER_ENUMS(AIF3TX2, ARIZONA_AIF3TX2MIX_INPUT_1_SOURCE);
  
@@ -20362,7 +22618,15 @@ index 7394e73..b18fd2e 100644
  
  static const char *wm5102_aec_loopback_texts[] = {
  	"HPOUT1L", "HPOUT1R", "HPOUT2L", "HPOUT2R", "EPOUT",
-@@ -894,9 +890,9 @@ SND_SOC_DAPM_PGA_E("IN3R PGA", ARIZONA_INPUT_ENABLES, ARIZONA_IN3R_ENA_SHIFT,
+@@ -864,6 +874,7 @@ SND_SOC_DAPM_REGULATOR_SUPPLY("SPKVDDR", 0, 0),
+ 
+ SND_SOC_DAPM_SIGGEN("TONE"),
+ SND_SOC_DAPM_SIGGEN("NOISE"),
++SND_SOC_DAPM_SIGGEN("HAPTICS"),
+ 
+ SND_SOC_DAPM_INPUT("IN1L"),
+ SND_SOC_DAPM_INPUT("IN1R"),
+@@ -894,9 +905,9 @@ SND_SOC_DAPM_PGA_E("IN3R PGA", ARIZONA_INPUT_ENABLES, ARIZONA_IN3R_ENA_SHIFT,
  SND_SOC_DAPM_SUPPLY("MICBIAS1", ARIZONA_MIC_BIAS_CTRL_1,
  		    ARIZONA_MICB1_ENA_SHIFT, 0, NULL, 0),
  SND_SOC_DAPM_SUPPLY("MICBIAS2", ARIZONA_MIC_BIAS_CTRL_2,
@@ -20374,7 +22638,7 @@ index 7394e73..b18fd2e 100644
  
  SND_SOC_DAPM_PGA("Noise Generator", ARIZONA_COMFORT_NOISE_GENERATOR,
  		 ARIZONA_NOISE_GEN_ENA_SHIFT, 0, NULL, 0),
-@@ -996,6 +992,8 @@ SND_SOC_DAPM_AIF_IN("AIF3RX1", NULL, 0,
+@@ -996,6 +1007,8 @@ SND_SOC_DAPM_AIF_IN("AIF3RX1", NULL, 0,
  SND_SOC_DAPM_AIF_IN("AIF3RX2", NULL, 0,
  		    ARIZONA_AIF3_RX_ENABLES, ARIZONA_AIF3RX2_ENA_SHIFT, 0),
  
@@ -20383,7 +22647,7 @@ index 7394e73..b18fd2e 100644
  SND_SOC_DAPM_VALUE_MUX("AEC Loopback", ARIZONA_DAC_AEC_CONTROL_1,
  		       ARIZONA_AEC_LOOPBACK_ENA, 0, &wm5102_aec_loopback_mux),
  
-@@ -1071,10 +1069,12 @@ ARIZONA_MIXER_WIDGETS(AIF2TX2, "AIF2TX2"),
+@@ -1071,10 +1084,12 @@ ARIZONA_MIXER_WIDGETS(AIF2TX2, "AIF2TX2"),
  ARIZONA_MIXER_WIDGETS(AIF3TX1, "AIF3TX1"),
  ARIZONA_MIXER_WIDGETS(AIF3TX2, "AIF3TX2"),
  
@@ -20400,7 +22664,15 @@ index 7394e73..b18fd2e 100644
  
  SND_SOC_DAPM_OUTPUT("HPOUT1L"),
  SND_SOC_DAPM_OUTPUT("HPOUT1R"),
-@@ -1127,7 +1127,13 @@ SND_SOC_DAPM_OUTPUT("SPKDAT1R"),
+@@ -1094,6 +1109,7 @@ SND_SOC_DAPM_OUTPUT("SPKDAT1R"),
+ 	{ name, "Noise Generator", "Noise Generator" }, \
+ 	{ name, "Tone Generator 1", "Tone Generator 1" }, \
+ 	{ name, "Tone Generator 2", "Tone Generator 2" }, \
++	{ name, "Haptics", "HAPTICS" }, \
+ 	{ name, "AEC", "AEC Loopback" }, \
+ 	{ name, "IN1L", "IN1L PGA" }, \
+ 	{ name, "IN1R", "IN1R PGA" }, \
+@@ -1127,7 +1143,13 @@ SND_SOC_DAPM_OUTPUT("SPKDAT1R"),
  	{ name, "ASRC1L", "ASRC1L" }, \
  	{ name, "ASRC1R", "ASRC1R" }, \
  	{ name, "ASRC2L", "ASRC2L" }, \
@@ -20415,7 +22687,19 @@ index 7394e73..b18fd2e 100644
  
  static const struct snd_soc_dapm_route wm5102_dapm_routes[] = {
  	{ "AIF2 Capture", NULL, "DBVDD2" },
-@@ -1255,10 +1261,12 @@ static const struct snd_soc_dapm_route wm5102_dapm_routes[] = {
+@@ -1213,6 +1235,11 @@ static const struct snd_soc_dapm_route wm5102_dapm_routes[] = {
+ 	{ "IN3L PGA", NULL, "IN3L" },
+ 	{ "IN3R PGA", NULL, "IN3R" },
+ 
++	{ "ASRC1L", NULL, "ASRC1L Input" },
++	{ "ASRC1R", NULL, "ASRC1R Input" },
++	{ "ASRC2L", NULL, "ASRC2L Input" },
++	{ "ASRC2R", NULL, "ASRC2R Input" },
++
+ 	ARIZONA_MIXER_ROUTES("OUT1L", "HPOUT1L"),
+ 	ARIZONA_MIXER_ROUTES("OUT1R", "HPOUT1R"),
+ 	ARIZONA_MIXER_ROUTES("OUT2L", "HPOUT2L"),
+@@ -1255,10 +1282,12 @@ static const struct snd_soc_dapm_route wm5102_dapm_routes[] = {
  	ARIZONA_MIXER_ROUTES("LHPF3", "LHPF3"),
  	ARIZONA_MIXER_ROUTES("LHPF4", "LHPF4"),
  
@@ -20432,7 +22716,54 @@ index 7394e73..b18fd2e 100644
  
  	{ "AEC Loopback", "HPOUT1L", "OUT1L" },
  	{ "AEC Loopback", "HPOUT1R", "OUT1R" },
-@@ -1434,6 +1442,15 @@ static int __devinit wm5102_probe(struct platform_device *pdev)
+@@ -1377,9 +1406,28 @@ static struct snd_soc_dai_driver wm5102_dai[] = {
+ static int wm5102_codec_probe(struct snd_soc_codec *codec)
+ {
+ 	struct wm5102_priv *priv = snd_soc_codec_get_drvdata(codec);
++	int ret;
+ 
+ 	codec->control_data = priv->core.arizona->regmap;
+-	return snd_soc_codec_set_cache_io(codec, 32, 16, SND_SOC_REGMAP);
++
++	ret = snd_soc_codec_set_cache_io(codec, 32, 16, SND_SOC_REGMAP);
++	if (ret != 0)
++		return ret;
++
++	snd_soc_dapm_disable_pin(&codec->dapm, "HAPTICS");
++
++	priv->core.arizona->dapm = &codec->dapm;
++
++	return 0;
++}
++
++static int wm5102_codec_remove(struct snd_soc_codec *codec)
++{
++	struct wm5102_priv *priv = snd_soc_codec_get_drvdata(codec);
++
++	priv->core.arizona->dapm = NULL;
++
++	return 0;
+ }
+ 
+ #define WM5102_DIG_VU 0x0200
+@@ -1406,6 +1454,7 @@ static unsigned int wm5102_digital_vu[] = {
+ 
+ static struct snd_soc_codec_driver soc_codec_dev_wm5102 = {
+ 	.probe = wm5102_codec_probe,
++	.remove = wm5102_codec_remove,
+ 
+ 	.idle_bias_off = true,
+ 
+@@ -1424,7 +1473,7 @@ static int __devinit wm5102_probe(struct platform_device *pdev)
+ {
+ 	struct arizona *arizona = dev_get_drvdata(pdev->dev.parent);
+ 	struct wm5102_priv *wm5102;
+-	int i;
++	int i, ret;
+ 
+ 	wm5102 = devm_kzalloc(&pdev->dev, sizeof(struct wm5102_priv),
+ 			      GFP_KERNEL);
+@@ -1434,6 +1483,19 @@ static int __devinit wm5102_probe(struct platform_device *pdev)
  
  	wm5102->core.arizona = arizona;
  
@@ -20445,14 +22776,46 @@ index 7394e73..b18fd2e 100644
 +	wm5102->core.adsp[0].mem = wm5102_dsp1_regions;
 +	wm5102->core.adsp[0].num_mems = ARRAY_SIZE(wm5102_dsp1_regions);
 +
++	ret = wm_adsp2_init(&wm5102->core.adsp[0], true);
++	if (ret != 0)
++		return ret;
++
  	for (i = 0; i < ARRAY_SIZE(wm5102->fll); i++)
  		wm5102->fll[i].vco_mult = 1;
  
 diff --git a/sound/soc/codecs/wm5110.c b/sound/soc/codecs/wm5110.c
-index 9211e41..3485b83 100644
+index 9211e41..14c90aa 100644
 --- a/sound/soc/codecs/wm5110.c
 +++ b/sound/soc/codecs/wm5110.c
-@@ -308,10 +308,10 @@ ARIZONA_MIXER_ENUMS(AIF2TX2, ARIZONA_AIF2TX2MIX_INPUT_1_SOURCE);
+@@ -89,6 +89,15 @@ ARIZONA_MIXER_CONTROLS("EQ2", ARIZONA_EQ2MIX_INPUT_1_SOURCE),
+ ARIZONA_MIXER_CONTROLS("EQ3", ARIZONA_EQ3MIX_INPUT_1_SOURCE),
+ ARIZONA_MIXER_CONTROLS("EQ4", ARIZONA_EQ4MIX_INPUT_1_SOURCE),
+ 
++SND_SOC_BYTES_MASK("EQ1 Coefficeints", ARIZONA_EQ1_1, 21,
++		   ARIZONA_EQ1_ENA_MASK),
++SND_SOC_BYTES_MASK("EQ2 Coefficeints", ARIZONA_EQ2_1, 21,
++		   ARIZONA_EQ2_ENA_MASK),
++SND_SOC_BYTES_MASK("EQ3 Coefficeints", ARIZONA_EQ3_1, 21,
++		   ARIZONA_EQ3_ENA_MASK),
++SND_SOC_BYTES_MASK("EQ4 Coefficeints", ARIZONA_EQ4_1, 21,
++		   ARIZONA_EQ4_ENA_MASK),
++
+ SOC_SINGLE_TLV("EQ1 B1 Volume", ARIZONA_EQ1_1, ARIZONA_EQ1_B1_GAIN_SHIFT,
+ 	       24, 0, eq_tlv),
+ SOC_SINGLE_TLV("EQ1 B2 Volume", ARIZONA_EQ1_1, ARIZONA_EQ1_B2_GAIN_SHIFT,
+@@ -148,6 +157,11 @@ ARIZONA_MIXER_CONTROLS("LHPF2", ARIZONA_HPLP2MIX_INPUT_1_SOURCE),
+ ARIZONA_MIXER_CONTROLS("LHPF3", ARIZONA_HPLP3MIX_INPUT_1_SOURCE),
+ ARIZONA_MIXER_CONTROLS("LHPF4", ARIZONA_HPLP4MIX_INPUT_1_SOURCE),
+ 
++SND_SOC_BYTES("LHPF1 Coefficients", ARIZONA_HPLPF1_2, 1),
++SND_SOC_BYTES("LHPF2 Coefficients", ARIZONA_HPLPF2_2, 1),
++SND_SOC_BYTES("LHPF3 Coefficients", ARIZONA_HPLPF3_2, 1),
++SND_SOC_BYTES("LHPF4 Coefficients", ARIZONA_HPLPF4_2, 1),
++
+ SOC_ENUM("LHPF1 Mode", arizona_lhpf1_mode),
+ SOC_ENUM("LHPF2 Mode", arizona_lhpf2_mode),
+ SOC_ENUM("LHPF3 Mode", arizona_lhpf3_mode),
+@@ -308,10 +322,10 @@ ARIZONA_MIXER_ENUMS(AIF2TX2, ARIZONA_AIF2TX2MIX_INPUT_1_SOURCE);
  ARIZONA_MIXER_ENUMS(AIF3TX1, ARIZONA_AIF3TX1MIX_INPUT_1_SOURCE);
  ARIZONA_MIXER_ENUMS(AIF3TX2, ARIZONA_AIF3TX2MIX_INPUT_1_SOURCE);
  
@@ -20467,7 +22830,15 @@ index 9211e41..3485b83 100644
  
  static const char *wm5110_aec_loopback_texts[] = {
  	"HPOUT1L", "HPOUT1R", "HPOUT2L", "HPOUT2R", "HPOUT3L", "HPOUT3R",
-@@ -585,10 +585,10 @@ ARIZONA_MIXER_WIDGETS(AIF2TX2, "AIF2TX2"),
+@@ -352,6 +366,7 @@ SND_SOC_DAPM_REGULATOR_SUPPLY("SPKVDDR", 0, 0),
+ 
+ SND_SOC_DAPM_SIGGEN("TONE"),
+ SND_SOC_DAPM_SIGGEN("NOISE"),
++SND_SOC_DAPM_SIGGEN("HAPTICS"),
+ 
+ SND_SOC_DAPM_INPUT("IN1L"),
+ SND_SOC_DAPM_INPUT("IN1R"),
+@@ -585,10 +600,10 @@ ARIZONA_MIXER_WIDGETS(AIF2TX2, "AIF2TX2"),
  ARIZONA_MIXER_WIDGETS(AIF3TX1, "AIF3TX1"),
  ARIZONA_MIXER_WIDGETS(AIF3TX2, "AIF3TX2"),
  
@@ -20482,7 +22853,15 @@ index 9211e41..3485b83 100644
  
  SND_SOC_DAPM_OUTPUT("HPOUT1L"),
  SND_SOC_DAPM_OUTPUT("HPOUT1R"),
-@@ -786,10 +786,10 @@ static const struct snd_soc_dapm_route wm5110_dapm_routes[] = {
+@@ -610,6 +625,7 @@ SND_SOC_DAPM_OUTPUT("SPKDAT2R"),
+ 	{ name, "Noise Generator", "Noise Generator" }, \
+ 	{ name, "Tone Generator 1", "Tone Generator 1" }, \
+ 	{ name, "Tone Generator 2", "Tone Generator 2" }, \
++	{ name, "Haptics", "HAPTICS" }, \
+ 	{ name, "AEC", "AEC Loopback" }, \
+ 	{ name, "IN1L", "IN1L PGA" }, \
+ 	{ name, "IN1R", "IN1R PGA" }, \
+@@ -786,10 +802,10 @@ static const struct snd_soc_dapm_route wm5110_dapm_routes[] = {
  	ARIZONA_MIXER_ROUTES("LHPF3", "LHPF3"),
  	ARIZONA_MIXER_ROUTES("LHPF4", "LHPF4"),
  
@@ -20497,6 +22876,107 @@ index 9211e41..3485b83 100644
  
  	{ "HPOUT1L", NULL, "OUT1L" },
  	{ "HPOUT1R", NULL, "OUT1R" },
+@@ -902,9 +918,29 @@ static struct snd_soc_dai_driver wm5110_dai[] = {
+ static int wm5110_codec_probe(struct snd_soc_codec *codec)
+ {
+ 	struct wm5110_priv *priv = snd_soc_codec_get_drvdata(codec);
++	int ret;
+ 
+ 	codec->control_data = priv->core.arizona->regmap;
+-	return snd_soc_codec_set_cache_io(codec, 32, 16, SND_SOC_REGMAP);
++	priv->core.arizona->dapm = &codec->dapm;
++
++	ret = snd_soc_codec_set_cache_io(codec, 32, 16, SND_SOC_REGMAP);
++	if (ret != 0)
++		return ret;
++
++	snd_soc_dapm_disable_pin(&codec->dapm, "HAPTICS");
++
++	priv->core.arizona->dapm = &codec->dapm;
++
++	return 0;
++}
++
++static int wm5110_codec_remove(struct snd_soc_codec *codec)
++{
++	struct wm5110_priv *priv = snd_soc_codec_get_drvdata(codec);
++
++	priv->core.arizona->dapm = NULL;
++
++	return 0;
+ }
+ 
+ #define WM5110_DIG_VU 0x0200
+@@ -935,6 +971,7 @@ static unsigned int wm5110_digital_vu[] = {
+ 
+ static struct snd_soc_codec_driver soc_codec_dev_wm5110 = {
+ 	.probe = wm5110_codec_probe,
++	.remove = wm5110_codec_remove,
+ 
+ 	.idle_bias_off = true,
+ 
+diff --git a/sound/soc/codecs/wm8350.c b/sound/soc/codecs/wm8350.c
+index a4cae06..32b8f08 100644
+--- a/sound/soc/codecs/wm8350.c
++++ b/sound/soc/codecs/wm8350.c
+@@ -1500,7 +1500,7 @@ static  int wm8350_codec_probe(struct snd_soc_codec *codec)
+ 	for (i = 0; i < ARRAY_SIZE(supply_names); i++)
+ 		priv->supplies[i].supply = supply_names[i];
+ 
+-	ret = regulator_bulk_get(wm8350->dev, ARRAY_SIZE(priv->supplies),
++	ret = devm_regulator_bulk_get(wm8350->dev, ARRAY_SIZE(priv->supplies),
+ 				 priv->supplies);
+ 	if (ret != 0)
+ 		return ret;
+@@ -1607,8 +1607,6 @@ static int  wm8350_codec_remove(struct snd_soc_codec *codec)
+ 
+ 	wm8350_clear_bits(wm8350, WM8350_POWER_MGMT_5, WM8350_CODEC_ENA);
+ 
+-	regulator_bulk_free(ARRAY_SIZE(priv->supplies), priv->supplies);
+-
+ 	return 0;
+ }
+ 
+diff --git a/sound/soc/codecs/wm8400.c b/sound/soc/codecs/wm8400.c
+index 5d277a9..262c440 100644
+--- a/sound/soc/codecs/wm8400.c
++++ b/sound/soc/codecs/wm8400.c
+@@ -1373,7 +1373,7 @@ static int wm8400_codec_probe(struct snd_soc_codec *codec)
+ 	codec->control_data = priv->wm8400 = wm8400;
+ 	priv->codec = codec;
+ 
+-	ret = regulator_bulk_get(wm8400->dev,
++	ret = devm_regulator_bulk_get(wm8400->dev,
+ 				 ARRAY_SIZE(power), &power[0]);
+ 	if (ret != 0) {
+ 		dev_err(codec->dev, "Failed to get regulators: %d\n", ret);
+@@ -1398,15 +1398,9 @@ static int wm8400_codec_probe(struct snd_soc_codec *codec)
+ 	snd_soc_write(codec, WM8400_LEFT_OUTPUT_VOLUME, 0x50 | (1<<8));
+ 	snd_soc_write(codec, WM8400_RIGHT_OUTPUT_VOLUME, 0x50 | (1<<8));
+ 
+-	if (!schedule_work(&priv->work)) {
+-		ret = -EINVAL;
+-		goto err_regulator;
+-	}
++	if (!schedule_work(&priv->work))
++		return -EINVAL;
+ 	return 0;
+-
+-err_regulator:
+-	regulator_bulk_free(ARRAY_SIZE(power), power);
+-	return ret;
+ }
+ 
+ static int  wm8400_codec_remove(struct snd_soc_codec *codec)
+@@ -1417,8 +1411,6 @@ static int  wm8400_codec_remove(struct snd_soc_codec *codec)
+ 	snd_soc_write(codec, WM8400_POWER_MANAGEMENT_1,
+ 		     reg & (~WM8400_CODEC_ENA));
+ 
+-	regulator_bulk_free(ARRAY_SIZE(power), power);
+-
+ 	return 0;
+ }
+ 
 diff --git a/sound/soc/codecs/wm8510.c b/sound/soc/codecs/wm8510.c
 index c12a54e..923e7e1 100644
 --- a/sound/soc/codecs/wm8510.c
@@ -21160,6 +23640,42 @@ index c088020..837bfb5 100644
  	return 0;
  }
  
+diff --git a/sound/soc/codecs/wm8955.c b/sound/soc/codecs/wm8955.c
+index 2f1c075..7a82b7d 100644
+--- a/sound/soc/codecs/wm8955.c
++++ b/sound/soc/codecs/wm8955.c
+@@ -1023,7 +1023,7 @@ static __devinit int wm8955_i2c_probe(struct i2c_client *i2c,
+ 	if (wm8955 == NULL)
+ 		return -ENOMEM;
+ 
+-	wm8955->regmap = regmap_init_i2c(i2c, &wm8955_regmap);
++	wm8955->regmap = devm_regmap_init_i2c(i2c, &wm8955_regmap);
+ 	if (IS_ERR(wm8955->regmap)) {
+ 		ret = PTR_ERR(wm8955->regmap);
+ 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
+@@ -1035,22 +1035,13 @@ static __devinit int wm8955_i2c_probe(struct i2c_client *i2c,
+ 
+ 	ret = snd_soc_register_codec(&i2c->dev,
+ 			&soc_codec_dev_wm8955, &wm8955_dai, 1);
+-	if (ret != 0)
+-		goto err;
+ 
+ 	return ret;
+-
+-err:
+-	regmap_exit(wm8955->regmap);
+-	return ret;
+ }
+ 
+ static __devexit int wm8955_i2c_remove(struct i2c_client *client)
+ {
+-	struct wm8955_priv *wm8955 = i2c_get_clientdata(client);
+-
+ 	snd_soc_unregister_codec(&client->dev);
+-	regmap_exit(wm8955->regmap);
+ 
+ 	return 0;
+ }
 diff --git a/sound/soc/codecs/wm8958-dsp2.c b/sound/soc/codecs/wm8958-dsp2.c
 index 00121ba..b0710d8 100644
 --- a/sound/soc/codecs/wm8958-dsp2.c
@@ -21383,6 +23899,110 @@ index 00121ba..b0710d8 100644
  
  	if (pdata->num_mbc_cfgs) {
  		struct snd_kcontrol_new control[] = {
+diff --git a/sound/soc/codecs/wm8960.c b/sound/soc/codecs/wm8960.c
+index f0f6f660..cf09cb6 100644
+--- a/sound/soc/codecs/wm8960.c
++++ b/sound/soc/codecs/wm8960.c
+@@ -1040,7 +1040,7 @@ static __devinit int wm8960_i2c_probe(struct i2c_client *i2c,
+ 	if (wm8960 == NULL)
+ 		return -ENOMEM;
+ 
+-	wm8960->regmap = regmap_init_i2c(i2c, &wm8960_regmap);
++	wm8960->regmap = devm_regmap_init_i2c(i2c, &wm8960_regmap);
+ 	if (IS_ERR(wm8960->regmap))
+ 		return PTR_ERR(wm8960->regmap);
+ 
+diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
+index ce67200..8fd38cb 100644
+--- a/sound/soc/codecs/wm8962.c
++++ b/sound/soc/codecs/wm8962.c
+@@ -3610,7 +3610,7 @@ static __devinit int wm8962_i2c_probe(struct i2c_client *i2c,
+ 	for (i = 0; i < ARRAY_SIZE(wm8962->supplies); i++)
+ 		wm8962->supplies[i].supply = wm8962_supply_names[i];
+ 
+-	ret = regulator_bulk_get(&i2c->dev, ARRAY_SIZE(wm8962->supplies),
++	ret = devm_regulator_bulk_get(&i2c->dev, ARRAY_SIZE(wm8962->supplies),
+ 				 wm8962->supplies);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to request supplies: %d\n", ret);
+@@ -3621,10 +3621,10 @@ static __devinit int wm8962_i2c_probe(struct i2c_client *i2c,
+ 				    wm8962->supplies);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to enable supplies: %d\n", ret);
+-		goto err_get;
++		return ret;
+ 	}
+ 
+-	wm8962->regmap = regmap_init_i2c(i2c, &wm8962_regmap);
++	wm8962->regmap = devm_regmap_init_i2c(i2c, &wm8962_regmap);
+ 	if (IS_ERR(wm8962->regmap)) {
+ 		ret = PTR_ERR(wm8962->regmap);
+ 		dev_err(&i2c->dev, "Failed to allocate regmap: %d\n", ret);
+@@ -3641,20 +3641,20 @@ static __devinit int wm8962_i2c_probe(struct i2c_client *i2c,
+ 	ret = regmap_read(wm8962->regmap, WM8962_SOFTWARE_RESET, &reg);
+ 	if (ret < 0) {
+ 		dev_err(&i2c->dev, "Failed to read ID register\n");
+-		goto err_regmap;
++		goto err_enable;
+ 	}
+ 	if (reg != 0x6243) {
+ 		dev_err(&i2c->dev,
+ 			"Device is not a WM8962, ID %x != 0x6243\n", reg);
+ 		ret = -EINVAL;
+-		goto err_regmap;
++		goto err_enable;
+ 	}
+ 
+ 	ret = regmap_read(wm8962->regmap, WM8962_RIGHT_INPUT_VOLUME, &reg);
+ 	if (ret < 0) {
+ 		dev_err(&i2c->dev, "Failed to read device revision: %d\n",
+ 			ret);
+-		goto err_regmap;
++		goto err_enable;
+ 	}
+ 
+ 	dev_info(&i2c->dev, "customer id %x revision %c\n",
+@@ -3667,7 +3667,7 @@ static __devinit int wm8962_i2c_probe(struct i2c_client *i2c,
+ 	ret = wm8962_reset(wm8962);
+ 	if (ret < 0) {
+ 		dev_err(&i2c->dev, "Failed to issue reset\n");
+-		goto err_regmap;
++		goto err_enable;
+ 	}
+ 
+ 	if (pdata && pdata->in4_dc_measure) {
+@@ -3686,30 +3686,22 @@ static __devinit int wm8962_i2c_probe(struct i2c_client *i2c,
+ 	ret = snd_soc_register_codec(&i2c->dev,
+ 				     &soc_codec_dev_wm8962, &wm8962_dai, 1);
+ 	if (ret < 0)
+-		goto err_regmap;
++		goto err_enable;
+ 
+ 	/* The drivers should power up as needed */
+ 	regulator_bulk_disable(ARRAY_SIZE(wm8962->supplies), wm8962->supplies);
+ 
+ 	return 0;
+ 
+-err_regmap:
+-	regmap_exit(wm8962->regmap);
+ err_enable:
+ 	regulator_bulk_disable(ARRAY_SIZE(wm8962->supplies), wm8962->supplies);
+-err_get:
+-	regulator_bulk_free(ARRAY_SIZE(wm8962->supplies), wm8962->supplies);
+ err:
+ 	return ret;
+ }
+ 
+ static __devexit int wm8962_i2c_remove(struct i2c_client *client)
+ {
+-	struct wm8962_priv *wm8962 = dev_get_drvdata(&client->dev);
+-
+ 	snd_soc_unregister_codec(&client->dev);
+-	regmap_exit(wm8962->regmap);
+-	regulator_bulk_free(ARRAY_SIZE(wm8962->supplies), wm8962->supplies);
+ 	return 0;
+ }
+ 
 diff --git a/sound/soc/codecs/wm8971.c b/sound/soc/codecs/wm8971.c
 index 5ce6477..70dd27e 100644
 --- a/sound/soc/codecs/wm8971.c
@@ -21671,11 +24291,76 @@ index 1d4c5cf..715788d 100644
  	return 0;
  }
  
+diff --git a/sound/soc/codecs/wm8993.c b/sound/soc/codecs/wm8993.c
+index 94737a3..347a359 100644
+--- a/sound/soc/codecs/wm8993.c
++++ b/sound/soc/codecs/wm8993.c
+@@ -1660,7 +1660,7 @@ static __devinit int wm8993_i2c_probe(struct i2c_client *i2c,
+ 	wm8993->dev = &i2c->dev;
+ 	init_completion(&wm8993->fll_lock);
+ 
+-	wm8993->regmap = regmap_init_i2c(i2c, &wm8993_regmap);
++	wm8993->regmap = devm_regmap_init_i2c(i2c, &wm8993_regmap);
+ 	if (IS_ERR(wm8993->regmap)) {
+ 		ret = PTR_ERR(wm8993->regmap);
+ 		dev_err(&i2c->dev, "Failed to allocate regmap: %d\n", ret);
+@@ -1672,18 +1672,18 @@ static __devinit int wm8993_i2c_probe(struct i2c_client *i2c,
+ 	for (i = 0; i < ARRAY_SIZE(wm8993->supplies); i++)
+ 		wm8993->supplies[i].supply = wm8993_supply_names[i];
+ 
+-	ret = regulator_bulk_get(&i2c->dev, ARRAY_SIZE(wm8993->supplies),
++	ret = devm_regulator_bulk_get(&i2c->dev, ARRAY_SIZE(wm8993->supplies),
+ 				 wm8993->supplies);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to request supplies: %d\n", ret);
+-		goto err;
++		return ret;
+ 	}
+ 
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(wm8993->supplies),
+ 				    wm8993->supplies);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to enable supplies: %d\n", ret);
+-		goto err_get;
++		return ret;
+ 	}
+ 
+ 	ret = regmap_read(wm8993->regmap, WM8993_SOFTWARE_RESET, &reg);
+@@ -1742,10 +1742,6 @@ err_irq:
+ 		free_irq(i2c->irq, wm8993);
+ err_enable:
+ 	regulator_bulk_disable(ARRAY_SIZE(wm8993->supplies), wm8993->supplies);
+-err_get:
+-	regulator_bulk_free(ARRAY_SIZE(wm8993->supplies), wm8993->supplies);
+-err:
+-	regmap_exit(wm8993->regmap);
+ 	return ret;
+ }
+ 
+@@ -1756,9 +1752,7 @@ static __devexit int wm8993_i2c_remove(struct i2c_client *i2c)
+ 	snd_soc_unregister_codec(&i2c->dev);
+ 	if (i2c->irq)
+ 		free_irq(i2c->irq, wm8993);
+-	regmap_exit(wm8993->regmap);
+ 	regulator_bulk_disable(ARRAY_SIZE(wm8993->supplies), wm8993->supplies);
+-	regulator_bulk_free(ARRAY_SIZE(wm8993->supplies), wm8993->supplies);
+ 
+ 	return 0;
+ }
 diff --git a/sound/soc/codecs/wm8994.c b/sound/soc/codecs/wm8994.c
-index b2b2b37..99d7d62 100644
+index b2b2b37..60b34ff 100644
 --- a/sound/soc/codecs/wm8994.c
 +++ b/sound/soc/codecs/wm8994.c
-@@ -110,13 +110,13 @@ static const struct wm8958_micd_rate jackdet_rates[] = {
+@@ -91,8 +91,6 @@ static int wm8994_retune_mobile_base[] = {
+ 	WM8994_AIF2_EQ_GAINS_1,
+ };
+ 
+-static void wm8958_default_micdet(u16 status, void *data);
+-
+ static const struct wm8958_micd_rate micdet_rates[] = {
+ 	{ 32768,       true,  1, 4 },
+ 	{ 32768,       false, 1, 1 },
+@@ -110,15 +108,12 @@ static const struct wm8958_micd_rate jackdet_rates[] = {
  static void wm8958_micd_set_rate(struct snd_soc_codec *codec)
  {
  	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
@@ -21687,11 +24372,12 @@ index b2b2b37..99d7d62 100644
  
 -	if (!(wm8994->pdata && wm8994->pdata->micd_rates) &&
 -	    wm8994->jack_cb != wm8958_default_micdet)
-+	if (wm8994->jack_cb != wm8958_default_micdet)
- 		return;
- 
+-		return;
+-
  	idle = !wm8994->jack_mic;
-@@ -127,9 +127,9 @@ static void wm8958_micd_set_rate(struct snd_soc_codec *codec)
+ 
+ 	sysclk = snd_soc_read(codec, WM8994_CLOCKING_1);
+@@ -127,9 +122,9 @@ static void wm8958_micd_set_rate(struct snd_soc_codec *codec)
  	else
  		sysclk = wm8994->aifclk[0];
  
@@ -21704,7 +24390,7 @@ index b2b2b37..99d7d62 100644
  	} else if (wm8994->jackdet) {
  		rates = jackdet_rates;
  		num_rates = ARRAY_SIZE(jackdet_rates);
-@@ -326,7 +326,8 @@ static int wm8994_put_drc_sw(struct snd_kcontrol *kcontrol,
+@@ -326,7 +321,8 @@ static int wm8994_put_drc_sw(struct snd_kcontrol *kcontrol,
  static void wm8994_set_drc(struct snd_soc_codec *codec, int drc)
  {
  	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
@@ -21714,7 +24400,7 @@ index b2b2b37..99d7d62 100644
  	int base = wm8994_drc_base[drc];
  	int cfg = wm8994->drc_cfg[drc];
  	int save, i;
-@@ -362,7 +363,8 @@ static int wm8994_put_drc_enum(struct snd_kcontrol *kcontrol,
+@@ -362,7 +358,8 @@ static int wm8994_put_drc_enum(struct snd_kcontrol *kcontrol,
  {
  	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
  	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
@@ -21724,7 +24410,7 @@ index b2b2b37..99d7d62 100644
  	int drc = wm8994_get_drc(kcontrol->id.name);
  	int value = ucontrol->value.integer.value[0];
  
-@@ -394,7 +396,8 @@ static int wm8994_get_drc_enum(struct snd_kcontrol *kcontrol,
+@@ -394,7 +391,8 @@ static int wm8994_get_drc_enum(struct snd_kcontrol *kcontrol,
  static void wm8994_set_retune_mobile(struct snd_soc_codec *codec, int block)
  {
  	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
@@ -21734,7 +24420,7 @@ index b2b2b37..99d7d62 100644
  	int base = wm8994_retune_mobile_base[block];
  	int iface, best, best_val, save, i, cfg;
  
-@@ -465,7 +468,8 @@ static int wm8994_put_retune_mobile_enum(struct snd_kcontrol *kcontrol,
+@@ -465,7 +463,8 @@ static int wm8994_put_retune_mobile_enum(struct snd_kcontrol *kcontrol,
  {
  	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
  	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
@@ -21744,7 +24430,16 @@ index b2b2b37..99d7d62 100644
  	int block = wm8994_get_retune_mobile_block(kcontrol->id.name);
  	int value = ucontrol->value.integer.value[0];
  
-@@ -862,7 +866,7 @@ static void vmid_reference(struct snd_soc_codec *codec)
+@@ -736,7 +735,7 @@ static void wm1811_jackdet_set_mode(struct snd_soc_codec *codec, u16 mode)
+ {
+ 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
+ 
+-	if (!wm8994->jackdet || !wm8994->jack_cb)
++	if (!wm8994->jackdet || !wm8994->micdet[0].jack)
+ 		return;
+ 
+ 	if (wm8994->active_refcount)
+@@ -862,7 +861,7 @@ static void vmid_reference(struct snd_soc_codec *codec)
  					    WM8994_BIAS_SRC |
  					    WM8994_STARTUP_BIAS_ENA |
  					    WM8994_VMID_BUF_ENA |
@@ -21753,7 +24448,7 @@ index b2b2b37..99d7d62 100644
  
  			/* Main bias enable, VMID=2x40k */
  			snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_1,
-@@ -870,7 +874,7 @@ static void vmid_reference(struct snd_soc_codec *codec)
+@@ -870,7 +869,7 @@ static void vmid_reference(struct snd_soc_codec *codec)
  					    WM8994_VMID_SEL_MASK,
  					    WM8994_BIAS_ENA | 0x2);
  
@@ -21762,7 +24457,7 @@ index b2b2b37..99d7d62 100644
  
  			snd_soc_update_bits(codec, WM8994_ANTIPOP_2,
  					    WM8994_VMID_RAMP_MASK |
-@@ -939,16 +943,10 @@ static void vmid_dereference(struct snd_soc_codec *codec)
+@@ -939,16 +938,10 @@ static void vmid_dereference(struct snd_soc_codec *codec)
  				    WM8994_BIAS_SRC |
  				    WM8994_VMID_DISCH);
  
@@ -21782,7 +24477,7 @@ index b2b2b37..99d7d62 100644
  
  		/* Active discharge */
  		snd_soc_update_bits(codec, WM8994_ANTIPOP_1,
-@@ -957,17 +955,12 @@ static void vmid_dereference(struct snd_soc_codec *codec)
+@@ -957,17 +950,12 @@ static void vmid_dereference(struct snd_soc_codec *codec)
  				    WM8994_LINEOUT1_DISCH |
  				    WM8994_LINEOUT2_DISCH);
  
@@ -21800,7 +24495,7 @@ index b2b2b37..99d7d62 100644
  		/* Switch off startup biases */
  		snd_soc_update_bits(codec, WM8994_ANTIPOP_2,
  				    WM8994_BIAS_SRC |
-@@ -976,10 +969,7 @@ static void vmid_dereference(struct snd_soc_codec *codec)
+@@ -976,10 +964,7 @@ static void vmid_dereference(struct snd_soc_codec *codec)
  				    WM8994_VMID_RAMP_MASK, 0);
  
  		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_1,
@@ -21812,7 +24507,7 @@ index b2b2b37..99d7d62 100644
  	}
  
  	pm_runtime_put(codec->dev);
-@@ -2277,6 +2267,18 @@ out:
+@@ -2277,6 +2262,18 @@ out:
  
  	configure_clock(codec);
  
@@ -21831,7 +24526,7 @@ index b2b2b37..99d7d62 100644
  	return 0;
  }
  
-@@ -2365,6 +2367,18 @@ static int wm8994_set_dai_sysclk(struct snd_soc_dai *dai,
+@@ -2365,6 +2362,18 @@ static int wm8994_set_dai_sysclk(struct snd_soc_dai *dai,
  
  	configure_clock(codec);
  
@@ -21850,7 +24545,7 @@ index b2b2b37..99d7d62 100644
  	return 0;
  }
  
-@@ -3082,7 +3096,8 @@ static int wm8994_codec_resume(struct snd_soc_codec *codec)
+@@ -3082,7 +3091,8 @@ static int wm8994_codec_resume(struct snd_soc_codec *codec)
  static void wm8994_handle_retune_mobile_pdata(struct wm8994_priv *wm8994)
  {
  	struct snd_soc_codec *codec = wm8994->hubs.codec;
@@ -21860,7 +24555,7 @@ index b2b2b37..99d7d62 100644
  	struct snd_kcontrol_new controls[] = {
  		SOC_ENUM_EXT("AIF1.1 EQ Mode",
  			     wm8994->retune_mobile_enum,
-@@ -3149,7 +3164,8 @@ static void wm8994_handle_retune_mobile_pdata(struct wm8994_priv *wm8994)
+@@ -3149,7 +3159,8 @@ static void wm8994_handle_retune_mobile_pdata(struct wm8994_priv *wm8994)
  static void wm8994_handle_pdata(struct wm8994_priv *wm8994)
  {
  	struct snd_soc_codec *codec = wm8994->hubs.codec;
@@ -21870,19 +24565,143 @@ index b2b2b37..99d7d62 100644
  	int ret, i;
  
  	if (!pdata)
-@@ -3451,7 +3467,7 @@ static void wm8958_default_micdet(u16 status, void *data)
- 
- 			mutex_unlock(&wm8994->accdet_lock);
- 
--			if (wm8994->pdata->jd_ext_cap)
-+			if (wm8994->wm8994->pdata.jd_ext_cap)
- 				snd_soc_dapm_disable_pin(&codec->dapm,
- 							 "MICBIAS2");
- 		}
-@@ -3486,11 +3502,48 @@ static void wm8958_default_micdet(u16 status, void *data)
- 	}
+@@ -3389,38 +3400,80 @@ static irqreturn_t wm8994_mic_irq(int irq, void *data)
+ 	return IRQ_HANDLED;
  }
  
+-/* Default microphone detection handler for WM8958 - the user can
+- * override this if they wish.
+- */
+-static void wm8958_default_micdet(u16 status, void *data)
++static void wm1811_micd_stop(struct snd_soc_codec *codec)
++{
++	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
++
++	if (!wm8994->jackdet)
++		return;
++
++	mutex_lock(&wm8994->accdet_lock);
++
++	snd_soc_update_bits(codec, WM8958_MIC_DETECT_1, WM8958_MICD_ENA, 0);
++
++	wm1811_jackdet_set_mode(codec, WM1811_JACKDET_MODE_JACK);
++
++	mutex_unlock(&wm8994->accdet_lock);
++
++	if (wm8994->wm8994->pdata.jd_ext_cap)
++		snd_soc_dapm_disable_pin(&codec->dapm,
++					 "MICBIAS2");
++}
++
++static void wm8958_button_det(struct snd_soc_codec *codec, u16 status)
+ {
+-	struct snd_soc_codec *codec = data;
+ 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
+ 	int report;
+ 
+-	dev_dbg(codec->dev, "MICDET %x\n", status);
++	report = 0;
++	if (status & 0x4)
++		report |= SND_JACK_BTN_0;
++
++	if (status & 0x8)
++		report |= SND_JACK_BTN_1;
++
++	if (status & 0x10)
++		report |= SND_JACK_BTN_2;
++
++	if (status & 0x20)
++		report |= SND_JACK_BTN_3;
++
++	if (status & 0x40)
++		report |= SND_JACK_BTN_4;
++
++	if (status & 0x80)
++		report |= SND_JACK_BTN_5;
++
++	snd_soc_jack_report(wm8994->micdet[0].jack, report,
++			    wm8994->btn_mask);
++}
++
++static void wm8958_mic_id(void *data, u16 status)
++{
++	struct snd_soc_codec *codec = data;
++	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
+ 
+ 	/* Either nothing present or just starting detection */
+ 	if (!(status & WM8958_MICD_STS)) {
+-		if (!wm8994->jackdet) {
+-			/* If nothing present then clear our statuses */
+-			dev_dbg(codec->dev, "Detected open circuit\n");
+-			wm8994->jack_mic = false;
+-			wm8994->mic_detecting = true;
++		/* If nothing present then clear our statuses */
++		dev_dbg(codec->dev, "Detected open circuit\n");
++		wm8994->jack_mic = false;
++		wm8994->mic_detecting = true;
+ 
+-			wm8958_micd_set_rate(codec);
++		wm1811_micd_stop(codec);
+ 
+-			snd_soc_jack_report(wm8994->micdet[0].jack, 0,
+-					    wm8994->btn_mask |
+-					    SND_JACK_HEADSET);
+-		}
++		wm8958_micd_set_rate(codec);
++
++		snd_soc_jack_report(wm8994->micdet[0].jack, 0,
++				    wm8994->btn_mask |
++				    SND_JACK_HEADSET);
+ 		return;
+ 	}
+ 
+ 	/* If the measurement is showing a high impedence we've got a
+ 	 * microphone.
+ 	 */
+-	if (wm8994->mic_detecting && (status & 0x600)) {
++	if (status & 0x600) {
+ 		dev_dbg(codec->dev, "Detected microphone\n");
+ 
+ 		wm8994->mic_detecting = false;
+@@ -3433,64 +3486,67 @@ static void wm8958_default_micdet(u16 status, void *data)
+ 	}
+ 
+ 
+-	if (wm8994->mic_detecting && status & 0xfc) {
++	if (status & 0xfc) {
+ 		dev_dbg(codec->dev, "Detected headphone\n");
+ 		wm8994->mic_detecting = false;
+ 
+ 		wm8958_micd_set_rate(codec);
+ 
+ 		/* If we have jackdet that will detect removal */
+-		if (wm8994->jackdet) {
+-			mutex_lock(&wm8994->accdet_lock);
+-
+-			snd_soc_update_bits(codec, WM8958_MIC_DETECT_1,
+-					    WM8958_MICD_ENA, 0);
+-
+-			wm1811_jackdet_set_mode(codec,
+-						WM1811_JACKDET_MODE_JACK);
+-
+-			mutex_unlock(&wm8994->accdet_lock);
+-
+-			if (wm8994->pdata->jd_ext_cap)
+-				snd_soc_dapm_disable_pin(&codec->dapm,
+-							 "MICBIAS2");
+-		}
++		wm1811_micd_stop(codec);
+ 
+ 		snd_soc_jack_report(wm8994->micdet[0].jack, SND_JACK_HEADPHONE,
+ 				    SND_JACK_HEADSET);
+ 	}
++}
+ 
+-	/* Report short circuit as a button */
+-	if (wm8994->jack_mic) {
+-		report = 0;
+-		if (status & 0x4)
+-			report |= SND_JACK_BTN_0;
 +/* Deferred mic detection to allow for extra settling time */
 +static void wm1811_mic_work(struct work_struct *work)
 +{
@@ -21890,35 +24709,52 @@ index b2b2b37..99d7d62 100644
 +						  mic_work.work);
 +	struct wm8994 *control = wm8994->wm8994;
 +	struct snd_soc_codec *codec = wm8994->hubs.codec;
-+
+ 
+-		if (status & 0x8)
+-			report |= SND_JACK_BTN_1;
 +	pm_runtime_get_sync(codec->dev);
-+
+ 
+-		if (status & 0x10)
+-			report |= SND_JACK_BTN_2;
 +	/* If required for an external cap force MICBIAS on */
 +	if (control->pdata.jd_ext_cap) {
 +		snd_soc_dapm_force_enable_pin(&codec->dapm,
 +					      "MICBIAS2");
 +		snd_soc_dapm_sync(&codec->dapm);
 +	}
-+
+ 
+-		if (status & 0x20)
+-			report |= SND_JACK_BTN_3;
 +	mutex_lock(&wm8994->accdet_lock);
-+
+ 
+-		if (status & 0x40)
+-			report |= SND_JACK_BTN_4;
 +	dev_dbg(codec->dev, "Starting mic detection\n");
-+
-+	/*
-+	 * Start off measument of microphone impedence to find out
-+	 * what's actually there.
-+	 */
-+	wm8994->mic_detecting = true;
-+	wm1811_jackdet_set_mode(codec, WM1811_JACKDET_MODE_MIC);
-+
-+	snd_soc_update_bits(codec, WM8958_MIC_DETECT_1,
-+			    WM8958_MICD_ENA, WM8958_MICD_ENA);
+ 
+-		if (status & 0x80)
+-			report |= SND_JACK_BTN_5;
++	/* Use a user-supplied callback if we have one */
++	if (wm8994->micd_cb) {
++		wm8994->micd_cb(wm8994->micd_cb_data);
++	} else {
++		/*
++		 * Start off measument of microphone impedence to find out
++		 * what's actually there.
++		 */
++		wm8994->mic_detecting = true;
++		wm1811_jackdet_set_mode(codec, WM1811_JACKDET_MODE_MIC);
+ 
+-		snd_soc_jack_report(wm8994->micdet[0].jack, report,
+-				    wm8994->btn_mask);
++		snd_soc_update_bits(codec, WM8958_MIC_DETECT_1,
++				    WM8958_MICD_ENA, WM8958_MICD_ENA);
+ 	}
 +
 +	mutex_unlock(&wm8994->accdet_lock);
 +
 +	pm_runtime_put(codec->dev);
-+}
-+
+ }
+ 
  static irqreturn_t wm1811_jackdet_irq(int irq, void *data)
  {
  	struct wm8994_priv *wm8994 = data;
@@ -21929,7 +24765,7 @@ index b2b2b37..99d7d62 100644
  	bool present;
  
  	pm_runtime_get_sync(codec->dev);
-@@ -3521,18 +3574,14 @@ static irqreturn_t wm1811_jackdet_irq(int irq, void *data)
+@@ -3521,18 +3577,14 @@ static irqreturn_t wm1811_jackdet_irq(int irq, void *data)
  		snd_soc_update_bits(codec, WM1811_JACKDET_CTRL,
  				    WM1811_JACKDET_DB, 0);
  
@@ -21953,7 +24789,7 @@ index b2b2b37..99d7d62 100644
  		snd_soc_update_bits(codec, WM8958_MICBIAS2,
  				    WM8958_MICB2_DISCH, WM8958_MICB2_DISCH);
  
-@@ -3549,14 +3598,9 @@ static irqreturn_t wm1811_jackdet_irq(int irq, void *data)
+@@ -3549,14 +3601,9 @@ static irqreturn_t wm1811_jackdet_irq(int irq, void *data)
  
  	mutex_unlock(&wm8994->accdet_lock);
  
@@ -21971,7 +24807,51 @@ index b2b2b37..99d7d62 100644
  
  	if (present)
  		snd_soc_jack_report(wm8994->micdet[0].jack,
-@@ -3633,8 +3677,8 @@ int wm8958_mic_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
+@@ -3599,7 +3646,8 @@ static void wm1811_jackdet_bootstrap(struct work_struct *work)
+  * detection algorithm.
+  */
+ int wm8958_mic_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
+-		      wm8958_micdet_cb cb, void *cb_data)
++		      wm1811_micdet_cb det_cb, void *det_cb_data,
++		      wm1811_mic_id_cb id_cb, void *id_cb_data)
+ {
+ 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
+ 	struct wm8994 *control = wm8994->wm8994;
+@@ -3614,27 +3662,32 @@ int wm8958_mic_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
+ 	}
+ 
+ 	if (jack) {
+-		if (!cb) {
+-			dev_dbg(codec->dev, "Using default micdet callback\n");
+-			cb = wm8958_default_micdet;
+-			cb_data = codec;
+-		}
+-
+ 		snd_soc_dapm_force_enable_pin(&codec->dapm, "CLK_SYS");
+ 		snd_soc_dapm_sync(&codec->dapm);
+ 
+ 		wm8994->micdet[0].jack = jack;
+-		wm8994->jack_cb = cb;
+-		wm8994->jack_cb_data = cb_data;
+ 
+-		wm8994->mic_detecting = true;
+-		wm8994->jack_mic = false;
++		if (det_cb) {
++			wm8994->micd_cb = det_cb;
++			wm8994->micd_cb_data = det_cb_data;
++		} else {
++			wm8994->mic_detecting = true;
++			wm8994->jack_mic = false;
++		}
++
++		if (id_cb) {
++			wm8994->mic_id_cb = id_cb;
++			wm8994->mic_id_cb_data = id_cb_data;
++		} else {
++			wm8994->mic_id_cb = wm8958_mic_id;
++			wm8994->mic_id_cb_data = codec;
++		}
+ 
  		wm8958_micd_set_rate(codec);
  
  		/* Detect microphones and short circuits by default */
@@ -21982,7 +24862,33 @@ index b2b2b37..99d7d62 100644
  		else
  			micd_lvl_sel = 0x41;
  
-@@ -3779,15 +3823,24 @@ static int wm8994_codec_probe(struct snd_soc_codec *codec)
+@@ -3728,10 +3781,22 @@ static irqreturn_t wm8958_mic_irq(int irq, void *data)
+ 	trace_snd_soc_jack_irq(dev_name(codec->dev));
+ #endif
+ 
+-	if (wm8994->jack_cb)
+-		wm8994->jack_cb(reg, wm8994->jack_cb_data);
++	/* Avoid a transient report when the accessory is being removed */
++	if (wm8994->jackdet) {
++		reg = snd_soc_read(codec, WM1811_JACKDET_CTRL);
++		if (reg < 0) {
++			dev_err(codec->dev, "Failed to read jack status: %d\n",
++				reg);
++		} else if (!(reg & WM1811_JACKDET_LVL)) {
++			dev_dbg(codec->dev, "Ignoring removed jack\n");
++			return IRQ_HANDLED;
++		}
++	}
++
++	if (wm8994->mic_detecting)
++		wm8994->mic_id_cb(wm8994->mic_id_cb_data, reg);
+ 	else
+-		dev_warn(codec->dev, "Accessory detection with no callback\n");
++		wm8958_button_det(codec, reg);
+ 
+ out:
+ 	pm_runtime_put(codec->dev);
+@@ -3779,15 +3844,24 @@ static int wm8994_codec_probe(struct snd_soc_codec *codec)
  	snd_soc_codec_set_cache_io(codec, 16, 16, SND_SOC_REGMAP);
  
  	mutex_init(&wm8994->accdet_lock);
@@ -22010,7 +24916,7 @@ index b2b2b37..99d7d62 100644
  
  	pm_runtime_enable(codec->dev);
  	pm_runtime_idle(codec->dev);
-@@ -3800,8 +3853,8 @@ static int wm8994_codec_probe(struct snd_soc_codec *codec)
+@@ -3800,8 +3874,8 @@ static int wm8994_codec_probe(struct snd_soc_codec *codec)
  	switch (control->type) {
  	case WM8994:
  		/* Single ended line outputs should have VMID on. */
@@ -22021,7 +24927,30 @@ index b2b2b37..99d7d62 100644
  			codec->dapm.idle_bias_off = 0;
  
  		switch (wm8994->revision) {
-@@ -4236,7 +4289,6 @@ static int __devinit wm8994_probe(struct platform_device *pdev)
+@@ -3839,20 +3913,8 @@ static int wm8994_codec_probe(struct snd_soc_codec *codec)
+ 		wm8994->hubs.no_cache_dac_hp_direct = true;
+ 		wm8994->fll_byp = true;
+ 
+-		switch (control->cust_id) {
+-		case 0:
+-		case 2:
+-			wm8994->hubs.dcs_codes_l = -9;
+-			wm8994->hubs.dcs_codes_r = -7;
+-			break;
+-		case 1:
+-		case 3:
+-			wm8994->hubs.dcs_codes_l = -8;
+-			wm8994->hubs.dcs_codes_r = -7;
+-			break;
+-		default:
+-			break;
+-		}
++		wm8994->hubs.dcs_codes_l = -9;
++		wm8994->hubs.dcs_codes_r = -7;
+ 
+ 		snd_soc_update_bits(codec, WM8994_ANALOGUE_HP_1,
+ 				    WM1811_HPOUT1_ATTN, WM1811_HPOUT1_ATTN);
+@@ -4236,7 +4298,6 @@ static int __devinit wm8994_probe(struct platform_device *pdev)
  	platform_set_drvdata(pdev, wm8994);
  
  	wm8994->wm8994 = dev_get_drvdata(pdev->dev.parent);
@@ -22029,12 +24958,47 @@ index b2b2b37..99d7d62 100644
  
  	return snd_soc_register_codec(&pdev->dev, &soc_codec_dev_wm8994,
  			wm8994_dai, ARRAY_SIZE(wm8994_dai));
+@@ -4266,7 +4327,7 @@ static int wm8994_resume(struct device *dev)
+ {
+ 	struct wm8994_priv *wm8994 = dev_get_drvdata(dev);
+ 
+-	if (wm8994->jackdet && wm8994->jack_cb)
++	if (wm8994->jackdet && wm8994->jackdet_mode)
+ 		regmap_update_bits(wm8994->wm8994->regmap, WM8994_ANTIPOP_2,
+ 				   WM1811_JACKDET_MODE_MASK,
+ 				   WM1811_JACKDET_MODE_AUDIO);
 diff --git a/sound/soc/codecs/wm8994.h b/sound/soc/codecs/wm8994.h
-index ccbce57..3120c0f 100644
+index ccbce57..45f1927 100644
 --- a/sound/soc/codecs/wm8994.h
 +++ b/sound/soc/codecs/wm8994.h
-@@ -143,7 +143,6 @@ struct wm8994_priv {
+@@ -39,12 +39,14 @@ enum wm8994_vmid_mode {
+ 	WM8994_VMID_FORCE,
+ };
+ 
+-typedef void (*wm8958_micdet_cb)(u16 status, void *data);
++typedef void (*wm1811_micdet_cb)(void *data);
++typedef void (*wm1811_mic_id_cb)(void *data, u16 status);
+ 
+ int wm8994_mic_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
+ 		      int micbias);
+ int wm8958_mic_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
+-		      wm8958_micdet_cb cb, void *cb_data);
++		      wm1811_micdet_cb cb, void *det_cb_data,
++		      wm1811_mic_id_cb id_cb, void *id_cb_data);
+ 
+ int wm8994_vmid_mode(struct snd_soc_codec *codec, enum wm8994_vmid_mode mode);
+ 
+@@ -138,12 +140,13 @@ struct wm8994_priv {
+ 	int jackdet_mode;
+ 	struct delayed_work jackdet_bootstrap;
+ 
+-	wm8958_micdet_cb jack_cb;
+-	void *jack_cb_data;
  	int micdet_irq;
++	wm1811_micdet_cb micd_cb;
++	void *micd_cb_data;
++	wm1811_mic_id_cb mic_id_cb;
++	void *mic_id_cb_data;
  
  	int revision;
 -	struct wm8994_pdata *pdata;
@@ -22139,12 +25103,134 @@ index 28c89b0..f1a7cf1 100644
  	return 0;
  }
  
+diff --git a/sound/soc/codecs/wm9081.c b/sound/soc/codecs/wm9081.c
+index 2de74e1..860144e 100644
+--- a/sound/soc/codecs/wm9081.c
++++ b/sound/soc/codecs/wm9081.c
+@@ -1341,28 +1341,27 @@ static __devinit int wm9081_i2c_probe(struct i2c_client *i2c,
+ 
+ 	i2c_set_clientdata(i2c, wm9081);
+ 
+-	wm9081->regmap = regmap_init_i2c(i2c, &wm9081_regmap);
++	wm9081->regmap = devm_regmap_init_i2c(i2c, &wm9081_regmap);
+ 	if (IS_ERR(wm9081->regmap)) {
+ 		ret = PTR_ERR(wm9081->regmap);
+ 		dev_err(&i2c->dev, "regmap_init() failed: %d\n", ret);
+-		goto err;
++		return ret;
+ 	}
+ 
+ 	ret = regmap_read(wm9081->regmap, WM9081_SOFTWARE_RESET, &reg);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to read chip ID: %d\n", ret);
+-		goto err_regmap;
++		return ret;
+ 	}
+ 	if (reg != 0x9081) {
+ 		dev_err(&i2c->dev, "Device is not a WM9081: ID=0x%x\n", reg);
+-		ret = -EINVAL;
+-		goto err_regmap;
++		return -EINVAL;
+ 	}
+ 
+ 	ret = wm9081_reset(wm9081->regmap);
+ 	if (ret < 0) {
+ 		dev_err(&i2c->dev, "Failed to issue reset\n");
+-		goto err_regmap;
++		return ret;
+ 	}
+ 
+ 	if (dev_get_platdata(&i2c->dev))
+@@ -1382,23 +1381,14 @@ static __devinit int wm9081_i2c_probe(struct i2c_client *i2c,
+ 	ret = snd_soc_register_codec(&i2c->dev,
+ 			&soc_codec_dev_wm9081, &wm9081_dai, 1);
+ 	if (ret < 0)
+-		goto err_regmap;
++		return ret;
+ 
+ 	return 0;
+-
+-err_regmap:
+-	regmap_exit(wm9081->regmap);
+-err:
+-
+-	return ret;
+ }
+ 
+ static __devexit int wm9081_i2c_remove(struct i2c_client *client)
+ {
+-	struct wm9081_priv *wm9081 = i2c_get_clientdata(client);
+-
+ 	snd_soc_unregister_codec(&client->dev);
+-	regmap_exit(wm9081->regmap);
+ 	return 0;
+ }
+ 
+diff --git a/sound/soc/codecs/wm9090.c b/sound/soc/codecs/wm9090.c
+index c7ddc56..bb55a70 100644
+--- a/sound/soc/codecs/wm9090.c
++++ b/sound/soc/codecs/wm9090.c
+@@ -628,7 +628,7 @@ static int wm9090_i2c_probe(struct i2c_client *i2c,
+ 		return -ENOMEM;
+ 	}
+ 
+-	wm9090->regmap = regmap_init_i2c(i2c, &wm9090_regmap);
++	wm9090->regmap = devm_regmap_init_i2c(i2c, &wm9090_regmap);
+ 	if (IS_ERR(wm9090->regmap)) {
+ 		ret = PTR_ERR(wm9090->regmap);
+ 		dev_err(&i2c->dev, "Failed to allocate regmap: %d\n", ret);
+@@ -637,16 +637,16 @@ static int wm9090_i2c_probe(struct i2c_client *i2c,
+ 
+ 	ret = regmap_read(wm9090->regmap, WM9090_SOFTWARE_RESET, &reg);
+ 	if (ret < 0)
+-		goto err;
++		return ret;
++
+ 	if (reg != 0x9093) {
+ 		dev_err(&i2c->dev, "Device is not a WM9090, ID=%x\n", reg);
+-		ret = -ENODEV;
+-		goto err;
++		return -ENODEV;
+ 	}
+ 
+ 	ret = regmap_write(wm9090->regmap, WM9090_SOFTWARE_RESET, 0);
+ 	if (ret < 0)
+-		goto err;
++		return ret;
+ 
+ 	if (i2c->dev.platform_data)
+ 		memcpy(&wm9090->pdata, i2c->dev.platform_data,
+@@ -658,23 +658,15 @@ static int wm9090_i2c_probe(struct i2c_client *i2c,
+ 			&soc_codec_dev_wm9090,  NULL, 0);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
+-		goto err;
++		return ret;
+ 	}
+ 
+ 	return 0;
+-
+-err:
+-	regmap_exit(wm9090->regmap);
+-	return ret;
+ }
+ 
+ static int __devexit wm9090_i2c_remove(struct i2c_client *i2c)
+ {
+-	struct wm9090_priv *wm9090 = i2c_get_clientdata(i2c);
+-
+ 	snd_soc_unregister_codec(&i2c->dev);
+-	regmap_exit(wm9090->regmap);
+-
+ 	return 0;
+ }
+ 
 diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
 new file mode 100644
-index 0000000..c72d3fa
+index 0000000..ffc89fa
 --- /dev/null
 +++ b/sound/soc/codecs/wm_adsp.c
-@@ -0,0 +1,571 @@
+@@ -0,0 +1,699 @@
 +/*
 + * wm_adsp.c  --  Wolfson ADSP support
 + *
@@ -22165,6 +25251,7 @@ index 0000000..c72d3fa
 +#include <linux/pm.h>
 +#include <linux/pm_runtime.h>
 +#include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
 +#include <linux/slab.h>
 +#include <sound/core.h>
 +#include <sound/pcm.h>
@@ -22249,8 +25336,9 @@ index 0000000..c72d3fa
 +#define ADSP1_START_SHIFT                      0  /* DSP1_START */
 +#define ADSP1_START_WIDTH                      1  /* DSP1_START */
 +
-+#define ADSP2_CONTROL 0
-+#define ADSP2_STATUS1 4
++#define ADSP2_CONTROL  0
++#define ADSP2_CLOCKING 1
++#define ADSP2_STATUS1  4
 +
 +/*
 + * ADSP2 Control
@@ -22272,6 +25360,13 @@ index 0000000..c72d3fa
 +#define ADSP2_START_MASK                  0x0001  /* DSP1_START */
 +#define ADSP2_START_SHIFT                      0  /* DSP1_START */
 +#define ADSP2_START_WIDTH                      1  /* DSP1_START */
++
++/*
++ * ADSP2 clocking
++ */
++#define ADSP2_CLK_SEL_MASK                0x0007  /* CLK_SEL_ENA */
++#define ADSP2_CLK_SEL_SHIFT                    0  /* CLK_SEL_ENA */
++#define ADSP2_CLK_SEL_WIDTH                    3  /* CLK_SEL_ENA */
 +
 +/*
 + * ADSP2 Status 1
@@ -22677,10 +25772,63 @@ index 0000000..c72d3fa
 +	struct snd_soc_codec *codec = w->codec;
 +	struct wm_adsp *dsps = snd_soc_codec_get_drvdata(codec);
 +	struct wm_adsp *dsp = &dsps[w->shift];
++	unsigned int val;
 +	int ret;
 +
 +	switch (event) {
 +	case SND_SOC_DAPM_POST_PMU:
++		/*
++		 * For simplicity set the DSP clock rate to be the
++		 * SYSCLK rate rather than making it configurable.
++		 */
++		ret = regmap_read(dsp->regmap, ARIZONA_SYSTEM_CLOCK_1, &val);
++		if (ret != 0) {
++			adsp_err(dsp, "Failed to read SYSCLK state: %d\n",
++				 ret);
++			return ret;
++		}
++		val = (val & ARIZONA_SYSCLK_FREQ_MASK)
++			>> ARIZONA_SYSCLK_FREQ_SHIFT;
++
++		ret = regmap_update_bits(dsp->regmap,
++					 dsp->base + ADSP2_CLOCKING,
++					 ADSP2_CLK_SEL_MASK, val);
++		if (ret != 0) {
++			adsp_err(dsp, "Failed to set clock rate: %d\n",
++				 ret);
++			return ret;
++		}
++
++		if (dsp->dvfs) {
++			ret = regmap_read(dsp->regmap,
++					  dsp->base + ADSP2_CLOCKING, &val);
++			if (ret != 0) {
++				dev_err(dsp->dev,
++					"Failed to read clocking: %d\n", ret);
++				return ret;
++			}
++
++			if ((val & ADSP2_CLK_SEL_MASK) >= 3) {
++				ret = regulator_enable(dsp->dvfs);
++				if (ret != 0) {
++					dev_err(dsp->dev,
++						"Failed to enable supply: %d\n",
++						ret);
++					return ret;
++				}
++
++				ret = regulator_set_voltage(dsp->dvfs,
++							    1800000,
++							    1800000);
++				if (ret != 0) {
++					dev_err(dsp->dev,
++						"Failed to raise supply: %d\n",
++						ret);
++					return ret;
++				}
++			}
++		}
++
 +		ret = wm_adsp2_ena(dsp);
 +		if (ret != 0)
 +			return ret;
@@ -22695,14 +25843,31 @@ index 0000000..c72d3fa
 +
 +		ret = regmap_update_bits(dsp->regmap,
 +					 dsp->base + ADSP2_CONTROL,
-+					 ADSP2_SYS_ENA | ADSP2_START, 0);
++					 ADSP2_CORE_ENA | ADSP2_START,
++					 ADSP2_CORE_ENA | ADSP2_START);
 +		if (ret != 0)
 +			goto err;
 +		break;
 +
 +	case SND_SOC_DAPM_PRE_PMD:
 +		regmap_update_bits(dsp->regmap, dsp->base + ADSP2_CONTROL,
-+				   ADSP2_SYS_ENA | ADSP2_START, 0);
++				   ADSP2_SYS_ENA | ADSP2_CORE_ENA |
++				   ADSP2_START, 0);
++
++		if (dsp->dvfs) {
++			ret = regulator_set_voltage(dsp->dvfs, 1200000,
++						    1800000);
++			if (ret != 0)
++				dev_warn(dsp->dev,
++					 "Failed to lower supply: %d\n",
++					 ret);
++
++			ret = regulator_disable(dsp->dvfs);
++			if (ret != 0)
++				dev_err(dsp->dev,
++					"Failed to enable supply: %d\n",
++					ret);
++		}
 +		break;
 +
 +	default:
@@ -22712,16 +25877,65 @@ index 0000000..c72d3fa
 +	return 0;
 +err:
 +	regmap_update_bits(dsp->regmap, dsp->base + ADSP2_CONTROL,
-+			   ADSP2_SYS_ENA | ADSP2_START, 0);
++			   ADSP2_SYS_ENA | ADSP2_CORE_ENA | ADSP2_START, 0);
 +	return ret;
 +}
 +EXPORT_SYMBOL_GPL(wm_adsp2_event);
++
++int wm_adsp2_init(struct wm_adsp *adsp, bool dvfs)
++{
++	int ret;
++
++	/*
++	 * Disable the DSP memory by default when in reset for a small
++	 * power saving.
++	 */
++	ret = regmap_update_bits(adsp->regmap, adsp->base + ADSP2_CONTROL,
++				 ADSP2_MEM_ENA, 0);
++	if (ret != 0) {
++		adsp_err(adsp, "Failed to clear memory retention: %d\n", ret);
++		return ret;
++	}
++
++	if (dvfs) {
++		adsp->dvfs = devm_regulator_get(adsp->dev, "DCVDD");
++		if (IS_ERR(adsp->dvfs)) {
++			ret = PTR_ERR(adsp->dvfs);
++			dev_err(adsp->dev, "Failed to get DCVDD: %d\n", ret);
++			return ret;
++		}
++
++		ret = regulator_enable(adsp->dvfs);
++		if (ret != 0) {
++			dev_err(adsp->dev, "Failed to enable DCVDD: %d\n",
++				ret);
++			return ret;
++		}
++
++		ret = regulator_set_voltage(adsp->dvfs, 1200000, 1800000);
++		if (ret != 0) {
++			dev_err(adsp->dev, "Failed to initialise DVFS: %d\n",
++				ret);
++			return ret;
++		}
++
++		ret = regulator_disable(adsp->dvfs);
++		if (ret != 0) {
++			dev_err(adsp->dev, "Failed to disable DCVDD: %d\n",
++				ret);
++			return ret;
++		}
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(wm_adsp2_init);
 diff --git a/sound/soc/codecs/wm_adsp.h b/sound/soc/codecs/wm_adsp.h
 new file mode 100644
-index 0000000..b303b1f
+index 0000000..ffd29a4
 --- /dev/null
 +++ b/sound/soc/codecs/wm_adsp.h
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,59 @@
 +/*
 + * wm_adsp.h  --  Wolfson ADSP support
 + *
@@ -22742,6 +25956,8 @@ index 0000000..b303b1f
 +
 +#include "wmfw.h"
 +
++struct regulator;
++
 +struct wm_adsp_region {
 +	int type;
 +	unsigned int base;
@@ -22758,6 +25974,8 @@ index 0000000..b303b1f
 +
 +	const struct wm_adsp_region *mem;
 +	int num_mems;
++
++	struct regulator *dvfs;
 +};
 +
 +#define WM_ADSP1(wname, num) \
@@ -22770,6 +25988,7 @@ index 0000000..b303b1f
 +	.shift = num, .event = wm_adsp2_event, \
 +	.event_flags = SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD }
 +
++int wm_adsp2_init(struct wm_adsp *adsp, bool dvfs);
 +int wm_adsp1_event(struct snd_soc_dapm_widget *w,
 +		   struct snd_kcontrol *kcontrol, int event);
 +int wm_adsp2_event(struct snd_soc_dapm_widget *w,
@@ -22968,10 +26187,10 @@ index a93679d..7eae529 100644
 +obj-$(CONFIG_SND_AM335X_SOC_RAUMFELD) += snd-soc-raumfeld.o
 diff --git a/sound/soc/davinci/am33xx-raumfeld.c b/sound/soc/davinci/am33xx-raumfeld.c
 new file mode 100644
-index 0000000..9018451
+index 0000000..eebbc5a
 --- /dev/null
 +++ b/sound/soc/davinci/am33xx-raumfeld.c
-@@ -0,0 +1,339 @@
+@@ -0,0 +1,342 @@
 +/*
 + * ASoC driver for Raumfeld's AM33xx based audio devices
 + *
@@ -23190,6 +26409,9 @@ index 0000000..9018451
 +
 +	ret = snd_soc_dai_set_clkdiv(cpu_dai, 0, 1);
 +	ret = snd_soc_dai_set_clkdiv(cpu_dai, 1, div);
++
++	/* BCLK-to_LRCLK divider ratio */
++	ret = snd_soc_dai_set_clkdiv(cpu_dai, 2, 64);
 +	if (ret < 0)
 +		return ret;
 +
@@ -23336,7 +26558,7 @@ index 6fac5af..591f547 100644
  }
  
 diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
-index 714e51e..6790def 100644
+index 714e51e..b21dff8 100644
 --- a/sound/soc/davinci/davinci-mcasp.c
 +++ b/sound/soc/davinci/davinci-mcasp.c
 @@ -199,6 +199,7 @@
@@ -23371,6 +26593,15 @@ index 714e51e..6790def 100644
  
  /*
   * DAVINCI_MCASP_XRSRCTL_BASE_REG -  Serializer Control Register Bits
+@@ -431,7 +435,7 @@ static void mcasp_stop_rx(struct davinci_audio_dev *dev)
+ 
+ static void mcasp_stop_tx(struct davinci_audio_dev *dev)
+ {
+-	mcasp_set_reg(dev->base + DAVINCI_MCASP_GBLCTLX_REG, 0);
++	mcasp_clr_bits(dev->base + DAVINCI_MCASP_GBLCTLX_REG, ~(1 << 8));
+ 	mcasp_set_reg(dev->base + DAVINCI_MCASP_TXSTAT_REG, 0xFFFFFFFF);
+ }
+ 
 @@ -473,6 +477,23 @@ static int davinci_mcasp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
  	struct davinci_audio_dev *dev = snd_soc_dai_get_drvdata(cpu_dai);
  	void __iomem *base = dev->base;
@@ -23405,41 +26636,85 @@ index 714e51e..6790def 100644
  		break;
  	case SND_SOC_DAIFMT_CBM_CFS:
  		/* codec is clock master and frame slave */
-@@ -554,6 +574,50 @@ static int davinci_mcasp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
+@@ -554,59 +574,75 @@ static int davinci_mcasp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
  	return 0;
  }
  
+-static int davinci_config_channel_size(struct davinci_audio_dev *dev,
+-				       int channel_size)
 +static int davinci_mcasp_set_clkdiv(struct snd_soc_dai *dai, int div_id, int div)
-+{
+ {
+-	u32 fmt = 0;
+-	u32 mask, rotate;
+-
+-	switch (channel_size) {
+-	case DAVINCI_AUDIO_WORD_8:
+-		fmt = 0x03;
+-		rotate = 6;
+-		mask = 0x000000ff;
+-		break;
 +	struct davinci_audio_dev *dev = snd_soc_dai_get_drvdata(dai);
-+
+ 
+-	case DAVINCI_AUDIO_WORD_12:
+-		fmt = 0x05;
+-		rotate = 5;
+-		mask = 0x00000fff;
 +	switch (div_id) {
 +	case 0:		/* MCLK divider */
 +		mcasp_mod_bits(dev->base + DAVINCI_MCASP_AHCLKXCTL_REG,
 +			       AHCLKXDIV(div - 1), AHCLKXDIV_MASK);
 +		mcasp_mod_bits(dev->base + DAVINCI_MCASP_AHCLKRCTL_REG,
 +			       AHCLKRDIV(div - 1), AHCLKRDIV_MASK);
-+		break;
-+
+ 		break;
+ 
+-	case DAVINCI_AUDIO_WORD_16:
+-		fmt = 0x07;
+-		rotate = 4;
+-		mask = 0x0000ffff;
 +	case 1:		/* BCLK divider */
 +		mcasp_mod_bits(dev->base + DAVINCI_MCASP_ACLKXCTL_REG,
 +			       ACLKXDIV(div - 1), ACLKXDIV_MASK);
 +		mcasp_mod_bits(dev->base + DAVINCI_MCASP_ACLKRCTL_REG,
 +			       ACLKRDIV(div - 1), ACLKRDIV_MASK);
-+		break;
-+
+ 		break;
+ 
+-	case DAVINCI_AUDIO_WORD_20:
+-		fmt = 0x09;
+-		rotate = 3;
+-		mask = 0x000fffff;
++	case 2:		/* BCLK/LRCLK ratio */
++		dev->bclk_lrclk_ratio = div;
+ 		break;
+ 
+-	case DAVINCI_AUDIO_WORD_24:
+-		fmt = 0x0B;
+-		rotate = 2;
+-		mask = 0x00ffffff;
+-		break;
 +	default:
 +		return -EINVAL;
 +	}
-+
+ 
+-	case DAVINCI_AUDIO_WORD_28:
+-		fmt = 0x0D;
+-		rotate = 1;
+-		mask = 0x0fffffff;
+-		break;
 +	return 0;
 +}
-+
+ 
+-	case DAVINCI_AUDIO_WORD_32:
+-		fmt = 0x0F;
+-		rotate = 0;
+-		mask = 0xffffffff;
+-		break;
 +static int davinci_mcasp_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 +				    unsigned int freq, int dir)
 +{
 +	struct davinci_audio_dev *dev = snd_soc_dai_get_drvdata(dai);
-+
+ 
+-	default:
+-		return -EINVAL;
 +	if (dir == SND_SOC_CLOCK_OUT) {
 +		mcasp_set_bits(dev->base + DAVINCI_MCASP_AHCLKXCTL_REG, AHCLKXE);
 +		mcasp_set_bits(dev->base + DAVINCI_MCASP_AHCLKRCTL_REG, AHCLKRE);
@@ -23448,23 +26723,36 @@ index 714e51e..6790def 100644
 +		mcasp_clr_bits(dev->base + DAVINCI_MCASP_AHCLKXCTL_REG, AHCLKXE);
 +		mcasp_clr_bits(dev->base + DAVINCI_MCASP_AHCLKRCTL_REG, AHCLKRE);
 +		mcasp_clr_bits(dev->base + DAVINCI_MCASP_PDIR_REG, AHCLKX);
-+	}
-+
+ 	}
+ 
 +	return 0;
 +}
 +
- static int davinci_config_channel_size(struct davinci_audio_dev *dev,
- 				       int channel_size)
- {
-@@ -607,6 +671,7 @@ static int davinci_config_channel_size(struct davinci_audio_dev *dev,
- 		return -EINVAL;
- 	}
- 
-+fmt = 0xf;
++static int davinci_config_channel_size(struct davinci_audio_dev *dev,
++				       int word_length)
++{
++	u32 fmt;
++	u32 rotate = (32 - word_length) / 4;
++	u32 mask = (1ULL << word_length) - 1;
++
++	/*
++	 * if s BCLK-to-LRCLK ratio has been configured via the set_clkdiv()
++	 * callback, take it into account here. That allows us to for example
++	 * send 32 bits per channel to the codec, while only 16 of them carry
++	 * audio payload.
++	 * The clock ratio is given for a full period of data (both left and
++	 * right channels), so it has to be divided by 2.
++	 */
++	if (dev->bclk_lrclk_ratio)
++		word_length = dev->bclk_lrclk_ratio / 2;
++
++	/* mapping of the XSSZ bit-field as described in the datasheet */
++	fmt = (word_length >> 1) - 1;
++
  	mcasp_mod_bits(dev->base + DAVINCI_MCASP_RXFMT_REG,
  					RXSSZ(fmt), RXSSZ(0x0F));
  	mcasp_mod_bits(dev->base + DAVINCI_MCASP_TXFMT_REG,
-@@ -709,8 +774,6 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
+@@ -709,8 +745,6 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
  	if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
  		/* bit stream is MSB first  with no delay */
  		/* DSP_B mode */
@@ -23473,7 +26761,7 @@ index 714e51e..6790def 100644
  		mcasp_set_reg(dev->base + DAVINCI_MCASP_TXTDM_REG, mask);
  		mcasp_set_bits(dev->base + DAVINCI_MCASP_TXFMT_REG, TXORD);
  
-@@ -720,14 +783,10 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
+@@ -720,14 +754,10 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
  		else
  			printk(KERN_ERR "playback tdm slot %d not supported\n",
  				dev->tdm_slots);
@@ -23488,7 +26776,7 @@ index 714e51e..6790def 100644
  		mcasp_set_reg(dev->base + DAVINCI_MCASP_RXTDM_REG, mask);
  
  		if ((dev->tdm_slots >= 2) && (dev->tdm_slots <= 32))
-@@ -736,8 +795,6 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
+@@ -736,8 +766,6 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
  		else
  			printk(KERN_ERR "capture tdm slot %d not supported\n",
  				dev->tdm_slots);
@@ -23497,22 +26785,38 @@ index 714e51e..6790def 100644
  	}
  }
  
-@@ -809,6 +866,14 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
- 		word_length = DAVINCI_AUDIO_WORD_16;
+@@ -800,19 +828,27 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
+ 	case SNDRV_PCM_FORMAT_U8:
+ 	case SNDRV_PCM_FORMAT_S8:
+ 		dma_params->data_type = 1;
+-		word_length = DAVINCI_AUDIO_WORD_8;
++		word_length = 8;
  		break;
  
+ 	case SNDRV_PCM_FORMAT_U16_LE:
+ 	case SNDRV_PCM_FORMAT_S16_LE:
+ 		dma_params->data_type = 2;
+-		word_length = DAVINCI_AUDIO_WORD_16;
++		word_length = 16;
++		break;
++
 +	case SNDRV_PCM_FORMAT_U24_3LE:
 +	case SNDRV_PCM_FORMAT_S24_3LE:
 +		dma_params->data_type = 3;
-+		word_length = DAVINCI_AUDIO_WORD_24;
-+		break;
-+
++		word_length = 24;
+ 		break;
+ 
 +	case SNDRV_PCM_FORMAT_U24_LE:
 +	case SNDRV_PCM_FORMAT_S24_LE:
  	case SNDRV_PCM_FORMAT_U32_LE:
  	case SNDRV_PCM_FORMAT_S32_LE:
  		dma_params->data_type = 4;
-@@ -880,13 +945,18 @@ static const struct snd_soc_dai_ops davinci_mcasp_dai_ops = {
+-		word_length = DAVINCI_AUDIO_WORD_32;
++		word_length = 32;
+ 		break;
+ 
+ 	default:
+@@ -880,13 +916,18 @@ static const struct snd_soc_dai_ops davinci_mcasp_dai_ops = {
  	.trigger	= davinci_mcasp_trigger,
  	.hw_params	= davinci_mcasp_hw_params,
  	.set_fmt	= davinci_mcasp_set_dai_fmt,
@@ -23532,7 +26836,7 @@ index 714e51e..6790def 100644
  				SNDRV_PCM_FMTBIT_S32_LE | \
  				SNDRV_PCM_FMTBIT_U32_LE)
  
-@@ -1006,6 +1076,22 @@ static struct snd_platform_data *davinci_mcasp_set_pdata_from_of(
+@@ -1006,6 +1047,22 @@ static struct snd_platform_data *davinci_mcasp_set_pdata_from_of(
  		pdata->serial_dir = of_serial_dir;
  	}
  
@@ -23555,7 +26859,15 @@ index 714e51e..6790def 100644
  	ret = of_property_read_u32(np, "tx-num-evt", &val);
  	if (ret >= 0)
  		pdata->txnumevt = val;
-@@ -1098,8 +1184,12 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
+@@ -1089,7 +1146,6 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
+ 	dev->tdm_slots = pdata->tdm_slots;
+ 	dev->num_serializer = pdata->num_serializer;
+ 	dev->serial_dir = pdata->serial_dir;
+-	dev->codec_fmt = pdata->codec_fmt;
+ 	dev->version = pdata->version;
+ 	dev->txnumevt = pdata->txnumevt;
+ 	dev->rxnumevt = pdata->rxnumevt;
+@@ -1098,8 +1154,12 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
  	dma_data = &dev->dma_params[SNDRV_PCM_STREAM_PLAYBACK];
  	dma_data->asp_chan_q = pdata->asp_chan_q;
  	dma_data->ram_chan_q = pdata->ram_chan_q;
@@ -23569,7 +26881,7 @@ index 714e51e..6790def 100644
  							mem->start);
  
  	/* first TX, then RX */
-@@ -1115,8 +1205,12 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
+@@ -1115,8 +1175,12 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
  	dma_data = &dev->dma_params[SNDRV_PCM_STREAM_CAPTURE];
  	dma_data->asp_chan_q = pdata->asp_chan_q;
  	dma_data->ram_chan_q = pdata->ram_chan_q;
@@ -23584,10 +26896,10 @@ index 714e51e..6790def 100644
  
  	res = platform_get_resource(pdev, IORESOURCE_DMA, 1);
 diff --git a/sound/soc/davinci/davinci-mcasp.h b/sound/soc/davinci/davinci-mcasp.h
-index 0de9ed6..156f15f 100644
+index 0de9ed6..0edd3b5 100644
 --- a/sound/soc/davinci/davinci-mcasp.h
 +++ b/sound/soc/davinci/davinci-mcasp.h
-@@ -23,7 +23,7 @@
+@@ -23,26 +23,14 @@
  
  #include "davinci-pcm.h"
  
@@ -23596,6 +26908,33 @@ index 0de9ed6..156f15f 100644
  #define DAVINCI_MCASP_I2S_DAI	0
  #define DAVINCI_MCASP_DIT_DAI	1
  
+-enum {
+-	DAVINCI_AUDIO_WORD_8 = 0,
+-	DAVINCI_AUDIO_WORD_12,
+-	DAVINCI_AUDIO_WORD_16,
+-	DAVINCI_AUDIO_WORD_20,
+-	DAVINCI_AUDIO_WORD_24,
+-	DAVINCI_AUDIO_WORD_32,
+-	DAVINCI_AUDIO_WORD_28,  /* This is only valid for McASP */
+-};
+-
+ struct davinci_audio_dev {
+ 	struct davinci_pcm_dma_params dma_params[2];
+ 	void __iomem *base;
+-	int sample_rate;
+ 	struct device *dev;
+-	unsigned int codec_fmt;
+ 
+ 	/* McASP specific data */
+ 	int	tdm_slots;
+@@ -50,6 +38,7 @@ struct davinci_audio_dev {
+ 	u8	num_serializer;
+ 	u8	*serial_dir;
+ 	u8	version;
++	u8	bclk_lrclk_ratio;
+ 
+ 	/* McASP FIFO related */
+ 	u8	txnumevt;
 diff --git a/sound/soc/davinci/davinci-pcm.c b/sound/soc/davinci/davinci-pcm.c
 index 93ea3bf..bb57552 100644
 --- a/sound/soc/davinci/davinci-pcm.c
@@ -23779,7 +27118,7 @@ index 5be65aa..5345e63 100644
  
  static struct platform_device *sffsdr_snd_device;
 diff --git a/sound/soc/fsl/Kconfig b/sound/soc/fsl/Kconfig
-index 4563b28..10fd172 100644
+index 4563b28..3b98159 100644
 --- a/sound/soc/fsl/Kconfig
 +++ b/sound/soc/fsl/Kconfig
 @@ -46,6 +46,20 @@ config SND_SOC_P1022_DS
@@ -23803,6 +27142,21 @@ index 4563b28..10fd172 100644
  config SND_SOC_MPC5200_I2S
  	tristate "Freescale MPC5200 PSC in I2S mode driver"
  	depends on PPC_MPC52xx && PPC_BESTCOMM
+@@ -98,12 +112,12 @@ config SND_SOC_IMX_PCM
+ 	tristate
+ 
+ config SND_SOC_IMX_PCM_FIQ
+-	tristate
++	bool
+ 	select FIQ
+ 	select SND_SOC_IMX_PCM
+ 
+ config SND_SOC_IMX_PCM_DMA
+-	tristate
++	bool
+ 	select SND_SOC_DMAENGINE_PCM
+ 	select SND_SOC_IMX_PCM
+ 
 @@ -112,7 +126,7 @@ config SND_SOC_IMX_AUDMUX
  
  config SND_MXC_SOC_WM1133_EV1
@@ -23813,7 +27167,7 @@ index 4563b28..10fd172 100644
  	select SND_SOC_IMX_PCM_FIQ
  	select SND_SOC_IMX_AUDMUX
 diff --git a/sound/soc/fsl/Makefile b/sound/soc/fsl/Makefile
-index 5f3cf3f..515ba66 100644
+index 5f3cf3f..afd3479 100644
 --- a/sound/soc/fsl/Makefile
 +++ b/sound/soc/fsl/Makefile
 @@ -6,6 +6,10 @@ obj-$(CONFIG_SND_SOC_MPC8610_HPCD) += snd-soc-mpc8610-hpcd.o
@@ -23827,6 +27181,28 @@ index 5f3cf3f..515ba66 100644
  # Freescale PowerPC SSI/DMA Platform Support
  snd-soc-fsl-ssi-objs := fsl_ssi.o
  snd-soc-fsl-utils-objs := fsl_utils.o
+@@ -26,14 +30,18 @@ obj-$(CONFIG_SND_MPC52xx_SOC_EFIKA) += efika-audio-fabric.o
+ # i.MX Platform Support
+ snd-soc-imx-ssi-objs := imx-ssi.o
+ snd-soc-imx-audmux-objs := imx-audmux.o
++snd-soc-imx-pcm-objs := imx-pcm.o
++ifneq ($(CONFIG_SND_SOC_IMX_PCM_FIQ),)
++	snd-soc-imx-pcm-objs += imx-pcm-fiq.o
++endif
++ifneq ($(CONFIG_SND_SOC_IMX_PCM_DMA),)
++	snd-soc-imx-pcm-objs += imx-pcm-dma.o
++endif
+ 
+ obj-$(CONFIG_SND_SOC_IMX_SSI) += snd-soc-imx-ssi.o
+ obj-$(CONFIG_SND_SOC_IMX_AUDMUX) += snd-soc-imx-audmux.o
+ 
+ obj-$(CONFIG_SND_SOC_IMX_PCM) += snd-soc-imx-pcm.o
+-snd-soc-imx-pcm-y := imx-pcm.o
+-snd-soc-imx-pcm-$(CONFIG_SND_SOC_IMX_PCM_FIQ) += imx-pcm-fiq.o
+-snd-soc-imx-pcm-$(CONFIG_SND_SOC_IMX_PCM_DMA) += imx-pcm-dma.o
+ 
+ # i.MX Machine Support
+ snd-soc-eukrea-tlv320-objs := eukrea-tlv320.o
 diff --git a/sound/soc/fsl/imx-pcm.c b/sound/soc/fsl/imx-pcm.c
 index 93dc360..d5cd9ef 100644
 --- a/sound/soc/fsl/imx-pcm.c
@@ -24722,6 +28098,142 @@ index f9084d8..4d92637 100644
  };
  
  #endif
+diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
+index c294fbb..b304e37 100644
+--- a/sound/soc/mxs/mxs-saif.c
++++ b/sound/soc/mxs/mxs-saif.c
+@@ -229,6 +229,7 @@ int mxs_saif_put_mclk(unsigned int saif_id)
+ 	saif->mclk_in_use = 0;
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(mxs_saif_put_mclk);
+ 
+ /*
+  * Get MCLK and set clock rate, then enable it
+@@ -282,6 +283,7 @@ int mxs_saif_get_mclk(unsigned int saif_id, unsigned int mclk,
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(mxs_saif_get_mclk);
+ 
+ /*
+  * SAIF DAI format configuration.
+diff --git a/sound/soc/omap/mcbsp.c b/sound/soc/omap/mcbsp.c
+index afb8d4f..a9a2438 100644
+--- a/sound/soc/omap/mcbsp.c
++++ b/sound/soc/omap/mcbsp.c
+@@ -28,8 +28,6 @@
+ 
+ #include <linux/platform_data/asoc-ti-mcbsp.h>
+ 
+-#include <plat/cpu.h>
+-
+ #include "mcbsp.h"
+ 
+ static void omap_mcbsp_write(struct omap_mcbsp *mcbsp, u16 reg, u32 val)
+@@ -612,7 +610,7 @@ void omap_mcbsp_free(struct omap_mcbsp *mcbsp)
+ 	 * system will refuse to enter idle if the CLKS pin source is not reset
+ 	 * back to internal source.
+ 	 */
+-	if (!cpu_class_is_omap1())
++	if (!mcbsp_omap1())
+ 		omap2_mcbsp_set_clks_src(mcbsp, MCBSP_CLKS_PRCM_SRC);
+ 
+ 	spin_lock(&mcbsp->lock);
+diff --git a/sound/soc/omap/mcbsp.h b/sound/soc/omap/mcbsp.h
+index 49a6725..a89791c 100644
+--- a/sound/soc/omap/mcbsp.h
++++ b/sound/soc/omap/mcbsp.h
+@@ -26,6 +26,12 @@
+ 
+ #include "omap-pcm.h"
+ 
++#ifdef CONFIG_ARCH_OMAP1
++#define mcbsp_omap1()	1
++#else
++#define mcbsp_omap1()	0
++#endif
++
+ /* McBSP register numbers. Register address offset = num * reg_step */
+ enum {
+ 	/* Common registers */
+diff --git a/sound/soc/omap/omap-abe-twl6040.c b/sound/soc/omap/omap-abe-twl6040.c
+index a57a4e6..1d6ea86 100644
+--- a/sound/soc/omap/omap-abe-twl6040.c
++++ b/sound/soc/omap/omap-abe-twl6040.c
+@@ -331,8 +331,8 @@ static __devinit int omap_abe_probe(struct platform_device *pdev)
+ 			num_links = 1;
+ 		}
+ 
+-		of_property_read_u32(node, "ti,jack-detection",
+-				     &priv->jack_detection);
++		priv->jack_detection = of_property_read_bool(node,
++							   "ti,jack-detection");
+ 		of_property_read_u32(node, "ti,mclk-freq",
+ 				     &priv->mclk_freq);
+ 		if (!priv->mclk_freq) {
+diff --git a/sound/soc/omap/omap-mcbsp.c b/sound/soc/omap/omap-mcbsp.c
+index a6ee157..0916760 100644
+--- a/sound/soc/omap/omap-mcbsp.c
++++ b/sound/soc/omap/omap-mcbsp.c
+@@ -34,7 +34,6 @@
+ #include <sound/initval.h>
+ #include <sound/soc.h>
+ 
+-#include <plat/cpu.h>
+ #include <linux/platform_data/asoc-ti-mcbsp.h>
+ #include "mcbsp.h"
+ #include "omap-mcbsp.h"
+@@ -512,7 +511,7 @@ static int omap_mcbsp_dai_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
+ 		regs->srgr2	|= CLKSM;
+ 		break;
+ 	case OMAP_MCBSP_SYSCLK_CLKS_FCLK:
+-		if (cpu_class_is_omap1()) {
++		if (mcbsp_omap1()) {
+ 			err = -EINVAL;
+ 			break;
+ 		}
+@@ -520,7 +519,7 @@ static int omap_mcbsp_dai_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
+ 					       MCBSP_CLKS_PRCM_SRC);
+ 		break;
+ 	case OMAP_MCBSP_SYSCLK_CLKS_EXT:
+-		if (cpu_class_is_omap1()) {
++		if (mcbsp_omap1()) {
+ 			err = 0;
+ 			break;
+ 		}
+diff --git a/sound/soc/omap/zoom2.c b/sound/soc/omap/zoom2.c
+index 1ff6bb9..771bff2 100644
+--- a/sound/soc/omap/zoom2.c
++++ b/sound/soc/omap/zoom2.c
+@@ -37,8 +37,6 @@
+ #include "omap-mcbsp.h"
+ #include "omap-pcm.h"
+ 
+-#define ZOOM2_HEADSET_MUX_GPIO		(OMAP_MAX_GPIO_LINES + 15)
+-
+ static int zoom2_hw_params(struct snd_pcm_substream *substream,
+ 				struct snd_pcm_hw_params *params)
+ {
+@@ -187,9 +185,6 @@ static int __init zoom2_soc_init(void)
+ 	if (ret)
+ 		goto err1;
+ 
+-	BUG_ON(gpio_request(ZOOM2_HEADSET_MUX_GPIO, "hs_mux") < 0);
+-	gpio_direction_output(ZOOM2_HEADSET_MUX_GPIO, 0);
+-
+ 	return 0;
+ 
+ err1:
+@@ -202,8 +197,6 @@ module_init(zoom2_soc_init);
+ 
+ static void __exit zoom2_soc_exit(void)
+ {
+-	gpio_free(ZOOM2_HEADSET_MUX_GPIO);
+-
+ 	platform_device_unregister(zoom2_snd_device);
+ }
+ module_exit(zoom2_soc_exit);
 diff --git a/sound/soc/samsung/ac97.c b/sound/soc/samsung/ac97.c
 index 14fbcd3..386bab1 100644
 --- a/sound/soc/samsung/ac97.c
@@ -25110,10 +28622,19 @@ index a2ca156..59ffd6c 100644
  };
  
 diff --git a/sound/soc/samsung/i2s.c b/sound/soc/samsung/i2s.c
-index 40b00a1..547b919 100644
+index 40b00a1..aaf57b7 100644
 --- a/sound/soc/samsung/i2s.c
 +++ b/sound/soc/samsung/i2s.c
-@@ -423,7 +423,7 @@ static int i2s_set_sysclk(struct snd_soc_dai *dai,
+@@ -49,8 +49,6 @@ struct i2s_dai {
+ 	struct clk *clk;
+ 	/* Clock for generating I2S signals */
+ 	struct clk *op_clk;
+-	/* Array of clock names for op_clk */
+-	const char **src_clk;
+ 	/* Pointer to the Primary_Fifo if this is Sec_Fifo, NULL otherwise */
+ 	struct i2s_dai *pri_dai;
+ 	/* Pointer to the Secondary_Fifo if it has one, NULL otherwise */
+@@ -423,7 +421,7 @@ static int i2s_set_sysclk(struct snd_soc_dai *dai,
  			if (i2s->op_clk) {
  				if ((clk_id && !(mod & MOD_IMS_SYSMUX)) ||
  					(!clk_id && (mod & MOD_IMS_SYSMUX))) {
@@ -25122,16 +28643,24 @@ index 40b00a1..547b919 100644
  					clk_put(i2s->op_clk);
  				} else {
  					i2s->rclk_srcrate =
-@@ -434,7 +434,7 @@ static int i2s_set_sysclk(struct snd_soc_dai *dai,
+@@ -432,9 +430,13 @@ static int i2s_set_sysclk(struct snd_soc_dai *dai,
+ 				}
+ 			}
  
- 			i2s->op_clk = clk_get(&i2s->pdev->dev,
- 						i2s->src_clk[clk_id]);
+-			i2s->op_clk = clk_get(&i2s->pdev->dev,
+-						i2s->src_clk[clk_id]);
 -			clk_enable(i2s->op_clk);
++			if (clk_id)
++				i2s->op_clk = clk_get(&i2s->pdev->dev,
++						"i2s_opclk1");
++			else
++				i2s->op_clk = clk_get(&i2s->pdev->dev,
++						"i2s_opclk0");
 +			clk_prepare_enable(i2s->op_clk);
  			i2s->rclk_srcrate = clk_get_rate(i2s->op_clk);
  
  			/* Over-ride the other's */
-@@ -880,7 +880,7 @@ static int samsung_i2s_dai_probe(struct snd_soc_dai *dai)
+@@ -880,7 +882,7 @@ static int samsung_i2s_dai_probe(struct snd_soc_dai *dai)
  		iounmap(i2s->addr);
  		return -ENOENT;
  	}
@@ -25140,7 +28669,7 @@ index 40b00a1..547b919 100644
  
  	if (other) {
  		other->addr = i2s->addr;
-@@ -922,7 +922,7 @@ static int samsung_i2s_dai_remove(struct snd_soc_dai *dai)
+@@ -922,7 +924,7 @@ static int samsung_i2s_dai_remove(struct snd_soc_dai *dai)
  		if (i2s->quirks & QUIRK_NEED_RSTCLR)
  			writel(0, i2s->addr + I2SCON);
  
@@ -25149,6 +28678,35 @@ index 40b00a1..547b919 100644
  		clk_put(i2s->clk);
  
  		iounmap(i2s->addr);
+@@ -1067,7 +1069,6 @@ static __devinit int samsung_i2s_probe(struct platform_device *pdev)
+ 		(struct s3c2410_dma_client *)&pri_dai->dma_capture;
+ 	pri_dai->dma_playback.channel = dma_pl_chan;
+ 	pri_dai->dma_capture.channel = dma_cp_chan;
+-	pri_dai->src_clk = i2s_cfg->src_clk;
+ 	pri_dai->dma_playback.dma_size = 4;
+ 	pri_dai->dma_capture.dma_size = 4;
+ 	pri_dai->base = regs_base;
+@@ -1088,7 +1089,6 @@ static __devinit int samsung_i2s_probe(struct platform_device *pdev)
+ 			(struct s3c2410_dma_client *)&sec_dai->dma_playback;
+ 		/* Use iDMA always if SysDMA not provided */
+ 		sec_dai->dma_playback.channel = dma_pl_sec_chan ? : -1;
+-		sec_dai->src_clk = i2s_cfg->src_clk;
+ 		sec_dai->dma_playback.dma_size = 4;
+ 		sec_dai->base = regs_base;
+ 		sec_dai->quirks = quirks;
+diff --git a/sound/soc/samsung/littlemill.c b/sound/soc/samsung/littlemill.c
+index ee52c8a0..7beb6d9 100644
+--- a/sound/soc/samsung/littlemill.c
++++ b/sound/soc/samsung/littlemill.c
+@@ -270,7 +270,7 @@ static int littlemill_late_probe(struct snd_soc_card *card)
+ 		return ret;
+ 
+ 	/* This will check device compatibility itself */
+-	wm8958_mic_detect(codec, &littlemill_headset, NULL, NULL);
++	wm8958_mic_detect(codec, &littlemill_headset, NULL, NULL, NULL, NULL);
+ 
+ 	/* As will this */
+ 	wm8994_mic_detect(codec, &littlemill_headset, 1);
 diff --git a/sound/soc/samsung/pcm.c b/sound/soc/samsung/pcm.c
 index c860819..45f4a75 100644
 --- a/sound/soc/samsung/pcm.c
@@ -27504,7 +31062,7 @@ index 1ab5fe0..0bb5ccc 100644
  					gpios[i].gpio, ret);
  		}
 diff --git a/sound/soc/soc-pcm.c b/sound/soc/soc-pcm.c
-index ef22d0b..314102a 100644
+index ef22d0b..5c3ca2a 100644
 --- a/sound/soc/soc-pcm.c
 +++ b/sound/soc/soc-pcm.c
 @@ -43,7 +43,7 @@ static int dpcm_dapm_stream_event(struct snd_soc_pcm_runtime *fe, int dir,
@@ -28213,12 +31771,14 @@ index ef22d0b..314102a 100644
  
  	/* DAPM dai link stream work */
  	INIT_DELAYED_WORK(&rtd->delayed_work, close_delayed_work);
-@@ -2097,7 +2100,7 @@ int soc_new_pcm(struct snd_soc_pcm_runtime *rtd, int num)
+@@ -2097,7 +2100,9 @@ int soc_new_pcm(struct snd_soc_pcm_runtime *rtd, int num)
  	if (platform->driver->pcm_new) {
  		ret = platform->driver->pcm_new(rtd);
  		if (ret < 0) {
 -			dev_err(platform->dev, "pcm constructor failed\n");
-+			dev_err(platform->dev, "ASoC: pcm constructor failed\n");
++			dev_err(platform->dev,
++				"ASoC: pcm constructor failed: %d\n",
++				ret);
  			return ret;
  		}
  	}
