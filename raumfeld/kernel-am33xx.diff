@@ -19827,7 +19827,7 @@ index 36ec649..84c415d 100644
  	char lock_name[ARIZONA_FLL_NAME_LEN];
  	char clock_ok_name[ARIZONA_FLL_NAME_LEN];
 diff --git a/sound/soc/codecs/cs4271.c b/sound/soc/codecs/cs4271.c
-index e3f0a7f..2b01474 100644
+index e3f0a7f..142071c 100644
 --- a/sound/soc/codecs/cs4271.c
 +++ b/sound/soc/codecs/cs4271.c
 @@ -27,6 +27,7 @@
@@ -19849,51 +19849,41 @@ index e3f0a7f..2b01474 100644
  };
  
  /*
-@@ -403,11 +408,43 @@ static const struct snd_kcontrol_new cs4271_snd_controls[] = {
- 		7, 1, 1),
- };
+@@ -325,6 +330,33 @@ static int cs4271_hw_params(struct snd_pcm_substream *substream,
+ 	int i, ret;
+ 	unsigned int ratio, val;
  
-+static int cs4271_startup(struct snd_pcm_substream *subs,
-+			   struct snd_soc_dai *codec_dai)
-+{
-+	int ret;
-+	struct snd_soc_codec *codec = codec_dai->codec;
-+	struct cs4271_private *cs4271 = snd_soc_codec_get_drvdata(codec);
++	if (cs4271->enable_soft_reset) {
++		/*
++		 * Put the codec in soft reset and back again in case it's not
++		 * currently streaming data. This way of bringing the codec in
++		 * sync to the current clocks is not explicitly documented in
++		 * the data sheet, but it seems to work fine, and in contrast
++		 * to a read hardware reset, we don't have to sync back all
++		 * registers every time.
++		 */
 +
-+	if (!cs4271->enable_soft_reset)
-+		return 0;
++		if ((substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
++		     !dai->capture_active) ||
++		    (substream->stream == SNDRV_PCM_STREAM_CAPTURE &&
++		     !dai->playback_active)) {
++			ret = snd_soc_update_bits(codec, CS4271_MODE2,
++						  CS4271_MODE2_PDN,
++						  CS4271_MODE2_PDN);
++			if (ret < 0)
++				return ret;
 +
-+	/*
-+	 * Put the codec in soft reset and back again in case it's not
-+	 * currently streaming data. This way of bringing the codec in
-+	 * sync to the current clocks is not explicitly documented in
-+	 * the data sheet, but it seems to work fine.
-+	 */
++			ret = snd_soc_update_bits(codec, CS4271_MODE2,
++						  CS4271_MODE2_PDN, 0);
++			if (ret < 0)
++				return ret;
++		}
++	}
 +
-+	if ((subs->stream == SNDRV_PCM_STREAM_PLAYBACK &&
-+	     codec_dai->capture_active) ||
-+	    (subs->stream == SNDRV_PCM_STREAM_CAPTURE &&
-+	     codec_dai->playback_active))
-+		return 0;
-+
-+	ret = snd_soc_update_bits(codec, CS4271_MODE2, CS4271_MODE2_PDN,
-+				  CS4271_MODE2_PDN);
-+	if (ret < 0)
-+		return ret;
-+
-+	return snd_soc_update_bits(codec, CS4271_MODE2, CS4271_MODE2_PDN, 0);
-+}
-+
- static const struct snd_soc_dai_ops cs4271_dai_ops = {
- 	.hw_params	= cs4271_hw_params,
- 	.set_sysclk	= cs4271_set_dai_sysclk,
- 	.set_fmt	= cs4271_set_dai_fmt,
- 	.digital_mute	= cs4271_digital_mute,
-+	.startup	= cs4271_startup,
- };
+ 	cs4271->rate = params_rate(params);
  
- static struct snd_soc_dai_driver cs4271_dai = {
-@@ -434,17 +471,36 @@ static struct snd_soc_dai_driver cs4271_dai = {
+ 	/* Configure DAC */
+@@ -434,17 +466,36 @@ static struct snd_soc_dai_driver cs4271_dai = {
  static int cs4271_soc_suspend(struct snd_soc_codec *codec)
  {
  	int ret;
@@ -19931,7 +19921,7 @@ index e3f0a7f..2b01474 100644
  	/* Restore codec state */
  	ret = snd_soc_cache_sync(codec);
  	if (ret < 0)
-@@ -474,15 +530,42 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -474,15 +525,42 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  	struct cs4271_platform_data *cs4271plat = codec->dev->platform_data;
  	int ret;
  	int gpio_nreset = -EINVAL;
@@ -19977,7 +19967,7 @@ index e3f0a7f..2b01474 100644
  
  	if (gpio_nreset >= 0)
  		if (devm_gpio_request(codec->dev, gpio_nreset, "CS4271 Reset"))
-@@ -528,6 +611,11 @@ static int cs4271_probe(struct snd_soc_codec *codec)
+@@ -528,6 +606,11 @@ static int cs4271_probe(struct snd_soc_codec *codec)
  	/* Power-up sequence requires 85 uS */
  	udelay(85);
  
@@ -26187,10 +26177,10 @@ index a93679d..7eae529 100644
 +obj-$(CONFIG_SND_AM335X_SOC_RAUMFELD) += snd-soc-raumfeld.o
 diff --git a/sound/soc/davinci/am33xx-raumfeld.c b/sound/soc/davinci/am33xx-raumfeld.c
 new file mode 100644
-index 0000000..eebbc5a
+index 0000000..98ff95b
 --- /dev/null
 +++ b/sound/soc/davinci/am33xx-raumfeld.c
-@@ -0,0 +1,342 @@
+@@ -0,0 +1,347 @@
 +/*
 + * ASoC driver for Raumfeld's AM33xx based audio devices
 + *
@@ -26299,10 +26289,11 @@ index 0000000..eebbc5a
 +	int i, ret, size;
 +
 +	printk(KERN_ERR " %s() :: %d\n", __func__, freq);
-+	
++
 +	if (!adapter) {
 +		printk(KERN_ERR "%s(): no adapter!?\n", __func__);
-+		return -EIO;
++		ret = -EIO;
++		goto exit;
 +	}
 +	
 +	printk(KERN_ERR " %s() :: adapter name >%s<\n", __func__, adapter->name);
@@ -26326,7 +26317,8 @@ index 0000000..eebbc5a
 +		break;
 +	default:
 +		printk(KERN_ERR "%s(): unsupported freq %d!\n", __func__, freq);
-+		return -EINVAL;
++		ret = -EINVAL;
++		goto exit;
 +	}
 +
 +	memset(&msg, 0, sizeof(msg));
@@ -26334,6 +26326,7 @@ index 0000000..eebbc5a
 +	msg.addr = 0x60;
 +	msg.buf = buf;
 +	msg.len = sizeof(buf);
++	msg.flags = I2C_M_IGNORE_NAK;
 +
 +	for (i = 0; i < 183; i++) {
 +		buf[0] = i;
@@ -26342,13 +26335,15 @@ index 0000000..eebbc5a
 +		mdelay(1);
 +		if (ret < 0) {
 +			printk(KERN_ERR " %s() write #%d failed\n", __func__, i);	
-+			return ret;
++			goto exit;
 +		}
 +	}
 +
-+	printk(KERN_ERR " >>> %s(): SENT %d bytes\n", __func__, size);
++	printk(KERN_ERR " >>> %s(): SENT %d bytes\n", __func__, i);
 +
-+	return 0;
++exit:
++	i2c_put_adapter(adapter);
++	return ret;
 +}
 +
 +static int raumfeld_i2s_hw_params(struct snd_pcm_substream *substream,
@@ -26558,7 +26553,7 @@ index 6fac5af..591f547 100644
  }
  
 diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
-index 714e51e..b21dff8 100644
+index 714e51e..6885f42 100644
 --- a/sound/soc/davinci/davinci-mcasp.c
 +++ b/sound/soc/davinci/davinci-mcasp.c
 @@ -199,6 +199,7 @@
@@ -26598,7 +26593,7 @@ index 714e51e..b21dff8 100644
  static void mcasp_stop_tx(struct davinci_audio_dev *dev)
  {
 -	mcasp_set_reg(dev->base + DAVINCI_MCASP_GBLCTLX_REG, 0);
-+	mcasp_clr_bits(dev->base + DAVINCI_MCASP_GBLCTLX_REG, ~(1 << 8));
++	mcasp_set_reg(dev->base + DAVINCI_MCASP_GBLCTLX_REG, 1 << 8);
  	mcasp_set_reg(dev->base + DAVINCI_MCASP_TXSTAT_REG, 0xFFFFFFFF);
  }
  
