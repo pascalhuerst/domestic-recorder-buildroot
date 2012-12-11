@@ -12,6 +12,6 @@ GUPNP_AV_INSTALL_STAGING = YES
 GUPNP_AV_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(LIBGLIB2_HOST_BINARY)
 
-GUPNP_AV_DEPENDENCIES = host-pkg-config host-libglib2 gupnp
+GUPNP_AV_DEPENDENCIES = host-pkgconf host-libglib2 gupnp
 
 $(eval $(autotools-package))
