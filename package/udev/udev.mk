@@ -16,7 +16,7 @@ UDEV_CONF_OPT =			\
 	--with-usb-ids-path=/usr/share/hwdata/usb.ids	\
 	--with-pci-ids-path=/usr/share/hwdata/pci.ids
 
-UDEV_DEPENDENCIES = host-gperf host-pkg-config util-linux
+UDEV_DEPENDENCIES = host-gperf host-pkgconf util-linux kmod
 
 ifeq ($(BR2_PACKAGE_UDEV_ACL),y)
 UDEV_CONF_OPT += --enable-udev_acl

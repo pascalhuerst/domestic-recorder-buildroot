@@ -12,6 +12,6 @@ GSSDP_INSTALL_STAGING = YES
 GSSDP_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(LIBGLIB2_HOST_BINARY)
 
-GSSDP_DEPENDENCIES = host-pkg-config host-libglib2 libsoup
+GSSDP_DEPENDENCIES = host-pkgconf host-libglib2 libsoup
 
 $(eval $(autotools-package))

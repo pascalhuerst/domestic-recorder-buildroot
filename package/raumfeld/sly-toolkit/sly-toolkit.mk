@@ -16,7 +16,7 @@ SLY_TOOLKIT_CONF_OPT = \
 	--disable-glibtest	\
 	--disable-gtk-doc --without-html-dir
 
-SLY_TOOLKIT_DEPENDENCIES = host-pkg-config host-libglib2 libglib2 directfb
+SLY_TOOLKIT_DEPENDENCIES = host-pkgconf host-libglib2 libglib2 directfb
 
 SLY_TOOLKIT_POST_EXTRACT_HOOKS = \
 	(cd $(SLY_TOOLKIT_DIR); gtkdocize)

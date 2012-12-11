@@ -13,6 +13,6 @@ GUPNP_IGD_INSTALL_TARGET = YES
 GUPNP_IGD_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(LIBGLIB2_HOST_BINARY)
 
-GUPNP_IGD_DEPENDENCIES = host-pkg-config gupnp
+GUPNP_IGD_DEPENDENCIES = host-pkgconf gupnp
 
 $(eval $(autotools-package))

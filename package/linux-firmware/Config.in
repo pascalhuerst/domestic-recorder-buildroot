@@ -25,22 +25,22 @@ endmenu
 menu "Marvell"
 
 config BR2_PACKAGE_LINUX_FIRMWARE_LIBERTAS_SD8686_V8
-       bool "Libertas SD8686 v8"
+       bool "Libertas SD 8686 v8"
        help
          Firmware files (version 8) for the Marvell SD8686 module
 
 config BR2_PACKAGE_LINUX_FIRMWARE_LIBERTAS_SD8686_V9
-       bool "Libertas SD8686 v9"
+       bool "Libertas SD 8686 v9"
        help
          Firmware files (version 9) for the Marvell SD8686 module
 
 config BR2_PACKAGE_LINUX_FIRMWARE_LIBERTAS_SD8688
-       bool "Libertas SD8688"
+       bool "Libertas SD 8688"
        help
          Firmware files for the Marvell SD8688 module
 
 config BR2_PACKAGE_LINUX_FIRMWARE_MRVL_SD8787
-       bool "Marvell SD8787"
+       bool "Marvell SD 8787"
        help
          Firmware for the Marvell SD8787 module
 
@@ -62,6 +62,20 @@ config BR2_PACKAGE_LINUX_FIRMWARE_RALINK_RT2XX
 	bool "Ralink rt27xx/rt28xx/rt30xx"
 	help
 	  Ralink rt27xx/rt28xx/rt30xx
+
+endmenu
+
+menu "Realtek"
+
+config BR2_PACKAGE_LINUX_FIRMWARE_RTL_8192
+	bool "Realtek 8192"
+	help
+	  Realtek 8192
+
+config BR2_PACKAGE_LINUX_FIRMWARE_RTL_8712
+	bool "Realtek 8712"
+	help
+	  Realtek 8712
 
 endmenu
 
