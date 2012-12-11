@@ -4,6 +4,6 @@
 #
 #############################################################
 
-CONFIG_SERVICE_DEPENDENCIES = host-pkg-config libraumfeld libraumfeldcpp
+CONFIG_SERVICE_DEPENDENCIES = host-pkgconf libraumfeld libraumfeldcpp
 
 $(eval $(raumfeld-cross-package))

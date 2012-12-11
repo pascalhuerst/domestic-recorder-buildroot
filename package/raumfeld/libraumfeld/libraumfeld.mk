@@ -23,7 +23,7 @@ LIBRAUMFELD_CONF_OPT += --enable-profiling
 endif
 
 LIBRAUMFELD_DEPENDENCIES = \
-	host-pkg-config host-libglib2 \
+	host-pkgconf host-libglib2 \
 	avahi gupnp-av openssl libarchive libunwind
 
 LIBRAUMFELD_POST_EXTRACT_HOOKS = \

@@ -12,6 +12,6 @@ LIBRAUMFELDCPP_CONF_OPT = \
 	--disable-explicit-deps \
 	--disable-glibtest
 
-LIBRAUMFELDCPP_DEPENDENCIES = host-pkg-config libsoup libraumfeld
+LIBRAUMFELDCPP_DEPENDENCIES = host-pkgconf libsoup libraumfeld
 
 $(eval $(raumfeld-autotools-package))
