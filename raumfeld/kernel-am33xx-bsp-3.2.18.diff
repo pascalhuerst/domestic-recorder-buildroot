@@ -11810,10 +11810,10 @@ index 02cd29a..44610d8 100644
  MACHINE_END
 diff --git a/arch/arm/mach-omap2/board-am335xevm.c b/arch/arm/mach-omap2/board-am335xevm.c
 new file mode 100644
-index 0000000..dc0ec90
+index 0000000..886bccc
 --- /dev/null
 +++ b/arch/arm/mach-omap2/board-am335xevm.c
-@@ -0,0 +1,4669 @@
+@@ -0,0 +1,4678 @@
 +/*
 + * Code for AM335X EVM.
 + *
@@ -14174,17 +14174,22 @@ index 0000000..dc0ec90
 +	{
 +		.name           = "U-Boot",
 +		.offset         = MTDPART_OFS_APPEND,   /* Offset = 0x80000 */
-+		.size           = 15 * SZ_128K,
++		.size           = SZ_1M,
 +	},
 +	{
 +		.name           = "U-Boot Env",
 +		.offset         = MTDPART_OFS_APPEND,   /* Offset = 0x260000 */
-+		.size           = 1 * SZ_128K,
++		.size           = SZ_128K,
 +	},
 +	{
 +		.name           = "Kernel",
 +		.offset         = MTDPART_OFS_APPEND,   /* Offset = 0x280000 */
-+		.size           = 40 * SZ_128K,
++		.size           = 6 * SZ_1M,
++	},
++	{
++		.name           = "DTS",
++		.offset         = MTDPART_OFS_APPEND,   /* Offset = 0x280000 */
++		.size           = SZ_256K,
 +	},
 +	{
 +		.name           = "File System",
@@ -15242,8 +15247,7 @@ index 0000000..dc0ec90
 +	am335x_mmc[1].nonremovable = true;
 +	am335x_mmc[1].gpio_cd = -EINVAL;
 +	am335x_mmc[1].gpio_wp = -EINVAL;
-+	am335x_mmc[1].caps = MMC_CAP_4_BIT_DATA | MMC_CAP_POWER_OFF_CARD
-+				| MMC_PM_KEEP_POWER;
++	am335x_mmc[1].caps = MMC_CAP_4_BIT_DATA | MMC_PM_KEEP_POWER;
 +	am335x_mmc[1].ocr_mask = MMC_VDD_32_33 | MMC_VDD_33_34; /* 3V3 */
 +
 +	/* mmc will be initialized when mmc0_init is called */
@@ -15792,8 +15796,7 @@ index 0000000..dc0ec90
 +	am335x_mmc[0].nonremovable = true;
 +	am335x_mmc[0].gpio_cd = -EINVAL;
 +	am335x_mmc[0].gpio_wp = -EINVAL;
-+	am335x_mmc[0].caps = MMC_CAP_4_BIT_DATA | MMC_CAP_POWER_OFF_CARD
-+				| MMC_PM_KEEP_POWER;
++	am335x_mmc[0].caps = MMC_CAP_4_BIT_DATA | MMC_PM_KEEP_POWER;
 +
 +#ifdef SUE_DEFAULT_BOARD
 +#if SUE_DEFAULT_BOARD == SUE_STREAM800_L0_EVM
@@ -16351,12 +16354,16 @@ index 0000000..dc0ec90
 +/* Enable clkout2 */
 +static struct pinmux_config clkout2_pin_mux[] = {
 +	{"xdma_event_intr1.clkout2", OMAP_MUX_MODE3 | AM33XX_PIN_OUTPUT},
++	{"gpmc_csn3.gpio2_0", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT },
 +	{NULL, 0},
 +};
 +
 +static void __init clkout2_enable(void)
 +{
 +	struct clk *ck_32;
++
++	setup_pin_mux(clkout2_pin_mux);
++	gpio_request_one(64, GPIOF_OUT_INIT_LOW, "wifi-pdn");
 +
 +	ck_32 = clk_get(NULL, "clkout2_ck");
 +	if (IS_ERR(ck_32)) {
@@ -16366,7 +16373,9 @@ index 0000000..dc0ec90
 +
 +	clk_enable(ck_32);
 +
-+	setup_pin_mux(clkout2_pin_mux);
++	/* release WIFI reset */
++	udelay(2000);
++	gpio_set_value(64, 1);
 +}
 +
 +void __iomem *am33xx_emif_base;
