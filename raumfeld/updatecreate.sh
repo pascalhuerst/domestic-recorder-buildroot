@@ -26,25 +26,35 @@ if [ ! -f "$kexec" ]; then
 fi
 
 # create a temporary tgz that contains the kexec kernel at the beginning,
-# followed by dts.cramfs (optionally) and boot-loaders (optionally)
+# followed by device-tree blobs (optionally), the dts.cramfs (optionally)
+# and replacement boot-loaders (optionally).
 
 tmp=$(mktemp).tar
 tmpgz=$tmp.gz
 gunzip -c $targz > $tmp
 tmpdir=$(mktemp -d)
 mkdir -p $tmpdir/tmp
+
 cp $kexec $tmpdir/tmp/raumfeld-update.zImage
+
 if [ $target = audioadapter-armada ]; then
+    HOSTDIR=$(pwd)/output/host
+
+    # first build the device-tree blobs for direct inclusion
+    make HOSTDIR=$HOSTDIR DESTDIR=$tmpdir/tmp -C raumfeld/dts
+
+    # then a cramfs containing the device-tree blobs
     make host-cramfs
     DIR=$(mktemp -d)
-    HOSTDIR=$(pwd)/output/host
-    make HOSTDIR=${HOSTDIR} DESTDIR=${DIR}/ -C raumfeld/dts
-    ${HOSTDIR}/usr/bin/mkcramfs ${DIR} $tmpdir/tmp/dts.cramfs
-    rm -fr ${DIR}
+    make HOSTDIR=$HOSTDIR DESTDIR=$DIR/ -C raumfeld/dts
+    $HOSTDIR/usr/bin/mkcramfs $DIR $tmpdir/tmp/dts.cramfs
+    rm -fr $DIR
 fi
+
 for bootloader in $(echo $bootloaders | tr ',' ' '); do
     cp $bootloader $tmpdir/tmp
 done
+
 echo "chown -R root.root $tmpdir/tmp" > $tmpdir/.fakeroot
 echo "tar -C $tmpdir -f $tmpdir/new.tar -c ./tmp" >> $tmpdir/.fakeroot
 chmod a+x $tmpdir/.fakeroot
