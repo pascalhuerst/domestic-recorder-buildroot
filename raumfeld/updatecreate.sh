@@ -41,7 +41,7 @@ if [ $target = audioadapter-armada ]; then
     HOSTDIR=$(pwd)/output/host
 
     # first build the device-tree blobs for direct inclusion
-    make HOSTDIR=$HOSTDIR DESTDIR=$tmpdir/tmp -C raumfeld/dts
+    make HOSTDIR=$HOSTDIR DESTDIR=$tmpdir/tmp/ -C raumfeld/dts
 
     # then a cramfs containing the device-tree blobs
     make host-cramfs
