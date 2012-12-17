@@ -36,13 +36,6 @@ config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_AUDIOTESTSRC
 config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_ENCODING
 	bool "encoding"
 
-config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_FFMPEGCOLORSPACE
-	bool "ffmpegcolorspace (mandatory for video playback)"
-	default y
-
-config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_GDP
-	bool "gdp"
-
 config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_PLAYBACK
 	bool "playback (mandatory)"
 	default y
@@ -56,6 +49,9 @@ config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_TCP
 config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_TYPEFIND
 	bool "typefind (mandatory)"
 	default y
+
+config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_VIDEOCONVERT
+	bool "videoconvert"
 
 config BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_VIDEOTESTSRC
 	bool "videotestsrc"

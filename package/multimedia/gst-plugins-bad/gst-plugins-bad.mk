@@ -3,8 +3,8 @@
 # gst-plugins-bad
 #
 #############################################################
-GST_PLUGINS_BAD_VERSION = 0.10.23
-GST_PLUGINS_BAD_SOURCE = gst-plugins-bad-$(GST_PLUGINS_BAD_VERSION).tar.bz2
+GST_PLUGINS_BAD_VERSION = 1.0.3
+GST_PLUGINS_BAD_SOURCE = gst-plugins-bad-$(GST_PLUGINS_BAD_VERSION).tar.xz
 GST_PLUGINS_BAD_SITE = http://gstreamer.freedesktop.org/src/gst-plugins-bad
 
 GST_PLUGINS_BAD_CONF_OPT = \
@@ -56,12 +56,6 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_BAYER),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-bayer
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-bayer
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_CAMERABIN),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-camerabin
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-camerabin
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_CAMERABIN2),y)
@@ -146,12 +140,6 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FIELDANALYSIS),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-fieldanalysis
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-fieldanalysis
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FREEZE),y)
-GST_PLUGINS_BAD_CONF_OPT += --enable-freeze
-else
-GST_PLUGINS_BAD_CONF_OPT += --disable-freeze
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FREEVERB),y)
@@ -508,6 +496,13 @@ else
 GST_PLUGINS_BAD_CONF_OPT += --disable-dvb
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FAAD),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-faad
+GST_PLUGINS_BAD_DEPENDENCIES += faad2
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-faad
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FBDEV),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-fbdev
 else
@@ -519,6 +514,13 @@ GST_PLUGINS_BAD_CONF_OPT += --enable-libmms
 GST_PLUGINS_BAD_DEPENDENCIES += libmms
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-libmms
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_MPG123),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-mpg123
+GST_PLUGINS_BAD_DEPENDENCIES += mpg123
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-mpg123
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_MUSEPACK),y)

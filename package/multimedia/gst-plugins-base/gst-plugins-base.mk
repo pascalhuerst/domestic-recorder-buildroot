@@ -91,18 +91,6 @@ else
 GST_PLUGINS_BASE_CONF_OPT += --disable-encoding
 endif
 
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_FFMPEGCOLORSPACE),y)
-GST_PLUGINS_BASE_CONF_OPT += --enable-ffmpegcolorspace
-else
-GST_PLUGINS_BASE_CONF_OPT += --disable-ffmpegcolorspace
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_GDP),y)
-GST_PLUGINS_BASE_CONF_OPT += --enable-gdp
-else
-GST_PLUGINS_BASE_CONF_OPT += --disable-gdp
-endif
-
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_PLAYBACK),y)
 GST_PLUGINS_BASE_CONF_OPT += --enable-playback
 else
@@ -125,6 +113,12 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_TYPEFIND),y)
 GST_PLUGINS_BASE_CONF_OPT += --enable-typefind
 else
 GST_PLUGINS_BASE_CONF_OPT += --disable-typefind
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_VIDEOCONVERT),y)
+GST_PLUGINS_BASE_CONF_OPT += --enable-videoconvert
+else
+GST_PLUGINS_BASE_CONF_OPT += --disable-videoconvert
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_VIDEOTESTSRC),y)

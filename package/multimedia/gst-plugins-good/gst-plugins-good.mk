@@ -152,6 +152,13 @@ else
 GST_PLUGINS_GOOD_CONF_OPT += --disable-flx
 endif
 
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_GDKPIXBUF),y)
+GST_PLUGINS_GOOD_CONF_OPT += --enable-gdk_pixbuf
+GST_PLUGINS_GOOD_DEPENDENCIES += gdk-pixbuf
+else
+GST_PLUGINS_GOOD_CONF_OPT += --disable-gdk_pixbuf
+endif
+
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_GOOM),y)
 GST_PLUGINS_GOOD_CONF_OPT += --enable-goom
 else
@@ -306,6 +313,13 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_WAVENC),y)
 GST_PLUGINS_GOOD_CONF_OPT += --enable-wavenc
 else
 GST_PLUGINS_GOOD_CONF_OPT += --disable-wavenc
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_WAVPACK),y)
+GST_PLUGINS_GOOD_CONF_OPT += --enable-wavpack
+GST_PLUGINS_GOOD_DEPENDENCIES += wavpack
+else
+GST_PLUGINS_GOOD_CONF_OPT += --disable-wavpack
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_WAVPARSE),y)
