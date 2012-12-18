@@ -1,29 +1,27 @@
 
 #############################################################
 #
-# gst-ffmpeg
+# gst-libav
 #
 #############################################################
 
-GST_FFMPEG_VERSION = 0.11.2
-GST_FFMPEG_SOURCE = gst-ffmpeg-$(GST_FFMPEG_VERSION).tar.bz2
-GST_FFMPEG_SITE = http://gstreamer.freedesktop.org/src/gst-ffmpeg
-GST_FFMPEG_INSTALL_STAGING = YES
+GST_LIBAV_VERSION = 1.0.3
+GST_LIBAV_SOURCE = gst-libav-$(GST_LIBAV_VERSION).tar.xz
+GST_LIBAV_SITE = http://gstreamer.freedesktop.org/src/gst-libav
+# GST_LIBAV_INSTALL_STAGING = YES
 
-GST_FFMPEG_DEPENDENCIES = host-pkgconf gstreamer gst-plugins-base
+GST_LIBAV_DEPENDENCIES = host-pkgconf gstreamer gst-plugins-base
 
-GST_FFMPEG_CONF_OPT = \
-	--with-ffmpeg-extra-configure="--target-os=linux \
+GST_LIBAV_CONF_OPT = \
+	--with-libav-extra-configure="--target-os=linux \
 	                               --disable-debug \
 				       --disable-ffmpeg \
                                        --disable-ffplay \
                                        --disable-ffserver \
                                        --disable-avfilter \
-                                       --enable-gpl \
                                        --enable-pthreads \
                                        --enable-zlib \
                                        --prefix=$(STAGING_DIR)/usr \
-                                       --enable-cross-compile \
                                        --sysroot=$(STAGING_DIR) \
                                        --host-cc=$(TARGET_CC) \
                                        --cc=$(TARGET_CC) \
@@ -37,10 +35,8 @@ GST_FFMPEG_CONF_OPT = \
                                        --disable-decoders \
                                        --disable-demuxers \
                                        --disable-encoders \
-                                       --disable-filters \
                                        --disable-muxers \
                                        --disable-parsers \
-                                       --disable-protocols \
                                        --enable-decoder=aac \
                                        --enable-decoder=alac \
                                        --enable-decoder=wmav1 \
@@ -48,7 +44,7 @@ GST_FFMPEG_CONF_OPT = \
                                        --enable-decoder=wmapro "
 
 ifeq ($(BR2_PACKAGE_BZIP2),y)
-GST_FFMPEG_DEPENDENCIES += bzip2
+GST_LIBAV_DEPENDENCIES += bzip2
 endif
 
 $(eval $(autotools-package))

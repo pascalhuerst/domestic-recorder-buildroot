@@ -1,0 +1,16 @@
+config BR2_PACKAGE_GST_LIBAV
+	bool "gst-libav"
+	depends on BR2_PACKAGE_GSTREAMER
+	select BR2_PACKAGE_GST_PLUGINS_BASE
+	depends on BR2_LARGEFILE
+	help
+	  GStreamer plugin (formerly gst-ffmpeg).
+
+	  This package is an implementation of the former
+	  gst-ffmpeg plugin but there is a lot missing from it.
+	  So far it only support decoding WMA and AAC.
+	  
+	  http://gstreamer.freedesktop.org/
+
+comment "gst-libav requires a toolchain with LARGEFILE support"
+	depends on !(BR2_LARGEFILE)
