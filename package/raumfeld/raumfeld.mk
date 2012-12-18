@@ -49,7 +49,7 @@ endif
 
 ifeq ($(ARCH),arm)
   CROSS = ARM
-  EXTRA_MAKE_OPTS = ARM_TYPE=$(call qstrip,$(BR2_ARM_TYPE))
+  EXTRA_MAKE_OPTS = ARM_TYPE=$(call qstrip,$(BR2_UCLIBC_ARM_TYPE))
 endif
 ifeq ($(ARCH),i586)
   CROSS = GEODE
