@@ -12,6 +12,6 @@ endif
 
 STREAM_DECODER_CONF_OPT = --disable-glibtest
 
-STREAM_DECODER_DEPENDENCIES = host-pkgconf libsoup gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-ffmpeg
+STREAM_DECODER_DEPENDENCIES = host-pkgconf libsoup gstreamer
 
 $(eval $(raumfeld-autotools-package))

@@ -4,7 +4,7 @@ config BR2_PACKAGE_STREAM_DECODER
 	select BR2_PACKAGE_GSTREAMER
 	select BR2_PACKAGE_GST_PLUGINS_GOOD
 	select BR2_PACKAGE_GST_PLUGINS_UGLY
-        select BR2_PACKAGE_GST_FFMPEG
+        select BR2_PACKAGE_GST_LIBAV
 	select BR2_PACKAGE_LIBSOUP
 	help
 	  The stream decoder software
