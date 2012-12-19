@@ -1,0 +1,15 @@
+--- gst-plugins-base-1.0.3/gst/typefind/gsttypefindfunctions.c.orig	2012-12-19 12:26:50.841879391 +0100
++++ gst-plugins-base-1.0.3/gst/typefind/gsttypefindfunctions.c	2012-12-19 12:27:53.833879421 +0100
+@@ -4858,10 +4858,12 @@
+       mpeg_video_stream_type_find, "mpv,mpeg,mpg", MPEG_VIDEO_CAPS, NULL, NULL);
+   TYPE_FIND_REGISTER (plugin, "video/mpeg4", GST_RANK_PRIMARY,
+       mpeg4_video_type_find, "m4v", MPEG_VIDEO_CAPS, NULL, NULL);
++#if 0
+   TYPE_FIND_REGISTER (plugin, "video/x-h263", GST_RANK_SECONDARY,
+       h263_video_type_find, "h263,263", H263_VIDEO_CAPS, NULL, NULL);
+   TYPE_FIND_REGISTER (plugin, "video/x-h264", GST_RANK_PRIMARY,
+       h264_video_type_find, "h264,x264,264", H264_VIDEO_CAPS, NULL, NULL);
++#endif
+   TYPE_FIND_REGISTER (plugin, "video/x-nuv", GST_RANK_SECONDARY, nuv_type_find,
+       "nuv", NUV_CAPS, NULL, NULL);
+ 

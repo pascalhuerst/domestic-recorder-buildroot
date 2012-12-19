@@ -1,0 +1,13 @@
+--- gst-plugins-base-1.0.3/gst/playback/gstdecodebin2.c.orig	2012-12-19 12:33:28.425879583 +0100
++++ gst-plugins-base-1.0.3/gst/playback/gstdecodebin2.c	2012-12-19 13:25:14.629881090 +0100
+@@ -2586,6 +2586,10 @@
+   if (!strstr (klass, "Demux"))
+     return FALSE;
+ 
++  /* Special case OggDemux and QTDemux for performance reasons */
++  if (strcmp (klass, "GstOggDemux") == 0 || strcmp (klass, "GstQTDemux") == 0)
++    return FALSE;
++
+   /* Walk the src pad templates and count how many the element
+    * might produce */
+   elemclass = GST_ELEMENT_GET_CLASS (srcelement);
