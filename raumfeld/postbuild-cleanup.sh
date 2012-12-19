@@ -43,15 +43,10 @@ rm -f  $1/usr/bin/gpg-error
 rm -f  $1/usr/bin/gpg-error-config
 rm -f  $1/usr/bin/gresource
 rm -f  $1/usr/bin/gsettings
-rm -f  $1/usr/bin/gst-discoverer-0.10
-rm -f  $1/usr/bin/gst-feedback
-rm -f  $1/usr/bin/gst-feedback-0.10
-rm -f  $1/usr/bin/gst-inspect
-rm -f  $1/usr/bin/gst-launch
-rm -f  $1/usr/bin/gst-typefind
-rm -f  $1/usr/bin/gst-visualise-0.10
-rm -f  $1/usr/bin/gst-xmlinspect
-rm -f  $1/usr/bin/gst-xmlinspect-0.10
+rm -f  $1/usr/bin/gst-discoverer-1.0
+rm -f  $1/usr/bin/gst-inspect-1.0
+rm -f  $1/usr/bin/gst-launch-1.0
+rm -f  $1/usr/bin/gst-typefind-1.0
 rm -f  $1/usr/bin/gtester
 rm -f  $1/usr/bin/gtester-report
 rm -f  $1/usr/bin/gupnp-binding-tool
@@ -98,6 +93,7 @@ rm -fr $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/common-lisp
 rm -fr $1/usr/share/gdb
 rm -f  $1/usr/share/getopt/*.tcsh
+rm -fr $1/usr/share/gst-plugins-base/1.0
 rm -fr $1/usr/share/pkgconfig
 rm -fr $1/usr/share/sounds
 rm -f  $1/usr/share/xml/iso-codes/iso_639.xml
