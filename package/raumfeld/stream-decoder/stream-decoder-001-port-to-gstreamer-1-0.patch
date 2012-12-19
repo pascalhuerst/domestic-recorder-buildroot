@@ -1,0 +1,511 @@
+=== modified file 'configure.ac'
+--- a/configure.ac	2012-10-31 11:26:39 +0000
++++ b/configure.ac	2012-12-18 16:06:24 +0000
+@@ -6,10 +6,10 @@
+ # required versions of other packages
+ m4_define([glib_required_version], [2.22.0])
+ m4_define([libsoup_required_version], [2.26.0])
+-m4_define([gstreamer_required_version], [0.10.0])
+-
+-
+-AC_INIT([stream-decoder], [0.5])
++m4_define([gstreamer_required_version], [1.0.0])
++
++
++AC_INIT([stream-decoder], [0.6])
+ 
+ AC_CONFIG_SRCDIR([src/StreamDecoder.cpp])
+ 
+@@ -24,10 +24,10 @@
+ AM_PATH_GLIB_2_0(glib_required_version,,, gobject gthread)
+ 
+ PKG_CHECK_EXISTS(libsoup-2.4 >= libsoup_required_version)
+-PKG_CHECK_EXISTS(gstreamer-0.10 >= gstreamer_required_version)
++PKG_CHECK_EXISTS(gstreamer-1.0 >= gstreamer_required_version)
+ 
+ PKG_CHECK_MODULES(STREAM_DECODER,
+-	libsoup-2.4 gstreamer-0.10 gobject-2.0 gthread-2.0)
++	libsoup-2.4 gstreamer-1.0 gobject-2.0 gthread-2.0)
+ 
+ AC_CONFIG_FILES([
+ Makefile
+
+=== modified file 'src/AudioConverter.cpp'
+--- a/src/AudioConverter.cpp	2012-04-02 14:52:01 +0000
++++ b/src/AudioConverter.cpp	2012-12-18 17:07:01 +0000
+@@ -20,6 +20,9 @@
+  *      Author: hhoegelo
+  */
+ 
++#include <stdlib.h>
++#include <string.h>
++
+ #include <glib.h>
+ #include "AudioConverter.h"
+ #include <gst/gst.h>
+@@ -34,9 +37,6 @@
+   int srcWidth;
+   int srcDepth;
+   int srcChannels;
+-
+-  GstBuffer *outBuffer;
+-  gint32 allocatedSize;
+ };
+ 
+ typedef gint16 tSample;
+@@ -238,19 +238,19 @@
+ }
+ 
+ template<typename T>
+-void doLoop(AudioConverterPrivate *priv, T *from, T *to)
++void doLoop(AudioConverterPrivate *priv, GstMapInfo *out, T *from, T *to)
+ {
+   TRACE_FUNCTION;
+ 
+   T left;
+   T right;
+ 
+-  bool convertEndianess = priv->srcIsBigEndian;
+-  tSample *tgtBuffer = (tSample*) priv->outBuffer->data;
++  tSample *tgtBuffer = (tSample*) out->data;
+ 
+-  int shiftAmount = priv->srcIsFloat ? 0 : priv->srcWidth - priv->srcDepth;
+-  bool short2IntOptimization = priv->srcWidth == 32 && priv->srcDepth == 16 &&
+-                               priv->srcIsSigned && !priv->srcIsFloat;
++  const bool convertEndianess = priv->srcIsBigEndian;
++  const int shiftAmount = priv->srcIsFloat ? 0 : priv->srcWidth - priv->srcDepth;
++  const bool short2IntOptimization = (priv->srcWidth == 32 && priv->srcDepth == 16 &&
++                                      priv->srcIsSigned && !priv->srcIsFloat);
+ 
+   while(from < to)
+   {
+@@ -304,21 +304,47 @@
+ 
+   if(s)
+   {
+-    priv->srcIsFloat = g_strcmp0(gst_structure_get_name (s), "audio/x-raw-int") != 0;
+-
+-    int iEndianess = 1234;
+-    if(gst_structure_get_int (s, "endianness", &iEndianess))
+-    {
+-      priv->srcIsBigEndian = (iEndianess == 4321);
+-    }
+-
+-    gst_structure_get_boolean (s, "signed", &priv->srcIsSigned);
+-    gst_structure_get_int (s, "width", &priv->srcWidth);
+-    gst_structure_get_int (s, "depth", &priv->srcDepth);
+     gst_structure_get_int (s, "channels", &priv->srcChannels);
+ 
+-    if(priv->srcChannels > 2)
++    if (priv->srcChannels > 2)
+       priv->srcChannels = 2;
++
++    const gchar *format = gst_structure_get_string (s, "format");
++    if (format)
++    {
++      switch (format[0])
++      {
++      case 'S':
++        priv->srcIsSigned = TRUE;
++        break;
++
++      case 'U':
++        priv->srcIsSigned = FALSE;
++        break;
++
++      case 'F':
++        priv->srcIsFloat = TRUE;
++        break;
++
++      default:
++        g_warn_if_reached ();
++      case '\0':
++        return pThis;
++      }
++
++      priv->srcDepth = strtoul (format + 1, (gchar **) &format, 10);
++
++      if (format[0] == '_')
++      {
++        priv->srcWidth = strtoul (format + 1, (gchar **) &format, 10);
++      }
++      else
++      {
++        priv->srcWidth = priv->srcDepth;
++      }
++
++      priv->srcIsBigEndian = (strcmp (format, "BE") == 0);
++    }
+   }
+ 
+   return pThis;
+@@ -328,16 +354,11 @@
+ {
+   TRACE_FUNCTION;
+ 
+-  if(pThis->priv->outBuffer)
+-  {
+-    gst_buffer_unref(pThis->priv->outBuffer);
+-  }
+-
+   g_free(pThis->priv);
+   g_free(pThis);
+ }
+ 
+-GstBuffer *audioconverter_eat(AudioConverter *pThis, GstBuffer *in)
++GstBuffer *audioconverter_eat(AudioConverter *pThis, GstBuffer *inBuffer)
+ {
+   TRACE_FUNCTION;
+ 
+@@ -347,86 +368,81 @@
+       priv->srcIsSigned && priv->srcWidth == 16 &&
+       priv->srcDepth == 16 && priv->srcChannels == 2)
+   {
+-    gst_buffer_ref(in);
+-    return in;
++    gst_buffer_ref(inBuffer);
++    return inBuffer;
+   }
+ 
+-  int bytesPerSample = priv->srcWidth / 8;
++  const int bytesPerSample = priv->srcWidth / 8;
+ 
+   if(!bytesPerSample || !priv->srcChannels)
+   {
+-    if(priv->outBuffer)
+-    {
+-      priv->outBuffer->size = 0;
+-    }
+-    return priv->outBuffer;
++    return gst_buffer_new ();
+   }
+ 
+-  const int numInSampleFrames = in->size / bytesPerSample / priv->srcChannels;
++  const int numInSampleFrames = gst_buffer_get_size (inBuffer) / bytesPerSample / priv->srcChannels;
+   const int neededSize = 2 * 2 * numInSampleFrames;
+ 
+-  if(!priv->outBuffer || priv->allocatedSize < neededSize)
+-  {
+-    if(priv->outBuffer)
+-    {
+-      gst_buffer_unref(priv->outBuffer);
+-    }
+-
+-    priv->outBuffer = gst_buffer_new_and_alloc(neededSize);
+-    priv->allocatedSize = neededSize;
+-  }
+-  priv->outBuffer->size = neededSize;
+-
+-  guint8 *start = (guint8*) in->data;
+-  guint8 *end = (guint8*) in->data + in->size;
+-
+-  if(priv->srcIsFloat)
+-  {
+-    doLoop(priv, (gfloat*) start, (gfloat*) end);
+-  }
+-  else if(priv->srcIsSigned)
+-  {
+-    switch(priv->srcWidth)
+-    {
+-      case 8:
+-        doLoop(priv, (gint8*) start, (gint8*) end);
+-        break;
+-
+-      case 16:
+-        doLoop(priv, (gint16*) start, (gint16*) end);
+-        break;
+-
+-      case 24:
+-        doLoop(priv, (tInt24*) start, (tInt24*) end);
+-        break;
+-
+-      case 32:
+-        doLoop(priv, (gint32*) start, (gint32*) end);
+-        break;
+-    }
+-  }
+-  else // !priv->srcIsSigned)
+-  {
+-    switch (priv->srcWidth)
+-    {
+-      case 8:
+-        doLoop(priv, (guint8*) start, (guint8*) end);
+-        break;
+-
+-      case 16:
+-        doLoop(priv, (guint16*) start, (guint16*) end);
+-        break;
+-
+-      case 24:
+-        doLoop(priv, (tUInt24*) start, (tUInt24*) end);
+-        break;
+-
+-      case 32:
+-        doLoop(priv, (guint32*) start, (guint32*) end);
+-        break;
+-    }
+-  }
+-
+-  gst_buffer_ref(priv->outBuffer);
+-  return priv->outBuffer;
++  GstBuffer *outBuffer = gst_buffer_new_allocate(NULL, neededSize, NULL);
++
++  GstMapInfo in;
++  GstMapInfo out;
++
++  if (gst_buffer_map (inBuffer, &in, GST_MAP_READ) &&
++      gst_buffer_map (outBuffer, &out, GST_MAP_WRITE))
++  {
++    guint8 *start = (guint8*) in.data;
++    guint8 *end = (guint8*) in.data + in.size;
++
++    if(priv->srcIsFloat)
++    {
++      doLoop(priv, &out, (gfloat*) start, (gfloat*) end);
++    }
++    else if(priv->srcIsSigned)
++    {
++      switch(priv->srcWidth)
++      {
++      case 8:
++        doLoop(priv, &out, (gint8*) start, (gint8*) end);
++        break;
++
++      case 16:
++        doLoop(priv, &out, (gint16*) start, (gint16*) end);
++        break;
++
++      case 24:
++        doLoop(priv, &out, (tInt24*) start, (tInt24*) end);
++        break;
++
++      case 32:
++        doLoop(priv, &out, (gint32*) start, (gint32*) end);
++        break;
++      }
++    }
++    else // !priv->srcIsSigned)
++    {
++      switch (priv->srcWidth)
++      {
++      case 8:
++        doLoop(priv, &out, (guint8*) start, (guint8*) end);
++        break;
++
++      case 16:
++        doLoop(priv, &out, (guint16*) start, (guint16*) end);
++        break;
++
++      case 24:
++        doLoop(priv, &out, (tUInt24*) start, (tUInt24*) end);
++        break;
++
++      case 32:
++        doLoop(priv, &out, (guint32*) start, (guint32*) end);
++        break;
++      }
++    }
++
++    gst_buffer_unmap (outBuffer, &out);
++    gst_buffer_unmap (inBuffer, &in);
++  }
++
++  return outBuffer;
+ }
+
+=== modified file 'src/Resampler.cpp'
+--- a/src/Resampler.cpp	2012-08-10 13:50:40 +0000
++++ b/src/Resampler.cpp	2012-12-18 16:06:24 +0000
+@@ -163,14 +163,19 @@
+     return in;
+   }
+ 
+-  if (in->size == 0) // special case: return the tail
++  if ( gst_buffer_get_size (in) == 0) // special case: return the tail
+   {
+     return resampler_eat_chunk (pThis);
+   }
+ 
++  GstMapInfo info;
++
++  if (! gst_buffer_map (in, &info, GST_MAP_READ))
++    return NULL;
++
+   GstBuffer *result = gst_buffer_new ();
+ 
+-  int framesTodo = in->size / 4;
++  int framesTodo = info.size / 4;
+   int framesDone = 0;
+ 
+   while(framesTodo)
+@@ -178,7 +183,7 @@
+     int spaceLeftInBuffer = IBUFFSIZE - priv->inBufferPos;
+     int framesForNow = MIN(framesTodo, spaceLeftInBuffer);
+ 
+-    const short *srcPtr = (const short*)in->data;
++    const short *srcPtr = (const short*)info.data;
+     srcPtr += framesDone * 2;
+ 
+     int i = 0;
+@@ -195,10 +200,12 @@
+     if(priv->inBufferPos == IBUFFSIZE)
+     {
+       // have a complete chunk
+-      result = gst_buffer_join(result, resampler_eat_chunk(pThis));
++      result = gst_buffer_append(result, resampler_eat_chunk(pThis));
+     }
+   }
+ 
++  gst_buffer_unmap (in, &info);
++
+   return result;
+ }
+ 
+@@ -276,16 +283,21 @@
+   priv->Xread = i; /* Pos in input buff to read new data into */
+   priv->Xp = priv->Xoff;
+ 
+-  GstBuffer *outBuffer = gst_buffer_new_and_alloc(Nout * 4);
+-  short *outBufferPtr = (short *) outBuffer->data;
+-
+-  // interleave
+-  for (i = 0; i < Nout; i++)
++  GstBuffer *outBuffer = gst_buffer_new_allocate(NULL, Nout * 4, NULL);
++  GstMapInfo info;
++  if (gst_buffer_map (outBuffer, &info, GST_MAP_WRITE))
+   {
+-    *(outBufferPtr++) = priv->Y1[i];
+-    *(outBufferPtr++) = priv->Y2[i];
++    short *outBufferPtr = (short *) info.data;
++
++    // interleave
++    for (i = 0; i < Nout; i++)
++      {
++        *(outBufferPtr++) = priv->Y1[i];
++        *(outBufferPtr++) = priv->Y2[i];
++      }
++
++    gst_buffer_unmap (outBuffer, &info);
+   }
+-
+   return outBuffer;
+ }
+ 
+
+=== modified file 'src/StreamDecoder.cpp'
+--- a/src/StreamDecoder.cpp	2012-10-31 11:24:49 +0000
++++ b/src/StreamDecoder.cpp	2012-12-18 17:28:25 +0000
+@@ -285,13 +285,18 @@
+     for (iter = list; iter; iter = iter->next)
+     {
+       GstTypeFindFactory *fac = (GstTypeFindFactory *) iter->data;
+-      const char *mime = GST_PLUGIN_FEATURE_NAME(fac);
++      GstCaps *caps = gst_type_find_factory_get_caps (fac);
++      char *mime = gst_caps_to_string (caps);
+ 
+       if (mime && *mime)
+       {
+         if (g_str_has_prefix(mime, "audio/") || strcmp(mime, "application/ogg")
+             == 0 || strcmp(mime, "application/x-ogg") == 0)
+         {
++          char *comma = strchr (mime, ',');
++          if (comma)
++            *comma = '\0';
++
+           if (str->str && str->len > 0)
+           {
+             str = g_string_append_c(str, ',');
+@@ -316,6 +321,8 @@
+           g_free(type);
+         }
+       }
++
++      g_free (mime);
+     }
+ 
+     if (str->str && str->len > 0)
+@@ -392,7 +399,7 @@
+     gst_element_get_state(decoder->pipeline, &curState, &pendingState, 2 * GST_SECOND);
+   }
+ 
+-  static void hand_off_data (GstElement *fakesrc,
++  static void hand_off_data (GstElement *fakesink,
+                              GstBuffer *buffer,
+                              GstPad *pad,
+                              app_data *decoder)
+@@ -401,7 +408,7 @@
+ 
+     if (decoder->audioPipe)
+     {
+-      GstCaps *caps = gst_buffer_get_caps(buffer);
++      GstCaps *caps = pad ? gst_pad_get_current_caps(pad) : NULL;
+ 
+       if(caps)
+       {
+@@ -435,11 +442,18 @@
+         GstBuffer *converted = audioconverter_eat(decoder->audioConverter, buffer);
+         GstBuffer *resampled = resampler_eat(decoder->resampler, converted);
+ 
+-        fwrite(resampled->data, 1, resampled->size, decoder->audioPipe);
+-        fflush(decoder->audioPipe);
+-
+-        gst_buffer_unref(resampled);
+-        gst_buffer_unref(converted);
++        GstMapInfo info;
++
++        if (gst_buffer_map (resampled, &info, GST_MAP_READ))
++          {
++            fwrite(info.data, 1, info.size, decoder->audioPipe);
++            fflush(decoder->audioPipe);
++
++            gst_buffer_unmap (resampled, &info);
++          }
++
++        gst_buffer_unref (resampled);
++        gst_buffer_unref (converted);
+       }
+       else
+       {
+@@ -716,29 +730,28 @@
+ 
+     while (!done)
+     {
+-
++      GValue value = { 0, };
+       GstElement *element = NULL;
+ 
+-      switch (gst_iterator_next (elem_it, (void **) &element))
++      switch (gst_iterator_next (elem_it, &value))
+       {
+         case GST_ITERATOR_OK:
+-
+-        g_print("%s, ", gst_element_get_name(element));
+-        gst_object_unref (element);
+-        break;
++          element = (GstElement *) g_value_get_object (&value);
++          g_print("%s, ", gst_element_get_name(element));
++          break;
+         case GST_ITERATOR_RESYNC:
+-        gst_iterator_resync (elem_it);
+-        break;
++          gst_iterator_resync (elem_it);
++          break;
+         case GST_ITERATOR_ERROR:
+-        done = TRUE;
+-        break;
++          done = TRUE;
++          break;
+         case GST_ITERATOR_DONE:
+-        done = TRUE;
+-        break;
++          done = TRUE;
++          break;
+       }
++      g_value_unset(&value);
+     }
+     gst_iterator_free (elem_it);
+-
+     g_print("\n");
+ 
+   }
+
