@@ -5,7 +5,7 @@
 #
 #############################################################
 
-GST_LIBAV_VERSION = 1.0.3
+GST_LIBAV_VERSION = 1.0.4
 GST_LIBAV_SOURCE = gst-libav-$(GST_LIBAV_VERSION).tar.xz
 GST_LIBAV_SITE = http://gstreamer.freedesktop.org/src/gst-libav
 # GST_LIBAV_INSTALL_STAGING = YES
@@ -16,9 +16,10 @@ GST_LIBAV_CONF_OPT = \
 	--with-libav-extra-configure="--target-os=linux \
 	                               --disable-debug \
 				       --disable-ffmpeg \
-                                       --disable-ffplay \
-                                       --disable-ffserver \
-                                       --disable-avfilter \
+				       --disable-avconv \
+				       --disable-avdevice \
+				       --disable-avplay \
+				       --disable-avserver \
                                        --enable-pthreads \
                                        --enable-zlib \
                                        --prefix=$(STAGING_DIR)/usr \

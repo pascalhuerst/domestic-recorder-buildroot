@@ -3,7 +3,7 @@
 # gst-plugins-bad
 #
 #############################################################
-GST_PLUGINS_BAD_VERSION = 1.0.3
+GST_PLUGINS_BAD_VERSION = 1.0.4
 GST_PLUGINS_BAD_SOURCE = gst-plugins-bad-$(GST_PLUGINS_BAD_VERSION).tar.xz
 GST_PLUGINS_BAD_SITE = http://gstreamer.freedesktop.org/src/gst-plugins-bad
 
@@ -164,6 +164,12 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_GEOMETRICTRANSFORM),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-geometrictransform
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-geometrictransform
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_GDP),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-gdp
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-gdp
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_GSETTINGS),y)
@@ -374,6 +380,12 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SEGMENTCLIP),y)
 GST_PLUGINS_BAD_CONF_OPT += --enable-segmentclip
 else
 GST_PLUGINS_BAD_CONF_OPT += --disable-segmentclip
+endif
+
+ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SHM),y)
+GST_PLUGINS_BAD_CONF_OPT += --enable-shm
+else
+GST_PLUGINS_BAD_CONF_OPT += --disable-shm
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SIREN),y)
