@@ -74,8 +74,7 @@ rm -fr $1/usr/lib/pkg-config
 rm -f  $1/usr/lib/*.la
 rm -fr $1/usr/lib/gdbus-2.0
 rm -fr $1/usr/lib/glib-2.0
-rm -f  $1/usr/lib/gstreamer-0.10/libgstffmpegscale.so
-rm -f  $1/usr/lib/gstreamer-0.10/libgstpostproc.so
+rm -f  $1/usr/lib/gstreamer-1.0/libgstavscale.so
 rm -f  $1/usr/lib/libvorbisenc*
 rm -f  $1/usr/lib/ssh-keysign
 rm -f  $1/usr/lib/ssh-pkcs11-helper
