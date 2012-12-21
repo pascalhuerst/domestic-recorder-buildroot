@@ -31,7 +31,6 @@ GST_LIBAV_CONF_OPT = \
                                        --cross-prefix=$(TARGET_CROSS) \
                                        --disable-shared \
                                        --enable-static \
-				       --disable-iwmmxt \
                                        --disable-bsfs \
                                        --disable-decoders \
                                        --disable-demuxers \
