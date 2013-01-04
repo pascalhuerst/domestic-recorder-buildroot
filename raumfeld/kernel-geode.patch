@@ -39,3 +39,32 @@ index 90e23e7..3cc2fa9 100644
 -- 
 1.7.9.5
 
+From 66c0065966cb39b2d8a8929b9cd22533b07efc05 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <s.neumann@raumfeld.com>
+Date: Fri, 4 Jan 2013 23:55:26 +0100
+Subject: [PATCH] Hack around TSC calibration
+
+Set TSC calibration to a fixed value to ensure that the clock
+runs with a deterministic speed.
+---
+ arch/x86/kernel/tsc.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
+index fc0a147..8a9f251 100644
+--- a/arch/x86/kernel/tsc.c
++++ b/arch/x86/kernel/tsc.c
+@@ -393,7 +393,9 @@ success:
+ 	delta *= PIT_TICK_RATE;
+ 	do_div(delta, i*256*1000);
+ 	printk("Fast TSC calibration using PIT\n");
+-	return delta;
++	/* HACK HACK */
++	return 498000;
++	//return delta;
+ }
+ 
+ /**
+-- 
+1.7.10.4
+
