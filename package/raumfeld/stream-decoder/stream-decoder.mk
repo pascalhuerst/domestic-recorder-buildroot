@@ -12,6 +12,10 @@ endif
 
 STREAM_DECODER_CONF_OPT = --disable-glibtest
 
+ifeq ($(BR2_UCLIBC_ARM_TYPE),"ARM_CORTEXA8")
+STREAM_DECODER_CONF_OPT += --enable-32bit
+endif
+
 STREAM_DECODER_DEPENDENCIES = host-pkgconf libsoup gstreamer
 
 $(eval $(raumfeld-autotools-package))
