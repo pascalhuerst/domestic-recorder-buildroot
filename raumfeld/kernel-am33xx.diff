@@ -31221,7 +31221,7 @@ index ef22d0b..5c3ca2a 100644
  				ret);
  			goto out;
  		}
-@@ -470,7 +472,7 @@ static int soc_pcm_prepare(struct snd_pcm_substream *substream)
+@@ -470,23 +472,23 @@ static int soc_pcm_prepare(struct snd_pcm_substream *substream)
  	if (cpu_dai->driver->ops->prepare) {
  		ret = cpu_dai->driver->ops->prepare(substream, cpu_dai);
  		if (ret < 0) {
@@ -31230,6 +31230,23 @@ index ef22d0b..5c3ca2a 100644
  				ret);
  			goto out;
  		}
+	}
+
+	/* cancel any delayed stream shutdown that is pending */
+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
+	    codec_dai->pop_wait) {
+		codec_dai->pop_wait = 0;
+		cancel_delayed_work(&rtd->delayed_work);
+	}
+
+	snd_soc_dapm_stream_event(rtd, substream->stream,
+			SND_SOC_DAPM_STREAM_START);
+
+-	snd_soc_dai_digital_mute(codec_dai, 0);
++       /* Don't mute snd_soc_dai_digital_mute(codec_dai, 0); */ 
+
+ out:
+	mutex_unlock(&rtd->pcm_mutex);
 @@ -512,7 +514,8 @@ static int soc_pcm_hw_params(struct snd_pcm_substream *substream,
  	if (rtd->dai_link->ops && rtd->dai_link->ops->hw_params) {
  		ret = rtd->dai_link->ops->hw_params(substream, params);
