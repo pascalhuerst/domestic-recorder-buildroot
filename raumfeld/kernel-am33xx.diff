@@ -26379,7 +26379,7 @@ index 0000000..98ff95b
 +	case 22050:
 +	case 44100:
 +	case 88200:
-+	case 176000:
++	case 176400:
 +		clk = 11289600 * 2;
 +		break;
 +	default:
