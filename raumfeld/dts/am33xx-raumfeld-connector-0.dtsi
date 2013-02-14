@@ -118,21 +118,21 @@
 
                         setup {
                                 label = "Setup";
-                                gpios = <&gpio2 18 0>;
+                                gpios = <&gpio2 18 1>;
                                 linux,code = <141>; /* KEY_SETUP */
                                 gpio-key,wakeup;
                         };
 
                         reset {
                                 label = "Reset";
-                                gpios = <&gpio1 9 0>;
+                                gpios = <&gpio1 9 1>;
                                 linux,code = <61>; /* KEY_F3 */
                                 gpio-key,wakeup;
                         };
 
                         power {
                                 label = "Power";
-                                gpios = <&gpio0 6 0>;
+                                gpios = <&gpio0 6 1>;
                                 linux,code = <116>; /* KEY_POWER */
                                 gpio-key,wakeup;
                         };
