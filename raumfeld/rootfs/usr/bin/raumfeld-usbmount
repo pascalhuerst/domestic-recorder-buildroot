@@ -45,6 +45,9 @@ if test "$1" = add; then
 
     mkdir -p $MOUNT_POINT
 
+    # add /sbin to PATH so that the mount.ntfs helper is found
+    PATH="$PATH:/sbin"
+
     log "starting usbmount add"
 
     MOUNTPOINTS=$MOUNT_POINT PATH=$PATH /usr/share/usbmount/usbmount add
