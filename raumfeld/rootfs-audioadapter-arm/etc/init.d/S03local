@@ -6,8 +6,10 @@ case "$1" in
         mount -a
 
         # Set the MAC address of eth0
-        eval $(fw_printenv ethaddr)
-        test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
+	if [ -x /usr/sbin/fw_printenv ]; then
+            eval $(fw_printenv ethaddr)
+            test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
+	fi
 	;;
   stop)
 	;;
