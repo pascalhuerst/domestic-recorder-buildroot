@@ -5,6 +5,12 @@ case "$1" in
        # change the mount options for the rootfs to noatime
        mount -o remount,noatime /
 
+       # limit DMA mode to UDMA4 (66 MB/s)
+       # (this will fail on the old disks because w/o the SATA
+       #  adapter cable detection works and the driver limits
+       #  the mode to UDMA2 (33 MB/s)
+       hdparm -Xudma4
+
        # set the standby (spindown) timeout for the internal hard-disk
        hdparm -S60 /dev/hda
 
