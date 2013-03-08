@@ -2,8 +2,14 @@
 
 case "$1" in
   start)
-        hw=$(cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' ' | tr '[A-Z]' '[a-z]')
-        hostname $hw
+	if [ -e /proc/device-tree/model ]; then
+	    hw=$(cat /proc/device-tree/model | grep ^Raumfeld | cut -f 2 -d' ' | tr '[:upper:]' '[:lower:]')
+	else
+            hw=$(cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' ' | tr '[A-Z]' '[a-z]')
+	fi
+        if [ -n "$hw" ]; then
+            hostname $hw
+        fi
 	;;
   stop)
 	;;
