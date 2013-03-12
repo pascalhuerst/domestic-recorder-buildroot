@@ -48,7 +48,8 @@ LINUX_MAKE_FLAGS = \
 	ARCH=$(KERNEL_ARCH) \
 	INSTALL_MOD_PATH=$(TARGET_DIR) \
 	CROSS_COMPILE="$(CCACHE) $(TARGET_CROSS)" \
-	DEPMOD=$(HOST_DIR)/usr/sbin/depmod
+	DEPMOD=$(HOST_DIR)/usr/sbin/depmod \
+	LOADADDR=$(BR2_LINUX_KERNEL_LOADADDR)
 
 # Get the real Linux version, which tells us where kernel modules are
 # going to be installed in the target filesystem.
