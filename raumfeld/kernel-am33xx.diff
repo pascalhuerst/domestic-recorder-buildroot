@@ -26421,7 +26421,7 @@ index 0000000..98ff95b
 +};
 +
 +#define RAUMFELD_DAI_FMT \
-+	(SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_CBS_CFS | SND_SOC_DAIFMT_NB_NF)
++	(SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_CBS_CFS | SND_SOC_DAIFMT_NB_IF)
 +
 +static struct snd_soc_dai_link raumfeld_dai_links[] = {
 +	{
