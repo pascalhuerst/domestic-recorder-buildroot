@@ -7,8 +7,9 @@ case "$1" in
 
        # tweak settings of the internal hard-disk:
        # - limit DMA mode to UDMA2 (33 MB/s)
-       # - set the standby (spindown) delay
-       hdparm -Xudma4 -S60 /dev/hda
+       # - enable power management
+       # - set the standby (spindown) delay to 10 minutes
+       hdparm -Xudma2 -B 128 -S 120 /dev/hda
 
        # start the master-process
        cd /raumfeld/master-process
