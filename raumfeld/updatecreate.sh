@@ -43,6 +43,10 @@ if [ $target = audioadapter-armada ]; then
     # first build the device-tree blobs for direct inclusion
     make HOSTDIR=$HOSTDIR DESTDIR=$tmpdir/tmp/ -C raumfeld/dts
 
+    # work around a bug in the update mechanism in 1.10
+    # which looks for the files without the .dtb extension
+    cp $tmpdir/tmp/am33xx-raumfeld-connector-0-0.dtb $tmpdir/tmp/am33xx-raumfeld-connector-0-0
+
     # then a cramfs containing the device-tree blobs
     make host-cramfs
     DIR=$(mktemp -d)
