@@ -33,6 +33,9 @@ config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_AUDIOVISUALIZERS
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_BAYER
 	bool "bayer"
 
+config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_CAMERABIN
+	bool "camerabin"
+
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_CAMERABIN2
 	bool "camerabin2"
 
@@ -82,6 +85,9 @@ config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FIELDANALYSIS
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FREEVERB
 	bool "freeverb"
 
+config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FREEZE
+	bool "freeze"
+
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FREI0R
 	bool "frei0r"
 
@@ -90,9 +96,6 @@ config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_GAUDIEFFECTS
 
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_GEOMETRICTRANSFORM
 	bool "geometrictransform"
-
-config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_GDP
-	bool "gdp"
 
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_GSETTINGS
 	bool "gsettings"
@@ -199,23 +202,20 @@ config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SDP
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SEGMENTCLIP
 	bool "segmentclip"
 
-config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SHM
-	bool "shm"
-
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SIREN
 	bool "siren"
 
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SMOOTH
 	bool "smooth"
 
-config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SUBENC
-	bool "subenc"
-
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SPEED
 	bool "speed"
 
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_STEREO
 	bool "stereo"
+
+config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SUBENC
+	bool "subenc"
 
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_TTA
 	bool "tta"
@@ -241,7 +241,7 @@ config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_VMNC
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_Y4M
 	bool "y4m"
 
-comment "plugins with external dependencies (not all from gstreamer are here)"
+comment "plugins with external dependencies (there may be more available)"
 
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_APEXSINK
 	bool "apexsink"
@@ -267,20 +267,16 @@ config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DIRECTFB
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_DVB
 	bool "dvb"
 
+config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FBDEV
+	bool "fbdev"
+
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FAAD
 	bool "faad"
 	select BR2_PACKAGE_FAAD2
 
-config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_FBDEV
-	bool "fbdev"
-
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_LIBMMS
 	bool "libmms"
 	select BR2_PACKAGE_LIBMMS
-
-config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_MPG123
-	bool "mpg123"
-	select BR2_PACKAGE_MPG123
 
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_MUSEPACK
 	bool "musepack"
@@ -296,8 +292,11 @@ config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_OPUS
 
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_RSVG
 	bool "rsvg"
-	depends on BR2_PACKAGE_LIBGTK2
+	depends on BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_LIBRSVG
+
+comment "rsvg plugin requires a toolchain with C++ support"
+	depends on !BR2_INSTALL_LIBSTDCPP
 
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SDL
 	bool "sdl"
@@ -306,6 +305,10 @@ config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SDL
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_SNDFILE
 	bool "sndfile"
 	select BR2_PACKAGE_LIBSNDFILE
+	depends on BR2_LARGEFILE
+
+comment "gst-plugins-bad-plugin-sndfile requires a toolchain with LARGEFILE support"
+	depends on !BR2_LARGEFILE
 
 config BR2_PACKAGE_GST_PLUGINS_BAD_PLUGIN_VCD
 	bool "vcd"

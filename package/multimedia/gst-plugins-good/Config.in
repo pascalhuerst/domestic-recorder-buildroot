@@ -190,6 +190,10 @@ config BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_FLAC
 	bool "flac (libFLAC)"
 	select BR2_PACKAGE_FLAC
 
+config BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_GDKPIXBUF
+	bool "gdkpixbuf"
+	select BR2_PACKAGE_GDK_PIXBUF
+
 config BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_OSS
 	bool "ossaudio (OSS audio)"
 
@@ -197,6 +201,8 @@ config BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_OSS4
 	bool "oss4 (Open Sound System 4)"
 
 config BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_PULSE
+	depends on BR2_TOOLCHAIN_HAS_THREADS # pulseaudio
+	depends on BR2_LARGEFILE # pulseaudio -> libsndfile
 	select BR2_PACKAGE_PULSEAUDIO
 	bool "pulseaudio"
 
