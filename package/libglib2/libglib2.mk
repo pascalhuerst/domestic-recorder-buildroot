@@ -14,7 +14,6 @@ LIBGLIB2_INSTALL_STAGING = YES
 LIBGLIB2_INSTALL_STAGING_OPT = DESTDIR=$(STAGING_DIR) LDFLAGS=-L$(STAGING_DIR)/usr/lib install
 
 LIBGLIB2_CONF_ENV = \
-		CPPFLAGS=-D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4 \
 		ac_cv_func_posix_getpwuid_r=yes glib_cv_stack_grows=no \
 		glib_cv_uscore=no ac_cv_func_strtod=yes \
 		ac_fsusage_space=yes fu_cv_sys_stat_statfs2_bsize=yes \
@@ -47,6 +46,11 @@ LIBGLIB2_CONF_ENV = \
 		ac_cv_func_newlocale=no ac_cv_func_uselocale=no \
 		ac_cv_func_strtod_l=no ac_cv_func_strtoll_l=no ac_cv_func_strtoull_l=no \
 		gt_cv_c_wchar_t=$(if $(BR2_USE_WCHAR),yes,no)
+
+ifeq ($(BR2_GCC_VERSION_4_6_X),y)
+LIBGLIB2_CONF_ENV += CPPFLAGS=-D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4
+endif
+
 
 # old uClibc versions don't provide qsort_r
 ifeq ($(BR2_UCLIBC_VERSION_0_9_31)$(BR2_UCLIBC_VERSION_0_9_32)$(BR2_TOOLCHAIN_CTNG_uClibc)$(BR2_TOOLCHAIN_EXTERNAL_UCLIBC),y)
