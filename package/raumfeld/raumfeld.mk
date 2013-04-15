@@ -176,3 +176,10 @@ RAUMFELD_DIRCLEAN_TARGETS =
 include package/raumfeld/*/*.mk
 
 raumfeld-rebuild: $(RAUMFELD_DIRCLEAN_TARGETS) all
+
+raumfeld-dts: host-cramfs
+	TMPDIR=$(shell mktemp -d) ; \
+	make HOSTDIR=${HOST_DIR} DESTDIR=$$TMPDIR/ -C raumfeld/dts ; \
+	${HOST_DIR}/usr/bin/mkcramfs $$TMPDIR ${BINARIES_DIR}/dts.cramfs ; \
+	rm -fr $$TMPDIR ; \
+	echo "cramfs image with Raumfeld device-trees created as ${BINARIES_DIR}/dts.cramfs"
