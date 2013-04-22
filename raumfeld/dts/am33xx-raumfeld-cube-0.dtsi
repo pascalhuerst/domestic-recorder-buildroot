@@ -5,8 +5,8 @@
  */
 
 / {
-	model = "Raumfeld Connector (AM33xx)";
-	compatible = "ti,am335x-raumfeld-connector", "ti,am33xx";
+	model = "Raumfeld Cube (AM33xx)";
+	compatible = "ti,am335x-raumfeld-cube", "ti,am33xx";
 
 	chosen {
 		bootargs = "console=ttyO0,115200n8";
@@ -19,7 +19,6 @@
 				0x154 0x18	/* SPI0_D0  */
 				0x158 0x38	/* SPI0_D1  */
 				0x15C 0x18	/* SPI0_CS0 */
-				0x58  0x07	/* AK4101 reset */
 			>;
 		};
 
@@ -37,7 +36,7 @@
 			>;
 		};
 
-		audio_pins: pinmux_audio_pins {
+		audio_pins: audio_pins_multichannel {
 			pinctrl-single,pins = <
 				0x1ac 0x28	/* MCASP0_MCLK_OUT */
 				0x190 0x08	/* MCASP0_BCLK_OUT */
@@ -48,6 +47,14 @@
 				0x1a4 0x28	/* MCASP0_WCLK_IN  */
 				0x19c 0x28	/* MCASP0_MCLK_IN  */
 				0x1a0 0x27	/* MCASP0_BCLK_IN -> GPIO */
+
+				0xd0  0x04	/* lcd_data12 -> MCASP0_ARX2 (LCD_DATA12) -out */
+				0xd4  0x04	/* lcd_data13 -> MCASP0_ARX3 (LCD_DATA13) -out */
+				0xd8  0x03	/* lcd_data14 -> MCASP0_ARX1 (LCD_DATA14) -out */
+				  
+				0x40 0x3f	/* gpmc_a0.-> gpio1_16, - (overtemperrature) - in*/
+				0x4c 0x7	/* gpmc_a3.-> gpio1_19,  - (/reset) - out*/
+				0x58 0x3f	/* gpmc_a6.-> gpio1_22, - (shutdown) - in*/
 			>;
 		};
 	};
@@ -71,27 +78,11 @@
 			pinctrl-0 = <&i2c3_pins>;
 			clock-frequency = <100000>;
 
-			cs4271: cs4271@10 {
-				compatible = "cirrus,cs4271";
-				reg = <0x10>;
+			tas5086: tas5086@27 {
+				compatible = "ti,tas5086";
+				reg = <0x1b>;
 				reset-gpio = <&gpio1 19 0>;
-				cirrus,amutec-eq-bmutec;
-				cirrus,enable-soft-reset;
 				vd-supply = <&vdd_audio>;
-			};
-		};
-
-		spi0: spi@48030000 {
-			status = "okay";
-			ti,pindir-d0-out-d1-in;
-			pinctrl-names = "default";
-			pinctrl-0 = <&spi0_pins>;
-
-			ak4104: ak4104@0 {
-				compatible = "asahi-kasei,ak4104";
-				reg = <0>; /* CS0 */
-				spi-max-frequency = <500000>;
-				reset-gpio = <&gpio1 22 0>;
 			};
 		};
 
@@ -147,12 +138,17 @@
 			op-mode = <0>;	  /* MCASP_IIS_MODE */
 			tdm-slots = <2>;
 			num-serializer = <16>;
-			serial-dir = <  1 2 0 0 /* 0: INACTIVE, 1: TX, 2: RX */
+			serial-dir = <  1 1 2 0 /* 0: INACTIVE, 1: TX, 2: RX */
 					0 0 0 0
 					0 0 0 0
 					0 0 0 0 >;
 			tx-num-evt = <1>;
 			rx-num-evt = <1>;
+		};
+
+		ak5386: ak5386@0 {
+			compatible = "asahi-kasei,ak5386";
+			/* reset-gpio = <&gpio1 19 0>; */
 		};
 	};
 
@@ -160,30 +156,29 @@
 		compatible = "sue,am33xx-generic-audio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&audio_pins>;
-		sue,card-name = "Connector";
+		sue,card-name = "Cube";
 		clocks = <&si5351a 0>;
-		sue,invert-wclk;
 
 		link@0 {
-			sue,name = "analog";
+			sue,name = "analog output";
 			sue,stream-name = "I2S";
 
 			sue,platform = <&mcasp0>;
 			sue,cpu-dai-name = "48038000.mcasp";
 
-			sue,codec = <&cs4271>;
-			sue,codec-dai-name = "cs4271-hifi";
+			sue,codec = <&tas5086>;
+			sue,codec-dai-name = "tas5086-hifi";
 		};
 
 		link@1 {
-			sue,name = "digital";
+			sue,name = "analog input";
 			sue,stream-name = "I2S";
 
 			sue,platform = <&mcasp0>;
 			sue,cpu-dai-name = "48038000.mcasp";
 
-			sue,codec = <&ak4104>;
-			sue,codec-dai-name = "ak4104-hifi";
+			sue,codec = <&ak5386>;
+			sue,codec-dai-name = "ak5386-hifi";
 		};
 	};
 

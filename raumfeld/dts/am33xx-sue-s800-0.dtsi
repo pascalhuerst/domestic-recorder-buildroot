@@ -48,6 +48,12 @@
 			>;
 		};
 
+		mmc1_cirq_pin: pinmux_cirq_pin {
+			pinctrl-single,pins = <
+				0x0f8 0x3f	/* MMC0_DAT1 as GPIO2_28 */
+			>;
+		};
+
 		spi0_pins: pinmux_spi0_pins {
 			pinctrl-single,pins = <
 				0x150 0x28	/* SPI0_SCLK */
@@ -66,6 +72,7 @@
 				reg = <0 0 0>; /* CS0 */
 				nand-bus-width = <8>;
 				ti,nand-ecc-opt = "bch8";
+				elm_id = <&elm>;
 
 				gpmc,sync-clk = <0>;
 				gpmc,cs-on = <0>;
@@ -132,7 +139,7 @@
 			};
 		};
 
-		i2c1: i2c@44e0b000 {
+		i2c@44e0b000 {
 			status = "okay";
 			clock-frequency = <100000>;
 			pinctrl-names = "default";
@@ -147,6 +154,52 @@
 				reg = <0x50>;
 				pagesize = <16>;
 			};
+
+			/* Si5351a i2c clock generator */
+			si5351a: clock-generator@60 {
+				compatible = "silabs,si5351a";
+				reg = <0x60>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+				#clock-cells = <1>;
+
+				/* connect xtal input to 25MHz reference */
+				clocks = <&ref25>;
+
+				/* connect xtal input as source of pll0 and pll1 */
+				silabs,pll-source = <0 0>, <1 0>;
+
+				/*
+				 * overwrite clkout0 configuration with:
+				 * - 8mA output drive strength
+				 * - pll0 as clock source of multisynth0
+				 * - multisynth0 as clock source of output divider
+				 * - multisynth0 can change pll0
+				 */
+				clkout0 {
+					reg = <0>;
+					silabs,drive-strength = <8>;
+					silabs,multisynth-source = <0>;
+					silabs,clock-source = <0>;
+					silabs,pll-master;
+				};
+
+				/*
+				 * overwrite clkout1 configuration with:
+				 * - 8mA output drive strength
+				 * - pll1 as clock source of multisynth1
+				 * - multisynth1 as clock source of output divider
+				 * - multisynth1 can change pll1
+				 */
+				clkout1 {
+					reg = <1>;
+					silabs,drive-strength = <8>;
+					silabs,multisynth-source = <1>;
+					silabs,clock-source = <0>;
+					silabs,pll-master;
+					clock-frequency = <32768>;
+				};
+			};
 		};
 
 		uart1: serial@44e09000 {
@@ -155,8 +208,10 @@
 		};
 
 		mmc1: mmc@48060000 {
-			pinctrl-names = "default";
+			pinctrl-names = "default", "idle";
 			pinctrl-0 = <&mmc1_pins>;
+			pinctrl-1 = <&mmc1_cirq_pin>;
+			ti,cirq-gpio = <&gpio2 28 0>;
 			ti,non-removable;
 			bus-width = <4>;
 			vmmc-supply = <&ldo2_reg>;
@@ -165,6 +220,13 @@
 			status = "okay";
 		};
 
+	};
+
+	/* 25MHz output from AR8030 Ethernet PHY */
+	ref25: ref25M {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <25000000>;
 	};
 
 	vmmc: reg_vmmc_gpio {
