@@ -50,8 +50,10 @@ LINUX_MAKE_FLAGS = \
 	CROSS_COMPILE="$(CCACHE) $(TARGET_CROSS)" \
 	DEPMOD=$(HOST_DIR)/usr/sbin/depmod
 
-ifneq ($(BR2_LINUX_KERNEL_LOADADDR),)
-LINUX_MAKE_FLAGS += LOADADDR=$(BR2_LINUX_KERNEL_LOADADDR)
+LOADADDR = $(call qstrip,$(BR2_LINUX_KERNEL_LOADADDR))
+
+ifneq ($(LOADADDR),)
+LINUX_MAKE_FLAGS += LOADADDR=$(LOADADDR)
 endif
 
 # Get the real Linux version, which tells us where kernel modules are
