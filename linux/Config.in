@@ -288,6 +288,7 @@ endif
 
 config BR2_LINUX_KERNEL_LOADADDR
        string "Kernel load address"
+       default ""
        help
          Set the load address
 
