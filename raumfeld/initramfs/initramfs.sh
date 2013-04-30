@@ -4,20 +4,23 @@ export PATH="/sbin:/usr/sbin:$PATH"
 
 echo "Booted to initramfs."
 
-hw=`cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' '`
-
-if [ -z "$hw" ]; then
-    hw=`cat /proc/cpuinfo | grep ^model\ name | cut -f 3 -d' '`
-fi
+hw=$(cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' ')
 
 offset="5128192"  # default value
-offset_v2="8658944"
 
 case "$hw" in
     AM33XX)
 	arch="armada"
-	img="connect2.img"
-	offset=$offset_v2
+	offset="8658944"
+        model=$(cat /proc/device-tree/model | cut -f 2 -d' ')
+        case "$model" in
+            Connector)
+                img="connect2.img"
+                ;;
+            Cube)
+                img="cube.img"
+                ;;
+        esac
 	;;
     Controller)
 	arch="arm"
