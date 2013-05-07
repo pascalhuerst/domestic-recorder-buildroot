@@ -36,6 +36,13 @@
 			>;
 		};
 
+		button_pins: pinmux_button_pins {
+			pinctrl-single,pins = <
+				0xdc 0x77	/* GPIO0_11 */
+				0x3c 0x77	/* GPIO1_15 */
+			>;
+		};
+
 		audio_pins: audio_pins_multichannel {
 			pinctrl-single,pins = <
 				0x1ac 0x28	/* MCASP0_MCLK_OUT */
@@ -48,12 +55,12 @@
 				0x19c 0x28	/* MCASP0_MCLK_IN  */
 				0x1a0 0x27	/* MCASP0_BCLK_IN -> GPIO */
 
-				0xd0  0x04	/* lcd_data12 -> MCASP0_ARX2 (LCD_DATA12) -out */
-				0xd4  0x04	/* lcd_data13 -> MCASP0_ARX3 (LCD_DATA13) -out */
-				0xd8  0x03	/* lcd_data14 -> MCASP0_ARX1 (LCD_DATA14) -out */
-				  
+				0xd0  0x04	/* lcd_data12 -> MCASP0_AXR2 (LCD_DATA12) - out */
+				//0xd4  0x04	/* lcd_data13 -> MCASP0_AXR3 (LCD_DATA13) - out */
+				//0xd8  0x03	/* lcd_data14 -> MCASP0_AXR1 (LCD_DATA14) - out */
+
 				0x40 0x3f	/* gpmc_a0.-> gpio1_16, - (overtemperrature) - in*/
-				0x4c 0x7	/* gpmc_a3.-> gpio1_19,  - (/reset) - out*/
+				0x4c 0x7	/* gpmc_a3.-> gpio1_19, - (/reset) - out*/
 				0x58 0x3f	/* gpmc_a6.-> gpio1_22, - (shutdown) - in*/
 			>;
 		};
@@ -105,6 +112,8 @@
 
 		gpio-keys {
 			compatible = "gpio-keys";
+			pinctrl-names = "default";
+			pinctrl-0 = <&button_pins>;
 
 			setup {
 				label = "Setup";
@@ -126,6 +135,20 @@
 				linux,code = <116>; /* KEY_POWER */
 				gpio-key,wakeup;
 			};
+
+			vol-up {
+				label = "Volume UP";
+				gpios = <&gpio0 11 1>;
+				linux,code = <115>; /* KEY_VOLUMEUP */
+				gpio-key,wakeup;
+			};
+
+			vol-down {
+				label = "Volume DOWN";
+				gpios = <&gpio1 15 1>;
+				linux,code = <114>; /* KEY_VOLUMEDOWN */
+				gpio-key,wakeup;
+			};
 		};
 
 		usb@47400000 {
@@ -138,7 +161,7 @@
 			op-mode = <0>;	  /* MCASP_IIS_MODE */
 			tdm-slots = <2>;
 			num-serializer = <16>;
-			serial-dir = <  1 1 2 0 /* 0: INACTIVE, 1: TX, 2: RX */
+			serial-dir = <  1 2 1 0 /* 0: INACTIVE, 1: TX, 2: RX */
 					0 0 0 0
 					0 0 0 0
 					0 0 0 0 >;
