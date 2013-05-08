@@ -6,6 +6,10 @@ echo "Booted to initramfs."
 
 hw=$(cat /proc/cpuinfo | grep ^Hardware | cut -f 3 -d' ')
 
+if [ -z "$hw" ]; then
+    hw=`cat /proc/cpuinfo | grep ^model\ name | cut -f 3 -d' '`
+fi
+
 offset="5128192"  # default value
 
 case "$hw" in
