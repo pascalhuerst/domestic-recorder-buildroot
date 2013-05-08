@@ -15857,7 +15857,7 @@ index 0000000..f54a8cb
 -- 
 1.8.1.4
 
-From 3da5ae1e5a1e86f828539238d8774c948a66aa59 Mon Sep 17 00:00:00 2001
+From eb0d031763ef89d69f4ed3254da78467d72a074c Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Mon, 6 May 2013 18:15:48 +0200
 Subject: [PATCH 56/56] TAS HACK
@@ -15867,7 +15867,7 @@ Subject: [PATCH 56/56] TAS HACK
  1 file changed, 16 insertions(+)
 
 diff --git a/sound/soc/codecs/tas5086.c b/sound/soc/codecs/tas5086.c
-index 6c5470c..7e8769a 100644
+index 6c5470c..529b25c 100644
 --- a/sound/soc/codecs/tas5086.c
 +++ b/sound/soc/codecs/tas5086.c
 @@ -564,6 +564,22 @@ msleep(300);
@@ -15875,7 +15875,7 @@ index 6c5470c..7e8769a 100644
  	}
  
 +	struct i2c_msg xfer[2];
-+	__u8 foo[]  = { 0x20, 0x00, 0x00, 0x45, 0x77 };
++	__u8 foo[]  = { 0x20, 0x00, 0x01, 0x45, 0x77 };
 +	__u8 foo1[] = { 0x25, 0x00, 0x01, 0x23, 0x45 };
 +
 +	xfer[0].addr = i2c->addr;
