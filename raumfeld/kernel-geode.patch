@@ -54,17 +54,16 @@ diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
 index fc0a147..8a9f251 100644
 --- a/arch/x86/kernel/tsc.c
 +++ b/arch/x86/kernel/tsc.c
-@@ -393,7 +393,9 @@ success:
+@@ -400,7 +400,9 @@
  	delta *= PIT_TICK_RATE;
  	do_div(delta, i*256*1000);
- 	printk("Fast TSC calibration using PIT\n");
+ 	pr_info("Fast TSC calibration using PIT\n");
 -	return delta;
 +	/* HACK HACK */
 +	return 498000;
-+	//return delta;
++	// return delta;
  }
  
  /**
 -- 
 1.7.10.4
-
