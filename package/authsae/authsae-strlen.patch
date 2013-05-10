@@ -1,0 +1,11 @@
+diff -u authsae-d825a6eff3351cda27e167d61597efce1b6db03d-orig/ampe.c authsae-d825a6eff3351cda27e167d61597efce1b6db03d/ampe.c
+--- authsae-d825a6eff3351cda27e167d61597efce1b6db03d-orig/ampe.c	2013-04-18 18:17:19.000000000 +0200
++++ authsae-d825a6eff3351cda27e167d61597efce1b6db03d/ampe.c	2013-04-25 14:47:10.239675022 +0200
+@@ -76,6 +76,8 @@
+ static const unsigned char pw_suite_selector[4] = { 0x0, 0xf, 0xac, 0x4 };     /*  CCMP  */
+ static const unsigned char null_nonce[32] = { 0 };
+ 
++extern size_t strnlen (__const char *__string, size_t __maxlen);
++
+ /* global configuration data */
+ static struct ampe_config ampe_conf;
