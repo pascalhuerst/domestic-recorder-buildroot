@@ -12,8 +12,7 @@ REMOTE_CONTROL_POST_PATCH_HOOKS += REMOTE_CONTROL_GLIB_GETTEXTIZE
 
 REMOTE_CONTROL_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
-	ac_cv_path_GLIB_MKENUMS=$(HOST_DIR)/usr/bin/glib-mkenums \
-	gt_cv_func_gnugettext1_libintl=yes
+	ac_cv_path_GLIB_MKENUMS=$(HOST_DIR)/usr/bin/glib-mkenums
 
 REMOTE_CONTROL_CONF_OPT = \
 	--disable-glibtest
