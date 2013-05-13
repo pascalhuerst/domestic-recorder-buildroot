@@ -621,6 +621,7 @@ endmenu
 menu "Networking applications"
 source "package/argus/Config.in"
 source "package/arptables/Config.in"
+source "package/authsae/Config.in"
 source "package/avahi/Config.in"
 source "package/axel/Config.in"
 source "package/bluez_utils/Config.in"
@@ -743,7 +744,6 @@ endif
 source "package/wireless-regdb/Config.in"
 source "package/wireless_tools/Config.in"
 source "package/wpa_supplicant/Config.in"
-source "package/authsae/Config.in"
 source "package/xinetd/Config.in"
 source "package/xl2tp/Config.in"
 
