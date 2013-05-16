@@ -1,7 +1,7 @@
 From 0030be18bc2eed4e5c29a1719a8a91e829285341 Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Thu, 6 Sep 2012 17:47:21 -0400
-Subject: [PATCH 01/56] mmc: omap_hsmmc: convert to
+Subject: [PATCH 01/58] mmc: omap_hsmmc: convert to
  dma_request_slave_channel_compat()
 
 Convert dmaengine channel requests to use
@@ -49,7 +49,7 @@ index bc58078..e79b12d 100644
 From cb9dfc1b2d910f2671896c3027255fdcb0d4eefa Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Wed, 6 Mar 2013 11:15:31 -0500
-Subject: [PATCH 02/56] ARM: davinci: move private EDMA API to arm/common
+Subject: [PATCH 02/58] ARM: davinci: move private EDMA API to arm/common
 
 Move mach-davinci/dma.c to common/edma.c so it can be used
 by OMAP (specifically AM33xx) as well.
@@ -4071,7 +4071,7 @@ index 5be65aa..76ea586 100644
 From 82f43edc8d2d7392779668d1d7d1cb07faef257e Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Wed, 6 Mar 2013 11:15:32 -0500
-Subject: [PATCH 03/56] ARM: edma: remove unused transfer controller handlers
+Subject: [PATCH 03/58] ARM: edma: remove unused transfer controller handlers
 
 Fix build on OMAP, the irqs are undefined on AM33xx.
 These error interrupt handlers were hardcoded as disabled
@@ -4144,7 +4144,7 @@ index dcaeb8e..a1db6cd 100644
 From 486504be3eb8cb5620f8b69472c69e4c816d1e4c Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Wed, 6 Mar 2013 11:15:33 -0500
-Subject: [PATCH 04/56] ARM: edma: add AM33XX support to the private EDMA API
+Subject: [PATCH 04/58] ARM: edma: add AM33XX support to the private EDMA API
 
 Adds support for parsing the TI EDMA DT data into the
 required EDMA private API platform data. Enables runtime
@@ -4550,7 +4550,7 @@ index 2344ea2..ffc1fb2 100644
 From 6271f95662a27cbc0e99d54eb8bacc559e515f87 Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Wed, 6 Mar 2013 11:15:34 -0500
-Subject: [PATCH 05/56] dmaengine: edma: enable build for AM33XX
+Subject: [PATCH 05/58] dmaengine: edma: enable build for AM33XX
 
 Enable TI EDMA option on OMAP.
 
@@ -4578,7 +4578,7 @@ index aeaea32..e772e43 100644
 From accde160ec4a588bfadbef410fc4083ee9bfec9f Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Wed, 6 Mar 2013 11:15:35 -0500
-Subject: [PATCH 06/56] dmaengine: edma: Add TI EDMA device tree binding
+Subject: [PATCH 06/58] dmaengine: edma: Add TI EDMA device tree binding
 
 The binding definition is based on the generic DMA controller
 binding.
@@ -4650,7 +4650,7 @@ index 0000000..075a60e3
 From 63cc16cfe2ac8c3ebb25b319d2e7bd0efc706ef9 Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Thu, 20 Sep 2012 08:55:41 -0400
-Subject: [PATCH 07/56] mmc: omap_hsmmc: limit max_segs with the EDMA DMAC
+Subject: [PATCH 07/58] mmc: omap_hsmmc: limit max_segs with the EDMA DMAC
 
 The EDMA DMAC has a hardware limitation that prevents supporting
 scatter gather lists with any number of segments. Since the EDMA
@@ -4692,7 +4692,7 @@ index e79b12d..bdece4e 100644
 From f3f0dd08b19204dd741a71da5919877e7b844c17 Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Fri, 1 Feb 2013 13:22:54 -0500
-Subject: [PATCH 08/56] spi: omap2-mcspi: add generic DMA request support to
+Subject: [PATCH 08/58] spi: omap2-mcspi: add generic DMA request support to
  the DT binding
 
 The binding definition is based on the generic DMA request binding
@@ -4750,7 +4750,7 @@ index 938809c..4c85c4c 100644
 From 7211642efc1590bcaea1727876c1b9ffd580bd62 Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Tue, 26 Feb 2013 14:57:25 +0100
-Subject: [PATCH 09/56] spi: omap2-mcspi: convert to
+Subject: [PATCH 09/58] spi: omap2-mcspi: convert to
  dma_request_slave_channel_compat()
 
 Convert dmaengine channel requests to use
@@ -4870,7 +4870,7 @@ index 893c3d7..c1f5bad 100644
 From ef0d9214aef150795fcc2aa26de04e803a76ef5e Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 26 Feb 2013 15:05:09 +0100
-Subject: [PATCH 10/56] omap: enable EDMA for AM33XX
+Subject: [PATCH 10/58] omap: enable EDMA for AM33XX
 
 ---
  arch/arm/mach-omap2/Kconfig | 1 +
@@ -4894,7 +4894,7 @@ index 1d01905..95dc25d 100644
 From dc7bd5e8ed140a025d07cf6ca97e23f4252a6e5b Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 10 Oct 2012 13:41:58 +0200
-Subject: [PATCH 11/56] ALSA: ASoC: add config option for AM33xx
+Subject: [PATCH 11/58] ALSA: ASoC: add config option for AM33xx
 
 The McASP part which, was originally implemented for Davinci SoCs only,
 is also found on AM33xx chips.
@@ -4944,7 +4944,7 @@ index a93679d..e3d5b54 100644
 From 2ee8a53055ce1d54d900914ee692a3f5d285e6d4 Mon Sep 17 00:00:00 2001
 From: "Hebbar, Gururaja" <gururaja.hebbar@ti.com>
 Date: Fri, 10 Aug 2012 20:38:09 +0530
-Subject: [PATCH 12/56] ASoC/dts: OMAP2+: AM33xx: [HACK] Add missing dma info
+Subject: [PATCH 12/58] ASoC/dts: OMAP2+: AM33xx: [HACK] Add missing dma info
 
 This patch adds dma related  dt entries and functions that later will be
 replaced by actual DMA porting
@@ -5014,7 +5014,7 @@ index 9321e5c..a0789ec 100644
 From 23066f8c4caaa4fdd8cf3a27a6d30db19b8f6aca Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Mon, 10 Dec 2012 12:50:46 +0100
-Subject: [PATCH 13/56] ALSA: ASoC: McASP: keep XCLKRST in
+Subject: [PATCH 13/58] ALSA: ASoC: McASP: keep XCLKRST in
  DAVINCI_MCASP_GBLCTLX_REG on stream stop
 
 Signed-off-by: Daniel Mack <zonque@gmail.com>
@@ -5041,7 +5041,7 @@ index a0789ec..05f1116 100644
 From 3c372b83bc2080dc64d24aa273d1a7bb8e891342 Mon Sep 17 00:00:00 2001
 From: Michal Bachraty <michal.bachraty@streamunlimited.com>
 Date: Thu, 28 Feb 2013 16:07:08 +0100
-Subject: [PATCH 14/56] davinci-mcasp: Add support for multichannel playback
+Subject: [PATCH 14/58] davinci-mcasp: Add support for multichannel playback
 
 Davinci McASP has support for I2S multichannel playback.
 For I2S playback/receive, each serializer is capable to play 2 channels
@@ -5278,7 +5278,7 @@ index fbb710c..0d84d32 100644
 From 80da7773c86250d810cd371bab37ab391ed86c57 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 10 Oct 2012 13:45:30 +0200
-Subject: [PATCH 15/56] ALSA: ASoC: add machine driver for SUE boards
+Subject: [PATCH 15/58] ALSA: ASoC: add machine driver for SUE boards
 
 Signed-off-by: Daniel Mack <zonque@gmail.com>
 ---
@@ -5607,7 +5607,7 @@ index 0000000..8d24e03
 From f59c92e4bb04821d34609b45ab082f1f1b8866a8 Mon Sep 17 00:00:00 2001
 From: Michal Bachraty <michal.bachraty@streamunlimited.com>
 Date: Mon, 11 Mar 2013 17:25:12 +0100
-Subject: [PATCH 16/56] Refine PPM clock compensation computing algorithm.
+Subject: [PATCH 16/58] Refine PPM clock compensation computing algorithm.
 
 Now it is able to refine with 5568 PPM for 24576000 Hz Mclk
 
@@ -5675,7 +5675,7 @@ index 8d24e03..5eef329 100644
 From 338eab35f00b30818b320a9127cdd752ef7a4414 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 7 Nov 2012 12:11:04 +0100
-Subject: [PATCH 17/56] mwifiex: rename 'mlan' to 'wlan'
+Subject: [PATCH 17/58] mwifiex: rename 'mlan' to 'wlan'
 
 ---
  drivers/net/wireless/mwifiex/main.c | 2 +-
@@ -5700,7 +5700,7 @@ index 9c802ed..102e636 100644
 From aeeae5f41d73764c6cbcec85f3244ff3956e1784 Mon Sep 17 00:00:00 2001
 From: Dave Martin <(address hidden)>
 Date: Wed, 21 Nov 2012 19:11:52 +0100
-Subject: [PATCH 18/56] Thumb-2: Add local symbols to work around gas behaviour
+Subject: [PATCH 18/58] Thumb-2: Add local symbols to work around gas behaviour
 
 All current versions of gas at the time of writing have issues
 fixing up pc-relative instructions which reference global symbols,
@@ -5796,7 +5796,7 @@ index d0cdedf..fe57bb9 100644
 From 2946cacd8ff157ceda3871b0f6b8d8396d62788f Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 19 Feb 2013 12:05:25 +0100
-Subject: [PATCH 19/56] ARM: OMAP: generic: add call to of_clk_init()
+Subject: [PATCH 19/58] ARM: OMAP: generic: add call to of_clk_init()
 
 This is needed to instanciate fixed clocks in the DT.
 
@@ -5843,7 +5843,7 @@ index e54a480..f2a2a70 100644
 From 076b01ae64c4d1bb70c181b8b7720649f2bea9fa Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Sun, 3 Mar 2013 13:06:21 +0100
-Subject: [PATCH 20/56] gpmc: hack
+Subject: [PATCH 20/58] gpmc: hack
 
 ---
  arch/arm/mach-omap2/gpmc.c | 2 +-
@@ -5868,7 +5868,7 @@ index 410e1ba..d9a3d8a 100644
 From 017996ab0621d25edc3ba8df5ecbd1dd31497a77 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Sat, 3 Nov 2012 09:50:39 +0100
-Subject: [PATCH 21/56] mmc clock hack
+Subject: [PATCH 21/58] mmc clock hack
 
 ---
  drivers/mmc/host/omap_hsmmc.c | 28 ++++++++++++++++++++++++++++
@@ -5926,7 +5926,7 @@ index bdece4e..d04d63a 100644
 From 6d7c7ac4a7907514d4bd31fe5283896a213635a5 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Sun, 3 Mar 2013 22:02:31 +0100
-Subject: [PATCH 22/56] mtd: devices: elm: check for device's presence before
+Subject: [PATCH 22/58] mtd: devices: elm: check for device's presence before
  configuration
 
 In case the driver is not probed - due to config mismatches or errors
@@ -6006,7 +6006,7 @@ index 1bd5244..bf0a83b 100644
 From d2afc746363bcb1d94c0106cbbefac0e54e678f7 Mon Sep 17 00:00:00 2001
 From: Yegor Yefremov <yegorslists@googlemail.com>
 Date: Mon, 4 Mar 2013 11:34:25 +0100
-Subject: [PATCH 23/56] ALSA: ASoC: davinci-mcasp: don't configure AFSX
+Subject: [PATCH 23/58] ALSA: ASoC: davinci-mcasp: don't configure AFSX
  direction in DIT mode
 
 AFSX won't be used in DIT mode. The related pins are AHCLKX and
@@ -6038,7 +6038,7 @@ index a7be2ee..a415588 100644
 From 521a68719c49df29c89ea6c18d0f69a098b2205b Mon Sep 17 00:00:00 2001
 From: Yegor Yefremov <yegorslists@googlemail.com>
 Date: Mon, 4 Mar 2013 11:34:26 +0100
-Subject: [PATCH 24/56] ALSA: ASoC: davinci-mcasp: don't overwrite DIT settings
+Subject: [PATCH 24/58] ALSA: ASoC: davinci-mcasp: don't overwrite DIT settings
 
 Channel size settings will be made at the end of
 davinci_mcasp_hw_params() routine and thus overwrite frame
@@ -6101,7 +6101,7 @@ index a415588..b386cad 100644
 From 909a562358a6027cfb9b1c830823efcbfff59508 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 6 Mar 2013 22:10:19 +0100
-Subject: [PATCH 25/56] ALSA: ASoC: cs4271: convert to direct regmap API usage
+Subject: [PATCH 25/58] ALSA: ASoC: cs4271: convert to direct regmap API usage
 
 By using the regmap API directly, we can make use of the
 .write_flag_mask for SPI, which allows us to drop the strange register
@@ -6431,7 +6431,7 @@ index 2415a41..ac0d3b4 100644
 From 23aa80e5ec53bc9fece3da525bb01e221c1ffcfa Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 6 Mar 2013 21:15:01 +0100
-Subject: [PATCH 26/56] ALSA: ASoC: ak4104: convert to direct regmap API usage
+Subject: [PATCH 26/58] ALSA: ASoC: ak4104: convert to direct regmap API usage
 
 Signed-off-by: Daniel Mack <zonque@gmail.com>
 ---
@@ -6531,7 +6531,7 @@ index 6f6c335..58f390d 100644
 From 65e74ba593ec75231f465a22740c80a76cc8cf5a Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 6 Mar 2013 22:10:54 +0100
-Subject: [PATCH 27/56] ALSA: ASoC: ak4104: correct tranceiver enable handling
+Subject: [PATCH 27/58] ALSA: ASoC: ak4104: correct tranceiver enable handling
 
 Move the enabling of the TX diode to hw_params() and disable it again in
 hw_free(). This way, the diode is only switched on as long as it needs
@@ -6596,7 +6596,7 @@ index 58f390d..c7cfdf9 100644
 From 06cf69df7ce742694c8fea063a7a8052c5d74a75 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Thu, 7 Mar 2013 12:25:56 +0100
-Subject: [PATCH 28/56] ALSA: ASoC: Add codec driver for AK5386
+Subject: [PATCH 28/58] ALSA: ASoC: Add codec driver for AK5386
 
 Adds a driver for Asahi Kasei's AK5386 Single-ended 24-Bit 192kHz
 delta-sigma ADC. The device has no control port interface but an
@@ -6843,7 +6843,7 @@ index 0000000..1f30398
 From 955980c4d184ba59e13e197e76948595db4a3250 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Sat, 2 Mar 2013 14:25:12 +0100
-Subject: [PATCH 29/56] ALSA: ASoC: add codec driver for TI TAS5086
+Subject: [PATCH 29/58] ALSA: ASoC: add codec driver for TI TAS5086
 
 This patch adds a driver for TI's TA5086 6-channel PWM processor.
 
@@ -7575,7 +7575,7 @@ index 0000000..008bea4
 From 5438476fe73eea84def47f8df9b06c36f63243bd Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Fri, 8 Mar 2013 14:11:52 +0100
-Subject: [PATCH 30/56] ALSA: ASoC: davinci-mcasp: clean up
+Subject: [PATCH 30/58] ALSA: ASoC: davinci-mcasp: clean up
  davinci_hw_common_param()
 
 As pointed of by Vaibhav, commit 2952b27e2 ("ASoC: davinci-mcasp:
@@ -7657,7 +7657,7 @@ index b386cad..8a9c0ee 100644
 From 603f866681faeb8f49c15b03e39df9d604bf3a9b Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Fri, 8 Mar 2013 14:44:07 +0100
-Subject: [PATCH 31/56] TAS5086: add delay hack
+Subject: [PATCH 31/58] TAS5086: add delay hack
 
 This is only necessary for the EVM kit, not for the final hardware. At
 least it seems. Dunno why.
@@ -7683,7 +7683,7 @@ index 008bea4..6c5470c 100644
 From 2969dfdd7cc2633316527917e4b1cf7c2d1395b3 Mon Sep 17 00:00:00 2001
 From: Michal Bachraty <michal.bachraty@streamunlimited.com>
 Date: Mon, 11 Mar 2013 14:11:50 +0100
-Subject: [PATCH 32/56] ALSA: ASoC davinci-pcm, davinci-mcasp Clean up
+Subject: [PATCH 32/58] ALSA: ASoC davinci-pcm, davinci-mcasp Clean up
  active_serializers As pointed of by Vaibhav, commit 2952b27e2 ("ASoC:
  davinci-mcasp: Add support for multichannel playback") number of active
  serializers can be hidden into fifo_level variable, which is set in
@@ -7798,7 +7798,7 @@ index 0d84d32..fbb710c 100644
 From a58e4228de7e5079dcc4d60938541cdca4d915e1 Mon Sep 17 00:00:00 2001
 From: Michal Bachraty <michal.bachraty@streamunlimited.com>
 Date: Mon, 11 Mar 2013 14:18:05 +0100
-Subject: [PATCH 33/56] ALSA: ASoC davinci-pcm Fix DMA dst_bidx for no FIFO DMA
+Subject: [PATCH 33/58] ALSA: ASoC davinci-pcm Fix DMA dst_bidx for no FIFO DMA
  transfer
 
 As documented in AM335x TRM:
@@ -7834,7 +7834,7 @@ index 8460edc..89608fb 100644
 From 91bb2bd068152c606506286bd42148af3cc38a40 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 12 Mar 2013 12:24:17 +0100
-Subject: [PATCH 34/56] ASoC: cs4271: switch to mute_stream
+Subject: [PATCH 34/58] ASoC: cs4271: switch to mute_stream
 
 Use the newly introduced mute_stream DAI operation, and don't mute the
 codec if it's called for the _CAPTURE stream.
@@ -7883,7 +7883,7 @@ index ac0d3b4..03036b3 100644
 From 3feff8b95a4edc7944df5a56af5689af5417ce5e Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 12 Mar 2013 13:33:03 +0100
-Subject: [PATCH 35/56] ASoC: cs4271: preserve "Master Playback Switch" setting
+Subject: [PATCH 35/58] ASoC: cs4271: preserve "Master Playback Switch" setting
 
 Currently, both the ALSA control for "Digital Master Playback Switch"
 and the ALSA core (by calling dai_ops->mute_stream()) control the same
@@ -8019,7 +8019,7 @@ index 03036b3..3a2ab48 100644
 From cd523234b2f80ff3f39fcf2e2b6e20ccce769ce8 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Fri, 15 Feb 2013 12:44:01 +0100
-Subject: [PATCH 36/56] ARM: Add Raumfeld/SUE DTS
+Subject: [PATCH 36/58] ARM: Add Raumfeld/SUE DTS
 
 Add DTS files for Raumfeld Connector v2 and SUE S800 module.
 Assorted AM33xx changes.
@@ -9025,7 +9025,7 @@ index 0957645..370e708 100644
 From 9456183510e5a26e2c9fad579c33816167adfbc4 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 12 Mar 2013 14:09:43 +0100
-Subject: [PATCH 37/56] Raumfeld/am33xx: add defconfig
+Subject: [PATCH 37/58] Raumfeld/am33xx: add defconfig
 
 ---
  arch/arm/configs/am33xx_raumfeld_defconfig | 2616 ++++++++++++++++++++++++++++
@@ -11660,7 +11660,7 @@ index 0000000..e2deb5b
 From e780d071308aa2d53ce6ca93dcef9e02b057e189 Mon Sep 17 00:00:00 2001
 From: Shawn Guo <shawn.guo@linaro.org>
 Date: Thu, 14 Mar 2013 10:14:31 +0100
-Subject: [PATCH 38/56] ARM: omap2: register cpufreq-cpu0 device for am33xx
+Subject: [PATCH 38/58] ARM: omap2: register cpufreq-cpu0 device for am33xx
 
 The cpufreq-cpu0 driver changes to instantiate use platform_driver
 mechanism.  The patch is an am33xx platform level adaptation for it.
@@ -11735,7 +11735,7 @@ index 5c445ca..b51c1c3 100644
 From 0498fd220b3a7e314b625125d9a107a1852f7814 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Fri, 5 Apr 2013 19:07:23 +0200
-Subject: [PATCH 39/56] musb: hacks
+Subject: [PATCH 39/58] musb: hacks
 
 ---
  drivers/usb/musb/musb_core.c   | 49 ++++++++++++++++++++++++++++++++++--------
@@ -11894,7 +11894,7 @@ index 83edded..081f792 100644
 From 6b8f79c659f0547480a7b0286b35a34eb4985b94 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Tue, 2 Apr 2013 00:22:16 +0200
-Subject: [PATCH 40/56] mwifiex: bug: wrong list in list_empty check.
+Subject: [PATCH 40/58] mwifiex: bug: wrong list in list_empty check.
 
 adapter->bss_prio_tbl list has already been checked in outer loop. The
 inner loop works with priv_tmp->wmm.tid_tbl_ptr list. Also the lock taken,
@@ -11925,7 +11925,7 @@ index 32adc87..b132c42 100644
 From 1259583638346e818a9550d217ef0e68418d011e Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Fri, 29 Mar 2013 22:29:01 +0100
-Subject: [PATCH 41/56] mwifiex: remove unused tid_tbl_lock from
+Subject: [PATCH 41/58] mwifiex: remove unused tid_tbl_lock from
  mwifiex_tid_tbl.
 
 ra_list_spinlock is used to protect struct mwifiex_wmm_desc and embedded
@@ -11992,7 +11992,7 @@ index b132c42..96eed2f 100644
 From f8c464fcfb364fab622082c7693412af1445d88d Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Thu, 4 Apr 2013 15:49:13 +0200
-Subject: [PATCH 42/56] mwifiex: bug: remove NO_PKT_PRIO_TID.
+Subject: [PATCH 42/58] mwifiex: bug: remove NO_PKT_PRIO_TID.
 
 Using NO_PKT_PRIO_TID and tx_pkts_queued to check for an empty state, can
 lead to a contradictory state, resulting in an infinite loop.
@@ -12068,7 +12068,7 @@ index 96eed2f..62b07d3 100644
 From f4e97dc2ae9cdbb62834b8d2aae54e9ee758c9b3 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Thu, 4 Apr 2013 22:51:47 +0200
-Subject: [PATCH 43/56] mwifiex: bug: hold proper locks when accessing ra_list
+Subject: [PATCH 43/58] mwifiex: bug: hold proper locks when accessing ra_list
  / bss_prio lists.
 
 Not locking ra_list when dequeuing packets creates race conditions.
@@ -12227,7 +12227,7 @@ index 62b07d3..62d740b 100644
 From 81f17802803d16b75707dc4d2f162c3a54456ab9 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Thu, 4 Apr 2013 21:31:47 +0200
-Subject: [PATCH 44/56] mwifiex: replace ra_list_curr by list rotation.
+Subject: [PATCH 44/58] mwifiex: replace ra_list_curr by list rotation.
 
 After a packet is successfully transmitted, ra list is rotated, so the ra
 next to the one transmitted, will be the first in the list. This way we
@@ -12482,7 +12482,7 @@ index b92f39d..644d6e0 100644
 From 0bc5948ad521cc7ebfb179d5cc461632ff21a785 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Thu, 4 Apr 2013 22:42:53 +0200
-Subject: [PATCH 45/56] mwifiex: rework round robin scheduling of bss nodes.
+Subject: [PATCH 45/58] mwifiex: rework round robin scheduling of bss nodes.
 
 Rotate bss prio list, so the bss next to the one served, will come first
 in the list of bss' with equal priority. This way we pick bss nodes in a
@@ -12742,7 +12742,7 @@ index c865e58..4995ff6 100644
 From a45a50726997e50ef3864ab003b9ae261e962434 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Fri, 22 Mar 2013 11:40:18 +0100
-Subject: [PATCH 46/56] gpio/omap: implement irq_enable/disable using
+Subject: [PATCH 46/58] gpio/omap: implement irq_enable/disable using
  mask/unmask.
 
 In PM suspend the omap_hsmmc driver can't detect SDIO IRQs. This is
@@ -12774,7 +12774,7 @@ index 159f5c5..2217e01 100644
 From 46d06e19e4c9088f69752ece6ffad1aafd31109f Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Fri, 22 Mar 2013 15:37:11 +0100
-Subject: [PATCH 47/56] mmc: omap_hsmmc: Enable SDIO IRQ using a GPIO in idle
+Subject: [PATCH 47/58] mmc: omap_hsmmc: Enable SDIO IRQ using a GPIO in idle
  mode.
 
 Without functional clock the omap_hsmmc module can't forward
@@ -13278,7 +13278,7 @@ index 2bf1b30..fd5fff5 100644
 From a43409015eaee250730b242d759ee7042e0b71d1 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Mon, 25 Mar 2013 17:50:58 +0100
-Subject: [PATCH 48/56] mmc: omap_hsmmc: debugfs entries for GPIO mode.
+Subject: [PATCH 48/58] mmc: omap_hsmmc: debugfs entries for GPIO mode.
 
 Signed-off-by: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 ---
@@ -13360,7 +13360,7 @@ index 0f70ce2..cc09fa9 100644
 From 40c4d0d05eb4a887eaa755d3831a04ec1bba13f3 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Mon, 25 Mar 2013 17:52:57 +0100
-Subject: [PATCH 49/56] mmc: omap_hsmmc: add PSTATE to debugfs regs_show.
+Subject: [PATCH 49/58] mmc: omap_hsmmc: add PSTATE to debugfs regs_show.
 
 PSTATE shows current state of data lines.
 
@@ -13396,7 +13396,7 @@ index cc09fa9..f0978c0 100644
 From 61b20442a39e997d2c19215e449d42cba79b7c03 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Sat, 2 Mar 2013 13:45:00 +0100
-Subject: [PATCH 50/56] dts: pinmux config for gpio-cirq.
+Subject: [PATCH 50/58] dts: pinmux config for gpio-cirq.
 
 Signed-off-by: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 ---
@@ -13438,7 +13438,7 @@ index 25439f9..6184b5a 100644
 From 59eb78caf350ca6303356848d669a794a61a6bec Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Mon, 25 Mar 2013 23:38:19 +0100
-Subject: [PATCH 51/56] irq: get_irq_disable_depth.
+Subject: [PATCH 51/58] irq: get_irq_disable_depth.
 
 Used to verify invariant in omap_hsmmc, were a gpio is used to detect
 sdio irqs during suspend phase. The ref count from irq_enable/irq_disable
@@ -13509,7 +13509,7 @@ index fa17855..d151868 100644
 From 89c73c65614e0156284f3746e3a767c0d12ab100 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Fri, 22 Mar 2013 15:26:35 +0100
-Subject: [PATCH 52/56] mmc: omap_hsmmc: GPIO CIRQ ref_count runtime checks.
+Subject: [PATCH 52/58] mmc: omap_hsmmc: GPIO CIRQ ref_count runtime checks.
 
 Signed-off-by: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 ---
@@ -13561,7 +13561,7 @@ index f0978c0..8107edb 100644
 From edc84cc47336a64f591efa9b5f332ed491d70d43 Mon Sep 17 00:00:00 2001
 From: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 Date: Wed, 10 Apr 2013 11:40:10 +0200
-Subject: [PATCH 53/56] clk: add si5351 i2c common clock driver
+Subject: [PATCH 53/58] clk: add si5351 i2c common clock driver
 
 This patch adds a common clock driver for Silicon Labs Si5351a/b/c
 i2c programmable clock generators. Currently, the driver does not
@@ -15546,7 +15546,7 @@ index 0000000..92dabca
 From c53e2b09d1493cd59d86d7d7d4cad3c57dee1e59 Mon Sep 17 00:00:00 2001
 From: Marek Belisko <marek.belisko@streamunlimited.com>
 Date: Fri, 19 Apr 2013 13:38:13 +0200
-Subject: [PATCH 54/56] hsmmc: Fix problems with wifi module loading in v3.9
+Subject: [PATCH 54/58] hsmmc: Fix problems with wifi module loading in v3.9
  kernel.
 
 Old u-boot set correctly pinmux and all other things to have correct
@@ -15605,10 +15605,57 @@ index 8107edb..4e09851 100644
 -- 
 1.8.1.4
 
-From 622567c17899743267b0a97b24568b0bfd284189 Mon Sep 17 00:00:00 2001
+From 57b6b1df3b85dbff441c0846ffd5be3f8a17f724 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Thu, 16 May 2013 15:07:52 +0200
+Subject: [PATCH 55/58] ASoC: davinci: fix sample rotation
+
+McASP serial audio engine needs different rotation values on TX and RX
+channels. Commit dde109fb462 ("ASoC: McASP: Fix data rotation for
+playback. Enables 24bit audio playback") changed the calculation to fix
+the playback format, but broke the capture stream by doing it for both
+TXFMT and RXFMT.
+
+Signed-off-by: Daniel Mack <zonque@gmail.com>
+Cc: Michal Bachraty <michal.bachraty@streamunlimited.com>
+Cc: stable@vger.kernel.org [3.9 only]
+---
+ sound/soc/davinci/davinci-mcasp.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
+index 63633e9..8d805ec 100644
+--- a/sound/soc/davinci/davinci-mcasp.c
++++ b/sound/soc/davinci/davinci-mcasp.c
+@@ -628,7 +628,8 @@ static int davinci_config_channel_size(struct davinci_audio_dev *dev,
+ 				       int word_length)
+ {
+ 	u32 fmt;
+-	u32 rotate = (word_length / 4) & 0x7;
++	u32 tx_rotate = (word_length / 4) & 0x7;
++	u32 rx_rotate = (32 - word_length) / 4;
+ 	u32 mask = (1ULL << word_length) - 1;
+ 
+ 	/*
+@@ -651,9 +652,9 @@ static int davinci_config_channel_size(struct davinci_audio_dev *dev,
+ 		mcasp_mod_bits(dev->base + DAVINCI_MCASP_TXFMT_REG,
+ 				TXSSZ(fmt), TXSSZ(0x0F));
+ 		mcasp_mod_bits(dev->base + DAVINCI_MCASP_TXFMT_REG,
+-				TXROT(rotate), TXROT(7));
++				TXROT(tx_rotate), TXROT(7));
+ 		mcasp_mod_bits(dev->base + DAVINCI_MCASP_RXFMT_REG,
+-				RXROT(rotate), RXROT(7));
++				RXROT(rx_rotate), RXROT(7));
+ 		mcasp_set_reg(dev->base + DAVINCI_MCASP_RXMASK_REG,
+ 				mask);
+ 	}
+-- 
+1.8.1.4
+
+From 999319cee110c831389af81b3138784df53c14d5 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Fri, 15 Feb 2013 12:44:01 +0100
-Subject: [PATCH 55/56] ARM: Add DTS files for Raumfeld CUBE
+Subject: [PATCH 56/58] ARM: Add DTS files for Raumfeld CUBE
 
 ---
  arch/arm/boot/dts/am33xx-raumfeld-cube-0-0.dts |   4 +
@@ -15857,10 +15904,10 @@ index 0000000..f54a8cb
 -- 
 1.8.1.4
 
-From eb0d031763ef89d69f4ed3254da78467d72a074c Mon Sep 17 00:00:00 2001
+From 387fc6dcd9278f6bf9c5e3411453e28029788bd9 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Mon, 6 May 2013 18:15:48 +0200
-Subject: [PATCH 56/56] TAS HACK
+Subject: [PATCH 57/58] TAS HACK
 
 ---
  sound/soc/codecs/tas5086.c | 16 ++++++++++++++++
@@ -15892,6 +15939,106 @@ index 6c5470c..529b25c 100644
 +
  	return snd_soc_register_codec(&i2c->dev, &soc_codec_dev_tas5086,
  		&tas5086_dai, 1);
+ }
+-- 
+1.8.1.4
+
+From c8a024c8dc7179deb42c9935e7f87c1270744255 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Tue, 7 May 2013 10:53:46 +0200
+Subject: [PATCH 58/58] regmap: clean up _regmap_raw_write
+
+Clean up _regmap_raw_write a bit by factoring out map->format.val_bits.
+No functional change.
+
+Signed-off-by: Daniel Mack <zonque@gmail.com>
+---
+ drivers/base/regmap/regmap.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index 58cfb32..c1ea936 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -929,19 +929,19 @@ static int _regmap_raw_write(struct regmap *map, unsigned int reg,
+ 	int ret = -ENOTSUPP;
+ 	size_t len;
+ 	int i;
++	size_t val_bytes = map->format.val_bytes;
+ 
+ 	BUG_ON(!map->bus);
+ 
+ 	/* Check for unwritable registers before we start */
+ 	if (map->writeable_reg)
+-		for (i = 0; i < val_len / map->format.val_bytes; i++)
++		for (i = 0; i < val_len / val_bytes; i++)
+ 			if (!map->writeable_reg(map->dev,
+ 						reg + (i * map->reg_stride)))
+ 				return -EINVAL;
+ 
+ 	if (!map->cache_bypass && map->format.parse_val) {
+ 		unsigned int ival;
+-		int val_bytes = map->format.val_bytes;
+ 		for (i = 0; i < val_len / val_bytes; i++) {
+ 			memcpy(map->work_buf, val + (i * val_bytes), val_bytes);
+ 			ival = map->format.parse_val(map->work_buf);
+@@ -962,23 +962,23 @@ static int _regmap_raw_write(struct regmap *map, unsigned int reg,
+ 
+ 	range = _regmap_range_lookup(map, reg);
+ 	if (range) {
+-		int val_num = val_len / map->format.val_bytes;
++		int val_num = val_len / val_bytes;
+ 		int win_offset = (reg - range->range_min) % range->window_len;
+ 		int win_residue = range->window_len - win_offset;
+ 
+ 		/* If the write goes beyond the end of the window split it */
+ 		while (val_num > win_residue) {
+ 			dev_dbg(map->dev, "Writing window %d/%zu\n",
+-				win_residue, val_len / map->format.val_bytes);
++				win_residue, val_len / val_bytes);
+ 			ret = _regmap_raw_write(map, reg, val, win_residue *
+-						map->format.val_bytes, async);
++						val_bytes, async);
+ 			if (ret != 0)
+ 				return ret;
+ 
+ 			reg += win_residue;
+ 			val_num -= win_residue;
+-			val += win_residue * map->format.val_bytes;
+-			val_len -= win_residue * map->format.val_bytes;
++			val += win_residue * val_bytes;
++			val_len -= win_residue * val_bytes;
+ 
+ 			win_offset = (reg - range->range_min) %
+ 				range->window_len;
+@@ -1011,7 +1011,7 @@ static int _regmap_raw_write(struct regmap *map, unsigned int reg,
+ 
+ 		/* If the caller supplied the value we can use it safely. */
+ 		memcpy(async->work_buf, map->work_buf, map->format.pad_bytes +
+-		       map->format.reg_bytes + map->format.val_bytes);
++		       map->format.reg_bytes + val_bytes);
+ 		if (val == work_val)
+ 			val = async->work_buf + map->format.pad_bytes +
+ 				map->format.reg_bytes;
+@@ -1040,8 +1040,7 @@ static int _regmap_raw_write(struct regmap *map, unsigned int reg,
+ 		return ret;
+ 	}
+ 
+-	trace_regmap_hw_write_start(map->dev, reg,
+-				    val_len / map->format.val_bytes);
++	trace_regmap_hw_write_start(map->dev, reg, val_len / val_bytes);
+ 
+ 	/* If we're doing a single register write we can probably just
+ 	 * send the work_buf directly, otherwise try to do a gather
+@@ -1073,8 +1072,7 @@ static int _regmap_raw_write(struct regmap *map, unsigned int reg,
+ 		kfree(buf);
+ 	}
+ 
+-	trace_regmap_hw_write_done(map->dev, reg,
+-				   val_len / map->format.val_bytes);
++	trace_regmap_hw_write_done(map->dev, reg, val_len / val_bytes);
+ 
+ 	return ret;
  }
 -- 
 1.8.1.4
