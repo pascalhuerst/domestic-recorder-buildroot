@@ -21,8 +21,8 @@ case "$hw" in
             Connector)
                 img="connect2.img"
                 ;;
-            Cube)
-                img="cube.img"
+            *)
+                img="speaker2.img"
                 ;;
         esac
 	;;
