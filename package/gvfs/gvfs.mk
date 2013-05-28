@@ -21,8 +21,17 @@ GVFS_CONF_OPT = \
 	--disable-gphoto2		\
 	--disable-keyring		\
 	--disable-bluray		\
-	--disable-afp			\
 	--disable-bash-completion
+
+ifeq ($(BR2_PACKAGE_GVFS_AFP),y)
+ifeq ($(BR2_PACKAGE_LIBGCRYPT),y)
+GVFS_DEPENDENCIES += libgcrypt
+GVFS_CONF_OPT += --with-libgcrypt-prefix=$(STAGING_DIR)/usr
+endif
+GVFS_CONF_OPT += --enable-afp
+else
+GVFS_CONF_OPT += --disable-afp
+endif
 
 ifeq ($(BR2_PACKAGE_AVAHI),y)
 GVFS_DEPENDENCIES += avahi
