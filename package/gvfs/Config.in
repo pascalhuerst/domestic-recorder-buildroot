@@ -16,5 +16,16 @@ config BR2_PACKAGE_GVFS
 
 	  http://en.wikipedia.org/wiki/GVFS
 
+config BR2_PACKAGE_GVFS_AFP
+	bool "AFP support"
+	default n
+	depends on BR2_PACKAGE_GVFS
+	help
+	  Support for the Apple Filing Protocol.
+
+	  Please select BR2_PACKAGE_LIBGCRYPT if you need to support
+	  AFP with authentification. Without libgcrypt only anonymous
+	  logins are supported.
+
 comment "gvfs requires a toolchain with LARGEFILE and WCHAR support"
 	depends on !BR2_LARGEFILE || !BR2_USE_WCHAR
