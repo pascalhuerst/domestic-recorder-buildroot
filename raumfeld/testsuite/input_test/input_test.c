@@ -286,7 +286,7 @@ static struct test_func {
 	},
 	{
 		.name	= "rotary_ccw",
-		.desc	= "\trotary clockwise test",
+		.desc	= "\trotary counter-clockwise test",
 		.dev	= "rotary-encoder",
 		.proc	= test_rotary_ccw
 	},
