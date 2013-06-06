@@ -67,7 +67,7 @@
 
 				0x40 0x3f	/* gpmc_a0.-> gpio1_16, - (overtemperrature) - in*/
 				0x4c 0x7	/* gpmc_a3.-> gpio1_19, - (/reset) - out*/
-				0x58 0x3f	/* gpmc_a6.-> gpio1_22, - (shutdown) - in*/
+				0x58 0xf	/* gpmc_a6.-> gpio1_22, - (/reset ak5386) - out */
 				0xd0 0x7	/* LCD_DATA12 -> GPIO0_8 (PLL_MODE0) */
 				0xd4 0x7	/* LCD_DATA13 -> GPIO0_9 (PLL_MODE1) */
 				0xd8 0x7	/* LCD_DATA14 -> GPIO0_10 */
@@ -105,8 +105,10 @@
 				compatible = "adi,adau1701";
 				reg = <0x34>;
 				reset-gpio = <&gpio0 10 0>;
-				pll-mode0-gpio = <&gpio0 8 0>;
-				pll-mode1-gpio = <&gpio0 9 0>;
+				adi,pll-mode0-gpio = <&gpio0 8 0>;
+				adi,pll-mode1-gpio = <&gpio0 9 0>;
+				adi,pin-config = <0x4 0x7 0x5 0x5 0x4 0x4
+						  0x4 0x4 0x4 0x4 0x4 0x4>;
 			};
 		};
 
@@ -197,7 +199,7 @@
 
 		ak5386: ak5386@0 {
 			compatible = "asahi-kasei,ak5386";
-			/* reset-gpio = <&gpio1 19 0>; */
+			reset-gpio = <&gpio1 22 0>;
 		};
 	};
 

@@ -1,7 +1,7 @@
 From 0030be18bc2eed4e5c29a1719a8a91e829285341 Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Thu, 6 Sep 2012 17:47:21 -0400
-Subject: [PATCH 01/58] mmc: omap_hsmmc: convert to
+Subject: [PATCH 01/67] mmc: omap_hsmmc: convert to
  dma_request_slave_channel_compat()
 
 Convert dmaengine channel requests to use
@@ -49,7 +49,7 @@ index bc58078..e79b12d 100644
 From cb9dfc1b2d910f2671896c3027255fdcb0d4eefa Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Wed, 6 Mar 2013 11:15:31 -0500
-Subject: [PATCH 02/58] ARM: davinci: move private EDMA API to arm/common
+Subject: [PATCH 02/67] ARM: davinci: move private EDMA API to arm/common
 
 Move mach-davinci/dma.c to common/edma.c so it can be used
 by OMAP (specifically AM33xx) as well.
@@ -4071,7 +4071,7 @@ index 5be65aa..76ea586 100644
 From 82f43edc8d2d7392779668d1d7d1cb07faef257e Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Wed, 6 Mar 2013 11:15:32 -0500
-Subject: [PATCH 03/58] ARM: edma: remove unused transfer controller handlers
+Subject: [PATCH 03/67] ARM: edma: remove unused transfer controller handlers
 
 Fix build on OMAP, the irqs are undefined on AM33xx.
 These error interrupt handlers were hardcoded as disabled
@@ -4144,7 +4144,7 @@ index dcaeb8e..a1db6cd 100644
 From 486504be3eb8cb5620f8b69472c69e4c816d1e4c Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Wed, 6 Mar 2013 11:15:33 -0500
-Subject: [PATCH 04/58] ARM: edma: add AM33XX support to the private EDMA API
+Subject: [PATCH 04/67] ARM: edma: add AM33XX support to the private EDMA API
 
 Adds support for parsing the TI EDMA DT data into the
 required EDMA private API platform data. Enables runtime
@@ -4550,7 +4550,7 @@ index 2344ea2..ffc1fb2 100644
 From 6271f95662a27cbc0e99d54eb8bacc559e515f87 Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Wed, 6 Mar 2013 11:15:34 -0500
-Subject: [PATCH 05/58] dmaengine: edma: enable build for AM33XX
+Subject: [PATCH 05/67] dmaengine: edma: enable build for AM33XX
 
 Enable TI EDMA option on OMAP.
 
@@ -4578,7 +4578,7 @@ index aeaea32..e772e43 100644
 From accde160ec4a588bfadbef410fc4083ee9bfec9f Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Wed, 6 Mar 2013 11:15:35 -0500
-Subject: [PATCH 06/58] dmaengine: edma: Add TI EDMA device tree binding
+Subject: [PATCH 06/67] dmaengine: edma: Add TI EDMA device tree binding
 
 The binding definition is based on the generic DMA controller
 binding.
@@ -4650,7 +4650,7 @@ index 0000000..075a60e3
 From 63cc16cfe2ac8c3ebb25b319d2e7bd0efc706ef9 Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Thu, 20 Sep 2012 08:55:41 -0400
-Subject: [PATCH 07/58] mmc: omap_hsmmc: limit max_segs with the EDMA DMAC
+Subject: [PATCH 07/67] mmc: omap_hsmmc: limit max_segs with the EDMA DMAC
 
 The EDMA DMAC has a hardware limitation that prevents supporting
 scatter gather lists with any number of segments. Since the EDMA
@@ -4692,7 +4692,7 @@ index e79b12d..bdece4e 100644
 From f3f0dd08b19204dd741a71da5919877e7b844c17 Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Fri, 1 Feb 2013 13:22:54 -0500
-Subject: [PATCH 08/58] spi: omap2-mcspi: add generic DMA request support to
+Subject: [PATCH 08/67] spi: omap2-mcspi: add generic DMA request support to
  the DT binding
 
 The binding definition is based on the generic DMA request binding
@@ -4750,7 +4750,7 @@ index 938809c..4c85c4c 100644
 From 7211642efc1590bcaea1727876c1b9ffd580bd62 Mon Sep 17 00:00:00 2001
 From: Matt Porter <mporter@ti.com>
 Date: Tue, 26 Feb 2013 14:57:25 +0100
-Subject: [PATCH 09/58] spi: omap2-mcspi: convert to
+Subject: [PATCH 09/67] spi: omap2-mcspi: convert to
  dma_request_slave_channel_compat()
 
 Convert dmaengine channel requests to use
@@ -4870,7 +4870,7 @@ index 893c3d7..c1f5bad 100644
 From ef0d9214aef150795fcc2aa26de04e803a76ef5e Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 26 Feb 2013 15:05:09 +0100
-Subject: [PATCH 10/58] omap: enable EDMA for AM33XX
+Subject: [PATCH 10/67] omap: enable EDMA for AM33XX
 
 ---
  arch/arm/mach-omap2/Kconfig | 1 +
@@ -4894,7 +4894,7 @@ index 1d01905..95dc25d 100644
 From dc7bd5e8ed140a025d07cf6ca97e23f4252a6e5b Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 10 Oct 2012 13:41:58 +0200
-Subject: [PATCH 11/58] ALSA: ASoC: add config option for AM33xx
+Subject: [PATCH 11/67] ALSA: ASoC: add config option for AM33xx
 
 The McASP part which, was originally implemented for Davinci SoCs only,
 is also found on AM33xx chips.
@@ -4944,7 +4944,7 @@ index a93679d..e3d5b54 100644
 From 2ee8a53055ce1d54d900914ee692a3f5d285e6d4 Mon Sep 17 00:00:00 2001
 From: "Hebbar, Gururaja" <gururaja.hebbar@ti.com>
 Date: Fri, 10 Aug 2012 20:38:09 +0530
-Subject: [PATCH 12/58] ASoC/dts: OMAP2+: AM33xx: [HACK] Add missing dma info
+Subject: [PATCH 12/67] ASoC/dts: OMAP2+: AM33xx: [HACK] Add missing dma info
 
 This patch adds dma related  dt entries and functions that later will be
 replaced by actual DMA porting
@@ -5014,7 +5014,7 @@ index 9321e5c..a0789ec 100644
 From 23066f8c4caaa4fdd8cf3a27a6d30db19b8f6aca Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Mon, 10 Dec 2012 12:50:46 +0100
-Subject: [PATCH 13/58] ALSA: ASoC: McASP: keep XCLKRST in
+Subject: [PATCH 13/67] ALSA: ASoC: McASP: keep XCLKRST in
  DAVINCI_MCASP_GBLCTLX_REG on stream stop
 
 Signed-off-by: Daniel Mack <zonque@gmail.com>
@@ -5041,7 +5041,7 @@ index a0789ec..05f1116 100644
 From 3c372b83bc2080dc64d24aa273d1a7bb8e891342 Mon Sep 17 00:00:00 2001
 From: Michal Bachraty <michal.bachraty@streamunlimited.com>
 Date: Thu, 28 Feb 2013 16:07:08 +0100
-Subject: [PATCH 14/58] davinci-mcasp: Add support for multichannel playback
+Subject: [PATCH 14/67] davinci-mcasp: Add support for multichannel playback
 
 Davinci McASP has support for I2S multichannel playback.
 For I2S playback/receive, each serializer is capable to play 2 channels
@@ -5278,7 +5278,7 @@ index fbb710c..0d84d32 100644
 From 80da7773c86250d810cd371bab37ab391ed86c57 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 10 Oct 2012 13:45:30 +0200
-Subject: [PATCH 15/58] ALSA: ASoC: add machine driver for SUE boards
+Subject: [PATCH 15/67] ALSA: ASoC: add machine driver for SUE boards
 
 Signed-off-by: Daniel Mack <zonque@gmail.com>
 ---
@@ -5607,7 +5607,7 @@ index 0000000..8d24e03
 From f59c92e4bb04821d34609b45ab082f1f1b8866a8 Mon Sep 17 00:00:00 2001
 From: Michal Bachraty <michal.bachraty@streamunlimited.com>
 Date: Mon, 11 Mar 2013 17:25:12 +0100
-Subject: [PATCH 16/58] Refine PPM clock compensation computing algorithm.
+Subject: [PATCH 16/67] Refine PPM clock compensation computing algorithm.
 
 Now it is able to refine with 5568 PPM for 24576000 Hz Mclk
 
@@ -5675,7 +5675,7 @@ index 8d24e03..5eef329 100644
 From 338eab35f00b30818b320a9127cdd752ef7a4414 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 7 Nov 2012 12:11:04 +0100
-Subject: [PATCH 17/58] mwifiex: rename 'mlan' to 'wlan'
+Subject: [PATCH 17/67] mwifiex: rename 'mlan' to 'wlan'
 
 ---
  drivers/net/wireless/mwifiex/main.c | 2 +-
@@ -5700,7 +5700,7 @@ index 9c802ed..102e636 100644
 From aeeae5f41d73764c6cbcec85f3244ff3956e1784 Mon Sep 17 00:00:00 2001
 From: Dave Martin <(address hidden)>
 Date: Wed, 21 Nov 2012 19:11:52 +0100
-Subject: [PATCH 18/58] Thumb-2: Add local symbols to work around gas behaviour
+Subject: [PATCH 18/67] Thumb-2: Add local symbols to work around gas behaviour
 
 All current versions of gas at the time of writing have issues
 fixing up pc-relative instructions which reference global symbols,
@@ -5796,7 +5796,7 @@ index d0cdedf..fe57bb9 100644
 From 2946cacd8ff157ceda3871b0f6b8d8396d62788f Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 19 Feb 2013 12:05:25 +0100
-Subject: [PATCH 19/58] ARM: OMAP: generic: add call to of_clk_init()
+Subject: [PATCH 19/67] ARM: OMAP: generic: add call to of_clk_init()
 
 This is needed to instanciate fixed clocks in the DT.
 
@@ -5843,7 +5843,7 @@ index e54a480..f2a2a70 100644
 From 076b01ae64c4d1bb70c181b8b7720649f2bea9fa Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Sun, 3 Mar 2013 13:06:21 +0100
-Subject: [PATCH 20/58] gpmc: hack
+Subject: [PATCH 20/67] gpmc: hack
 
 ---
  arch/arm/mach-omap2/gpmc.c | 2 +-
@@ -5868,7 +5868,7 @@ index 410e1ba..d9a3d8a 100644
 From 017996ab0621d25edc3ba8df5ecbd1dd31497a77 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Sat, 3 Nov 2012 09:50:39 +0100
-Subject: [PATCH 21/58] mmc clock hack
+Subject: [PATCH 21/67] mmc clock hack
 
 ---
  drivers/mmc/host/omap_hsmmc.c | 28 ++++++++++++++++++++++++++++
@@ -5926,7 +5926,7 @@ index bdece4e..d04d63a 100644
 From 6d7c7ac4a7907514d4bd31fe5283896a213635a5 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Sun, 3 Mar 2013 22:02:31 +0100
-Subject: [PATCH 22/58] mtd: devices: elm: check for device's presence before
+Subject: [PATCH 22/67] mtd: devices: elm: check for device's presence before
  configuration
 
 In case the driver is not probed - due to config mismatches or errors
@@ -6006,7 +6006,7 @@ index 1bd5244..bf0a83b 100644
 From d2afc746363bcb1d94c0106cbbefac0e54e678f7 Mon Sep 17 00:00:00 2001
 From: Yegor Yefremov <yegorslists@googlemail.com>
 Date: Mon, 4 Mar 2013 11:34:25 +0100
-Subject: [PATCH 23/58] ALSA: ASoC: davinci-mcasp: don't configure AFSX
+Subject: [PATCH 23/67] ALSA: ASoC: davinci-mcasp: don't configure AFSX
  direction in DIT mode
 
 AFSX won't be used in DIT mode. The related pins are AHCLKX and
@@ -6038,7 +6038,7 @@ index a7be2ee..a415588 100644
 From 521a68719c49df29c89ea6c18d0f69a098b2205b Mon Sep 17 00:00:00 2001
 From: Yegor Yefremov <yegorslists@googlemail.com>
 Date: Mon, 4 Mar 2013 11:34:26 +0100
-Subject: [PATCH 24/58] ALSA: ASoC: davinci-mcasp: don't overwrite DIT settings
+Subject: [PATCH 24/67] ALSA: ASoC: davinci-mcasp: don't overwrite DIT settings
 
 Channel size settings will be made at the end of
 davinci_mcasp_hw_params() routine and thus overwrite frame
@@ -6101,7 +6101,7 @@ index a415588..b386cad 100644
 From 909a562358a6027cfb9b1c830823efcbfff59508 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 6 Mar 2013 22:10:19 +0100
-Subject: [PATCH 25/58] ALSA: ASoC: cs4271: convert to direct regmap API usage
+Subject: [PATCH 25/67] ALSA: ASoC: cs4271: convert to direct regmap API usage
 
 By using the regmap API directly, we can make use of the
 .write_flag_mask for SPI, which allows us to drop the strange register
@@ -6431,7 +6431,7 @@ index 2415a41..ac0d3b4 100644
 From 23aa80e5ec53bc9fece3da525bb01e221c1ffcfa Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 6 Mar 2013 21:15:01 +0100
-Subject: [PATCH 26/58] ALSA: ASoC: ak4104: convert to direct regmap API usage
+Subject: [PATCH 26/67] ALSA: ASoC: ak4104: convert to direct regmap API usage
 
 Signed-off-by: Daniel Mack <zonque@gmail.com>
 ---
@@ -6531,7 +6531,7 @@ index 6f6c335..58f390d 100644
 From 65e74ba593ec75231f465a22740c80a76cc8cf5a Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Wed, 6 Mar 2013 22:10:54 +0100
-Subject: [PATCH 27/58] ALSA: ASoC: ak4104: correct tranceiver enable handling
+Subject: [PATCH 27/67] ALSA: ASoC: ak4104: correct tranceiver enable handling
 
 Move the enabling of the TX diode to hw_params() and disable it again in
 hw_free(). This way, the diode is only switched on as long as it needs
@@ -6596,7 +6596,7 @@ index 58f390d..c7cfdf9 100644
 From 06cf69df7ce742694c8fea063a7a8052c5d74a75 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Thu, 7 Mar 2013 12:25:56 +0100
-Subject: [PATCH 28/58] ALSA: ASoC: Add codec driver for AK5386
+Subject: [PATCH 28/67] ALSA: ASoC: Add codec driver for AK5386
 
 Adds a driver for Asahi Kasei's AK5386 Single-ended 24-Bit 192kHz
 delta-sigma ADC. The device has no control port interface but an
@@ -6843,7 +6843,7 @@ index 0000000..1f30398
 From 955980c4d184ba59e13e197e76948595db4a3250 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Sat, 2 Mar 2013 14:25:12 +0100
-Subject: [PATCH 29/58] ALSA: ASoC: add codec driver for TI TAS5086
+Subject: [PATCH 29/67] ALSA: ASoC: add codec driver for TI TAS5086
 
 This patch adds a driver for TI's TA5086 6-channel PWM processor.
 
@@ -7575,7 +7575,7 @@ index 0000000..008bea4
 From 5438476fe73eea84def47f8df9b06c36f63243bd Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Fri, 8 Mar 2013 14:11:52 +0100
-Subject: [PATCH 30/58] ALSA: ASoC: davinci-mcasp: clean up
+Subject: [PATCH 30/67] ALSA: ASoC: davinci-mcasp: clean up
  davinci_hw_common_param()
 
 As pointed of by Vaibhav, commit 2952b27e2 ("ASoC: davinci-mcasp:
@@ -7657,7 +7657,7 @@ index b386cad..8a9c0ee 100644
 From 603f866681faeb8f49c15b03e39df9d604bf3a9b Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Fri, 8 Mar 2013 14:44:07 +0100
-Subject: [PATCH 31/58] TAS5086: add delay hack
+Subject: [PATCH 31/67] TAS5086: add delay hack
 
 This is only necessary for the EVM kit, not for the final hardware. At
 least it seems. Dunno why.
@@ -7683,7 +7683,7 @@ index 008bea4..6c5470c 100644
 From 2969dfdd7cc2633316527917e4b1cf7c2d1395b3 Mon Sep 17 00:00:00 2001
 From: Michal Bachraty <michal.bachraty@streamunlimited.com>
 Date: Mon, 11 Mar 2013 14:11:50 +0100
-Subject: [PATCH 32/58] ALSA: ASoC davinci-pcm, davinci-mcasp Clean up
+Subject: [PATCH 32/67] ALSA: ASoC davinci-pcm, davinci-mcasp Clean up
  active_serializers As pointed of by Vaibhav, commit 2952b27e2 ("ASoC:
  davinci-mcasp: Add support for multichannel playback") number of active
  serializers can be hidden into fifo_level variable, which is set in
@@ -7798,7 +7798,7 @@ index 0d84d32..fbb710c 100644
 From a58e4228de7e5079dcc4d60938541cdca4d915e1 Mon Sep 17 00:00:00 2001
 From: Michal Bachraty <michal.bachraty@streamunlimited.com>
 Date: Mon, 11 Mar 2013 14:18:05 +0100
-Subject: [PATCH 33/58] ALSA: ASoC davinci-pcm Fix DMA dst_bidx for no FIFO DMA
+Subject: [PATCH 33/67] ALSA: ASoC davinci-pcm Fix DMA dst_bidx for no FIFO DMA
  transfer
 
 As documented in AM335x TRM:
@@ -7834,7 +7834,7 @@ index 8460edc..89608fb 100644
 From 91bb2bd068152c606506286bd42148af3cc38a40 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 12 Mar 2013 12:24:17 +0100
-Subject: [PATCH 34/58] ASoC: cs4271: switch to mute_stream
+Subject: [PATCH 34/67] ASoC: cs4271: switch to mute_stream
 
 Use the newly introduced mute_stream DAI operation, and don't mute the
 codec if it's called for the _CAPTURE stream.
@@ -7883,7 +7883,7 @@ index ac0d3b4..03036b3 100644
 From 3feff8b95a4edc7944df5a56af5689af5417ce5e Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 12 Mar 2013 13:33:03 +0100
-Subject: [PATCH 35/58] ASoC: cs4271: preserve "Master Playback Switch" setting
+Subject: [PATCH 35/67] ASoC: cs4271: preserve "Master Playback Switch" setting
 
 Currently, both the ALSA control for "Digital Master Playback Switch"
 and the ALSA core (by calling dai_ops->mute_stream()) control the same
@@ -8019,7 +8019,7 @@ index 03036b3..3a2ab48 100644
 From cd523234b2f80ff3f39fcf2e2b6e20ccce769ce8 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Fri, 15 Feb 2013 12:44:01 +0100
-Subject: [PATCH 36/58] ARM: Add Raumfeld/SUE DTS
+Subject: [PATCH 36/67] ARM: Add Raumfeld/SUE DTS
 
 Add DTS files for Raumfeld Connector v2 and SUE S800 module.
 Assorted AM33xx changes.
@@ -9025,7 +9025,7 @@ index 0957645..370e708 100644
 From 9456183510e5a26e2c9fad579c33816167adfbc4 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 12 Mar 2013 14:09:43 +0100
-Subject: [PATCH 37/58] Raumfeld/am33xx: add defconfig
+Subject: [PATCH 37/67] Raumfeld/am33xx: add defconfig
 
 ---
  arch/arm/configs/am33xx_raumfeld_defconfig | 2616 ++++++++++++++++++++++++++++
@@ -11660,7 +11660,7 @@ index 0000000..e2deb5b
 From e780d071308aa2d53ce6ca93dcef9e02b057e189 Mon Sep 17 00:00:00 2001
 From: Shawn Guo <shawn.guo@linaro.org>
 Date: Thu, 14 Mar 2013 10:14:31 +0100
-Subject: [PATCH 38/58] ARM: omap2: register cpufreq-cpu0 device for am33xx
+Subject: [PATCH 38/67] ARM: omap2: register cpufreq-cpu0 device for am33xx
 
 The cpufreq-cpu0 driver changes to instantiate use platform_driver
 mechanism.  The patch is an am33xx platform level adaptation for it.
@@ -11735,7 +11735,7 @@ index 5c445ca..b51c1c3 100644
 From 0498fd220b3a7e314b625125d9a107a1852f7814 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Fri, 5 Apr 2013 19:07:23 +0200
-Subject: [PATCH 39/58] musb: hacks
+Subject: [PATCH 39/67] musb: hacks
 
 ---
  drivers/usb/musb/musb_core.c   | 49 ++++++++++++++++++++++++++++++++++--------
@@ -11894,7 +11894,7 @@ index 83edded..081f792 100644
 From 6b8f79c659f0547480a7b0286b35a34eb4985b94 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Tue, 2 Apr 2013 00:22:16 +0200
-Subject: [PATCH 40/58] mwifiex: bug: wrong list in list_empty check.
+Subject: [PATCH 40/67] mwifiex: bug: wrong list in list_empty check.
 
 adapter->bss_prio_tbl list has already been checked in outer loop. The
 inner loop works with priv_tmp->wmm.tid_tbl_ptr list. Also the lock taken,
@@ -11925,7 +11925,7 @@ index 32adc87..b132c42 100644
 From 1259583638346e818a9550d217ef0e68418d011e Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Fri, 29 Mar 2013 22:29:01 +0100
-Subject: [PATCH 41/58] mwifiex: remove unused tid_tbl_lock from
+Subject: [PATCH 41/67] mwifiex: remove unused tid_tbl_lock from
  mwifiex_tid_tbl.
 
 ra_list_spinlock is used to protect struct mwifiex_wmm_desc and embedded
@@ -11992,7 +11992,7 @@ index b132c42..96eed2f 100644
 From f8c464fcfb364fab622082c7693412af1445d88d Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Thu, 4 Apr 2013 15:49:13 +0200
-Subject: [PATCH 42/58] mwifiex: bug: remove NO_PKT_PRIO_TID.
+Subject: [PATCH 42/67] mwifiex: bug: remove NO_PKT_PRIO_TID.
 
 Using NO_PKT_PRIO_TID and tx_pkts_queued to check for an empty state, can
 lead to a contradictory state, resulting in an infinite loop.
@@ -12068,7 +12068,7 @@ index 96eed2f..62b07d3 100644
 From f4e97dc2ae9cdbb62834b8d2aae54e9ee758c9b3 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Thu, 4 Apr 2013 22:51:47 +0200
-Subject: [PATCH 43/58] mwifiex: bug: hold proper locks when accessing ra_list
+Subject: [PATCH 43/67] mwifiex: bug: hold proper locks when accessing ra_list
  / bss_prio lists.
 
 Not locking ra_list when dequeuing packets creates race conditions.
@@ -12227,7 +12227,7 @@ index 62b07d3..62d740b 100644
 From 81f17802803d16b75707dc4d2f162c3a54456ab9 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Thu, 4 Apr 2013 21:31:47 +0200
-Subject: [PATCH 44/58] mwifiex: replace ra_list_curr by list rotation.
+Subject: [PATCH 44/67] mwifiex: replace ra_list_curr by list rotation.
 
 After a packet is successfully transmitted, ra list is rotated, so the ra
 next to the one transmitted, will be the first in the list. This way we
@@ -12482,7 +12482,7 @@ index b92f39d..644d6e0 100644
 From 0bc5948ad521cc7ebfb179d5cc461632ff21a785 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Thu, 4 Apr 2013 22:42:53 +0200
-Subject: [PATCH 45/58] mwifiex: rework round robin scheduling of bss nodes.
+Subject: [PATCH 45/67] mwifiex: rework round robin scheduling of bss nodes.
 
 Rotate bss prio list, so the bss next to the one served, will come first
 in the list of bss' with equal priority. This way we pick bss nodes in a
@@ -12742,7 +12742,7 @@ index c865e58..4995ff6 100644
 From a45a50726997e50ef3864ab003b9ae261e962434 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Fri, 22 Mar 2013 11:40:18 +0100
-Subject: [PATCH 46/58] gpio/omap: implement irq_enable/disable using
+Subject: [PATCH 46/67] gpio/omap: implement irq_enable/disable using
  mask/unmask.
 
 In PM suspend the omap_hsmmc driver can't detect SDIO IRQs. This is
@@ -12774,7 +12774,7 @@ index 159f5c5..2217e01 100644
 From 46d06e19e4c9088f69752ece6ffad1aafd31109f Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Fri, 22 Mar 2013 15:37:11 +0100
-Subject: [PATCH 47/58] mmc: omap_hsmmc: Enable SDIO IRQ using a GPIO in idle
+Subject: [PATCH 47/67] mmc: omap_hsmmc: Enable SDIO IRQ using a GPIO in idle
  mode.
 
 Without functional clock the omap_hsmmc module can't forward
@@ -13278,7 +13278,7 @@ index 2bf1b30..fd5fff5 100644
 From a43409015eaee250730b242d759ee7042e0b71d1 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Mon, 25 Mar 2013 17:50:58 +0100
-Subject: [PATCH 48/58] mmc: omap_hsmmc: debugfs entries for GPIO mode.
+Subject: [PATCH 48/67] mmc: omap_hsmmc: debugfs entries for GPIO mode.
 
 Signed-off-by: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 ---
@@ -13360,7 +13360,7 @@ index 0f70ce2..cc09fa9 100644
 From 40c4d0d05eb4a887eaa755d3831a04ec1bba13f3 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Mon, 25 Mar 2013 17:52:57 +0100
-Subject: [PATCH 49/58] mmc: omap_hsmmc: add PSTATE to debugfs regs_show.
+Subject: [PATCH 49/67] mmc: omap_hsmmc: add PSTATE to debugfs regs_show.
 
 PSTATE shows current state of data lines.
 
@@ -13396,7 +13396,7 @@ index cc09fa9..f0978c0 100644
 From 61b20442a39e997d2c19215e449d42cba79b7c03 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Sat, 2 Mar 2013 13:45:00 +0100
-Subject: [PATCH 50/58] dts: pinmux config for gpio-cirq.
+Subject: [PATCH 50/67] dts: pinmux config for gpio-cirq.
 
 Signed-off-by: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 ---
@@ -13438,7 +13438,7 @@ index 25439f9..6184b5a 100644
 From 59eb78caf350ca6303356848d669a794a61a6bec Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Mon, 25 Mar 2013 23:38:19 +0100
-Subject: [PATCH 51/58] irq: get_irq_disable_depth.
+Subject: [PATCH 51/67] irq: get_irq_disable_depth.
 
 Used to verify invariant in omap_hsmmc, were a gpio is used to detect
 sdio irqs during suspend phase. The ref count from irq_enable/irq_disable
@@ -13509,7 +13509,7 @@ index fa17855..d151868 100644
 From 89c73c65614e0156284f3746e3a767c0d12ab100 Mon Sep 17 00:00:00 2001
 From: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 Date: Fri, 22 Mar 2013 15:26:35 +0100
-Subject: [PATCH 52/58] mmc: omap_hsmmc: GPIO CIRQ ref_count runtime checks.
+Subject: [PATCH 52/67] mmc: omap_hsmmc: GPIO CIRQ ref_count runtime checks.
 
 Signed-off-by: Andreas Fenkart <andreas.fenkart@streamunlimited.com>
 ---
@@ -13561,7 +13561,7 @@ index f0978c0..8107edb 100644
 From edc84cc47336a64f591efa9b5f332ed491d70d43 Mon Sep 17 00:00:00 2001
 From: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 Date: Wed, 10 Apr 2013 11:40:10 +0200
-Subject: [PATCH 53/58] clk: add si5351 i2c common clock driver
+Subject: [PATCH 53/67] clk: add si5351 i2c common clock driver
 
 This patch adds a common clock driver for Silicon Labs Si5351a/b/c
 i2c programmable clock generators. Currently, the driver does not
@@ -15546,7 +15546,7 @@ index 0000000..92dabca
 From c53e2b09d1493cd59d86d7d7d4cad3c57dee1e59 Mon Sep 17 00:00:00 2001
 From: Marek Belisko <marek.belisko@streamunlimited.com>
 Date: Fri, 19 Apr 2013 13:38:13 +0200
-Subject: [PATCH 54/58] hsmmc: Fix problems with wifi module loading in v3.9
+Subject: [PATCH 54/67] hsmmc: Fix problems with wifi module loading in v3.9
  kernel.
 
 Old u-boot set correctly pinmux and all other things to have correct
@@ -15608,7 +15608,7 @@ index 8107edb..4e09851 100644
 From 57b6b1df3b85dbff441c0846ffd5be3f8a17f724 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Thu, 16 May 2013 15:07:52 +0200
-Subject: [PATCH 55/58] ASoC: davinci: fix sample rotation
+Subject: [PATCH 55/67] ASoC: davinci: fix sample rotation
 
 McASP serial audio engine needs different rotation values on TX and RX
 channels. Commit dde109fb462 ("ASoC: McASP: Fix data rotation for
@@ -15655,7 +15655,7 @@ index 63633e9..8d805ec 100644
 From 999319cee110c831389af81b3138784df53c14d5 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Fri, 15 Feb 2013 12:44:01 +0100
-Subject: [PATCH 56/58] ARM: Add DTS files for Raumfeld CUBE
+Subject: [PATCH 56/67] ARM: Add DTS files for Raumfeld CUBE
 
 ---
  arch/arm/boot/dts/am33xx-raumfeld-cube-0-0.dts |   4 +
@@ -15907,7 +15907,7 @@ index 0000000..f54a8cb
 From 387fc6dcd9278f6bf9c5e3411453e28029788bd9 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Mon, 6 May 2013 18:15:48 +0200
-Subject: [PATCH 57/58] TAS HACK
+Subject: [PATCH 57/67] TAS HACK
 
 ---
  sound/soc/codecs/tas5086.c | 16 ++++++++++++++++
@@ -15946,7 +15946,7 @@ index 6c5470c..529b25c 100644
 From c8a024c8dc7179deb42c9935e7f87c1270744255 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Tue, 7 May 2013 10:53:46 +0200
-Subject: [PATCH 58/58] regmap: clean up _regmap_raw_write
+Subject: [PATCH 58/67] regmap: clean up _regmap_raw_write
 
 Clean up _regmap_raw_write a bit by factoring out map->format.val_bits.
 No functional change.
@@ -16040,6 +16040,1162 @@ index 58cfb32..c1ea936 100644
  
  	return ret;
  }
+-- 
+1.8.1.4
+
+From e735f60b181c8c729dcd267d3053b720e2ed1242 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Thu, 16 May 2013 17:38:40 +0200
+Subject: [PATCH 59/67] ARM: dts: add dts files for Raumfeld One
+
+---
+ arch/arm/boot/dts/am33xx-raumfeld-one-0-0.dts |   4 +
+ arch/arm/boot/dts/am33xx-raumfeld-one-0.dtsi  | 260 ++++++++++++++++++++++++++
+ 2 files changed, 264 insertions(+)
+ create mode 100644 arch/arm/boot/dts/am33xx-raumfeld-one-0-0.dts
+ create mode 100644 arch/arm/boot/dts/am33xx-raumfeld-one-0.dtsi
+
+diff --git a/arch/arm/boot/dts/am33xx-raumfeld-one-0-0.dts b/arch/arm/boot/dts/am33xx-raumfeld-one-0-0.dts
+new file mode 100644
+index 0000000..ca8d646
+--- /dev/null
++++ b/arch/arm/boot/dts/am33xx-raumfeld-one-0-0.dts
+@@ -0,0 +1,4 @@
++/dts-v1/;
++
++/include/ "am33xx-sue-s800-0.dtsi"
++/include/ "am33xx-raumfeld-one-0.dtsi"
+diff --git a/arch/arm/boot/dts/am33xx-raumfeld-one-0.dtsi b/arch/arm/boot/dts/am33xx-raumfeld-one-0.dtsi
+new file mode 100644
+index 0000000..a1601e8
+--- /dev/null
++++ b/arch/arm/boot/dts/am33xx-raumfeld-one-0.dtsi
+@@ -0,0 +1,260 @@
++/*
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/ {
++	model = "Raumfeld One (AM33xx)";
++	compatible = "ti,am335x-raumfeld-one", "ti,am33xx";
++
++	chosen {
++		bootargs = "console=ttyO0,115200n8";
++	};
++
++	am3358_pinmux: pinmux@44e10800 {
++		spi0_pins: pinmux_spi0_pins {
++			pinctrl-single,pins = <
++				0x150 0x28	/* SPI0_CLK */
++				0x154 0x18	/* SPI0_D0  */
++				0x158 0x38	/* SPI0_D1  */
++				0x15C 0x18	/* SPI0_CS0 */
++			>;
++		};
++
++		i2c3_pins: pinmux_i2c3_pins {
++			pinctrl-single,pins = <
++				0x178 0x23	/* I2C2_SDA */
++				0x17c 0x23	/* I2C2_SCL */
++			>;
++		};
++
++		led_pins: pinmux_led_pins {
++			pinctrl-single,pins = <
++				0x118 0x7	/* GPIO3_4 */
++				0x130 0x7	/* GPIO3_10 */
++			>;
++		};
++
++		button_pins: pinmux_button_pins {
++			pinctrl-single,pins = <
++				0x160 0x77	/* GPIO0_6 */
++				0xdc  0x77	/* GPIO0_11 */
++				0x30  0x77	/* GPIO1_12 */
++				0x3c  0x77	/* GPIO1_15 */
++				0x38  0x77	/* GPIO1_14 */
++			>;
++		};
++
++		rotary_pins: pinmux_rotary_pins {
++			pinctrl-single,pins = <
++				0xcc 0x77	/* GPIO2_17 */
++				0x134 0x77	/* GPIO1_13 */
++			>;
++		};
++
++		audio_pins: audio_pins {
++			pinctrl-single,pins = <
++				0x1ac 0x28	/* MCASP0_MCLK_OUT */
++				0x190 0x08	/* MCASP0_BCLK_OUT */
++				0x194 0x08	/* MCASP0_WCLK_OUT */
++				0x198 0x08	/* MCASP0_DATA_OUT */
++				0x1a8 0x28	/* MCASP0_DATA_IN  */
++				0x078 0x26	/* MCASP0_BCLK_IN  */
++				0x1a4 0x28	/* MCASP0_WCLK_IN  */
++				0x19c 0x28	/* MCASP0_MCLK_IN  */
++				0x1a0 0x27	/* MCASP0_BCLK_IN -> GPIO */
++
++				0x40 0x3f	/* gpmc_a0.-> gpio1_16, - (overtemperrature) - in*/
++				0x4c 0x7	/* gpmc_a3.-> gpio1_19, - (/reset) - out*/
++				0x58 0xf	/* gpmc_a6.-> gpio1_22, - (/reset ak5386) - out */
++				0xd0 0x7	/* LCD_DATA12 -> GPIO0_8 (PLL_MODE0) */
++				0xd4 0x7	/* LCD_DATA13 -> GPIO0_9 (PLL_MODE1) */
++				0xd8 0x7	/* LCD_DATA14 -> GPIO0_10 */
++			>;
++		};
++	};
++
++	ocp {
++		uart1: serial@44e09000 {
++			status = "okay";
++		};
++
++		i2c@44e0b000 {
++			status = "okay";
++		};
++
++		i2c@4802a000 {
++			status = "okay";
++		};
++
++		i2c@4819c000 {
++			status = "okay";
++			pinctrl-names = "default";
++			pinctrl-0 = <&i2c3_pins>;
++			clock-frequency = <100000>;
++
++			tas5086: tas5086@27 {
++				compatible = "ti,tas5086";
++				reg = <0x1b>;
++				reset-gpio = <&gpio1 19 0>;
++				vd-supply = <&vdd_audio>;
++			};
++
++			adau1701: adau1701@34 {
++				compatible = "adi,adau1701";
++				reg = <0x34>;
++				reset-gpio = <&gpio0 10 0>;
++				adi,pll-mode0-gpio = <&gpio0 8 0>;
++				adi,pll-mode1-gpio = <&gpio0 9 0>;
++				adi,pin-config = <0x4 0x7 0x5 0x5 0x4 0x4
++						  0x4 0x4 0x4 0x4 0x4 0x4>;
++			};
++		};
++
++		leds {
++			compatible = "gpio-leds";
++			pinctrl-names = "default";
++			pinctrl-0 = <&led_pins>;
++
++			d1 {
++				label = "raumfeld:1";
++				gpios = <&gpio3 4 0>;
++			};
++
++			d2 {
++				label = "raumfeld:2";
++				gpios = <&gpio3 10 0>;
++				default-state = "on";
++			};
++		};
++
++		gpio-keys {
++			compatible = "gpio-keys";
++			pinctrl-names = "default";
++			pinctrl-0 = <&button_pins>;
++
++			power {
++				label = "Power";
++				gpios = <&gpio0 6 1>;
++				linux,code = <116>; /* KEY_POWER */
++				gpio-key,wakeup;
++			};
++
++			one {
++				label = "1";
++				gpios = <&gpio0 11 1>;
++				linux,code = <2>; /* KEY_1 */
++				gpio-key,wakeup;
++			};
++
++			two {
++				label = "2";
++				gpios = <&gpio1 12 1>;
++				linux,code = <3>; /* KEY_2 */
++				gpio-key,wakeup;
++			};
++
++			three {
++				label = "3";
++				gpios = <&gpio1 15 1>;
++				linux,code = <4>; /* KEY_3 */
++				gpio-key,wakeup;
++			};
++
++			four {
++				label = "4";
++				gpios = <&gpio1 14 1>;
++				linux,code = <5>; /* KEY_4 */
++				gpio-key,wakeup;
++			};
++		};
++
++		rotary@0 {
++			compatible = "rotary-encoder";
++			pinctrl-names = "default";
++			pinctrl-0 = <&rotary_pins>;
++			gpios = <&gpio2 17 9>, <&gpio1 13 0>;
++			linux,axis = <0>;	/* REL_X */
++			rotary-encoder,relative-axis;
++		};
++
++		usb@47400000 {
++			status = "okay";
++			port0-mode = <1>;
++		};
++
++		mcasp@48038000 {
++			status = "okay";
++			op-mode = <0>;	  /* MCASP_IIS_MODE */
++			tdm-slots = <2>;
++			num-serializer = <16>;
++			serial-dir = <  1 2 0 0 /* 0: INACTIVE, 1: TX, 2: RX */
++					0 0 0 0
++					0 0 0 0
++					0 0 0 0 >;
++			tx-num-evt = <1>;
++			rx-num-evt = <1>;
++		};
++
++		ak5386: ak5386@0 {
++			compatible = "asahi-kasei,ak5386";
++			reset-gpio = <&gpio1 22 0>;
++		};
++	};
++
++	audio {
++		compatible = "sue,am33xx-generic-audio";
++		pinctrl-names = "default";
++		pinctrl-0 = <&audio_pins>;
++		sue,card-name = "One";
++		clocks = <&si5351a 0>;
++
++		link@0 {
++			sue,name = "analog output";
++			sue,stream-name = "I2S";
++
++			sue,platform = <&mcasp0>;
++			sue,cpu-dai-name = "48038000.mcasp";
++
++			sue,codec = <&tas5086>;
++			sue,codec-dai-name = "tas5086-hifi";
++		};
++
++		link@1 {
++			sue,name = "analog input";
++			sue,stream-name = "I2S";
++
++			sue,platform = <&mcasp0>;
++			sue,cpu-dai-name = "48038000.mcasp";
++
++			sue,codec = <&ak5386>;
++			sue,codec-dai-name = "ak5386-hifi";
++		};
++
++		link@2 {
++			sue,name = "DSP dummy";
++			sue,stream-name = "I2S";
++
++			sue,platform = <&mcasp0>;
++			sue,cpu-dai-name = "48038000.mcasp";
++
++			sue,codec = <&adau1701>;
++			sue,codec-dai-name = "adau1701";
++		};
++	};
++
++	vdd_audio: vdd_audio_regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd-audio";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&gpio1 18 0>;
++		enable-active-high;
++		regulator-boot-on;
++	};
++};
++
++&cpsw_emac0 {
++	phy_id = <&davinci_mdio 4>;
++};
+-- 
+1.8.1.4
+
+From d5e004f10b7b3f5eea316adfbc1ff750df575123 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Thu, 16 May 2013 17:49:19 +0200
+Subject: [PATCH 60/67] Raumfeld: build adau1701 driver
+
+---
+ sound/soc/davinci/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sound/soc/davinci/Kconfig b/sound/soc/davinci/Kconfig
+index be37faf..8805bb1 100644
+--- a/sound/soc/davinci/Kconfig
++++ b/sound/soc/davinci/Kconfig
+@@ -98,6 +98,7 @@ config  SND_AM335X_SOC_S800
+ 	select SND_SOC_AK4104
+ 	select SND_SOC_AK5386
+ 	select SND_SOC_TAS5086
++	select SND_SOC_ADAU1701
+ 	help
+ 	  Say Y if you want to add support for SoC audio on AM335X
+ 	  based SUE (StreamUnlimited) S800  devices, for example
+-- 
+1.8.1.4
+
+From 2a4b6894646e99159eb0090ed57c4344137bb06c Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Wed, 10 Apr 2013 17:03:03 +0200
+Subject: [PATCH 61/67] ASoC: codecs: adau1701: refactor firmware loading
+ function
+
+Pass a struct i2c_client * to adau1701_load_firmware directly.
+
+Signed-off-by: Daniel Mack <zonque@gmail.com>
+---
+ sound/soc/codecs/adau1701.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/sound/soc/codecs/adau1701.c b/sound/soc/codecs/adau1701.c
+index dafdbe8..95e1677 100644
+--- a/sound/soc/codecs/adau1701.c
++++ b/sound/soc/codecs/adau1701.c
+@@ -180,9 +180,9 @@ static unsigned int adau1701_read(struct snd_soc_codec *codec, unsigned int reg)
+ 	return value;
+ }
+ 
+-static int adau1701_load_firmware(struct snd_soc_codec *codec)
++static int adau1701_load_firmware(struct i2c_client *client)
+ {
+-	return process_sigma_firmware(codec->control_data, ADAU1701_FIRMWARE);
++	return process_sigma_firmware(client, ADAU1701_FIRMWARE);
+ }
+ 
+ static int adau1701_set_capture_pcm_format(struct snd_soc_codec *codec,
+@@ -455,10 +455,11 @@ static struct snd_soc_dai_driver adau1701_dai = {
+ static int adau1701_probe(struct snd_soc_codec *codec)
+ {
+ 	int ret;
++	struct i2c_client *client = to_i2c_client(codec->dev);
+ 
+-	codec->control_data = to_i2c_client(codec->dev);
++	codec->control_data = client;
+ 
+-	ret = adau1701_load_firmware(codec);
++	ret = adau1701_load_firmware(client);
+ 	if (ret)
+ 		dev_warn(codec->dev, "Failed to load firmware\n");
+ 
+-- 
+1.8.1.4
+
+From 0b5a1f1004ffa5413dea964e4f3c33c837d3b8ad Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Thu, 23 May 2013 12:30:49 +0200
+Subject: [PATCH 62/67] ASoC: codecs: adau1701: add DT bindings
+
+Apart from pure matching, the bindings also support setting the the
+reset gpio line.
+
+Signed-off-by: Daniel Mack <zonque@gmail.com>
+---
+ .../devicetree/bindings/sound/adi,adau1701.txt     | 23 ++++++++++++++
+ sound/soc/codecs/adau1701.c                        | 35 +++++++++++++++++++++-
+ 2 files changed, 57 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/sound/adi,adau1701.txt
+
+diff --git a/Documentation/devicetree/bindings/sound/adi,adau1701.txt b/Documentation/devicetree/bindings/sound/adi,adau1701.txt
+new file mode 100644
+index 0000000..3afeda7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/sound/adi,adau1701.txt
+@@ -0,0 +1,23 @@
++Analog Devices ADAU1701
++
++Required properties:
++
++ - compatible:		Should contain "adi,adau1701"
++ - reg:			The i2c address. Value depends on the state of ADDR0
++			and ADDR1, as wired in hardware.
++
++Optional properties:
++
++ - reset-gpio: 		A GPIO spec to define which pin is connected to the
++			chip's !RESET pin. If specified, the driver will
++			assert a hardware reset at probe time.
++
++Examples:
++
++	i2c_bus {
++		adau1701@34 {
++			compatible = "adi,adau1701";
++			reg = <0x34>;
++			reset-gpio = <&gpio 23 0>;
++		};
++	};
+diff --git a/sound/soc/codecs/adau1701.c b/sound/soc/codecs/adau1701.c
+index 95e1677..3fc1763 100644
+--- a/sound/soc/codecs/adau1701.c
++++ b/sound/soc/codecs/adau1701.c
+@@ -13,6 +13,9 @@
+ #include <linux/i2c.h>
+ #include <linux/delay.h>
+ #include <linux/slab.h>
++#include <linux/of.h>
++#include <linux/of_gpio.h>
++#include <linux/of_device.h>
+ #include <sound/core.h>
+ #include <sound/pcm.h>
+ #include <sound/pcm_params.h>
+@@ -452,6 +455,14 @@ static struct snd_soc_dai_driver adau1701_dai = {
+ 	.symmetric_rates = 1,
+ };
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id adau1701_dt_ids[] = {
++	{ .compatible = "adi,adau1701", },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, adau1701_dt_ids);
++#endif
++
+ static int adau1701_probe(struct snd_soc_codec *codec)
+ {
+ 	int ret;
+@@ -494,12 +505,33 @@ static int adau1701_i2c_probe(struct i2c_client *client,
+ 			      const struct i2c_device_id *id)
+ {
+ 	struct adau1701 *adau1701;
++	struct device *dev = &client->dev;
++	int gpio_nreset = -EINVAL;
+ 	int ret;
+ 
+-	adau1701 = devm_kzalloc(&client->dev, sizeof(*adau1701), GFP_KERNEL);
++	adau1701 = devm_kzalloc(dev, sizeof(*adau1701), GFP_KERNEL);
+ 	if (!adau1701)
+ 		return -ENOMEM;
+ 
++	if (dev->of_node) {
++		gpio_nreset = of_get_named_gpio(dev->of_node, "reset-gpio", 0);
++		if (gpio_nreset < 0 && gpio_nreset != -ENOENT)
++			return gpio_nreset;
++	}
++
++	if (gpio_is_valid(gpio_nreset)) {
++		ret = devm_gpio_request_one(dev, gpio_nreset, GPIOF_OUT_INIT_LOW,
++					    "ADAU1701 Reset");
++		if (ret < 0)
++			return ret;
++
++		/* minimum reset time is 20ns */
++		udelay(1);
++		gpio_set_value(gpio_nreset, 1);
++		/* power-up time may be as long as 85ms */
++		mdelay(85);
++	}
++
+ 	i2c_set_clientdata(client, adau1701);
+ 	ret = snd_soc_register_codec(&client->dev, &adau1701_codec_drv,
+ 			&adau1701_dai, 1);
+@@ -522,6 +554,7 @@ static struct i2c_driver adau1701_i2c_driver = {
+ 	.driver = {
+ 		.name	= "adau1701",
+ 		.owner	= THIS_MODULE,
++		.of_match_table	= of_match_ptr(adau1701_dt_ids),
+ 	},
+ 	.probe		= adau1701_i2c_probe,
+ 	.remove		= adau1701_i2c_remove,
+-- 
+1.8.1.4
+
+From a8f573e6fa5894e558da94a9b2b3f560633577b9 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Wed, 5 Jun 2013 15:44:18 +0200
+Subject: [PATCH 63/67] ASoC: codecs: adau1701: factor out firmware reset
+
+Some runtime-determined constraints might need to be satisfied prior to
+firmware loading, so the actual download and releasing the device from
+reset has to be postponed. Factor it out first, so we have everything at
+one place.
+
+This also changes the behaviour in a way that adau1701_i2c_probe() will
+assert the reset line, and wait for the codec probe to release it.
+
+Signed-off-by: Daniel Mack <zonque@gmail.com>
+---
+ sound/soc/codecs/adau1701.c | 47 ++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 34 insertions(+), 13 deletions(-)
+
+diff --git a/sound/soc/codecs/adau1701.c b/sound/soc/codecs/adau1701.c
+index 3fc1763..fa22213 100644
+--- a/sound/soc/codecs/adau1701.c
++++ b/sound/soc/codecs/adau1701.c
+@@ -90,6 +90,7 @@
+ #define ADAU1701_FIRMWARE "adau1701.bin"
+ 
+ struct adau1701 {
++	int gpio_nreset;
+ 	unsigned int dai_fmt;
+ };
+ 
+@@ -183,9 +184,35 @@ static unsigned int adau1701_read(struct snd_soc_codec *codec, unsigned int reg)
+ 	return value;
+ }
+ 
+-static int adau1701_load_firmware(struct i2c_client *client)
++static void adau1701_reset(struct snd_soc_codec *codec)
+ {
+-	return process_sigma_firmware(client, ADAU1701_FIRMWARE);
++	struct adau1701 *adau1701 = snd_soc_codec_get_drvdata(codec);
++
++	if (!gpio_is_valid(adau1701->gpio_nreset))
++		return;
++
++	gpio_set_value(adau1701->gpio_nreset, 0);
++	/* minimum reset time is 20ns */
++	udelay(1);
++	gpio_set_value(adau1701->gpio_nreset, 1);
++	/* power-up time may be as long as 85ms */
++	mdelay(85);
++}
++
++static int adau1701_init(struct snd_soc_codec *codec)
++{
++	int ret;
++	struct i2c_client *client = to_i2c_client(codec->dev);
++
++	adau1701_reset(codec);
++
++	ret = process_sigma_firmware(client, ADAU1701_FIRMWARE);
++	if (ret)
++		dev_warn(codec->dev, "Failed to load firmware\n");
++
++	snd_soc_write(codec, ADAU1701_DACSET, ADAU1701_DACSET_DACINIT);
++
++	return 0;
+ }
+ 
+ static int adau1701_set_capture_pcm_format(struct snd_soc_codec *codec,
+@@ -466,15 +493,13 @@ MODULE_DEVICE_TABLE(of, adau1701_dt_ids);
+ static int adau1701_probe(struct snd_soc_codec *codec)
+ {
+ 	int ret;
+-	struct i2c_client *client = to_i2c_client(codec->dev);
+ 
+-	codec->control_data = client;
++	codec->control_data = to_i2c_client(codec->dev);
+ 
+-	ret = adau1701_load_firmware(client);
++	ret = adau1701_init(codec);
+ 	if (ret)
+-		dev_warn(codec->dev, "Failed to load firmware\n");
++		return ret;
+ 
+-	snd_soc_write(codec, ADAU1701_DACSET, ADAU1701_DACSET_DACINIT);
+ 	snd_soc_write(codec, ADAU1701_DSPCTRL, ADAU1701_DSPCTRL_CR);
+ 
+ 	return 0;
+@@ -524,14 +549,10 @@ static int adau1701_i2c_probe(struct i2c_client *client,
+ 					    "ADAU1701 Reset");
+ 		if (ret < 0)
+ 			return ret;
+-
+-		/* minimum reset time is 20ns */
+-		udelay(1);
+-		gpio_set_value(gpio_nreset, 1);
+-		/* power-up time may be as long as 85ms */
+-		mdelay(85);
+ 	}
+ 
++	adau1701->gpio_nreset = gpio_nreset;
++
+ 	i2c_set_clientdata(client, adau1701);
+ 	ret = snd_soc_register_codec(&client->dev, &adau1701_codec_drv,
+ 			&adau1701_dai, 1);
+-- 
+1.8.1.4
+
+From cff26b9845394eb0bce0e121927c0ce0bff5d083 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Wed, 5 Jun 2013 15:58:59 +0200
+Subject: [PATCH 64/67] ASoC: codecs: adau1701: allow configuration PLL mode
+ pins
+
+The ADAU1701 has 2 hardware pins to configure the PLL mode in accordance
+to the MCLK-to-LRCLK ratio. These pins have to be stable before the chip
+is released from reset, and a full reset cycle, including a new firmware
+download is needed whenever they change.
+
+This patch adds GPIO properties to the DT bindings of the Codec, and
+implements a callback for the set_clkdiv callback of the DAI.
+
+Signed-off-by: Daniel Mack <zonque@gmail.com>
+---
+ .../devicetree/bindings/sound/adi,adau1701.txt     |  5 ++
+ sound/soc/codecs/adau1701.c                        | 71 ++++++++++++++++++++++
+ sound/soc/codecs/adau1701.h                        |  4 ++
+ 3 files changed, 80 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/adi,adau1701.txt b/Documentation/devicetree/bindings/sound/adi,adau1701.txt
+index 3afeda7..aa5b998 100644
+--- a/Documentation/devicetree/bindings/sound/adi,adau1701.txt
++++ b/Documentation/devicetree/bindings/sound/adi,adau1701.txt
+@@ -11,6 +11,11 @@ Optional properties:
+  - reset-gpio: 		A GPIO spec to define which pin is connected to the
+ 			chip's !RESET pin. If specified, the driver will
+ 			assert a hardware reset at probe time.
++ - adi,pll-mode0-gpio,
++   adi,pll-mode1-gpio:	GPIO specs to describe the GPIOs the ADAU's PLL config
++			pins are connected to. The state of the pins are set
++			according to the configured clock divider on ASoC side
++			before the firmware is loaded.
+ 
+ Examples:
+ 
+diff --git a/sound/soc/codecs/adau1701.c b/sound/soc/codecs/adau1701.c
+index fa22213..e0e1381 100644
+--- a/sound/soc/codecs/adau1701.c
++++ b/sound/soc/codecs/adau1701.c
+@@ -91,7 +91,10 @@
+ 
+ struct adau1701 {
+ 	int gpio_nreset;
++	int gpio_pll_mode0;
++	int gpio_pll_mode1;
+ 	unsigned int dai_fmt;
++	unsigned int pll_clkdiv;
+ };
+ 
+ static const struct snd_kcontrol_new adau1701_controls[] = {
+@@ -191,6 +194,29 @@ static void adau1701_reset(struct snd_soc_codec *codec)
+ 	if (!gpio_is_valid(adau1701->gpio_nreset))
+ 		return;
+ 
++	if (gpio_is_valid(adau1701->gpio_pll_mode0) &&
++	    gpio_is_valid(adau1701->gpio_pll_mode1)) {
++		switch (adau1701->pll_clkdiv) {
++		case 64:
++			gpio_set_value(adau1701->gpio_pll_mode0, 0);
++			gpio_set_value(adau1701->gpio_pll_mode1, 0);
++			break;
++		case 256:
++			gpio_set_value(adau1701->gpio_pll_mode0, 0);
++			gpio_set_value(adau1701->gpio_pll_mode1, 1);
++			break;
++		case 384:
++			gpio_set_value(adau1701->gpio_pll_mode0, 1);
++			gpio_set_value(adau1701->gpio_pll_mode1, 0);
++			break;
++		case 512:
++		default:
++			gpio_set_value(adau1701->gpio_pll_mode0, 1);
++			gpio_set_value(adau1701->gpio_pll_mode1, 1);
++			break;
++		}
++	}
++
+ 	gpio_set_value(adau1701->gpio_nreset, 0);
+ 	/* minimum reset time is 20ns */
+ 	udelay(1);
+@@ -450,6 +476,21 @@ static int adau1701_set_sysclk(struct snd_soc_codec *codec, int clk_id,
+ 	return 0;
+ }
+ 
++static int adau1701_set_clkdiv(struct snd_soc_dai *codec_dai,
++			       int div_id, int div)
++{
++	struct snd_soc_codec *codec = codec_dai->codec;
++	struct adau1701 *adau1701 = snd_soc_codec_get_drvdata(codec);
++
++	switch (div_id) {
++	case ADAU1701_CLKDIV_MCLK_LRCLK:
++		adau1701->pll_clkdiv = div;
++		return adau1701_init(codec);
++	default:
++		return -EINVAL;
++	}
++}
++
+ #define ADAU1701_RATES (SNDRV_PCM_RATE_48000 | SNDRV_PCM_RATE_96000 | \
+ 	SNDRV_PCM_RATE_192000)
+ 
+@@ -460,6 +501,7 @@ static const struct snd_soc_dai_ops adau1701_dai_ops = {
+ 	.set_fmt	= adau1701_set_dai_fmt,
+ 	.hw_params	= adau1701_hw_params,
+ 	.digital_mute	= adau1701_digital_mute,
++	.set_clkdiv	= adau1701_set_clkdiv,
+ };
+ 
+ static struct snd_soc_dai_driver adau1701_dai = {
+@@ -532,6 +574,8 @@ static int adau1701_i2c_probe(struct i2c_client *client,
+ 	struct adau1701 *adau1701;
+ 	struct device *dev = &client->dev;
+ 	int gpio_nreset = -EINVAL;
++	int gpio_pll_mode0 = -EINVAL;
++	int gpio_pll_mode1 = -EINVAL;
+ 	int ret;
+ 
+ 	adau1701 = devm_kzalloc(dev, sizeof(*adau1701), GFP_KERNEL);
+@@ -542,6 +586,16 @@ static int adau1701_i2c_probe(struct i2c_client *client,
+ 		gpio_nreset = of_get_named_gpio(dev->of_node, "reset-gpio", 0);
+ 		if (gpio_nreset < 0 && gpio_nreset != -ENOENT)
+ 			return gpio_nreset;
++
++		gpio_pll_mode0 = of_get_named_gpio(dev->of_node,
++						   "adi,pll-mode0-gpio", 0);
++		if (gpio_pll_mode0 < 0 && gpio_pll_mode0 != -ENOENT)
++			return gpio_pll_mode0;
++
++		gpio_pll_mode1 = of_get_named_gpio(dev->of_node,
++						   "adi,pll-mode1-gpio", 0);
++		if (gpio_pll_mode1 < 0 && gpio_pll_mode1 != -ENOENT)
++			return gpio_pll_mode1;
+ 	}
+ 
+ 	if (gpio_is_valid(gpio_nreset)) {
+@@ -551,7 +605,24 @@ static int adau1701_i2c_probe(struct i2c_client *client,
+ 			return ret;
+ 	}
+ 
++	if (gpio_is_valid(gpio_pll_mode0) &&
++	    gpio_is_valid(gpio_pll_mode1)) {
++		ret = devm_gpio_request_one(dev, gpio_pll_mode0,
++					    GPIOF_OUT_INIT_LOW,
++					    "ADAU1701 PLL mode 0");
++		if (ret < 0)
++			return ret;
++
++		ret = devm_gpio_request_one(dev, gpio_pll_mode1,
++					    GPIOF_OUT_INIT_LOW,
++					    "ADAU1701 PLL mode 1");
++		if (ret < 0)
++			return ret;
++	}
++
+ 	adau1701->gpio_nreset = gpio_nreset;
++	adau1701->gpio_pll_mode0 = gpio_pll_mode0;
++	adau1701->gpio_pll_mode1 = gpio_pll_mode1;
+ 
+ 	i2c_set_clientdata(client, adau1701);
+ 	ret = snd_soc_register_codec(&client->dev, &adau1701_codec_drv,
+diff --git a/sound/soc/codecs/adau1701.h b/sound/soc/codecs/adau1701.h
+index 8d0949a..bdcdddc 100644
+--- a/sound/soc/codecs/adau1701.h
++++ b/sound/soc/codecs/adau1701.h
+@@ -14,4 +14,8 @@ enum adau1701_clk_src {
+ 	ADAU1701_CLK_SRC_MCLK,
+ };
+ 
++enum adau1701_clkdiv {
++	ADAU1701_CLKDIV_MCLK_LRCLK,
++};
++
+ #endif
+-- 
+1.8.1.4
+
+From 92306f15d0e63613ed569bfd094f0d88aeac0254 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Wed, 5 Jun 2013 18:07:47 +0200
+Subject: [PATCH 65/67] ASoC: codecs: adau1701: switch to direct regmap API
+ usage
+
+The hardware I/O has to be open-coded due to registers of unequal sizes.
+Other than that, the transition is straight forward.
+
+Signed-off-by: Daniel Mack <zonque@gmail.com>
+---
+ sound/soc/codecs/adau1701.c | 106 +++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 79 insertions(+), 27 deletions(-)
+
+diff --git a/sound/soc/codecs/adau1701.c b/sound/soc/codecs/adau1701.c
+index e0e1381..358ee83 100644
+--- a/sound/soc/codecs/adau1701.c
++++ b/sound/soc/codecs/adau1701.c
+@@ -16,6 +16,7 @@
+ #include <linux/of.h>
+ #include <linux/of_gpio.h>
+ #include <linux/of_device.h>
++#include <linux/regmap.h>
+ #include <sound/core.h>
+ #include <sound/pcm.h>
+ #include <sound/pcm_params.h>
+@@ -95,6 +96,7 @@ struct adau1701 {
+ 	int gpio_pll_mode1;
+ 	unsigned int dai_fmt;
+ 	unsigned int pll_clkdiv;
++	struct regmap *regmap;
+ };
+ 
+ static const struct snd_kcontrol_new adau1701_controls[] = {
+@@ -126,7 +128,7 @@ static const struct snd_soc_dapm_route adau1701_dapm_routes[] = {
+ 	{ "ADC", NULL, "IN1" },
+ };
+ 
+-static unsigned int adau1701_register_size(struct snd_soc_codec *codec,
++static unsigned int adau1701_register_size(struct device *dev,
+ 		unsigned int reg)
+ {
+ 	switch (reg) {
+@@ -140,24 +142,33 @@ static unsigned int adau1701_register_size(struct snd_soc_codec *codec,
+ 		return 1;
+ 	}
+ 
+-	dev_err(codec->dev, "Unsupported register address: %d\n", reg);
++	dev_err(dev, "Unsupported register address: %d\n", reg);
+ 	return 0;
+ }
+ 
+-static int adau1701_write(struct snd_soc_codec *codec, unsigned int reg,
+-		unsigned int value)
++static bool adau1701_volatile_reg(struct device *dev, unsigned int reg)
+ {
++	switch (reg) {
++	case ADAU1701_DACSET:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static int adau1701_reg_write(void *context, unsigned int reg,
++			      unsigned int value)
++{
++	struct i2c_client *client = context;
+ 	unsigned int i;
+ 	unsigned int size;
+-	uint8_t buf[4];
++	uint8_t buf[5];
+ 	int ret;
+ 
+-	size = adau1701_register_size(codec, reg);
++	size = adau1701_register_size(&client->dev, reg);
+ 	if (size == 0)
+ 		return -EINVAL;
+ 
+-	snd_soc_cache_write(codec, reg, value);
+-
+ 	buf[0] = 0x08;
+ 	buf[1] = reg;
+ 
+@@ -166,7 +177,7 @@ static int adau1701_write(struct snd_soc_codec *codec, unsigned int reg,
+ 		value >>= 8;
+ 	}
+ 
+-	ret = i2c_master_send(to_i2c_client(codec->dev), buf, size + 2);
++	ret = i2c_master_send(client, buf, size + 2);
+ 	if (ret == size + 2)
+ 		return 0;
+ 	else if (ret < 0)
+@@ -175,16 +186,47 @@ static int adau1701_write(struct snd_soc_codec *codec, unsigned int reg,
+ 		return -EIO;
+ }
+ 
+-static unsigned int adau1701_read(struct snd_soc_codec *codec, unsigned int reg)
++static int adau1701_reg_read(void *context, unsigned int reg,
++			     unsigned int *value)
+ {
+-	unsigned int value;
+-	unsigned int ret;
++	int ret;
++	unsigned int i;
++	unsigned int size;
++	uint8_t send_buf[2], recv_buf[3];
++	struct i2c_client *client = context;
++	struct i2c_msg msgs[2] = {
++		{
++			.addr	= client->addr,
++			.len	= sizeof(send_buf),
++			.buf	= send_buf,
++		},
++		{
++			.addr	= client->addr,
++			.len	= sizeof(recv_buf),
++			.buf	= recv_buf,
++			.flags	= I2C_M_RD | I2C_M_STOP,
++		},
++	};
++
++	size = adau1701_register_size(&client->dev, reg);
++	if (size == 0)
++		return -EINVAL;
+ 
+-	ret = snd_soc_cache_read(codec, reg, &value);
+-	if (ret)
++	send_buf[0] = 0x08;
++	send_buf[1] = reg;
++
++	ret = i2c_transfer(client->adapter, msgs, 2);
++	if (ret < 0)
+ 		return ret;
++	else if (ret != 2)
++		return -EIO;
++
++	*value = 0;
++
++	for (i = 0; i < size; i++)
++		*value |= recv_buf[i] << (i * 8);
+ 
+-	return value;
++	return 0;
+ }
+ 
+ static void adau1701_reset(struct snd_soc_codec *codec)
+@@ -229,6 +271,7 @@ static int adau1701_init(struct snd_soc_codec *codec)
+ {
+ 	int ret;
+ 	struct i2c_client *client = to_i2c_client(codec->dev);
++	struct adau1701 *adau1701 = snd_soc_codec_get_drvdata(codec);
+ 
+ 	adau1701_reset(codec);
+ 
+@@ -236,7 +279,8 @@ static int adau1701_init(struct snd_soc_codec *codec)
+ 	if (ret)
+ 		dev_warn(codec->dev, "Failed to load firmware\n");
+ 
+-	snd_soc_write(codec, ADAU1701_DACSET, ADAU1701_DACSET_DACINIT);
++	regcache_sync(adau1701->regmap);
++	regmap_write(adau1701->regmap, ADAU1701_DACSET, ADAU1701_DACSET_DACINIT);
+ 
+ 	return 0;
+ }
+@@ -408,8 +452,8 @@ static int adau1701_set_dai_fmt(struct snd_soc_dai *codec_dai,
+ 
+ 	adau1701->dai_fmt = fmt & SND_SOC_DAIFMT_FORMAT_MASK;
+ 
+-	snd_soc_write(codec, ADAU1701_SERICTL, serictl);
+-	snd_soc_update_bits(codec, ADAU1701_SEROCTL,
++	regmap_write(adau1701->regmap, ADAU1701_SERICTL, serictl);
++	regmap_update_bits(adau1701->regmap, ADAU1701_SEROCTL,
+ 		~ADAU1701_SEROCTL_WORD_LEN_MASK, seroctl);
+ 
+ 	return 0;
+@@ -535,14 +579,13 @@ MODULE_DEVICE_TABLE(of, adau1701_dt_ids);
+ static int adau1701_probe(struct snd_soc_codec *codec)
+ {
+ 	int ret;
+-
+-	codec->control_data = to_i2c_client(codec->dev);
++	struct adau1701 *adau1701 = snd_soc_codec_get_drvdata(codec);
+ 
+ 	ret = adau1701_init(codec);
+ 	if (ret)
+ 		return ret;
+ 
+-	snd_soc_write(codec, ADAU1701_DSPCTRL, ADAU1701_DSPCTRL_CR);
++	regmap_write(adau1701->regmap, ADAU1701_DSPCTRL, ADAU1701_DSPCTRL_CR);
+ 
+ 	return 0;
+ }
+@@ -552,9 +595,6 @@ static struct snd_soc_codec_driver adau1701_codec_drv = {
+ 	.set_bias_level		= adau1701_set_bias_level,
+ 	.idle_bias_off		= true,
+ 
+-	.reg_cache_size		= ADAU1701_NUM_REGS,
+-	.reg_word_size		= sizeof(u16),
+-
+ 	.controls		= adau1701_controls,
+ 	.num_controls		= ARRAY_SIZE(adau1701_controls),
+ 	.dapm_widgets		= adau1701_dapm_widgets,
+@@ -562,12 +602,19 @@ static struct snd_soc_codec_driver adau1701_codec_drv = {
+ 	.dapm_routes		= adau1701_dapm_routes,
+ 	.num_dapm_routes	= ARRAY_SIZE(adau1701_dapm_routes),
+ 
+-	.write			= adau1701_write,
+-	.read			= adau1701_read,
+-
+ 	.set_sysclk		= adau1701_set_sysclk,
+ };
+ 
++static const struct regmap_config adau1701_regmap = {
++	.reg_bits		= 16,
++	.val_bits		= 24,
++	.max_register		= ADAU1701_NUM_REGS,
++	.cache_type		= REGCACHE_RBTREE,
++	.volatile_reg		= adau1701_volatile_reg,
++	.reg_write		= adau1701_reg_write,
++	.reg_read		= adau1701_reg_read,
++};
++
+ static int adau1701_i2c_probe(struct i2c_client *client,
+ 			      const struct i2c_device_id *id)
+ {
+@@ -582,6 +629,11 @@ static int adau1701_i2c_probe(struct i2c_client *client,
+ 	if (!adau1701)
+ 		return -ENOMEM;
+ 
++	adau1701->regmap = devm_regmap_init(dev, NULL, client,
++					    &adau1701_regmap);
++	if (IS_ERR(adau1701->regmap))
++		return PTR_ERR(adau1701->regmap);
++
+ 	if (dev->of_node) {
+ 		gpio_nreset = of_get_named_gpio(dev->of_node, "reset-gpio", 0);
+ 		if (gpio_nreset < 0 && gpio_nreset != -ENOENT)
+-- 
+1.8.1.4
+
+From eaa16dd67a07b58f41e804be976287b70371a77b Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Wed, 5 Jun 2013 17:25:23 +0200
+Subject: [PATCH 66/67] ASoC: codecs: adau1701: add support for pin muxing
+
+The ADAU1701 has 12 pins that can be configured depending on the system
+configuration. Allow settting the corresponding registers from DT.
+
+Signed-off-by: Daniel Mack <zonque@gmail.com>
+---
+ .../devicetree/bindings/sound/adi,adau1701.txt     |  4 +++
+ sound/soc/codecs/adau1701.c                        | 33 +++++++++++++++++++++-
+ 2 files changed, 36 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/sound/adi,adau1701.txt b/Documentation/devicetree/bindings/sound/adi,adau1701.txt
+index aa5b998..60c5c2c 100644
+--- a/Documentation/devicetree/bindings/sound/adi,adau1701.txt
++++ b/Documentation/devicetree/bindings/sound/adi,adau1701.txt
+@@ -17,6 +17,10 @@ Optional properties:
+ 			according to the configured clock divider on ASoC side
+ 			before the firmware is loaded.
+ 
++ - adi,pin-config:	An array of 12 numerical values selecting one of the
++			pin configurations as described in the datasheet,
++			table 53.
++
+ Examples:
+ 
+ 	i2c_bus {
+diff --git a/sound/soc/codecs/adau1701.c b/sound/soc/codecs/adau1701.c
+index 358ee83..479a83a 100644
+--- a/sound/soc/codecs/adau1701.c
++++ b/sound/soc/codecs/adau1701.c
+@@ -29,6 +29,8 @@
+ #define ADAU1701_SEROCTL	0x1e
+ #define ADAU1701_SERICTL	0x1f
+ 
++#define ADAU1701_PINCONF_0	0x20
++#define ADAU1701_PINCONF_1	0x21
+ #define ADAU1701_AUXNPOW	0x22
+ 
+ #define ADAU1701_OSCIPOW	0x26
+@@ -97,6 +99,7 @@ struct adau1701 {
+ 	unsigned int dai_fmt;
+ 	unsigned int pll_clkdiv;
+ 	struct regmap *regmap;
++	unsigned char pin_config[12];
+ };
+ 
+ static const struct snd_kcontrol_new adau1701_controls[] = {
+@@ -132,6 +135,9 @@ static unsigned int adau1701_register_size(struct device *dev,
+ 		unsigned int reg)
+ {
+ 	switch (reg) {
++	case ADAU1701_PINCONF_0:
++	case ADAU1701_PINCONF_1:
++		return 3;
+ 	case ADAU1701_DSPCTRL:
+ 	case ADAU1701_SEROCTL:
+ 	case ADAU1701_AUXNPOW:
+@@ -578,7 +584,8 @@ MODULE_DEVICE_TABLE(of, adau1701_dt_ids);
+ 
+ static int adau1701_probe(struct snd_soc_codec *codec)
+ {
+-	int ret;
++	int ret, i;
++	unsigned int val;
+ 	struct adau1701 *adau1701 = snd_soc_codec_get_drvdata(codec);
+ 
+ 	ret = adau1701_init(codec);
+@@ -587,6 +594,19 @@ static int adau1701_probe(struct snd_soc_codec *codec)
+ 
+ 	regmap_write(adau1701->regmap, ADAU1701_DSPCTRL, ADAU1701_DSPCTRL_CR);
+ 
++	/* set up pin config */
++	val = 0;
++	for (i = 0; i < 6; i++)
++		val |= adau1701->pin_config[i] << (i * 4);
++
++	regmap_write(adau1701->regmap, ADAU1701_PINCONF_0, val);
++
++	val = 0;
++	for (i = 0; i < 6; i++)
++		val |= adau1701->pin_config[i + 6] << (i * 4);
++
++	regmap_write(adau1701->regmap, ADAU1701_PINCONF_1, val);
++
+ 	return 0;
+ }
+ 
+@@ -635,6 +655,9 @@ static int adau1701_i2c_probe(struct i2c_client *client,
+ 		return PTR_ERR(adau1701->regmap);
+ 
+ 	if (dev->of_node) {
++		const u32 *pin_config32;
++		u32 size, i;
++
+ 		gpio_nreset = of_get_named_gpio(dev->of_node, "reset-gpio", 0);
+ 		if (gpio_nreset < 0 && gpio_nreset != -ENOENT)
+ 			return gpio_nreset;
+@@ -648,6 +671,14 @@ static int adau1701_i2c_probe(struct i2c_client *client,
+ 						   "adi,pll-mode1-gpio", 0);
+ 		if (gpio_pll_mode1 < 0 && gpio_pll_mode1 != -ENOENT)
+ 			return gpio_pll_mode1;
++
++		pin_config32 = of_get_property(dev->of_node,
++					       "adi,pin-config", &size);
++		size /= sizeof(u32);
++		size = min(ARRAY_SIZE(adau1701->pin_config), size);
++
++		for (i = 0; i < size; i++)
++			adau1701->pin_config[i] = be32_to_cpup(pin_config32 + i);
+ 	}
+ 
+ 	if (gpio_is_valid(gpio_nreset)) {
+-- 
+1.8.1.4
+
+From 3b1d085e6401962ad40e9e1da18dd01d6f58a55a Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Wed, 5 Jun 2013 14:48:48 +0200
+Subject: [PATCH 67/67] adau1701: TERRIBLE MASTER MODE HACK
+
+---
+ sound/soc/codecs/adau1701.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/sound/soc/codecs/adau1701.c b/sound/soc/codecs/adau1701.c
+index 479a83a..c618575 100644
+--- a/sound/soc/codecs/adau1701.c
++++ b/sound/soc/codecs/adau1701.c
+@@ -401,13 +401,12 @@ static int adau1701_set_dai_fmt(struct snd_soc_dai *codec_dai,
+ 	bool invert_lrclk;
+ 
+ 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
++	case SND_SOC_DAIFMT_CBS_CFS:
+ 	case SND_SOC_DAIFMT_CBM_CFM:
+ 		/* master, 64-bits per sample, 1 frame per sample */
+ 		seroctl |= ADAU1701_SEROCTL_MASTER | ADAU1701_SEROCTL_OBF16
+ 				| ADAU1701_SEROCTL_OLF1024;
+ 		break;
+-	case SND_SOC_DAIFMT_CBS_CFS:
+-		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
 -- 
 1.8.1.4
 
