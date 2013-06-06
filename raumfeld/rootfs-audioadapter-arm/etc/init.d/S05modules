@@ -6,11 +6,11 @@
 case "$1" in
   start)
  	echo "Loading modules..."
-        modprobe pxamci
+	modprobe pxamci
+	modprobe snd-soc-s800
 	;;
   *)
-        ;;
+	;;
 esac
 
 exit $?
-
