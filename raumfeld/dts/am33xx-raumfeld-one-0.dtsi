@@ -105,6 +105,7 @@
 				compatible = "adi,adau1701";
 				reg = <0x34>;
 				reset-gpio = <&gpio0 10 0>;
+				adi,pll-clkdiv = <512>;
 				adi,pll-mode0-gpio = <&gpio0 8 0>;
 				adi,pll-mode1-gpio = <&gpio0 9 0>;
 				adi,pin-config = <0x4 0x7 0x5 0x5 0x4 0x4
@@ -133,6 +134,20 @@
 			compatible = "gpio-keys";
 			pinctrl-names = "default";
 			pinctrl-0 = <&button_pins>;
+
+			setup {
+				label = "Setup";
+				gpios = <&gpio2 18 1>;
+				linux,code = <141>; /* KEY_SETUP */
+				gpio-key,wakeup;
+			};
+
+			reset {
+				label = "Reset";
+				gpios = <&gpio1 9 1>;
+				linux,code = <61>; /* KEY_F3 */
+				gpio-key,wakeup;
+			};
 
 			power {
 				label = "Power";
