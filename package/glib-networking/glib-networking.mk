@@ -1,11 +1,11 @@
-#############################################################
+################################################################################
 #
 # glib-networking
 #
-#############################################################
+################################################################################
 
-GLIB_NETWORKING_MAJOR_VERSION = 2.32
-GLIB_NETWORKING_MINOR_VERSION = 3
+GLIB_NETWORKING_MAJOR_VERSION = 2.36
+GLIB_NETWORKING_MINOR_VERSION = 1
 GLIB_NETWORKING_VERSION = $(GLIB_NETWORKING_MAJOR_VERSION).$(GLIB_NETWORKING_MINOR_VERSION)
 GLIB_NETWORKING_SITE = http://ftp.gnome.org/pub/gnome/sources/glib-networking/$(GLIB_NETWORKING_MAJOR_VERSION)
 GLIB_NETWORKING_SOURCE = glib-networking-$(GLIB_NETWORKING_VERSION).tar.xz
