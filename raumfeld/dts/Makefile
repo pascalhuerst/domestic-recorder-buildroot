@@ -4,7 +4,8 @@ DTC=$(HOSTDIR)/usr/bin/dtc
 TARGETS = \
 	am33xx-raumfeld-connector-0-0.dtb	\
 	am33xx-raumfeld-cube-0-0.dtb		\
-	am33xx-raumfeld-one-0-0.dtb
+	am33xx-raumfeld-one-0-0.dtb		\
+	am33xx-raumfeld-speaker-l-0-0.dtb
 
 all: clean $(TARGETS)
 

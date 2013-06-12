@@ -87,14 +87,15 @@ names=( \
     "Raumfeld One"         \
     "Raumfeld Connector 2" \
     "Raumfeld Cube"        \
-    "Raumfeld One 2")
+    "Raumfeld One 2"       \
+    "Raumfeld Speaker L 2")
 
 case $target in
 	audioadapter-arm)
 		hardwareids="3 4 6 7 8"
 		;;
 	audioadapter-armada)
-		hardwareids="9 10 11"
+		hardwareids="9 10 11 12"
 		;;
 	remotecontrol-arm)
 		hardwareids="2"
