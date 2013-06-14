@@ -8,7 +8,7 @@ uuid=`echo $UM_MOUNTPOINT | awk -F "/" '{print $3}'`
 i=3
 while [ $i -gt 0 ]; do
     /usr/bin/raumfeld-prefs \
-        "set-value /Preferences/Storages Storage $uuid Online 0" \
+        "set-value /Preferences/Storages Storage $uuid Online no" \
         "store" && break
     i=`expr $i - 1`
     echo "raumfeld-prefs failed. Trying $i more times."

@@ -23,7 +23,7 @@ i=3
 while [ $i -gt 0 ]; do
     /usr/bin/raumfeld-prefs \
         "set-value /Preferences/Storages Storage $uuid Path file://$UM_MOUNTPOINT" \
-        "set-value /Preferences/Storages Storage $uuid Online 1" \
+        "set-value /Preferences/Storages Storage $uuid Online yes" \
         "set-value /Preferences/Storages Storage $uuid Name $label" \
         "store" && break
     i=`expr $i - 1`
