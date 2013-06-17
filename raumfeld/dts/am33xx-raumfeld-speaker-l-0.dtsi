@@ -91,7 +91,7 @@
 				reg = <0x1b>;
 				reset-gpio = <&gpio1 19 0>;
 				vd-supply = <&vdd_audio>;
-				input-matrix = <1>;
+				input-matrix = <2>;
 			};
 		};
 
