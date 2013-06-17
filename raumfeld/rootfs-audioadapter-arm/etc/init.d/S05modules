@@ -7,7 +7,7 @@ case "$1" in
   start)
  	echo "Loading modules..."
 	modprobe pxamci
-	modprobe snd-soc-s800
+	modprobe snd-soc-adau1701
 	;;
   *)
 	;;
