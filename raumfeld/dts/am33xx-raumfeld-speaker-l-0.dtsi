@@ -43,7 +43,7 @@
 			>;
 		};
 
-		audio_pins: audio_pins_multichannel {
+		audio_pins: pinmux_audio_pins {
 			pinctrl-single,pins = <
 				0x1ac 0x28	/* MCASP0_MCLK_OUT */
 				0x190 0x08	/* MCASP0_BCLK_OUT */
@@ -91,6 +91,7 @@
 				reg = <0x1b>;
 				reset-gpio = <&gpio1 19 0>;
 				vd-supply = <&vdd_audio>;
+				input-matrix = <1>;
 			};
 		};
 
