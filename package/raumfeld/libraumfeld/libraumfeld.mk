@@ -4,7 +4,6 @@
 #
 #############################################################
 
-LIBRAUMFELD_MODULE = raumfeld
 LIBRAUMFELD_INSTALL_STAGING = YES
 
 LIBRAUMFELD_CONF_ENV = \
@@ -23,10 +22,13 @@ LIBRAUMFELD_CONF_OPT += --enable-profiling
 endif
 
 LIBRAUMFELD_DEPENDENCIES = \
-	host-pkgconf host-libglib2 \
+	host-pkgconf host-libglib2		\
 	avahi gupnp-av openssl libarchive libunwind
 
-LIBRAUMFELD_POST_EXTRACT_HOOKS = \
-	(cd $(LIBRAUMFELD_DIR); gtkdocize)
+define LIBRAUMFELD_GTKDOCIZE_HOOK
+	$(Q) cd $(LIBRAUMFELD_SRCDIR) && gtkdocize
+endef
+
+LIBRAUMFELD_PRE_AUTORECONF_HOOKS = $(LIBRAUMFELD_GTKDOCIZE_HOOK)
 
 $(eval $(raumfeld-autotools-package))

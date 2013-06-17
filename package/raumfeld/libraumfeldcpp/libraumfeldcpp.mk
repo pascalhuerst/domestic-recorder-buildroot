@@ -4,7 +4,6 @@
 #
 #############################################################
 
-LIBRAUMFELDCPP_MODULE = raumfeldcpp
 LIBRAUMFELDCPP_INSTALL_STAGING = YES
 
 LIBRAUMFELDCPP_CONF_OPT = \
