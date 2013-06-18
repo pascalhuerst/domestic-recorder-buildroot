@@ -66,6 +66,14 @@ config BR2_TOOLCHAIN_BUILDROOT_USE_SSP
 	  See http://www.linuxfromscratch.org/hints/downloads/files/ssp.txt
 	  for details.
 
+config BR2_TOOLCHAIN_BUILDROOT_CONTEXT_FUNCS
+	bool "Enable the obsolescent functions used for context control"
+        depends on BR2_UCLIBC_VERSION_0_9_32
+	help
+	  Enable this option if you want your toolchain to support the
+	  setcontext family of functions used for context control. These
+	  functions are: setcontext, getcontext, makecontext, swapcontext.
+
 choice
 	prompt "Thread library implementation"
 	default BR2_PTHREADS_NATIVE if (!BR2_UCLIBC_VERSION_0_9_31) && !BR2_ARM_OABI && !(BR2_avr32 || BR2_xtensa)

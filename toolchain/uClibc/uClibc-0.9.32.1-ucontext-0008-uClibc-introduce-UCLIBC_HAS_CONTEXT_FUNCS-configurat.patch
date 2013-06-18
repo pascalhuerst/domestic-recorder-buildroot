@@ -1,0 +1,43 @@
+From c7bc2aa052847fad61b774c5e3aad2bff1b04638 Mon Sep 17 00:00:00 2001
+From: Florian Fainelli <florian@openwrt.org>
+Date: Fri, 28 Dec 2012 12:27:51 +0100
+Subject: [PATCH 8/8] uClibc: introduce UCLIBC_HAS_CONTEXT_FUNCS configuration
+ symbol
+
+This option is introduced to conditionnaly enable the support for the
+{get,set,swap,make}context functions. Based on a initial patch by Carmelo
+Amoroso.
+
+Signed-off-by: Carmelo Amoroso <carmelo.amoroso@st.com>
+Signed-off-by: Florian Fainelli <florian@openwrt.org>
+---
+ extra/Configs/Config.in | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/extra/Configs/Config.in b/extra/Configs/Config.in
+index d0204bb..62bcd9b 100644
+--- a/extra/Configs/Config.in
++++ b/extra/Configs/Config.in
+@@ -681,6 +681,19 @@ config UCLIBC_SUSV3_LEGACY
+ 
+ 	  WARNING! ABI incompatibility.
+ 
++config UCLIBC_HAS_CONTEXT_FUNCS
++	bool "Use obsolescent context control functions"
++	depends on UCLIBC_SUSV3_LEGACY && ARCH_HAS_UCONTEXT
++	help
++	  Add into library the SuSv3 obsolescent functions used for context
++	  control. The setcontext family allows the implementation in C of
++	  advanced control flow patterns such as iterators, fibers, and
++	  coroutines. They may be viewed as an advanced version of
++	  setjmp/longjmp; whereas the latter allows only a single non-local jump
++	  up the stack, setcontext allows the creation of multiple cooperative
++	  threads of control, each with its own stack.
++	  These functions are: setcontext, getcontext, makecontext, swapcontext.
++
+ config UCLIBC_SUSV3_LEGACY_MACROS
+ 	bool "Enable SuSv3 LEGACY macros"
+ 	help
+-- 
+1.8.1.2
+

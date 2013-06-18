@@ -1,6 +1,10 @@
 config BR2_PACKAGE_GOOGLE_BREAKPAD
 	bool "google-breakpad"
+	depends on BR2_TOOLCHAIN_BUILDROOT_CONTEXT_FUNCS
 	help
 	  An open-source multi-platform crash reporting system
 
 	  http://code.google.com/p/google-breakpad/
+
+comment "google-breakpad requires a toolchain with context control functions"
+	depends on !BR2_TOOLCHAIN_BUILDROOT_CONTEXT_FUNCS

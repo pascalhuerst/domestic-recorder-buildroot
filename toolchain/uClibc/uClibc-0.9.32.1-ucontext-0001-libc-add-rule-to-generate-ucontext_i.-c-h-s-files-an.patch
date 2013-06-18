@@ -1,0 +1,59 @@
+From 8f39d9d94b38d04d5452454ad77f4b7fb4b78c3a Mon Sep 17 00:00:00 2001
+From: Florian Fainelli <florian@openwrt.org>
+Date: Mon, 31 Dec 2012 14:51:40 +0100
+Subject: [PATCH 1/8] libc: add rule to generate ucontext_i.{c,h,s} files and
+ clean them
+
+This patch adds the required rules to generate the ucontext_i.{c,h,s}
+files from the architecture specific ucontext_i.sym file. Such files are
+required to properly support user-space context functions
+({get,set,swap,make}context), and as such is made conditional on
+UCLIBC_HAS_CONTEXT_FUNCS.
+
+Signed-off-by: Florian Fainelli <florian@openwrt.org>
+---
+ libc/.gitignore                        |  1 +
+ libc/sysdeps/linux/Makefile.commonarch | 21 ++++++++++++++++++++-
+ 2 files changed, 21 insertions(+), 1 deletion(-)
+ create mode 100644 libc/.gitignore
+
+diff --git a/libc/.gitignore b/libc/.gitignore
+new file mode 100644
+index 0000000..f4c0305
+--- /dev/null
++++ b/libc/.gitignore
+@@ -0,0 +1 @@
++ucontext_i.[chs]
+diff --git a/libc/sysdeps/linux/Makefile.commonarch b/libc/sysdeps/linux/Makefile.commonarch
+index c1bc5df..9b72a0e 100644
+--- a/libc/sysdeps/linux/Makefile.commonarch
++++ b/libc/sysdeps/linux/Makefile.commonarch
+@@ -37,5 +37,24 @@ headers-y += $(ARCH_HEADERS_OUT)
+ headers_clean-y += HEADERCLEAN_$(subst $(top_builddir),,$(ARCH_OUT))
+ HEADERCLEAN_$(subst $(top_builddir),,$(ARCH_OUT)):
+ 	$(do_rm) $(ARCH_HEADERS_OUT)
+-
+ endif
++
++CFLAGS-ucontext_i.c = -S
++
++$(ARCH_OUT)/ucontext_i.c: $(ARCH_DIR)/ucontext_i.sym
++	$(do_awk) $(top_srcdir)extra/scripts/gen-as-const.awk $< > $@
++
++$(ARCH_OUT)/ucontext_i.s: $(ARCH_OUT)/ucontext_i.c
++	$(compile.c)
++
++$(ARCH_OUT)/ucontext_i.h: $(ARCH_OUT)/ucontext_i.s
++	$(do_sed) $(PTHREAD_GENERATE_MANGLE) $< > $@
++
++pregen-headers-$(UCLIBC_HAS_CONTEXT_FUNCS) += $(ARCH_OUT)/ucontext_i.h
++
++headers_clean-$(UCLIBC_HAS_CONTEXT_FUNCS) += \
++	HEADERCLEAN_$(subst $(top_builddir),,$(ARCH_OUT)/ucontext_i)
++
++HEADERCLEAN_$(subst $(top_builddir),,$(ARCH_OUT)/ucontext_i):
++	$(do_rm) $(addprefix $(ARCH_OUT)/ucontext_i., c h s)
++
+-- 
+1.8.1.2
+

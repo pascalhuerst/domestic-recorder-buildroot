@@ -282,6 +282,11 @@ ifeq ($(BR2_TOOLCHAIN_BUILDROOT_USE_SSP),y)
 else
 	$(SED) 's,^.*UCLIBC_HAS_SSP[^_].*,UCLIBC_HAS_SSP=n,g' $(UCLIBC_DIR)/.oldconfig
 endif
+ifeq ($(BR2_TOOLCHAIN_BUILDROOT_CONTEXT_FUNCS),y)
+	echo "UCLIBC_HAS_CONTEXT_FUNCS=y" >> $(UCLIBC_DIR)/.oldconfig
+else
+	echo "# UCLIBC_HAS_CONTEXT_FUNCS is not set" >> $(UCLIBC_DIR)/.oldconfig
+endif
 	$(SED) '/UCLIBC_HAS_THREADS/d' $(UCLIBC_DIR)/.oldconfig
 	$(SED) '/LINUXTHREADS/d' $(UCLIBC_DIR)/.oldconfig
 	$(SED) '/LINUXTHREADS_OLD/d' $(UCLIBC_DIR)/.oldconfig
