@@ -17716,17 +17716,17 @@ index 2ad61f0..ee24941 100644
 -- 
 1.8.1.4
 
-From 06e898a49b5909fa5697fdd1a1fc5c67e04ffc60 Mon Sep 17 00:00:00 2001
+From 3a5e4110aea8e44af201c2a5198a15a283e37860 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Mon, 17 Jun 2013 14:57:41 +0200
 Subject: [PATCH 72/72] speaker L DTS
 
 ---
- arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi b/arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi
-index 673dec2..a69154a 100644
+index 673dec2..23a0601 100644
 --- a/arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi
 +++ b/arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi
 @@ -57,8 +57,8 @@
@@ -17747,6 +17747,15 @@ index 673dec2..a69154a 100644
 +				input-matrix = <2>;
  			};
  		};
+ 
+@@ -159,7 +159,7 @@
+ 
+ 		ak5386: ak5386@0 {
+ 			compatible = "asahi-kasei,ak5386";
+-			/* reset-gpio = <&gpio1 19 0>; */
++			reset-gpio = <&gpio1 22 0>;
+ 		};
+ 	};
  
 -- 
 1.8.1.4

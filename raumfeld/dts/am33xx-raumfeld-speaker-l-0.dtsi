@@ -159,7 +159,7 @@
 
 		ak5386: ak5386@0 {
 			compatible = "asahi-kasei,ak5386";
-			/* reset-gpio = <&gpio1 19 0>; */
+			reset-gpio = <&gpio1 22 0>;
 		};
 	};
 
