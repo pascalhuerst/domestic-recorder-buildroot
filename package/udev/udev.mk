@@ -3,52 +3,43 @@
 # udev
 #
 #############################################################
-UDEV_VERSION = 173
+
+UDEV_VERSION = 182
 UDEV_SOURCE = udev-$(UDEV_VERSION).tar.bz2
 UDEV_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/kernel/hotplug/
+UDEV_LICENSE = GPLv2+
+UDEV_LICENSE_FILES = COPYING
 UDEV_INSTALL_STAGING = YES
+
+# mq_getattr is in librt
+UDEV_CONF_ENV += LIBS=-lrt
 
 UDEV_CONF_OPT =			\
 	--sbindir=/sbin		\
-	--libexecdir=/lib/udev	\
 	--with-rootlibdir=/lib	\
-	--with-firmware-path=/lib/firmware		\
+	--libexecdir=/lib	\
 	--with-usb-ids-path=/usr/share/hwdata/usb.ids	\
-	--with-pci-ids-path=/usr/share/hwdata/pci.ids
+	--with-pci-ids-path=/usr/share/hwdata/pci.ids	\
+	--with-firmware-path=/lib/firmware		\
+	--disable-introspection
 
 UDEV_DEPENDENCIES = host-gperf host-pkgconf util-linux kmod
 
-ifeq ($(BR2_PACKAGE_UDEV_ACL),y)
-UDEV_CONF_OPT += --enable-udev_acl
-UDEV_DEPENDENCIES += acl
+ifeq ($(BR2_PACKAGE_UDEV_RULES_GEN),y)
+UDEV_CONF_OPT += --enable-rule_generator
 endif
 
-ifeq ($(BR2_PACKAGE_UDEV_GUDEV),y)
-UDEV_DEPENDENCIES += libglib2
+ifeq ($(BR2_PACKAGE_UDEV_ALL_EXTRAS),y)
+UDEV_DEPENDENCIES += acl hwdata libglib2
+UDEV_CONF_OPT +=		\
+	--enable-udev_acl
 else
-UDEV_CONF_OPT += --disable-gudev
+UDEV_CONF_OPT +=		\
+	--disable-gudev
 endif
 
-ifeq ($(BR2_PACKAGE_UDEV_HWDATA),y)
-UDEV_DEPENDENCIES += hwdata
-endif
-
-ifeq ($(BR2_PACKAGE_UDEV_INTROSPECTION),y)
-UDEV_DEPENDENCIES += libglib2
-else
-UDEV_CONF_OPT += --disable-introspection
-endif
-
-ifneq ($(BR2_PACKAGE_UDEV_KEYMAP),y)
-UDEV_CONF_OPT += --disable-keymap
-endif
-
-ifneq ($(BR2_PACKAGE_UDEV_MTD),y)
-UDEV_CONF_OPT += --disable-mtd_probe
-endif
-
-ifneq ($(BR2_PACKAGE_UDEV_RULES_GEN),y)
-UDEV_CONF_OPT += --disable-rule_generator
+ifeq ($(BR2_PACKAGE_SYSTEMD),y)
+	UDEV_CONF_OPT += --with-systemdsystemunitdir=/lib/systemd/system/
 endif
 
 define UDEV_INSTALL_INITSCRIPT

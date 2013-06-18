@@ -1,11 +1,19 @@
 config BR2_PACKAGE_CRDA
-	bool "central regulatory domain agent"
+	bool "crda"
+	depends on BR2_TOOLCHAIN_HAS_THREADS # libnl
+	select BR2_PACKAGE_LIBGCRYPT
 	select BR2_PACKAGE_LIBNL
-	select BR2_PACKAGE_OPENSSL
-	select BR2_PACKAGE_UDEV
+	# regdb is a runtime dependency
 	select BR2_PACKAGE_WIRELESS_REGDB
 	help
-	  This is the Central Regulatory Domain Agent for Linux.
-	  In essence it is a udev helper for communication between
-	  the kernel and userspace.
+	  Central Regulatory Domain Agent.
 
+	  This package provides a Central Regulatory Domain Agent (CRDA)
+	  to be used by the Linux kernel cf80211 wireless subsystem to
+	  query and apply the regulatory domain settings wireless devices
+	  may operate within for a given location.
+
+	  http://linuxwireless.org/en/developers/Regulatory/CRDA
+
+comment "crda requires a toolchain with thread support"
+	depends on !BR2_TOOLCHAIN_HAS_THREADS
