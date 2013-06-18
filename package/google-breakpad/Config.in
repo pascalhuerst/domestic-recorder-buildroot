@@ -1,0 +1,6 @@
+config BR2_PACKAGE_GOOGLE_BREAKPAD
+	bool "google-breakpad"
+	help
+	  An open-source multi-platform crash reporting system
+
+	  http://code.google.com/p/google-breakpad/
