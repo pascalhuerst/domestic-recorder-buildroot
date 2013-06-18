@@ -57,8 +57,8 @@
 
 				0xd0  0x04	/* lcd_data12 -> MCASP0_AXR2 (LCD_DATA12) - out */
 				//0xd4  0x04	/* lcd_data13 -> MCASP0_AXR3 (LCD_DATA13) - out */
-
 				0xd8  0x7	/* lcd_data14 -> GPIO0_10 (LCD_DATA14) - out */
+				0x58 0xf	/* gpmc_a6.-> gpio1_22, - (/reset ak5386) - out */
 
 				0x40 0x3f	/* gpmc_a0.-> gpio1_16, - (overtemperrature) - in*/
 				0x4c 0x7	/* gpmc_a3.-> gpio1_19, - (/reset) - out*/

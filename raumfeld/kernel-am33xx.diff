@@ -17716,19 +17716,29 @@ index 2ad61f0..ee24941 100644
 -- 
 1.8.1.4
 
-From fd1250beee308d0cc4aaae85f0ed1c98e91884e5 Mon Sep 17 00:00:00 2001
+From 06e898a49b5909fa5697fdd1a1fc5c67e04ffc60 Mon Sep 17 00:00:00 2001
 From: Daniel Mack <zonque@gmail.com>
 Date: Mon, 17 Jun 2013 14:57:41 +0200
 Subject: [PATCH 72/72] speaker L DTS
 
 ---
- arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi b/arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi
-index 673dec2..9302908 100644
+index 673dec2..a69154a 100644
 --- a/arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi
 +++ b/arch/arm/boot/dts/am33xx-raumfeld-speaker-l-0.dtsi
+@@ -57,8 +57,8 @@
+ 
+ 				0xd0  0x04	/* lcd_data12 -> MCASP0_AXR2 (LCD_DATA12) - out */
+ 				//0xd4  0x04	/* lcd_data13 -> MCASP0_AXR3 (LCD_DATA13) - out */
+-
+ 				0xd8  0x7	/* lcd_data14 -> GPIO0_10 (LCD_DATA14) - out */
++				0x58 0xf	/* gpmc_a6.-> gpio1_22, - (/reset ak5386) - out */
+ 
+ 				0x40 0x3f	/* gpmc_a0.-> gpio1_16, - (overtemperrature) - in*/
+ 				0x4c 0x7	/* gpmc_a3.-> gpio1_19, - (/reset) - out*/
 @@ -91,7 +91,7 @@
  				reg = <0x1b>;
  				reset-gpio = <&gpio1 19 0>;
