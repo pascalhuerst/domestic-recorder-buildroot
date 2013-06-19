@@ -1,9 +1,7 @@
 #!/bin/sh
 
 # Check for disk label
-label=$(blkid -o value -s LABEL $UM_DEVICE)
-
-if test "$label" = "SCREENSHOTS"; then
+if test "$UM_LABEL" = "SCREENSHOTS"; then
   mkdir -p /tmp/screenshots
   mount --bind $UM_MOUNTPOINT /tmp/screenshots
   mount -o remount,rw,sync /tmp/screenshots
