@@ -31,15 +31,13 @@ if test "$1" = add; then
 
     log "handle insertion of $DEVNAME"
 
-    DEV_UUID=$(blkid -o value -s UUID $DEVNAME)
-
-    if [ -z "$DEV_UUID" ]; then
+    if [ -z "$ID_FS_UUID" ]; then
     	exit 0
     fi
 
-    log "extracted uuid $DEV_UUID"
+    log "uuid is $ID_FS_UUID"
 
-    MOUNT_POINT="/media/$DEV_UUID"
+    MOUNT_POINT="/media/$ID_FS_UUID"
 
     log "creating mount point $MOUNT_POINT"
 
