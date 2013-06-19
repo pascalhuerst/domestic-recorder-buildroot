@@ -91,6 +91,7 @@ rm -f  $1/usr/libexec/gvfsd-sftp
 rm -f  $1/usr/libexec/gvfsd-trash
 rm -fr $1/usr/share/GConf
 rm -fr $1/usr/share/aclocal
+rm -fr $1/usr/share/bash-completion
 rm -fr $1/usr/share/alsa/cards
 rm -fr $1/usr/share/alsa/pcm
 rm -fr $1/usr/share/applications
@@ -98,6 +99,7 @@ rm -fr $1/usr/share/avahi/introspection
 rm -fr $1/usr/share/common-lisp
 rm -fr $1/usr/share/gdb
 rm -f  $1/usr/share/getopt/*.tcsh
+rm -fr $1/usr/share/glib-2.0/codegen
 rm -fr $1/usr/share/gst-plugins-base/1.0
 rm -f  $1/usr/share/gvfs/mounts/burn.mount
 rm -f  $1/usr/share/gvfs/mounts/computer.mount
