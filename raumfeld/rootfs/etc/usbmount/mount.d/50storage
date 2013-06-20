@@ -4,8 +4,8 @@
 grep "^ismaster=yes" /var/raumfeld-1.0/master-process.conf || exit 0
 
 # Check for disk UUID and label
-uuid=$(UM_UUID)
-label=$(UM_LABEL)
+uuid=$UM_UUID
+label=$UM_LABEL
 
 if test -z "$label"; then
   # If there's no label, use vendor and/or model
