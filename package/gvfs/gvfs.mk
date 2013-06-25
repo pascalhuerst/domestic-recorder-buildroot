@@ -3,7 +3,7 @@
 # gvfs
 #
 #############################################################
-GVFS_VERSION_MAJOR = 1.12
+GVFS_VERSION_MAJOR = 1.16
 GVFS_VERSION_MINOR = 3
 GVFS_VERSION = $(GVFS_VERSION_MAJOR).$(GVFS_VERSION_MINOR)
 GVFS_SOURCE = gvfs-$(GVFS_VERSION).tar.xz
@@ -17,10 +17,13 @@ GVFS_CONF_OPT = \
 	--disable-udisks2		\
 	--disable-cdda			\
 	--disable-afc			\
+	--disable-goa			\
 	--disable-obexftp		\
 	--disable-gphoto2		\
 	--disable-keyring		\
 	--disable-bluray		\
+	--disable-libmtp		\
+	--disable-gtk			\
 	--disable-bash-completion
 
 ifeq ($(BR2_PACKAGE_GVFS_AFP),y)
