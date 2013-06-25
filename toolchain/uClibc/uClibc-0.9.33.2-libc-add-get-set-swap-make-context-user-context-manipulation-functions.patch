@@ -109,22 +109,22 @@ index 14a1270..f11db77 100644
     License along with the GNU C Library; if not, see
     <http://www.gnu.org/licenses/>.  */
  
-+/* The System V ABI user-level context switching support functions
-+   are marked obsolescent by SuSv3.  */
-+
  #ifndef _UCONTEXT_H
  #define _UCONTEXT_H	1
  
  #include <features.h>
  
-+#ifdef __UCLIBC_HAS_CONTEXT_FUNCS__
-+
  /* Get machine dependent definition of data structures.  */
  #include <sys/ucontext.h>
  
 -/* The System V ABI user-level context switching support functions
 - * are marked obsolescent by SuSv3, and are not implemented by
 - * uClibc.  This header is therefore empty.  */
++/* The System V ABI user-level context switching support functions
++   are marked obsolescent by SuSv3.  */
++
++#ifdef __UCLIBC_HAS_CONTEXT_FUNCS__
++
 +__BEGIN_DECLS
 +
 +/* Get user context and store it in variable pointed to by UCP.  */
