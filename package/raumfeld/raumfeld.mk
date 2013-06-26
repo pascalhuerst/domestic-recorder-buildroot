@@ -177,7 +177,7 @@ include package/raumfeld/*/*.mk
 
 raumfeld-rebuild: $(RAUMFELD_DIRCLEAN_TARGETS) all
 
-raumfeld-dts: host-cramfs
+raumfeld-dts: host-cramfs linux
 	TMPDIR=$(shell mktemp -d) ; \
 	make HOSTDIR=${HOST_DIR} DESTDIR=$$TMPDIR/ -C raumfeld/dts ; \
 	${HOST_DIR}/usr/bin/mkcramfs $$TMPDIR ${BINARIES_DIR}/dts.cramfs ; \
