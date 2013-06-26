@@ -51,6 +51,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+/update-uboot-armada.sh
 
 
 kill_leds

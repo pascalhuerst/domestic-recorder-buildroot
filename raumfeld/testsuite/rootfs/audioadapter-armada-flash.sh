@@ -24,6 +24,9 @@ fi
 
 kill_leds
 
+/update-uboot-armada.sh
+
+
 led_on 1
 led_on 2
 
