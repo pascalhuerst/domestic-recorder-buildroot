@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# final script for end of line tests, usually fully assembled. Mostly the same for connector and speakers. 
+
+
 source tests.inc
 
 cd /tests
@@ -33,13 +36,15 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-kill_leds
-./leds-blink-so 4 &
-./audio-test-armada
-if [ $? -ne 0 ]; then
+if [ ! -z "$(grep -i "Connector" /proc/device-tree/model)" ]; then
     kill_leds
-    ./leds-blink-so 4 1 &
-    exit 1
+    ./leds-blink-so 4 &
+    ./audio-test-armada
+    if [ $? -ne 0 ]; then
+        kill_leds
+        ./leds-blink-so 4 1 &
+        exit 1
+    fi
 fi
 
 kill_leds
@@ -59,8 +64,9 @@ kill_leds
 led_on 1
 led_on 2
 
-./audio-speaker-armada
-
+if [ ! -z "$(grep -i "Connector" /proc/device-tree/model)" ]; then
+    ./audio-speaker-armada
+fi
 
 echo "*********** Raumfeld Tests success ********"
 
