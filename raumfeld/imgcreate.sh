@@ -31,19 +31,19 @@ __EOF__
 add_raumfeld_demo() {
     DOWNLOAD_SITE=http://rf-devel.teufel.local/buildroot/dl
     DOWNLOAD_FILE="Raumfeld Demo.mp3"
-    test -f "dl/$DOWNLOAD_FILE" || \
-        wget -P dl "$DOWNLOAD_SITE/$DOWNLOAD_FILE"
-    cp "dl/$DOWNLOAD_FILE" $tmpdir/
+    test -f "output/dl/$DOWNLOAD_FILE" || \
+        wget -P output/dl "$DOWNLOAD_SITE/$DOWNLOAD_FILE"
+    cp "output/dl/$DOWNLOAD_FILE" $tmpdir/
 }
 
 add_audiotest_wav() {
     DOWNLOAD_PRIMARY_SITE=http://rf-devel.teufel.local/buildroot/dl
     DOWNLOAD_BACKUP_SITE=http://caiaq.de/download/raumfeld
     DOWNLOAD_FILE="audiotest.wav"
-    test -f dl/$DOWNLOAD_FILE || \
+    test -f output/dl/$DOWNLOAD_FILE || \
         for site in $DOWNLOAD_PRIMARY_SITE $DOWNLOAD_BACKUP_SITE; \
-        do wget -P dl $site/$DOWNLOAD_FILE && break; done
-    cp dl/$DOWNLOAD_FILE $tmpdir/
+        do wget -P output/dl $site/$DOWNLOAD_FILE && break; done
+    cp output/dl/$DOWNLOAD_FILE $tmpdir/
 }
 
 add_rootfs_tgz() {
@@ -53,8 +53,7 @@ add_rootfs_tgz() {
 }
 
 add_dtb_cramfs() {
-    make raumfeld-dts
-    cp images/dts.cramfs $tmpdir
+    cp output/images/dts.cramfs $tmpdir/
 }
 
 ./buildlog.sh $*
