@@ -53,12 +53,8 @@ add_rootfs_tgz() {
 }
 
 add_dtb_cramfs() {
-    make host-cramfs
-    DIR=$(mktemp -d)
-    HOSTDIR=$(pwd)/output/host
-    make HOSTDIR=${HOSTDIR} DESTDIR=${DIR}/ -C raumfeld/dts
-    ${HOSTDIR}/usr/bin/mkcramfs ${DIR} $tmpdir/dts.cramfs
-    rm -fr ${DIR}
+    make raumfeld-dts
+    cp images/dts.cramfs $tmpdir
 }
 
 ./buildlog.sh $*

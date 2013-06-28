@@ -1,0 +1,19 @@
+menuconfig BR2_PACKAGE_RAUMFELD_DTS
+	bool "raumfeld-dts"
+	depends on BR2_arm
+	help
+	  Pulls the DTS files from our git repository and compiles them.
+
+	  http://www.raumfeld.com/
+
+if BR2_PACKAGE_RAUMFELD_DTS
+
+config BR2_PACKAGE_RAUMFELD_DTS_REPOSITORY
+        string "git repository that holds the dts files"
+        default "ssh://git@sources.teufelhome.com/rfs/dts.git"
+
+config BR2_PACKAGE_RAUMFELD_DTS_VERSION
+        string "version or branch to check out from the git repository"
+        default "raumfeld-am33xx-3.9"
+
+endif
