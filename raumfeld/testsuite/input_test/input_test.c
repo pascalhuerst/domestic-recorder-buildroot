@@ -275,19 +275,19 @@ static struct test_func {
 	{
 		.name	= "rotary",
 		.desc	= "\trotary left/right 360° test",
-		.dev	= "rotary-encoder",
+		.dev	= "rotary",
 		.proc	= test_rotary
 	},
 	{
 		.name	= "rotary_cw",
 		.desc	= "\trotary clockwise test",
-		.dev	= "rotary-encoder",
+		.dev	= "rotary",
 		.proc	= test_rotary_cw
 	},
 	{
 		.name	= "rotary_ccw",
 		.desc	= "\trotary counter-clockwise test",
-		.dev	= "rotary-encoder",
+		.dev	= "rotary",
 		.proc	= test_rotary_ccw
 	},
 	{
