@@ -70,7 +70,7 @@ led_on 2
 
 ./audio-speaker-armada
 
-echo "*** Updateting u-boot *****"
+echo "*** Updating u-boot *****"
 /update-uboot-armada.sh
 
 echo "*********** Raumfeld Tests success ********"
