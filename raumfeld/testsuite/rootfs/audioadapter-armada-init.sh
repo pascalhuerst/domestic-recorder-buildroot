@@ -21,6 +21,15 @@ kill_leds
 ./leds-blink-so 1 &
 ./armada-button
 
+if [-n "$(grep -i "Speaker L" /proc/device-tree/model)"] || [-n "$(grep -i "One" /proc/device-tree/model)"]; then
+	kill_leds
+	./leds-blink 4 &
+	$INPUT_TEST rotary_cw
+
+	kill_leds
+	./leds-blink 5 &
+	$INPUT_TEST rotary_ccw
+fi
 
 #wifi test not needed in this case
 #kill_leds
@@ -68,7 +77,7 @@ kill_leds
 led_on 1
 led_on 2
 
-./audio-speaker-armada
+#./audio-speaker-armada
 
 echo "*** Updating u-boot *****"
 /update-uboot-armada.sh
