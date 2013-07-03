@@ -4,9 +4,12 @@
 #
 #############################################################
 
-GUPNP_VERSION = 0.14.1
-GUPNP_SOURCE = gupnp-$(GUPNP_VERSION).tar.gz
-GUPNP_SITE = http://www.gupnp.org/sites/all/files/sources
+GUPNP_MAJOR_VERSION = 0.14
+GUPNP_MINOR_VERSION = 1
+GUPNP_VERSION = $(GUPNP_MAJOR_VERSION).$(GUPNP_MINOR_VERSION)
+GUPNP_SOURCE = gupnp-$(GUPNP_VERSION).tar.bz2
+GUPNP_SITE = http://ftp.gnome.org/pub/GNOME/sources/gupnp/$(GUPNP_MAJOR_VERSION)
+
 GUPNP_INSTALL_STAGING = YES
 
 GUPNP_CONF_ENV = \
