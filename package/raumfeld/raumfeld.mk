@@ -53,17 +53,25 @@ endef # inner-raumfeld-cross-package
 define inner-raumfeld-autotools-package
 
 
+$(2)_OVERRIDE_SRCDIR = $(BUILD_DIR)/raumfeld-repo-$(call qstrip,$(BR2_PACKAGE_RAUMFELD_REPO_VERSION))/$(1)
+
 ifndef $(2)_AUTORECONF
   $(2)_AUTORECONF = YES
 endif
 
-$(2)_OVERRIDE_SRCDIR = $(BUILD_DIR)/raumfeld-repo-$(call qstrip,$(BR2_PACKAGE_RAUMFELD_REPO_VERSION))/$(1)
-
 define $(2)_AUTORECONF_M4_HOOK
-  mkdir $$($(2)_SRCDIR)/m4
+  $(Q) mkdir $$($(2)_SRCDIR)/m4
 endef
 
-$(2)_PRE_CONFIGURE_HOOKS = $(2)_AUTORECONF_M4_HOOK $(2)_PRE_AUTORECONF_HOOKS
+define $(2)_GTKDOCIZE_HOOK
+  $(Q) cd $$($(2)_SRCDIR) && gtkdocize
+endef
+
+$(2)_PRE_CONFIGURE_HOOKS = $(2)_AUTORECONF_M4_HOOK
+
+ifeq ($$($(2)_GTKDOCIZE),YES)
+$(2)_PRE_CONFIGURE_HOOKS += $(2)_GTKDOCIZE_HOOK
+endif
 
 
 RAUMFELD_DIRCLEAN_TARGETS += $(1)-dirclean
