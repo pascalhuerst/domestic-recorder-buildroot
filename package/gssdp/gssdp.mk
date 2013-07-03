@@ -4,9 +4,12 @@
 #
 #############################################################
 
-GSSDP_VERSION = 0.8.2
-GSSDP_SOURCE = gssdp-$(GSSDP_VERSION).tar.gz
-GSSDP_SITE = http://www.gupnp.org/sites/all/files/sources
+GSSDP_MAJOR_VERSION = 0.8
+GSSDP_MINOR_VERSION = 2
+GSSDP_VERSION = $(GSSDP_MAJOR_VERSION).$(GSSDP_MINOR_VERSION)
+GSSDP_SOURCE = gssdp-$(GSSDP_VERSION).tar.bz2
+GSSDP_SITE = http://ftp.gnome.org/pub/GNOME/sources/gssdp/$(GSSDP_MAJOR_VERSION)
+
 GSSDP_INSTALL_STAGING = YES
 
 GSSDP_CONF_ENV = \
