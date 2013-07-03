@@ -1,5 +1,5 @@
-config BR2_PACKAGE_P0_RENDERER
-	bool "p0-renderer"
+config BR2_PACKAGE_RENDERER
+	bool "renderer"
 	select BR2_PACKAGE_ALSA_LIB
 	select BR2_PACKAGE_FLAC
 	select BR2_PACKAGE_LIBRAUMFELD
@@ -8,4 +8,3 @@ config BR2_PACKAGE_P0_RENDERER
 	  Raumfeld renderer
 
 	  http://www.raumfeld.com/
-

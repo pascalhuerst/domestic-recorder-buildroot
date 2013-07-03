@@ -1,8 +1,0 @@
-config BR2_PACKAGE_P0_TIMESERVER
-	bool "p0-timeserver"
-	select BR2_PACKAGE_LIBRAUMFELD
-	help
-	  Raumfeld time-server
-
-	  http://www.raumfeld.com/
-

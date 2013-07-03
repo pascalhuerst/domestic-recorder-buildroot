@@ -1,0 +1,7 @@
+config BR2_PACKAGE_TIMESERVER
+	bool "timeserver"
+	select BR2_PACKAGE_LIBRAUMFELD
+	help
+	  Raumfeld time server
+
+	  http://www.raumfeld.com/
