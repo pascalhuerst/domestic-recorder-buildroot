@@ -100,7 +100,7 @@ raumfeld-cross-package = $(call inner-raumfeld-cross-package,$(call pkgname),$(c
 ################################################################################
 ################################################################################
 
-RAUMFELD_DIRCLEAN_TARGETS = raumfeld-repo-dirclean
+RAUMFELD_DIRCLEAN_TARGETS = raumfeld-repo-dlclean raumfeld-repo-dirclean
 
 include package/raumfeld/*/*.mk
 
