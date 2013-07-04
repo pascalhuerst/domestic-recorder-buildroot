@@ -8,7 +8,11 @@
 
 define inner-raumfeld-cross-package
 
-$(2)_OVERRIDE_SRCDIR = $(BUILD_DIR)/raumfeld-repo-$(call qstrip,$(BR2_PACKAGE_RAUMFELD_REPO_VERSION))/$(1)
+ifndef $(2)_MODULE
+  $(2)_MODULE = $(1)
+endif
+
+$(2)_OVERRIDE_SRCDIR = $(BUILD_DIR)/raumfeld-repo-$(call qstrip,$(BR2_PACKAGE_RAUMFELD_REPO_VERSION))/$($(2)_MODULE)
 
 ifeq ($(ARCH),arm)
   CROSS = ARM
@@ -49,7 +53,11 @@ endef # inner-raumfeld-cross-package
 
 define inner-raumfeld-autotools-package
 
-$(2)_OVERRIDE_SRCDIR = $(BUILD_DIR)/raumfeld-repo-$(call qstrip,$(BR2_PACKAGE_RAUMFELD_REPO_VERSION))/$(1)
+ifndef $(2)_MODULE
+  $(2)_MODULE = $(1)
+endif
+
+$(2)_OVERRIDE_SRCDIR = $(BUILD_DIR)/raumfeld-repo-$(call qstrip,$(BR2_PACKAGE_RAUMFELD_REPO_VERSION))/$($(2)_MODULE)
 
 ifndef $(2)_AUTORECONF
   $(2)_AUTORECONF = YES
