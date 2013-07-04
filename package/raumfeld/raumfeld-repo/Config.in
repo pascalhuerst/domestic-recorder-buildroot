@@ -1,4 +1,4 @@
-config BR2_PACKAGE_RAUMFELD_REPO
+menuconfig BR2_PACKAGE_RAUMFELD_REPO
 	bool "raumfeld git repository"
 	help
 	  This package takes care of checking out and updating the
@@ -6,6 +6,8 @@ config BR2_PACKAGE_RAUMFELD_REPO
 	  the other Raumfeld packages.
 
 	  http://www.raumfeld.com/
+
+if BR2_PACKAGE_RAUMFELD_REPO
 
 config BR2_PACKAGE_RAUMFELD_REPO_LOCATION
 	string "raumfeld git location"
@@ -18,3 +20,5 @@ config BR2_PACKAGE_RAUMFELD_REPO_VERSION
 	default "master"
 	help
 	  version to checkout from the git repository
+
+endif

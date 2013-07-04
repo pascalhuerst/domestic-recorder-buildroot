@@ -1,4 +1,5 @@
 config BR2_PACKAGE_ETHWATCH
+        select BR2_PACKAGE_RAUMFELD_REPOSITORY
 	bool "ethwatch"
 	help
 	  Raumfeld ethwatch daemon
