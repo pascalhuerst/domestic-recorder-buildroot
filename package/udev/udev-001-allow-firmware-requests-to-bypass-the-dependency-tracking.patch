@@ -12,8 +12,8 @@ the fragile-since-day-one fake async driver-core device dance involving
 udev can be retired:
   http://git.kernel.org/?p=linux/kernel/git/torvalds/linux.git;a=commit;h=abb139e75c2cdbb955e840d6331cb5863e409d0e
 --
---- udev-182/src/udevd.c.orig	2012-01-29 04:41:25.643538062 +0100
-+++ udev-182/src/udevd.c	2013-06-25 21:50:47.383938021 +0200
+--- udev-182/src/udevd.c.orig	2013-07-05 11:53:11.273415774 +0200
++++ udev-182/src/udevd.c	2013-07-05 11:53:26.517415954 +0200
 @@ -103,8 +103,9 @@
          size_t devpath_len;
          const char *devpath_old;
@@ -35,7 +35,7 @@ udev can be retired:
          udev_queue_export_device_queued(udev_queue_export, dev);
          info(event->udev, "seq %llu queued, '%s' '%s'\n", udev_device_get_seqnum(dev),
               udev_device_get_action(dev), udev_device_get_subsystem(dev));
-@@ -548,6 +552,10 @@
+@@ -542,6 +546,10 @@
                          return true;
                  }
  
@@ -43,6 +43,6 @@ udev can be retired:
 +                if (event->nodelay)
 +                        continue;
 +
-                 /* child device event found */
-                 if (loop_event->devpath[common] == '/') {
+                 /* parent device event found */
+                 if (event->devpath[common] == '/') {
                          event->delaying_seqnum = loop_event->seqnum;
