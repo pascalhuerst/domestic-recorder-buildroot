@@ -6,6 +6,7 @@ config BR2_PACKAGE_STREAM_RELAY
         select BR2_PACKAGE_LIBMMS
         select BR2_PACKAGE_LIBVORBIS
         select BR2_PACKAGE_TAGLIB
+	select BR2_PACKAGE_RAUMFELD_REPO
 	help
 	  Raumfeld stream-relay
 

@@ -1,33 +1,23 @@
 menu "Raumfeld software"
 
-config BR2_PACKAGE_RAUMFELD_REPOSITORY
-	string "raumfeld bazaar repository"
-	default "sftp://rf-bzr.teufel.local/bzr"
-	help
-	  location of the raumfeld bazaar repository 
+source "package/raumfeld/raumfeld-repo/Config.in"
 
-config BR2_PACKAGE_RAUMFELD_BRANCH
-	string "raumfeld bazaar branch"
-	default "trunk"
-	help
-	  branch to checkout from the bazaar repository
-
+source "package/raumfeld/config-service/Config.in"
 source "package/raumfeld/ethwatch/Config.in"
 source "package/raumfeld/libraumfeld/Config.in"
 source "package/raumfeld/libraumfeldcpp/Config.in"
-source "package/raumfeld/sly-toolkit/Config.in"
-source "package/raumfeld/remote-control/Config.in"
-source "package/raumfeld/master-process/Config.in"
-source "package/raumfeld/p0-renderer/Config.in"
-source "package/raumfeld/p0-timeserver/Config.in"
-source "package/raumfeld/config-service/Config.in"
-source "package/raumfeld/meta-server/Config.in"
-source "package/raumfeld/stream-decoder/Config.in"
-source "package/raumfeld/stream-relay/Config.in"
 source "package/raumfeld/loopbacktest/Config.in"
+source "package/raumfeld/master-process/Config.in"
+source "package/raumfeld/meta-server/Config.in"
 source "package/raumfeld/raumfeld-dts/Config.in"
 source "package/raumfeld/raumfeld-extract/Config.in"
+source "package/raumfeld/remote-control/Config.in"
+source "package/raumfeld/renderer/Config.in"
 source "package/raumfeld/report-daemon/Config.in"
+source "package/raumfeld/sly-toolkit/Config.in"
+source "package/raumfeld/stream-decoder/Config.in"
+source "package/raumfeld/stream-relay/Config.in"
+source "package/raumfeld/timeserver/Config.in"
 source "package/raumfeld/web-service/Config.in"
-endmenu
 
+endmenu

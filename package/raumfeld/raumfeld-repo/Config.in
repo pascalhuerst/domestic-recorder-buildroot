@@ -1,0 +1,24 @@
+menuconfig BR2_PACKAGE_RAUMFELD_REPO
+	bool "raumfeld git repository"
+	help
+	  This package takes care of checking out and updating the
+	  Raumfeld source repository. It serves as a dependency for
+	  the other Raumfeld packages.
+
+	  http://www.raumfeld.com/
+
+if BR2_PACKAGE_RAUMFELD_REPO
+
+config BR2_PACKAGE_RAUMFELD_REPO_LOCATION
+	string "raumfeld git location"
+	default "ssh://git@sources.teufelhome.com/rfs/core.git"
+	help
+	  location of the Raumfeld git repository 
+
+config BR2_PACKAGE_RAUMFELD_REPO_VERSION
+	string "raumfeld git branch, tag or commit ID"
+	default "master"
+	help
+	  version to checkout from the git repository
+
+endif

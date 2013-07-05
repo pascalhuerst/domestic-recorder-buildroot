@@ -4,6 +4,7 @@ config BR2_PACKAGE_REMOTE_CONTROL
 	select BR2_PACKAGE_ISO_CODES
 	select BR2_PACKAGE_LIBRAUMFELD
 	select BR2_PACKAGE_SLY_TOOLKIT
+	select BR2_PACKAGE_RAUMFELD_REPO
 	help
 	  The remote control software
 

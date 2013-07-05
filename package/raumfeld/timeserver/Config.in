@@ -1,8 +1,8 @@
-config BR2_PACKAGE_MASTER_PROCESS
-	bool "master-process"
+config BR2_PACKAGE_TIMESERVER
+	bool "timeserver"
 	select BR2_PACKAGE_LIBRAUMFELD
 	select BR2_PACKAGE_RAUMFELD_REPO
 	help
-	  Raumfeld master-process
+	  Raumfeld time server
 
 	  http://www.raumfeld.com/

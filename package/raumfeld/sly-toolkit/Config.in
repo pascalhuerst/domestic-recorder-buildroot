@@ -2,6 +2,7 @@ config BR2_PACKAGE_SLY_TOOLKIT
 	bool "sly-toolkit"
 	select BR2_PACKAGE_DIRECTFB
 	select BR2_PACKAGE_LIBGLIB2
+	select BR2_PACKAGE_RAUMFELD_REPO
 	help
 	  sly-toolkit is a toolkit based on DirectFB
 

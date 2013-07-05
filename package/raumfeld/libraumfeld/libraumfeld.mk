@@ -4,8 +4,9 @@
 #
 #############################################################
 
-LIBRAUMFELD_MODULE = raumfeld
 LIBRAUMFELD_INSTALL_STAGING = YES
+
+LIBRAUMFELD_GTKDOCIZE = YES
 
 LIBRAUMFELD_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
@@ -23,10 +24,6 @@ LIBRAUMFELD_CONF_OPT += --enable-profiling
 endif
 
 LIBRAUMFELD_DEPENDENCIES = \
-	host-pkgconf host-libglib2 \
-	avahi gupnp-av openssl libarchive libunwind
-
-LIBRAUMFELD_POST_EXTRACT_HOOKS = \
-	(cd $(LIBRAUMFELD_DIR); gtkdocize)
+	host-pkgconf host-libglib2 avahi gupnp-av openssl libarchive libunwind
 
 $(eval $(raumfeld-autotools-package))

@@ -6,6 +6,7 @@ config BR2_PACKAGE_STREAM_DECODER
 	select BR2_PACKAGE_GST_PLUGINS_UGLY
         select BR2_PACKAGE_GST_LIBAV
 	select BR2_PACKAGE_LIBSOUP
+        select BR2_PACKAGE_RAUMFELD_REPOSITORY
 	help
 	  The stream decoder software
 

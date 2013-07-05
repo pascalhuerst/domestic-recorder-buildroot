@@ -1,7 +1,7 @@
 config BR2_PACKAGE_CONFIG_SERVICE
 	bool "config-service"
-	select BR2_PACKAGE_LIBRAUMFELD
 	select BR2_PACKAGE_LIBRAUMFELDCPP
+        select BR2_PACKAGE_RAUMFELD_REPOSITORY
 	help
 	  Raumfeld config-service
 
