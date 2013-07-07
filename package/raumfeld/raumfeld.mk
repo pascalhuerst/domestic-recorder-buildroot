@@ -67,11 +67,19 @@ define $(2)_AUTORECONF_M4_HOOK
   $(Q) mkdir $$($(2)_SRCDIR)/m4
 endef
 
+define $(2)_GETTEXTIZE_HOOK
+  $(Q) (cd $$($(2)_SRCDIR) && $(HOST_DIR)/usr/bin/glib-gettextize)
+endef
+
 define $(2)_GTKDOCIZE_HOOK
-  $(Q) cd $$($(2)_SRCDIR) && gtkdocize
+  $(Q) (cd $$($(2)_SRCDIR) && gtkdocize)
 endef
 
 $(2)_PRE_CONFIGURE_HOOKS = $(2)_AUTORECONF_M4_HOOK
+
+ifeq ($$($(2)_GETTEXTIZE),YES)
+$(2)_PRE_CONFIGURE_HOOKS += $(2)_GETTEXTIZE_HOOK
+endif
 
 ifeq ($$($(2)_GTKDOCIZE),YES)
 $(2)_PRE_CONFIGURE_HOOKS += $(2)_GTKDOCIZE_HOOK
