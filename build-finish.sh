@@ -69,15 +69,6 @@ if ! test -z "$image"; then
 fi
 
 
-# create a list of all files in the rootfs
-
-if [ -f output/images/rootfs.tar.gz ]; then
-    tar ztvf output/images/rootfs.tar.gz > $target.contents
-else
-    (cd output/target ; find . -exec ls -l {} \;) > $target.contents
-fi
-
-
 # do post-processing ...
 
 mkdir -p binaries/$target
