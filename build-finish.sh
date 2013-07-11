@@ -52,8 +52,11 @@ fi
 # decide which images should be created ...
 
 case $target in
-    audioadapter-arm*)
-        IMAGES="init flash final"
+    audioadapter-armada)
+        IMAGES="init flash final repair"
+        ;;
+    audioadapter-arm)
+        IMAGES="init flash final repair"
         ;;
     remotecontrol-arm)
         IMAGES="init flash final"
