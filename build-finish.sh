@@ -23,7 +23,7 @@ for t in $targets; do echo "            $t"; done
 
 cat << __EOF__ >&2
 
-   image     is optional and can be one of 'init flash final'
+   image     is optional and can be one of 'init flash final repair'
    version   is optional and serves as an identifier for this build
 
 __EOF__
@@ -51,7 +51,17 @@ fi
 
 # decide which images should be created ...
 
-IMAGES="init flash final"
+case $target in
+    audioadapter-arm*)
+        IMAGES="init flash final"
+        ;;
+    remotecontrol-arm)
+        IMAGES="init flash final"
+        ;;
+    base-geode)
+        IMAGES="init flash repair"
+        ;;
+fi
 
 if ! test -z "$image"; then
     found=0

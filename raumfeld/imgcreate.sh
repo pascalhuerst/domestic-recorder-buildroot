@@ -162,7 +162,7 @@ case $target in
         add_raumfeld_demo
 	cp raumfeld/Coreboot/raumfeld-base.rom $tmpdir/
         ;;
-    base-geode-final)
+    base-geode-repair)
         add_rootfs_tgz
         ;;
     base-geode-coreboot)
