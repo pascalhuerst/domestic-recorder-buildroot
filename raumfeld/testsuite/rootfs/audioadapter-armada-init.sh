@@ -31,16 +31,6 @@ if [ ! -z "$(grep -i "Speaker L" /proc/device-tree/model)" ] || [ ! -z "$(grep -
 	$INPUT_TEST rotary_ccw
 fi
 
-#wifi test not needed in this case
-#kill_leds
-#./leds-blink-so 2 &
-#./wifi_managed_ping factory_test
-#if [ $? -ne 0 ]; then
-#    kill_leds
-#    ./leds-blink-so 2 1 &
-#    exit 1
-#fi
-
 kill_leds
 ./leds-blink-so 3 &
 ./ethernet_armada 
@@ -50,37 +40,15 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-#audiotest not needed
-#kill_leds
-#./leds-blink-so 4 &
-#./audio-test-armada
-#if [ $? -ne 0 ]; then
-#    kill_leds
-#    ./leds-blink-so 4 1 &
-#    exit 1
-#fi
 
-#nand flashing not needed
-#kill_leds
-#./leds-blink 1 &
-#./nand_armada
-#if [ $? -ne 0 ]; then
-#    kill_leds
-#    ./leds-blink-so 5 1 &
-#    exit 1
-#fi
-
+echo "*** Updating u-boot *****"
 /update-uboot-armada.sh
+
 
 kill_leds
 
 led_on 1
 led_on 2
-
-#./audio-speaker-armada
-
-echo "*** Updating u-boot *****"
-/update-uboot-armada.sh
 
 echo "*********** Raumfeld Tests success ********"
 
