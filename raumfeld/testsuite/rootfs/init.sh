@@ -17,22 +17,20 @@ export PATH="/sbin:/usr/sbin:$PATH"
 /lib/udev/udevd --daemon
 
 if [ ! -z "$(grep Geode /proc/cpuinfo)" ]; then
-	# modules for GEODE
-	modprobe ath5k
-else
-  if [ ! -z "$(grep AM33XX /proc/cpuinfo)" ]; then
+    # modules for GEODE
+    modprobe ath5k
+elif [ ! -z "$(grep AM33XX /proc/cpuinfo)" ]; then
     # modules for ARMADA
     modprobe mwifiex_sdio
-  else
-	  # modules for ARM
-	  modprobe eeti_ts flip_y=1
-	  modprobe pxamci
-	  modprobe libertas_sdio
-	  modprobe wire.ko delay_coef=3
-	  modprobe w1-gpio.ko
-	  modprobe w1_ds2760.ko
-	  modprobe ds2760_battery.ko pmod_enabled=1 rated_capacity=10
-  fi
+else
+    # modules for ARM
+    modprobe eeti_ts flip_y=1
+    modprobe pxamci
+    modprobe libertas_sdio
+    modprobe wire.ko delay_coef=3
+    modprobe w1-gpio.ko
+    modprobe w1_ds2760.ko
+    modprobe ds2760_battery.ko pmod_enabled=1 rated_capacity=10
 fi
 
 rm -fr /var/empty
