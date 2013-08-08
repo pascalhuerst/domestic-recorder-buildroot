@@ -1,11 +1,5 @@
 #!/bin/sh
 
-if [ ! -z "$(grep -i "Connector" /proc/device-tree/model)" ]; then
-
-        echo "init script not yet used for Connector. We send you to prompt"
-        exit 0
-fi
-
 echo "test script for basic IO Board testing"
 source tests.inc
 
