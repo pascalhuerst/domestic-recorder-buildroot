@@ -20,12 +20,12 @@ if [ -n "$(grep -i "Speaker L" /proc/device-tree/model)" ] ||
 
 	kill_leds
 	./leds-blink 4 &
-        echo "Turn rotary encoder clock-wise."
+        echo "Turn rotary encoder counter-clock-wise."
 	$INPUT_TEST rotary_cw
 
 	kill_leds
 	./leds-blink 5 &
-        echo "Turn rotary encoder counter-clock-wise."
+        echo "Turn rotary encoder clock-wise."
 	$INPUT_TEST rotary_ccw
 fi
 
