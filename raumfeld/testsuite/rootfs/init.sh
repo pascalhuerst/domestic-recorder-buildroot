@@ -41,5 +41,9 @@ mkdir /var/lock
 
 export TERM=xterm-color
 dmesg -n 1
+
+read -p "Press Enter to interrupt startup ..." -t3 && exec /bin/sh
+
 /start-test.sh
+
 exec /bin/sh
