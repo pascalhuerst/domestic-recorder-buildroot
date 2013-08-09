@@ -105,7 +105,7 @@ echo "Operating in $tmpdir"
 case $target in
     audioadapter-armada-*)
 	img_version=1
-        dts_image=$tmpdir/dts.cramfs
+        dts_image=output/images/dts.cramfs
         ;;
     *)
         img_version=0
