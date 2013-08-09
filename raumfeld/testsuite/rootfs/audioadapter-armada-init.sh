@@ -15,7 +15,9 @@ kill_leds
 ./leds-blink-so 1 &
 ./armada-button
 
-if [ ! -z "$(grep -i "Speaker L" /proc/device-tree/model)" ] || [ ! -z "$(grep -i "One" /proc/device-tree/model)" ]; then
+if [ -n "$(grep -i "Speaker L" /proc/device-tree/model)" ] ||
+   [ -n "$(grep -i "One" /proc/device-tree/model)" ]; then
+
 	kill_leds
 	./leds-blink 4 &
         echo "Turn rotary encoder clock-wise."
