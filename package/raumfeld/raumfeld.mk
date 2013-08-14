@@ -64,7 +64,7 @@ ifndef $(2)_AUTORECONF
 endif
 
 define $(2)_AUTORECONF_M4_HOOK
-  $(Q) mkdir $$($(2)_SRCDIR)/m4
+  $(Q) mkdir -p $$($(2)_SRCDIR)/m4
 endef
 
 define $(2)_GETTEXTIZE_HOOK
