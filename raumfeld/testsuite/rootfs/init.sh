@@ -16,10 +16,10 @@ exec 2>/dev/console
 export PATH="/sbin:/usr/sbin:$PATH"
 /lib/udev/udevd --daemon
 
-if [ ! -z "$(grep Geode /proc/cpuinfo)" ]; then
+if [ -n "$(grep Geode /proc/cpuinfo)" ]; then
     # modules for GEODE
     modprobe ath5k
-elif [ ! -z "$(grep AM33XX /proc/cpuinfo)" ]; then
+elif [ -n "$(grep AM33XX /proc/cpuinfo)" ]; then
     # modules for ARMADA
     modprobe mwifiex_sdio
 else

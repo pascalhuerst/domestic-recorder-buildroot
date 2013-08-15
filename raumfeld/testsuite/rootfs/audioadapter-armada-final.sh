@@ -17,7 +17,7 @@ kill_leds
 ./leds-blink-so 1 &
 ./armada-button
 
-if [ ! -z "$(grep -i "Speaker L" /proc/device-tree/model)" ] || [ ! -z "$(grep -i "One" /proc/device-tree/model)" ]; then
+if [ -n "$(grep -i "Speaker L" /proc/device-tree/model)" ] || [ -n "$(grep -i "One" /proc/device-tree/model)" ]; then
     kill_leds
     ./leds-blink 4 &
     $INPUT_TEST rotary_cw
@@ -45,7 +45,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-if [ ! -z "$(grep -i "Connector" /proc/device-tree/model)" ]; then
+if [ -n "$(grep -i "Connector" /proc/device-tree/model)" ]; then
     kill_leds
     ./leds-blink-so 4 &
     ./audio-test-armada
@@ -67,13 +67,12 @@ fi
 
 /update-uboot-armada.sh
 
-
 kill_leds
 
 led_on 1
 led_on 2
 
-if [ ! -z "$(grep -i "Connector" /proc/device-tree/model)" ]; then
+if [ -n "$(grep -i "Connector" /proc/device-tree/model)" ]; then
     ./audio-speaker-armada
 fi
 

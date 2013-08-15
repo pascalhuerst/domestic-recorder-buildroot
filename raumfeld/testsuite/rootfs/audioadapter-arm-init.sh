@@ -4,7 +4,7 @@ source tests.inc
 
 cd tests
 
-if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
+if [ -n "$(grep -i speaker /proc/cpuinfo)" ]; then
 	./nand     		&& \
 	./wifi			&& \
 	./ethaddr  		&& \

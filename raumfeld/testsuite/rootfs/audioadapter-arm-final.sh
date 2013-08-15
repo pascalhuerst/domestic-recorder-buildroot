@@ -7,7 +7,7 @@ cd /tests
 led_off 1
 led_off 2
 
-if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
+if [ -n "$(grep -i speaker /proc/cpuinfo)" ]; then
 
 	# TEST PROCEDURE FOR SPEAKERS
 
@@ -26,14 +26,14 @@ if [ ! -z "$(grep -i speaker /proc/cpuinfo)" ]; then
 	led_off 1
 	led_off 2
 
-if [ ! -z "$(grep -i ": 0401" /proc/cpuinfo)" ]; then
+if [ -n "$(grep -i ": 0401" /proc/cpuinfo)" ]; then
 	# Raumfeld One
 	./wifi_managed
 
 	led_on 1
 	led_on 2
 fi
-if [ ! -z "$(grep -i ": 0201" /proc/cpuinfo)" ]; then
+if [ -n "$(grep -i ": 0201" /proc/cpuinfo)" ]; then
 	# Speaker L
 	./wifi_managed
 
