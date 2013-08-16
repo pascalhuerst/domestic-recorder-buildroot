@@ -5,6 +5,6 @@ TITLE="ZEROSETUPBUTTTON"
 DIALOGOPTS="--title $TITLE"
 
 dialog_info "Press the zero setup button." $DIALOGOPTS
-$INPUT_TEST key_3
+$INPUT_TEST key_f3
 dialog_success "OK" $DIALOGOPTS
 
