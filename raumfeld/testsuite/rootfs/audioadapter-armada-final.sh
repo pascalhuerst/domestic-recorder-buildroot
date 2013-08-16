@@ -17,13 +17,33 @@ kill_leds
 ./leds-blink-so 1 &
 ./armada-button
 
+if [ -n "$(grep -i "Cube" /proc/device-tree/model)" ]; then
+    kill_leds
+    ./leds-blink 4 &
+    echo "Press Volume Down button (-)."
+    $INPUT_TEST key_volume_down
+
+    kill_leds
+    ./leds-blink 5 &
+    echo "Press Volume Up button (+)."
+    $INPUT_TEST key_volume_up
+fi
+
+if [ -n "$(grep -i "One" /proc/device-tree/model)" ]; then
+    kill_leds
+    ./leds-blink 6 &
+    ./station-buttons
+fi
+
 if [ -n "$(grep -i "Speaker L" /proc/device-tree/model)" ] || [ -n "$(grep -i "One" /proc/device-tree/model)" ]; then
     kill_leds
     ./leds-blink 4 &
+    echo "Turn rotary encoder clock-wise."
     $INPUT_TEST rotary_cw
 
     kill_leds
     ./leds-blink 5 &
+    echo "Turn rotary encoder counter-clock-wise."
     $INPUT_TEST rotary_ccw
 fi
 
@@ -38,7 +58,7 @@ fi
 
 kill_leds
 ./leds-blink-so 3 &
-./ethernet_armada 
+./ethernet_armada
 if [ $? -ne 0 ]; then
     kill_leds
     ./leds-blink-so 3 1 &
