@@ -72,9 +72,7 @@ kill_leds
 led_on 1
 led_on 2
 
-if [ -n "$(grep -i "Connector" /proc/device-tree/model)" ]; then
-    ./audio-speaker-armada
-fi
+./audio-speaker-armada
 
 echo "*********** Raumfeld Tests success ********"
 
