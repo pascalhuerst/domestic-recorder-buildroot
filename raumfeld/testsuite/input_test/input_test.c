@@ -139,7 +139,7 @@ static int _test_rotary(int fd, int expected, int scale, int offset)
 		cnt++;
 
 		/* output percentage for dialog */
-		printf("%d\n", offset + 
+		printf("%d\n", offset +
 				((cnt * 100) / (ROTARY_STEPS * scale)));
 		fflush(stdout);
 	}
@@ -237,17 +237,22 @@ static int test_accel_full(int fd)
 
 static int test_key_1(int fd)
 {
-	return test_key(fd, KEY_F1);
+	return test_key(fd, KEY_1);
 }
 
 static int test_key_2(int fd)
 {
-	return test_key(fd, KEY_F2);
+	return test_key(fd, KEY_2);
 }
 
 static int test_key_3(int fd)
 {
-	return test_key(fd, KEY_F3);
+	return test_key(fd, KEY_3);
+}
+
+static int test_key_4(int fd)
+{
+	return test_key(fd, KEY_4);
 }
 
 static int test_key_setup(int fd)
@@ -260,6 +265,21 @@ static int test_key_power(int fd)
 	return test_key(fd, KEY_POWER);
 }
 
+static int test_key_volume_down(int fd)
+{
+	return test_key(fd, KEY_VOLUMEDOWN);
+}
+
+static int test_key_volume_up(int fd)
+{
+	return test_key(fd, KEY_VOLUMEUP);
+}
+
+static int test_key_f3(int fd)
+{
+	return test_key(fd, KEY_F3);
+}
+
 static struct test_func {
 	const char *name;
 	const char *desc;
@@ -268,25 +288,25 @@ static struct test_func {
 } test_func[] = {
 	{
 		.name	= "touch",
-		.desc	= "\tmulti-point touch screen test",
+		.desc	= "multi-point touch screen test",
 		.dev	= "eeti_ts",
 		.proc	= test_touch
 	},
 	{
 		.name	= "rotary",
-		.desc	= "\trotary left/right 360° test",
+		.desc	= "rotary left/right 360° test",
 		.dev	= "rotary",
 		.proc	= test_rotary
 	},
 	{
 		.name	= "rotary_cw",
-		.desc	= "\trotary clockwise test",
+		.desc	= "rotary clockwise test",
 		.dev	= "rotary",
 		.proc	= test_rotary_cw
 	},
 	{
 		.name	= "rotary_ccw",
-		.desc	= "\trotary counter-clockwise test",
+		.desc	= "rotary counter-clockwise test",
 		.dev	= "rotary",
 		.proc	= test_rotary_ccw
 	},
@@ -304,33 +324,45 @@ static struct test_func {
 	},
 	{
 		.name	= "key_1",
-		.desc	= "\tkey_1 test",
+		.desc	= "key 1 test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_1
 	},
 	{
 		.name	= "key_2",
-		.desc	= "\tkey_2 test",
+		.desc	= "key 2 test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_2
 	},
 	{
 		.name	= "key_3",
-		.desc	= "\tkey_3 test",
+		.desc	= "key 3 test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_3
 	},
 	{
+		.name	= "key_4",
+		.desc	= "key 4 test",
+		.dev	= "gpio-keys",
+		.proc	= test_key_4
+	},
+	{
 		.name	= "key_setup",
-		.desc	= "\tsetup button test",
+		.desc	= "setup button test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_setup
 	},
 	{
 		.name	= "key_power",
-		.desc	= "\tpower button test",
+		.desc	= "power button test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_power
+	},
+	{
+		.name	= "key_f3",
+		.desc	= "key F3 test",
+		.dev	= "gpio-keys",
+		.proc	= test_key_f3
 	},
 	{ .name = NULL }
 };
@@ -386,7 +418,7 @@ int main(int argc, char **argv)
 	printf("Available tests:\n");
 
 	for (t = test_func; t->name; t++)
-		printf("\t%s\t%s\n", t->name, t->desc);
+		printf("\t%16s\t%s\n", t->name, t->desc);
 
 	return 3;
 }

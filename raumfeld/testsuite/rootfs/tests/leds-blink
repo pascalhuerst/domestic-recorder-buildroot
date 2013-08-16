@@ -40,26 +40,20 @@ case "$mode" in
 			led_on  1
 			led_off 2
 			led_off 3
-
 			sleep 1
-
 			led_off 1
 			led_on  2
 			led_off 3
-
 			sleep 1
-			
 			led_off 1
 			led_off 2
 			led_on  3
-
 			sleep 1
 		done
 		;;
 	4)
 		led_off 2
 		led_off 3
-		
 		while [ 0 ]; do
 			led_on 1
 			sleep 1
@@ -70,7 +64,6 @@ case "$mode" in
 	5)
 		led_off 1
 		led_off 3
-		
 		while [ 0 ]; do
 			led_on 2
 			sleep 1
@@ -80,53 +73,52 @@ case "$mode" in
 		;;
 	6)
 		led_on 1
-    led_off 2
+		led_off 2
 		led_off 3
-		
 		while [ 0 ]; do
 			led_on 2
 			usleep 300000
 			led_off 2
-      usleep 300000
+			usleep 300000
 		done
 		;;
 	7)
 		led_off 3
 		while [ 0 ]; do
 			led_on 2
-      led_off 1
+			led_off 1
 			usleep 300000
 			led_on 1
-      led_off 2
-      usleep 300000
+			led_off 2
+			usleep 300000
 		done
 		;;
 	8)
 		led_off 3
 		while [ 0 ]; do
-      led_on 1
+			led_on 1
 			led_on 2
 			usleep 100000
 			led_off 1
-      led_off 2
-      usleep 100000
+			led_off 2
+			usleep 100000
 		done
 		;;
 	9)
 		led_off 3
 		while [ 0 ]; do
-      led_on 1
+			led_on 1
 			led_on 2
 			usleep 100000
 			led_off 1
-      led_off 2
-      usleep 100000
-      led_on 1
+			led_off 2
+			usleep 100000
+			led_on 1
 			led_on 2
 			usleep 100000
 			led_off 1
-      led_off 2
-      sleep 1
+			led_off 2
+			sleep 1
 		done
 		;;
 esac

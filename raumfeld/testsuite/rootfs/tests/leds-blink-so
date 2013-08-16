@@ -10,42 +10,43 @@ if [ -z "$error" ] ; then
     while [ 0 ]; do
         redo=$times
         while [ ! "$redo" = "0" ]; do      
-                led_on   1
-                led_off  2
-                usleep 100000
+            led_on   1
+            led_off  2
+            usleep 100000
 
-                led_on   2
-                led_off  1
-                usleep 100000
+            led_on   2
+            led_off  1
+            usleep 100000
             
-                led_off 1
-                led_off 2
-                usleep 200000
+            led_off 1
+            led_off 2
+            usleep 200000
             
-                redo=$(($redo - 1))
+            redo=$(($redo - 1))
         done
         led_off 1
         led_off 2
         sleep 1
-        done
+    done
+
 else
 
    while [ 0 ]; do
-           redo=$times
-           while [ ! "$redo" = "0" ]; do
-                led_on  1
-                led_on  2
-                usleep 200000
-                                                                   
-                led_off  2
-                led_off  1
+       redo=$times
+       while [ ! "$redo" = "0" ]; do
+           led_on  1
+           led_on  2
+           usleep 200000
+           
+           led_off  2
+           led_off  1
           
-                usleep 200000
-                redo=$(($redo - 1))
-           done
-   led_off 1                                                                                                                                             
-   led_off 2                                                                                                                                             
-   usleep 800000
+           usleep 200000
+           redo=$(($redo - 1))
+       done
+       led_off 1
+       led_off 2
+       usleep 800000
    done
-fi
 
+fi
