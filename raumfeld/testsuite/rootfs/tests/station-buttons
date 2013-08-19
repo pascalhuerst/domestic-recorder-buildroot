@@ -1,0 +1,15 @@
+#!/bin/sh
+
+. ../tests.inc
+
+echo "Press station button 1."
+$INPUT_TEST key_1
+echo "Press station button 2."
+$INPUT_TEST key_2
+echo "Press station button 3."
+$INPUT_TEST key_3
+echo "Press station button 4."
+$INPUT_TEST key_4
+echo "done"
+
+exit 0
