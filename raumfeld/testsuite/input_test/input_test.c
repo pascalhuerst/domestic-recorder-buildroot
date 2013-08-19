@@ -324,33 +324,33 @@ static struct test_func {
 	},
 	{
 		.name	= "key_1",
-		.desc	= "key 1 test",
+		.desc	= "button 1 test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_1
 	},
 	{
 		.name	= "key_2",
-		.desc	= "key 2 test",
+		.desc	= "button 2 test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_2
 	},
 	{
 		.name	= "key_3",
-		.desc	= "key 3 test",
+		.desc	= "button 3 test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_3
 	},
 	{
 		.name	= "key_4",
-		.desc	= "key 4 test",
+		.desc	= "button 4 test",
 		.dev	= "gpio-keys",
 		.proc	= test_key_4
 	},
 	{
-		.name	= "key_setup",
-		.desc	= "setup button test",
+		.name	= "key_f3",
+		.desc	= "key F3 test",
 		.dev	= "gpio-keys",
-		.proc	= test_key_setup
+		.proc	= test_key_f3
 	},
 	{
 		.name	= "key_power",
@@ -359,10 +359,22 @@ static struct test_func {
 		.proc	= test_key_power
 	},
 	{
-		.name	= "key_f3",
-		.desc	= "key F3 test",
+		.name	= "key_setup",
+		.desc	= "setup button test",
 		.dev	= "gpio-keys",
-		.proc	= test_key_f3
+		.proc	= test_key_setup
+	},
+	{
+		.name	= "key_volume_down",
+		.desc	= "volume down button test",
+		.dev	= "gpio-keys",
+		.proc	= test_key_volume_down
+	},
+	{
+		.name	= "key_volume_up",
+		.desc	= "volume up button test",
+		.dev	= "gpio-keys",
+		.proc	= test_key_volume_up
 	},
 	{ .name = NULL }
 };
