@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# final script for end of line tests, usually fully assembled. Mostly the same for connector and speakers. 
+# Final script for end of line tests, usually fully assembled.
+# Mostly the same for connector and speakers.
 
 
 source tests.inc
