@@ -1,4 +1,4 @@
-#	$OpenBSD: sshd_config,v 1.80 2008/07/02 02:24:18 djm Exp $
+#	$OpenBSD: sshd_config,v 1.89 2013/02/06 00:20:42 dtucker Exp $
 
 # This is the sshd server system-wide configuration file.  See
 # sshd_config(5) for more information.
@@ -7,7 +7,7 @@
 
 # The strategy used for options in the default sshd_config shipped with
 # OpenSSH is to specify options with their default value where
-# possible, but leave them commented.  Uncommented options change a
+# possible, but leave them commented.  Uncommented options override the
 # default value.
 
 #Port 22
@@ -15,16 +15,15 @@
 #ListenAddress 0.0.0.0
 #ListenAddress ::
 
-# Disable legacy (protocol version 1) support in the server for new
-# installations. In future the default will change to require explicit
-# activation of protocol 1
-Protocol 2
+# The default requires explicit activation of protocol 1
+#Protocol 2
 
 # HostKey for protocol version 1
-#HostKey /etc/ssh_host_key
+HostKey /etc/ssh_host_key
 # HostKeys for protocol version 2
-#HostKey /etc/ssh_host_rsa_key
-#HostKey /etc/ssh_host_dsa_key
+HostKey /etc/ssh_host_rsa_key
+HostKey /etc/ssh_host_dsa_key
+HostKey /etc/ssh_host_ecdsa_key
 
 # Lifetime and size of ephemeral version 1 server key
 #KeyRegenerationInterval 1h
@@ -45,9 +44,17 @@ PermitRootLogin yes
 
 #RSAAuthentication yes
 #PubkeyAuthentication yes
-#AuthorizedKeysFile	.ssh/authorized_keys
 
-# For this to work you will also need host keys in /etc/ssh_known_hosts
+# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
+# but this is overridden so installations will only check .ssh/authorized_keys
+AuthorizedKeysFile	.ssh/authorized_keys
+
+#AuthorizedPrincipalsFile none
+
+#AuthorizedKeysCommand none
+#AuthorizedKeysCommandUser nobody
+
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
 #RhostsRSAAuthentication no
 # similar for protocol version 2
 #HostbasedAuthentication no
@@ -88,34 +95,30 @@ PermitEmptyPasswords yes
 #AllowAgentForwarding yes
 #AllowTcpForwarding yes
 #GatewayPorts no
-X11Forwarding no
+#X11Forwarding no
 #X11DisplayOffset 10
 #X11UseLocalhost yes
-#PrintMotd yes
 PrintMotd no
 #PrintLastLog yes
 #TCPKeepAlive yes
 #UseLogin no
-#UsePrivilegeSeparation yes
+UsePrivilegeSeparation sandbox		# Default for new installations.
 #PermitUserEnvironment no
 #Compression delayed
 #ClientAliveInterval 0
 #ClientAliveCountMax 3
 UseDNS no
 #PidFile /var/run/sshd.pid
-#MaxStartups 10
+#MaxStartups 10:30:100
 #PermitTunnel no
 #ChrootDirectory none
+#VersionAddendum none
 
 # no default banner path
 #Banner none
 
-ClientAliveInterval 15
-ClientAliveCountMax 4
-AcceptEnv LANG LC_*
-
 # override default of no subsystems
-Subsystem	sftp	/usr/lib/sftp-server
+Subsystem	sftp	/usr/libexec/sftp-server
 
 # Example of overriding settings on a per-user basis
 #Match User anoncvs
