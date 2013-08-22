@@ -1,4 +1,4 @@
-/* gcc -Wall -o input_dump input_dump.c */
+/* gcc -Wall -o input_test input_test.c */
 
 #include <stdio.h>
 #include <fcntl.h>
