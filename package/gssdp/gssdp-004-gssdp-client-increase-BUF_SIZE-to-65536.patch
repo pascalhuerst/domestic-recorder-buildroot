@@ -1,0 +1,30 @@
+From 12dafb895a9c1567fb25748df641222ed609a0b5 Mon Sep 17 00:00:00 2001
+From: Steffen Sledz <sledz@dresearch-fe.de>
+Date: Mon, 31 Oct 2011 14:24:35 +0100
+Subject: [PATCH] gssdp-client: increase BUF_SIZE to 65536
+
+A size of 1024 is a really hard limitation. The UDP length field
+size sets a theoretical limit of 65,535 bytes (8 byte header +
+65,527 bytes of data) for a UDP datagram.
+
+Signed-off-by: Steffen Sledz <sledz@dresearch-fe.de>
+---
+ libgssdp/gssdp-client.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libgssdp/gssdp-client.c b/libgssdp/gssdp-client.c
+index 7bbc71d..c2d2561 100644
+--- a/libgssdp/gssdp-client.c
++++ b/libgssdp/gssdp-client.c
+@@ -70,7 +70,7 @@ typedef unsigned long in_addr_t;
+ #endif
+ 
+ /* Size of the buffer used for reading from the socket */
+-#define BUF_SIZE 1024
++#define BUF_SIZE 65536
+ 
+ static void
+ gssdp_client_initable_iface_init (gpointer g_iface,
+-- 
+1.8.1.2
+
