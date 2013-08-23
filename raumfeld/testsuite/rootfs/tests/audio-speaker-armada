@@ -3,12 +3,12 @@
 . ../tests.inc
 
 # set volume
-
-
 amixer cset numid=1 117
 
-echo "testing S/P Diff and analog outputs, check if there is output"
+if [ -n "$(grep -i "Connector" /proc/device-tree/model)" ]; then
+   echo "testing S/P Diff and analog outputs, check if there is output"
+else
+   echo "testing speakers, check if sound can be heard"
+fi
 
 aplay -D hw:0 /audiotest.wav &
-
-
