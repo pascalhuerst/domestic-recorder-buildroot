@@ -47,4 +47,8 @@ ifeq ($(BR2_PACKAGE_BZIP2),y)
 GST_LIBAV_DEPENDENCIES += bzip2
 endif
 
+ifeq ($(BR2_i386),y)
+GST_LIBAV_DEPENDENCIES += host-yasm
+endif
+
 $(eval $(autotools-package))
