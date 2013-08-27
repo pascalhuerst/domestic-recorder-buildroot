@@ -85,7 +85,7 @@ define WPA_SUPPLICANT_DBUS_OLD_CONFIG
 	$(SED) 's/\(#\)\(CONFIG_CTRL_IFACE_DBUS=\)/\2/' $(WPA_SUPPLICANT_CONFIG)
 endef
 define WPA_SUPPLICANT_INSTALL_DBUS_OLD
-	$(INSTALL) -D \
+	$(INSTALL) -D -m 644 \
 	  $(@D)/wpa_supplicant/dbus/$(WPA_SUPPLICANT_DBUS_OLD_SERVICE).service \
 	  $(TARGET_DIR)/usr/share/dbus-1/system-services/$(WPA_SUPPLICANT_DBUS_OLD_SERVICE).service
 endef
@@ -96,7 +96,7 @@ define WPA_SUPPLICANT_DBUS_NEW_CONFIG
 	$(SED) 's/\(#\)\(CONFIG_CTRL_IFACE_DBUS_NEW=\)/\2/' $(WPA_SUPPLICANT_CONFIG)
 endef
 define WPA_SUPPLICANT_INSTALL_DBUS_NEW
-	$(INSTALL) -D \
+	$(INSTALL) -D -m 644 \
 	  $(@D)/wpa_supplicant/dbus/$(WPA_SUPPLICANT_DBUS_NEW_SERVICE).service \
 	  $(TARGET_DIR)/usr/share/dbus-1/system-services/$(WPA_SUPPLICANT_DBUS_NEW_SERVICE).service
 endef
