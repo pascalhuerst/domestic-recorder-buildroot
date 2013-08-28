@@ -2,6 +2,15 @@
 #
 # Start wpa-supplicant to bring up the wireless interface....
 #
+# The way it is started here, wpa_supplicant logs to syslog.
+# You can adjust the debug-level at run-time using the following
+# command:
+#
+# dbus-send --system --print-reply --dest=fi.w1.wpa_supplicant1 /fi/w1/wpa_supplicant1 org.freedesktop.DBus.Properties.Set string:fi.w1.wpa_supplicant1 string:DebugLevel variant:string:"debug"
+#
+# The available debug levels are:
+# "excessive", "msgdump", "debug", "info", "warning", "error"
+#
 
 case "$1" in
   start)
