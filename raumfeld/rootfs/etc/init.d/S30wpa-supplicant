@@ -6,7 +6,7 @@
 case "$1" in
   start)
  	echo "Starting wpa-supplicant..."
-        wpa_supplicant -B -u
+        wpa_supplicant -B -u -s
 	;;
   stop)
 	echo -n "Stopping wpa-supplicant..."
