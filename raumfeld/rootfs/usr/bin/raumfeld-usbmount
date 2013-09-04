@@ -32,10 +32,11 @@ if test "$1" = add; then
     log "handle insertion of $DEVNAME"
 
     if [ -z "$ID_FS_UUID" ]; then
+        log "unable to determine UUID"
     	exit 0
     fi
 
-    log "uuid is $ID_FS_UUID"
+    log "UUID is $ID_FS_UUID"
 
     MOUNT_POINT="/media/$ID_FS_UUID"
 
