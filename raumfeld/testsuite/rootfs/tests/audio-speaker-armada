@@ -3,7 +3,7 @@
 . ../tests.inc
 
 # set volume
-amixer cset numid=1 117
+amixer cset numid=1 160
 
 if [ -n "$(grep -i "Connector" /proc/device-tree/model)" ]; then
    echo "testing S/P Diff and analog outputs, check if there is output"
