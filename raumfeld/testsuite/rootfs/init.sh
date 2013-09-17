@@ -21,6 +21,7 @@ if [ -n "$(grep Geode /proc/cpuinfo)" ]; then
     modprobe ath5k
 elif [ -n "$(grep AM33XX /proc/cpuinfo)" ]; then
     # modules for ARMADA
+    modprobe snd-soc-s800
     modprobe mwifiex_sdio
 else
     # modules for ARM

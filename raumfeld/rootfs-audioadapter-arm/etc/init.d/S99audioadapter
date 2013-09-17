@@ -3,6 +3,9 @@
 
 case "$1" in
   start)
+	# Load sound drivers as late as possible (see RFS-3968)
+	modprobe snd-soc-s800
+
         cd /raumfeld/master-process/
         ./raumfeld-master-sh.sh &
 	;;
