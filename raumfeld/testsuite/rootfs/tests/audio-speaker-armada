@@ -11,4 +11,9 @@ else
    echo "testing speakers, check if sound can be heard"
 fi
 
+# initialize the DSP pseudo device on the Raumfeld One
+if [ -n "$(grep -i "One" /proc/device-tree/model)" ]; then
+   dd if=/dev/zero bs=1024 count=800 | aplay -D hw:0,2 -f cd -
+fi
+
 aplay -D hw:0 /audiotest.wav &
