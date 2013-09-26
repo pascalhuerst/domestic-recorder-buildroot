@@ -1,0 +1,127 @@
+From a302823af930e1b09f44908b02d1f4b6a44b5cc9 Mon Sep 17 00:00:00 2001
+From: Alexander Larsson <alexl@redhat.com>
+Date: Thu, 26 Sep 2013 12:26:07 +0200
+Subject: [PATCH 2/3] GDaemonFileMonitor: Only recieve events on one dbus
+ connection
+
+There is no need to register for monitor evens on all dbus connections,
+just the one we send the request on.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=708744
+---
+ client/gdaemonfilemonitor.c | 54 ++++++++++++++++++---------------------------
+ 1 file changed, 22 insertions(+), 32 deletions(-)
+
+diff --git a/client/gdaemonfilemonitor.c b/client/gdaemonfilemonitor.c
+index 7e247bd..e58bbb7 100644
+--- a/client/gdaemonfilemonitor.c
++++ b/client/gdaemonfilemonitor.c
+@@ -48,6 +48,7 @@ struct _GDaemonFileMonitor
+   char *remote_id;
+   GDBusConnection *connection;
+   GVfsDBusMonitor *proxy;
++  GVfsDBusMonitorClient *skeleton;
+ };
+ 
+ G_DEFINE_TYPE (GDaemonFileMonitor, g_daemon_file_monitor, G_TYPE_FILE_MONITOR)
+@@ -59,10 +60,14 @@ g_daemon_file_monitor_finalize (GObject* object)
+   
+   daemon_monitor = G_DAEMON_FILE_MONITOR (object);
+ 
++  if (daemon_monitor->skeleton)
++    {
++      g_dbus_interface_skeleton_unexport (G_DBUS_INTERFACE_SKELETON (daemon_monitor->skeleton));
++      g_object_unref (daemon_monitor->skeleton);
++    }
++
+   g_clear_object (&daemon_monitor->proxy);
+ 
+-  _g_dbus_unregister_vfs_filter (daemon_monitor->object_path);
+-  
+   g_clear_object (&daemon_monitor->connection);
+ 
+   g_free (daemon_monitor->object_path);
+@@ -78,7 +83,6 @@ g_daemon_file_monitor_class_init (GDaemonFileMonitorClass* klass)
+ {
+   GObjectClass* gobject_class = G_OBJECT_CLASS (klass);
+   GFileMonitorClass *file_monitor_class = G_FILE_MONITOR_CLASS (klass);
+-  
+   gobject_class->finalize = g_daemon_file_monitor_finalize;
+ 
+   file_monitor_class->cancel = g_daemon_file_monitor_cancel;
+@@ -120,43 +124,17 @@ handle_changed (GVfsDBusMonitorClient *object,
+   return TRUE;
+ }
+ 
+-static GDBusInterfaceSkeleton *
+-register_vfs_filter_cb (GDBusConnection *connection,
+-                        const char *obj_path,
+-                        gpointer callback_data)
+-{
+-  GError *error;
+-  GVfsDBusMonitorClient *skeleton;
+-
+-  skeleton = gvfs_dbus_monitor_client_skeleton_new ();
+-  g_signal_connect (skeleton, "handle-changed", G_CALLBACK (handle_changed), callback_data);
+-
+-  error = NULL;
+-  if (!g_dbus_interface_skeleton_export (G_DBUS_INTERFACE_SKELETON (skeleton),
+-                                         connection,
+-                                         obj_path,
+-                                         &error))
+-    {
+-      g_warning ("Error registering path: %s (%s, %d)\n",
+-                  error->message, g_quark_to_string (error->domain), error->code);
+-      g_error_free (error);
+-    }
+-
+-  return G_DBUS_INTERFACE_SKELETON (skeleton);
+-}
+-
+ static void
+ g_daemon_file_monitor_init (GDaemonFileMonitor* daemon_monitor)
+ {
+   gint id;
+-  
++
+   id = g_atomic_int_add (&path_counter, 1);
+ 
+   daemon_monitor->object_path = g_strdup_printf (OBJ_PATH_PREFIX"%d", id);
+ 
+-  _g_dbus_register_vfs_filter (daemon_monitor->object_path,
+-                               register_vfs_filter_cb,
+-			       G_OBJECT (daemon_monitor));
++  daemon_monitor->skeleton = gvfs_dbus_monitor_client_skeleton_new ();
++  g_signal_connect (daemon_monitor->skeleton, "handle-changed", G_CALLBACK (handle_changed), daemon_monitor);
+ }
+ 
+ static void
+@@ -232,6 +210,7 @@ async_got_connection_cb (GDBusConnection *connection,
+                          gpointer callback_data)
+ {
+   GDaemonFileMonitor* monitor = callback_data;
++  GError *error;
+ 
+   if (! connection)
+     {
+@@ -241,6 +220,17 @@ async_got_connection_cb (GDBusConnection *connection,
+       return;
+     }
+ 
++  error = NULL;
++  if (!g_dbus_interface_skeleton_export (G_DBUS_INTERFACE_SKELETON (monitor->skeleton),
++                                         connection,
++                                         monitor->object_path,
++                                         &error))
++    {
++      g_warning ("Error registering path: %s (%s, %d)\n",
++                  error->message, g_quark_to_string (error->domain), error->code);
++      g_error_free (error);
++    }
++
+   monitor->connection = g_object_ref (connection);
+   gvfs_dbus_monitor_proxy_new (connection,
+                                G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES | G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
+-- 
+1.8.1.2
+
