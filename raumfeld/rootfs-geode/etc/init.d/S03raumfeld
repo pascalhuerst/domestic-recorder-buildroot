@@ -1,0 +1,16 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+        # Remove leftover temporary files
+        rm -f /var/raumfeld-1.0/.goutputstream-*
+
+	;;
+  stop)
+	;;
+  *)
+	echo $"Usage: $0 {start|stop}"
+	exit 1
+esac
+
+exit $?
