@@ -1,0 +1,19 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+        # Change the kernel memory overcommit policy to always overcommit
+        sysctl -w vm.overcommit_memory=1
+
+        # Remove leftover temporary files
+        rm -f /var/raumfeld-1.0/.goutputstream-*
+
+	;;
+  stop)
+	;;
+  *)
+	echo $"Usage: $0 {start|stop}"
+	exit 1
+esac
+
+exit $?

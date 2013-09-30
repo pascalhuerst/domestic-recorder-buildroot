@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# Mount all partitions listed in /etc/fstab
-mount -a
-
-# Change the kernel memory overcommit policy to always overcommit
-sysctl -w vm.overcommit_memory=1

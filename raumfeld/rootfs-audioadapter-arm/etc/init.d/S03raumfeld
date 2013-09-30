@@ -2,14 +2,15 @@
 
 case "$1" in
   start)
-        # Mount all partitions listed in /etc/fstab
-        mount -a
-
         # Set the MAC address of eth0
 	if [ -x /usr/sbin/fw_printenv ]; then
             eval $(fw_printenv ethaddr)
             test -z "$ethaddr" || /sbin/ifconfig eth0 hw ether $ethaddr
 	fi
+
+        # Remove leftover temporary files
+        rm -f /var/raumfeld-1.0/.goutputstream-*
+
 	;;
   stop)
 	;;
