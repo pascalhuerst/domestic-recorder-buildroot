@@ -4,8 +4,8 @@
 #
 #############################################################
 
-LIBSOUP_MAJOR_VERSION = 2.38
-LIBSOUP_MINOR_VERSION = 1
+LIBSOUP_MAJOR_VERSION = 2.42
+LIBSOUP_MINOR_VERSION = 2
 LIBSOUP_VERSION = $(LIBSOUP_MAJOR_VERSION).$(LIBSOUP_MINOR_VERSION)
 LIBSOUP_SOURCE = libsoup-$(LIBSOUP_VERSION).tar.xz
 LIBSOUP_SITE = http://ftp.gnome.org/pub/gnome/sources/libsoup/$(LIBSOUP_MAJOR_VERSION)
