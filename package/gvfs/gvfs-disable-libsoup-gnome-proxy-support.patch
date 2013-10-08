@@ -2,7 +2,7 @@ Disable GNOME proxy resolver support so that we can compile the
 HTTP backend with plain libsoup-2.4 avoiding a dependency on
 libsoup-gnome-2.4.
 
-Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
+Signed-off-by: Sven Neumann <neumann@teufel.de>
 --- gvfs-1.16.3/configure.orig	2013-06-25 10:59:49.946978733 +0200
 +++ gvfs-1.16.3/configure	2013-06-25 11:00:21.818979110 +0200
 @@ -15605,8 +15605,8 @@
@@ -66,27 +66,14 @@ Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
  
  $HTTP_PKG_ERRORS
  
---- gvfs-1.16.3/daemon/gvfsbackendhttp.c.orig	2013-06-25 10:58:13.014977587 +0200
-+++ gvfs-1.16.3/daemon/gvfsbackendhttp.c	2013-06-25 10:58:53.422978065 +0200
-@@ -34,7 +34,6 @@
+--- gvfs-1.18.2/daemon/gvfsbackendhttp.c.orig	2013-09-30 10:47:02.000000000 +0200
++++ gvfs-1.18.2/daemon/gvfsbackendhttp.c	2013-10-04 09:30:02.397200677 +0200
+@@ -34,7 +34,7 @@
  #include <gio/gio.h>
  
  #define LIBSOUP_USE_UNSTABLE_REQUEST_API
 -#include <libsoup/soup-gnome.h>
- #include <libsoup/soup-requester.h>
++#include <libsoup/soup.h>
  
  #include "gvfsbackendhttp.h"
-@@ -98,11 +97,13 @@
-   /* SoupRequester seems to depend on use-thread-context */
-   g_object_set (G_OBJECT (backend->session_async), "use-thread-context", TRUE, NULL);
- 
-+#if 0
-   /* Proxy handling */
-   proxy_resolver = g_object_new (SOUP_TYPE_PROXY_RESOLVER_GNOME, NULL);
-   soup_session_add_feature (backend->session, proxy_resolver);
-   soup_session_add_feature (backend->session_async, proxy_resolver);
-   g_object_unref (proxy_resolver);
-+#endif
- 
-   /* Cookie handling - stored temporarlly in memory, mostly useful for
-    * authentication in WebDAV. */
+ #include "gvfshttpinputstream.h"
