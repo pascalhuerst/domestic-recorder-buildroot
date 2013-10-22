@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=fi.w1.wpa_supplicant1
+Exec=/usr/sbin/wpa_supplicant -Dnl80211 -B -u -s -c /etc/wpa_supplicant.conf -P /var/run/wpa_supplicant.pid
+User=root
