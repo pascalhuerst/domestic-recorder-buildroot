@@ -1,10 +1,11 @@
-#############################################################
+################################################################################
 #
 # gst-plugins-good
 #
-#############################################################
-GST_PLUGINS_GOOD_VERSION = 1.0.4
-GST_PLUGINS_GOOD_SOURCE = gst-plugins-good-$(GST_PLUGINS_GOOD_VERSION).tar.xz
+################################################################################
+
+GST_PLUGINS_GOOD_VERSION = 0.10.31
+GST_PLUGINS_GOOD_SOURCE = gst-plugins-good-$(GST_PLUGINS_GOOD_VERSION).tar.bz2
 GST_PLUGINS_GOOD_SITE = http://gstreamer.freedesktop.org/src/gst-plugins-good
 
 GST_PLUGINS_GOOD_CONF_OPT = \
@@ -21,11 +22,6 @@ GST_PLUGINS_GOOD_CONF_OPT = \
 		--disable-shout2
 
 GST_PLUGINS_GOOD_DEPENDENCIES = gstreamer gst-plugins-base
-
-
-ifeq ($(BR2_PACKAGE_ORC),y)
-GST_PLUGINS_GOOD_DEPENDENCIES += orc
-endif
 
 ifeq ($(BR2_PACKAGE_XORG7),y)
 GST_PLUGINS_GOOD_DEPENDENCIES += xlib_libX11 xlib_libXext xlib_libXv
@@ -150,13 +146,6 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_FLX),y)
 GST_PLUGINS_GOOD_CONF_OPT += --enable-flx
 else
 GST_PLUGINS_GOOD_CONF_OPT += --disable-flx
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_GDKPIXBUF),y)
-GST_PLUGINS_GOOD_CONF_OPT += --enable-gdk_pixbuf
-GST_PLUGINS_GOOD_DEPENDENCIES += gdk-pixbuf
-else
-GST_PLUGINS_GOOD_CONF_OPT += --disable-gdk_pixbuf
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_GOOM),y)
@@ -313,13 +302,6 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_WAVENC),y)
 GST_PLUGINS_GOOD_CONF_OPT += --enable-wavenc
 else
 GST_PLUGINS_GOOD_CONF_OPT += --disable-wavenc
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_WAVPACK),y)
-GST_PLUGINS_GOOD_CONF_OPT += --enable-wavpack
-GST_PLUGINS_GOOD_DEPENDENCIES += wavpack
-else
-GST_PLUGINS_GOOD_CONF_OPT += --disable-wavpack
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_GOOD_PLUGIN_WAVPARSE),y)

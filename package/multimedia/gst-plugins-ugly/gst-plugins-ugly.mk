@@ -1,20 +1,17 @@
-#############################################################
+################################################################################
 #
 # gst-plugins-ugly
 #
-#############################################################
-GST_PLUGINS_UGLY_VERSION = 1.0.4
-GST_PLUGINS_UGLY_SOURCE = gst-plugins-ugly-$(GST_PLUGINS_UGLY_VERSION).tar.xz
+################################################################################
+
+GST_PLUGINS_UGLY_VERSION = 0.10.19
+GST_PLUGINS_UGLY_SOURCE = gst-plugins-ugly-$(GST_PLUGINS_UGLY_VERSION).tar.bz2
 GST_PLUGINS_UGLY_SITE = http://gstreamer.freedesktop.org/src/gst-plugins-ugly
 
 GST_PLUGINS_UGLY_CONF_OPT = \
 		--disable-examples
 
 GST_PLUGINS_UGLY_DEPENDENCIES = gstreamer gst-plugins-base
-
-ifeq ($(BR2_PACKAGE_ORC),y)
-GST_PLUGINS_UGLY_DEPENDENCIES += orc
-endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_UGLY_PLUGIN_ASFDEMUX),y)
 GST_PLUGINS_UGLY_CONF_OPT += --enable-asfdemux
@@ -62,12 +59,6 @@ ifeq ($(BR2_PACKAGE_GST_PLUGINS_UGLY_PLUGIN_SYNAESTHESIA),y)
 GST_PLUGINS_UGLY_CONF_OPT += --enable-synaesthesia
 else
 GST_PLUGINS_UGLY_CONF_OPT += --disable-synaesthesia
-endif
-
-ifeq ($(BR2_PACKAGE_GST_PLUGINS_UGLY_PLUGIN_XINGMUX),y)
-GST_PLUGINS_UGLY_CONF_OPT += --enable-xingmux
-else
-GST_PLUGINS_UGLY_CONF_OPT += --disable-xingmux
 endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_UGLY_PLUGIN_LAME),y)

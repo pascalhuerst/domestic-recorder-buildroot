@@ -1,3 +1,9 @@
+udev can provide all the values that usbmount determined using the
+blkid binary. This patch drops use of blkid in favor of using the
+environment variables set by udev. Thus it removes the dependency
+on blkid from usbmount.
+
+Signed-off-by: Sven Neumann <s.neumann@raumfeld.com>
 --- usbmount-0.0.22/usbmount.orig	2013-06-18 14:44:40.143096147 +0200
 +++ usbmount-0.0.22/usbmount	2013-06-19 16:13:09.882434896 +0200
 @@ -59,11 +59,6 @@

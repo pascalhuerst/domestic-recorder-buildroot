@@ -1,11 +1,11 @@
-
-#############################################################
+################################################################################
 #
 # gstreamer
 #
-#############################################################
-GSTREAMER_VERSION = 1.0.4
-GSTREAMER_SOURCE = gstreamer-$(GSTREAMER_VERSION).tar.xz
+################################################################################
+
+GSTREAMER_VERSION = 0.10.36
+GSTREAMER_SOURCE = gstreamer-$(GSTREAMER_VERSION).tar.bz2
 GSTREAMER_SITE = http://gstreamer.freedesktop.org/src/gstreamer
 GSTREAMER_INSTALL_STAGING = YES
 
