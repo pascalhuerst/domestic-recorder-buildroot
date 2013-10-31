@@ -83,7 +83,6 @@ rm -f  $1/usr/libexec/gvfsd-archive
 rm -f  $1/usr/libexec/gvfsd-burn
 rm -f  $1/usr/libexec/gvfsd-computer
 rm -f  $1/usr/libexec/gvfsd-dav
-rm -f  $1/usr/libexec/gvfsd-dnssd
 rm -f  $1/usr/libexec/gvfsd-ftp
 rm -f  $1/usr/libexec/gvfsd-http
 rm -f  $1/usr/libexec/gvfsd-localtest
@@ -105,7 +104,6 @@ rm -f  $1/usr/share/gvfs/mounts/burn.mount
 rm -f  $1/usr/share/gvfs/mounts/computer.mount
 rm -f  $1/usr/share/gvfs/mounts/dav.mount
 rm -f  $1/usr/share/gvfs/mounts/dav\+sd.mount
-rm -f  $1/usr/share/gvfs/mounts/dns-sd.mount
 rm -f  $1/usr/share/gvfs/mounts/ftp.mount
 rm -f  $1/usr/share/gvfs/mounts/http.mount
 rm -f  $1/usr/share/gvfs/mounts/localtest.mount
