@@ -5,7 +5,7 @@ set -e
 mount -t ubifs ubi:RootFS /mnt
 
 cd /mnt
-zcat /rootfs.tgz | tar -xvf -
+zcat /rootfs.tgz | tar -xv
 
 # 'move' the uImage from the rootfs to its own partition
 flash_erase /dev/mtd6 0 0
