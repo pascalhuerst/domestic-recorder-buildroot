@@ -126,3 +126,4 @@ if test -d $1/usr/lib/directfb-1.4-6; then
     rm -f  $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBFont/libidirectfbfont_dgiff.so
     rm -f  $i/usr/lib/directfb-1.4-6/interfaces/ICoreResourceManager/libicoreresourcemanager_test.so
 fi
+rm -fr $1/var/www
