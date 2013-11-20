@@ -1,9 +1,10 @@
 #!/bin/sh
 
 #
-# Extract rootfs.tgz to the harddisk. No attempt is made to clean up
-# or even format the disk. The purpose is to recover from a failed
-# update attempt.
+# Extract rootfs.tgz to the harddisk.
+# No attempt is made to clean up or even format the disk. The
+# purpose is to recover from a failed update attempt without
+# loosing the user settings, favorites, etc.
 #
 
 source tests.inc
