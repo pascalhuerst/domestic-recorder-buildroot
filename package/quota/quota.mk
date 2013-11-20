@@ -1,11 +1,10 @@
-#############################################################
+################################################################################
 #
-# QUOTA
+# quota
 #
-#############################################################
+################################################################################
 
 QUOTA_VERSION = 4.00
-QUOTA_SOURCE = quota-$(QUOTA_VERSION).tar.gz
 QUOTA_SITE = http://downloads.sourceforge.net/project/linuxquota/quota-tools/$(QUOTA_VERSION)
 QUOTA_DEPENDENCIES = host-gettext
 QUOTA_AUTORECONF = YES

@@ -1,11 +1,11 @@
-#############################################################
+################################################################################
 #
 # tvheadend
 #
-##############################################################
+################################################################################
 
-TVHEADEND_VERSION           = v3.5
-TVHEADEND_SITE              = http://github.com/tvheadend/tvheadend/tarball/$(TVHEADEND_VERSION)
+TVHEADEND_VERSION           = 2b649954346aa2e9c81834d500a25c528f31f829
+TVHEADEND_SITE              = git://github.com/tvheadend/tvheadend.git
 TVHEADEND_LICENSE           = GPLv3+
 TVHEADEND_LICENSE_FILES     = LICENSE
 TVHEADEND_DEPENDENCIES      = host-pkgconf host-python openssl

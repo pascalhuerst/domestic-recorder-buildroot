@@ -1,4 +1,4 @@
-######################################################################
+################################################################################
 #
 # Qt Embedded for Linux
 #
@@ -9,11 +9,11 @@
 # the kernels FPU emulation so it's better to choose soft float in the
 # buildroot config (and uClibc.config of course, if you have your own.)
 #
-######################################################################
+################################################################################
 
-QT_VERSION = 4.8.4
+QT_VERSION = 4.8.5
 QT_SOURCE  = qt-everywhere-opensource-src-$(QT_VERSION).tar.gz
-QT_SITE    = http://releases.qt-project.org/qt4/source
+QT_SITE    = http://download.qt-project.org/official_releases/qt/4.8/$(QT_VERSION)
 QT_DEPENDENCIES = host-pkgconf
 QT_INSTALL_STAGING = YES
 
@@ -136,7 +136,11 @@ QT_DEPENDENCIES += directfb
 else
 QT_CONFIGURE_OPTS += -no-gfx-directfb
 endif
-
+ifeq ($(BR2_PACKAGE_QT_GFX_POWERVR),y)
+QT_CONFIGURE_OPTS += \
+	-plugin-gfx-powervr -D QT_NO_QWS_CURSOR -D QT_QWS_CLIENTBLIT
+QT_DEPENDENCIES += powervr
+endif
 
 ### Mouse drivers
 ifeq ($(BR2_PACKAGE_QT_MOUSE_PC),y)
@@ -313,6 +317,13 @@ else
 QT_CONFIGURE_OPTS += -no-openssl
 endif
 
+ifeq ($(BR2_PACKAGE_QT_OPENGL_ES),y)
+QT_CONFIGURE_OPTS += -opengl es2 -egl
+QT_DEPENDENCIES   += libgles libegl
+else
+QT_CONFIGURE_OPTS += -no-opengl
+endif
+
 # Qt SQL Drivers
 ifeq ($(BR2_PACKAGE_QT_SQL_MODULE),y)
 ifeq ($(BR2_PACKAGE_QT_IBASE),y)
@@ -402,12 +413,6 @@ ifeq ($(BR2_PACKAGE_QT_SCRIPTTOOLS),y)
 QT_CONFIGURE_OPTS += -scripttools
 else
 QT_CONFIGURE_OPTS += -no-scripttools
-endif
-
-ifeq ($(BR2_PACKAGE_QT_JAVASCRIPTCORE),y)
-QT_CONFIGURE_OPTS += -javascript-jit
-else
-QT_CONFIGURE_OPTS += -no-javascript-jit
 endif
 
 ifeq ($(BR2_PACKAGE_QT_STL),y)
@@ -505,6 +510,7 @@ define QT_CONFIGURE_CMDS
 		-prefix /usr \
 		-plugindir /usr/lib/qt/plugins \
 		-importdir /usr/lib/qt/imports \
+		-translationdir /usr/share/qt/translations \
 		-hostprefix $(STAGING_DIR) \
 		-fast \
 		-no-rpath \
@@ -563,6 +569,12 @@ QT_INSTALL_LIBS    += QtDeclarative
 endif
 ifeq ($(BR2_PACKAGE_QT_QT3SUPPORT),y)
 QT_INSTALL_LIBS    += Qt3Support
+endif
+ifeq ($(BR2_PACKAGE_QT_OPENGL_ES),y)
+QT_INSTALL_LIBS    += QtOpenGL
+endif
+ifeq ($(BR2_PACKAGE_QT_GFX_POWERVR),y)
+QT_INSTALL_LIBS    += pvrQWSWSEGL
 endif
 
 QT_CONF_FILE=$(HOST_DIR)/usr/bin/qt.conf
@@ -640,12 +652,30 @@ define QT_INSTALL_TARGET_FONTS_TTF
 endef
 endif
 
+ifeq ($(BR2_PACKAGE_QT_GFX_POWERVR),y)
+define QT_INSTALL_TARGET_POWERVR
+	# Note: this overwrites the default powervr.ini provided by the ti-gfx
+	# package.
+	$(INSTALL) -D -m 0644 package/qt/powervr.ini \
+		$(TARGET_DIR)/etc/powervr.ini
+endef
+endif
+
+define QT_INSTALL_TARGET_TRANSLATIONS
+	if [ -d $(STAGING_DIR)/usr/share/qt/translations/ ] ; then \
+		mkdir -p $(TARGET_DIR)/usr/share/qt/translations ; \
+		cp -dpfr $(STAGING_DIR)/usr/share/qt/translations/* $(TARGET_DIR)/usr/share/qt/translations ; \
+	fi
+endef
+
 define QT_INSTALL_TARGET_CMDS
 	$(QT_INSTALL_TARGET_LIBS)
 	$(QT_INSTALL_TARGET_PLUGINS)
 	$(QT_INSTALL_TARGET_IMPORTS)
 	$(QT_INSTALL_TARGET_FONTS)
 	$(QT_INSTALL_TARGET_FONTS_TTF)
+	$(QT_INSTALL_TARGET_POWERVR)
+	$(QT_INSTALL_TARGET_TRANSLATIONS)
 endef
 
 define QT_CLEAN_CMDS
