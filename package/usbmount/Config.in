@@ -1,7 +1,5 @@
 config BR2_PACKAGE_USBMOUNT
 	bool "usbmount"
-	depends on BR2_LARGEFILE # util-linux
-	depends on BR2_USE_WCHAR # util-linux
 	depends on BR2_PACKAGE_UDEV
 	select BR2_PACKAGE_LOCKFILE_PROGS
 	help
@@ -10,5 +8,5 @@ config BR2_PACKAGE_USBMOUNT
 
 	  http://usbmount.alioth.debian.org/
 
-comment "usbmount requires a toolchain with LARGEFILE + WCHAR support"
-	depends on !(BR2_LARGEFILE && BR2_USE_WCHAR) && BR2_PACKAGE_UDEV
+comment "usbmount requires udev to be enabled"
+	depends on !BR2_PACKAGE_UDEV

@@ -1,9 +1,11 @@
+################################################################################
 #
 # libroxml
 #
+################################################################################
 
-LIBROXML_VERSION = 2.2.1
-LIBROXML_SITE = http://libroxml.googlecode.com/files
+LIBROXML_VERSION = 2.2.3
+LIBROXML_SITE = http://download.libroxml.net/pool/v2.x/
 LIBROXML_INSTALL_STAGING = YES
 
 define LIBROXML_BUILD_CMDS
@@ -15,7 +17,7 @@ define LIBROXML_INSTALL_STAGING_CMDS
 endef
 
 define LIBROXML_INSTALL_TARGET_CMDS
-	$(MAKE) DESTDIR=$(TARGET_DIR) -C $(@D) install
+	$(MAKE) DESTDIR=$(TARGET_DIR)/usr/ -C $(@D) install
 endef
 
 define LIBROXML_UNINSTALL_STAGING_CMDS

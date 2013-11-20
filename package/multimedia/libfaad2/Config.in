@@ -1,7 +1,0 @@
-config BR2_PACKAGE_LIBFAAD2
-	bool "libfaad2"
-	default n
-	help
-          libfaad2 AC3 decoder
-
-	  http://www.audiocoding.com/

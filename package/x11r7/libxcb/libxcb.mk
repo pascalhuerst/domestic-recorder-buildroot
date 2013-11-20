@@ -1,8 +1,9 @@
-#############################################################
+################################################################################
 #
 # libxcb
 #
-#############################################################
+################################################################################
+
 LIBXCB_VERSION = 1.8.1
 LIBXCB_SOURCE = libxcb-$(LIBXCB_VERSION).tar.bz2
 LIBXCB_SITE = http://xcb.freedesktop.org/dist/
@@ -23,4 +24,3 @@ HOST_LIBXCB_CONF_OPT = --disable-build-docs
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))
-

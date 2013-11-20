@@ -1,0 +1,11 @@
+--- gst1-libav-1.2.1/gst-libs/ext/libav/libavcodec/alac.c.orig	2013-11-20 15:36:13.912018612 +0100
++++ gst1-libav-1.2.1/gst-libs/ext/libav/libavcodec/alac.c	2013-11-20 15:38:51.940020481 +0100
+@@ -514,7 +514,7 @@
+     bytestream2_get_be16u(&gb); // maxRun
+     bytestream2_get_be32u(&gb); // max coded frame size
+     bytestream2_get_be32u(&gb); // average bitrate
+-    bytestream2_get_be32u(&gb); // samplerate
++    alac->avctx->sample_rate = bytestream2_get_be32u(&gb); // samplerate
+ 
+     return 0;
+ }

@@ -1,11 +1,11 @@
-#############################################################
+################################################################################
 #
 # php
 #
-#############################################################
+################################################################################
 
-PHP_VERSION = 5.3.24
-PHP_SOURCE = php-$(PHP_VERSION).tar.bz2
+PHP_VERSION = 5.3.27
+PHP_SOURCE = php-$(PHP_VERSION).tar.xz
 PHP_SITE = http://www.php.net/distributions
 PHP_INSTALL_STAGING = YES
 PHP_INSTALL_STAGING_OPT = INSTALL_ROOT=$(STAGING_DIR) install
@@ -19,12 +19,17 @@ PHP_CONF_OPT =  --mandir=/usr/share/man \
 		--with-config-file-path=/etc \
 		--localstatedir=/var \
 		--disable-rpath
+ifeq ($(BR2_ENDIAN),"BIG")
+PHP_CONF_ENV = ac_cv_c_bigendian_php=yes
+else
+PHP_CONF_ENV = ac_cv_c_bigendian_php=no
+endif
 PHP_CONFIG_SCRIPTS = php-config
 
 PHP_CFLAGS = $(TARGET_CFLAGS)
 
 # Workaround for non-IPv6 uClibc toolchain
-ifeq ($(BR2_TOOLCHAIN_BUILDROOT)$(BR2_TOOLCHAIN_EXTERNAL_UCLIBC)$(BR2_TOOLCHAIN_CTNG_uClibc),y)
+ifeq ($(BR2_TOOLCHAIN_USES_UCLIBC),y)
 ifneq ($(BR2_INET_IPV6),y)
 	PHP_CFLAGS += -DHAVE_DEPRECATED_DNS_FUNCS
 endif

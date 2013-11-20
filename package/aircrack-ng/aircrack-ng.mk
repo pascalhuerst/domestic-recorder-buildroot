@@ -1,11 +1,10 @@
-#############################################################
+################################################################################
 #
-# Aircrack-ng
+# aircrack-ng
 #
-#############################################################
+################################################################################
 
 AIRCRACK_NG_VERSION = 1.1
-AIRCRACK_NG_SOURCE = aircrack-ng-$(AIRCRACK_NG_VERSION).tar.gz
 AIRCRACK_NG_SITE = http://download.aircrack-ng.org
 AIRCRACK_NG_LICENSE = GPLv2+
 AIRCRACK_NG_LICENSE_FILES = LICENSE
@@ -13,7 +12,8 @@ AIRCRACK_NG_DEPENDENCIES = openssl
 
 ifeq ($(BR2_PACKAGE_SQLITE),y)
 	AIRCRACK_NG_MAKE_OPTS = sqlite=true
-	AIRCRACK_NG_MAKE_OPTS += LIBSQL="-lsqlite3"
+	AIRCRACK_NG_MAKE_OPTS += \
+		LIBSQL="-lsqlite3$(if $(BR2_PREFER_STATIC_LIB), -ldl -lpthread)"
 
 	AIRCRACK_NG_DEPENDENCIES += sqlite
 else

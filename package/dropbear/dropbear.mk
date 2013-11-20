@@ -1,10 +1,10 @@
-#############################################################
+################################################################################
 #
 # dropbear
 #
-#############################################################
+################################################################################
 
-DROPBEAR_VERSION = 2013.58
+DROPBEAR_VERSION = 2013.60
 DROPBEAR_SITE = http://matt.ucc.asn.au/dropbear/releases
 DROPBEAR_SOURCE = dropbear-$(DROPBEAR_VERSION).tar.bz2
 DROPBEAR_TARGET_BINS = dbclient dropbearkey dropbearconvert scp ssh

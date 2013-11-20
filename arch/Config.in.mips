@@ -47,10 +47,21 @@ config BR2_MIPS_OABI32
 config BR2_MIPS_NABI32
 	bool "n32"
 	depends on BR2_ARCH_IS_64
+	select BR2_KERNEL_64_USERLAND_32
 config BR2_MIPS_NABI64
 	bool "n64"
 	depends on BR2_ARCH_IS_64
 endchoice
+
+config BR2_MIPS_SOFT_FLOAT
+	bool "Use soft-float"
+	default y
+	select BR2_SOFT_FLOAT
+	help
+	  If your target CPU does not have a Floating Point Unit (FPU)
+	  or a kernel FPU emulator, but you still wish to support
+	  floating point functions, then everything will need to be
+	  compiled with soft floating point support (-msoft-float).
 
 config BR2_ARCH
 	default "mips"		if BR2_mips
@@ -62,7 +73,7 @@ config BR2_ENDIAN
 	default "LITTLE"	if BR2_mipsel || BR2_mips64el
 	default "BIG" 	    	if BR2_mips || BR2_mips64
 
-config BR2_GCC_TARGET_TUNE
+config BR2_GCC_TARGET_ARCH
 	default "mips1"		if BR2_mips_1
 	default "mips2"		if BR2_mips_2
 	default "mips3"		if BR2_mips_3
