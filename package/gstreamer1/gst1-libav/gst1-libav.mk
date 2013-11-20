@@ -1,18 +1,16 @@
-
 #############################################################
 #
-# gst-libav
+# gst1-libav
 #
 #############################################################
 
-GST_LIBAV_VERSION = 1.0.4
-GST_LIBAV_SOURCE = gst-libav-$(GST_LIBAV_VERSION).tar.xz
-GST_LIBAV_SITE = http://gstreamer.freedesktop.org/src/gst-libav
-# GST_LIBAV_INSTALL_STAGING = YES
+GST1_LIBAV_VERSION = 1.0.4
+GST1_LIBAV_SOURCE = gst-libav-$(GST1_LIBAV_VERSION).tar.xz
+GST1_LIBAV_SITE = http://gstreamer.freedesktop.org/src/gst-libav
 
-GST_LIBAV_DEPENDENCIES = host-pkgconf gstreamer gst-plugins-base
+GST1_LIBAV_DEPENDENCIES = host-pkgconf gstreamer1 gst1-plugins-base
 
-GST_LIBAV_CONF_OPT = \
+GST1_LIBAV_CONF_OPT = \
 	--with-libav-extra-configure="--target-os=linux \
 	                               --disable-debug \
 				       --disable-ffmpeg \
@@ -44,11 +42,11 @@ GST_LIBAV_CONF_OPT = \
                                        --enable-decoder=wmapro "
 
 ifeq ($(BR2_PACKAGE_BZIP2),y)
-GST_LIBAV_DEPENDENCIES += bzip2
+GST1_LIBAV_DEPENDENCIES += bzip2
 endif
 
 ifeq ($(BR2_i386),y)
-GST_LIBAV_DEPENDENCIES += host-yasm
+GST1_LIBAV_DEPENDENCIES += host-yasm
 endif
 
 $(eval $(autotools-package))

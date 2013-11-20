@@ -1,7 +1,7 @@
-config BR2_PACKAGE_GST_LIBAV
-	bool "gst-libav"
-	depends on BR2_PACKAGE_GSTREAMER
-	select BR2_PACKAGE_GST_PLUGINS_BASE
+config BR2_PACKAGE_GST1_LIBAV
+	bool "gst1-libav"
+	depends on BR2_PACKAGE_GSTREAMER1
+	select BR2_PACKAGE_GST1_PLUGINS_BASE
 	depends on BR2_LARGEFILE
 	help
 	  GStreamer plugin (formerly gst-ffmpeg).
@@ -12,5 +12,5 @@ config BR2_PACKAGE_GST_LIBAV
 	  
 	  http://gstreamer.freedesktop.org/
 
-comment "gst-libav requires a toolchain with LARGEFILE support"
+comment "gst1-libav requires a toolchain with LARGEFILE support"
 	depends on !(BR2_LARGEFILE)
