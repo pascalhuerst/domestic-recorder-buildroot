@@ -4,10 +4,10 @@
 #
 #############################################################
 
-GSSDP_MAJOR_VERSION = 0.8
-GSSDP_MINOR_VERSION = 2
+GSSDP_MAJOR_VERSION = 0.14
+GSSDP_MINOR_VERSION = 6
 GSSDP_VERSION = $(GSSDP_MAJOR_VERSION).$(GSSDP_MINOR_VERSION)
-GSSDP_SOURCE = gssdp-$(GSSDP_VERSION).tar.bz2
+GSSDP_SOURCE = gssdp-$(GSSDP_VERSION).tar.xz
 GSSDP_SITE = http://ftp.gnome.org/pub/GNOME/sources/gssdp/$(GSSDP_MAJOR_VERSION)
 
 GSSDP_INSTALL_STAGING = YES

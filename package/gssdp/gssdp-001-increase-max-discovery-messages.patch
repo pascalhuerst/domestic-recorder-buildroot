@@ -1,9 +1,9 @@
---- gssdp-0.6.4-orig/libgssdp/gssdp-resource-browser.c	2009-01-06 15:44:15.000000000 +0100
-+++ gssdp-0.6.4/libgssdp/gssdp-resource-browser.c	2010-01-04 14:57:56.000000000 +0100
-@@ -40,7 +40,7 @@
- #include "gssdp-protocol.h"
+--- gssdp-0.14.6/libgssdp/gssdp-resource-browser.c.orig	2013-11-21 15:30:11.533909739 +0100
++++ gssdp-0.14.6/libgssdp/gssdp-resource-browser.c	2013-11-21 15:31:27.357910636 +0100
+@@ -42,7 +42,7 @@
  #include "gssdp-marshal.h"
  
+ #define RESCAN_TIMEOUT 5 /* 5 seconds */
 -#define MAX_DISCOVERY_MESSAGES 3
 +#define MAX_DISCOVERY_MESSAGES 20
  #define DISCOVERY_FREQUENCY    500 /* 500 ms */
