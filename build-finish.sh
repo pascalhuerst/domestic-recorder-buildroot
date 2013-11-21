@@ -64,7 +64,7 @@ case $target in
     base-geode)
         IMAGES="init flash repair"
         ;;
-fi
+esac
 
 if ! test -z "$image"; then
     found=0
