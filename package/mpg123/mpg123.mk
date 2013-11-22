@@ -15,7 +15,11 @@ MPG123_LICENSE_FILES = COPYING
 MPG123_CPU = $(if $(BR2_SOFT_FLOAT),generic_nofpu,generic_fpu)
 
 ifeq ($(BR2_arm),y)
+ifeq ($(BR2_ARM_FPU_NEON),y)
+MPG123_CPU = neon
+else
 MPG123_CPU = arm_nofpu
+endif
 endif
 
 ifeq ($(BR2_i386),y)
