@@ -25,14 +25,14 @@ zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
 	dialog_progress "Copying files to flash. Please wait." $DIALOGOPTS
 sync
 
-# copy the DTB cramfs image to its home location
-flash_erase /dev/mtd$DTBMTD 0 0
-nandwrite --pad /dev/mtd$DTBMTD /dts.cramfs
+# copy the DTB cramfs image to its own partition
+flash_erase /dev/mtd7 0 0
+nandwrite --pad /dev/mtd7 /dts.cramfs
 
 # 'move' the uImage from the rootfs to its own partition
 flash_erase /dev/mtd6 0 0
 nandwrite --pad /dev/mtd6 $TMPROOT/boot/uImage
-rm boot/uImage
+rm $TMPROOT/boot/uImage
 
 echo "Unmounting filesystems ..."
 
