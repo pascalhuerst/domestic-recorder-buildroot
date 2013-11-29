@@ -4,8 +4,9 @@
 #
 ################################################################################
 
-FLAC_VERSION = 1.2.1
-FLAC_SITE = http://downloads.sourceforge.net/project/flac/flac-src/flac-$(FLAC_VERSION)-src
+FLAC_VERSION = 1.3.0
+FLAC_SITE = http://downloads.xiph.org/releases/flac/
+FLAC_SOURCE = flac-$(FLAC_VERSION).tar.xz
 FLAC_INSTALL_STAGING = YES
 
 FLAC_CONF_OPT = \
