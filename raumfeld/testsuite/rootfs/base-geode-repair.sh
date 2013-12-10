@@ -19,8 +19,8 @@ pid=$!
 echo "Mounting filesystems ..."
 
 mkdir $TMPROOT
-mount -t ext3 -o rw,sync ${DEV}2 $TMPROOT
-mount -t ext3 -o rw,sync ${DEV}1 $TMPROOT/boot
+mount -t ext3 -o rw ${DEV}2 $TMPROOT
+mount -t ext3 -o rw ${DEV}1 $TMPROOT/boot
 
 zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
 	/percent `cat /rootfs.tgz.numfiles` | \

@@ -18,7 +18,7 @@ pid=$!
 echo "Mounting filesystems ..."
 
 mkdir $TMPROOT
-mount -t ubifs -o rw,sync ubi0:RootFS $TMPROOT
+mount -t ubifs -o rw ubi0:RootFS $TMPROOT
 
 zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
 	/percent `cat /rootfs.tgz.numfiles` | \
