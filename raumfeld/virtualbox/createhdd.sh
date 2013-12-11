@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 ext2=$1
 target=$2
 
@@ -15,7 +17,9 @@ fi
 
 # target disk size in MB
 disksize=512
-loopdev=$(losetup -f)
+# FIXME
+losetup=../../output/host/usr/sbin/losetup
+loopdev=$($losetup -f)
 
 cp ${ext2} rootfs.ext2 
 resize2fs rootfs.ext2 ${disksize}M
@@ -29,17 +33,19 @@ dd if=/dev/zero of=hdd.raw bs=1048576 seek=${disksize} count=1
 
 parted hdd.raw --script "mklabel msdos" "mkpart primary ext4 1MiB ${disksize}Mib" "set 1 boot on"
 
-losetup -P ${loopdev} hdd.raw
+${losetup} -P ${loopdev} hdd.raw
 
 test -d mnt || mkdir mnt
 mount ${loopdev}p1 mnt
-extlinux --install mnt/
+extlinux -H 64 -S 32 --reset-adv --install mnt/
 
 echo "DEFAULT /boot/bzImage root=/dev/hda1" > mnt/extlinux.conf
 
 sync
+sleep 1
+sync
 umount mnt
-losetup -d ${loopdev}
+${losetup} -d ${loopdev}
 
 dd if=mbr.bin of=hdd.raw conv=notrunc
 
@@ -47,5 +53,5 @@ rm -f ${target}
 VBoxManage convertfromraw hdd.raw ${target} --format VDI
 
 chmod 666 ${target}
-rm hdd.raw rootfs.ext2
+#rm hdd.raw rootfs.ext2
 
