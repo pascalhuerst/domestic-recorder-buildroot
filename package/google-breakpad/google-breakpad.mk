@@ -3,7 +3,7 @@
 # google-breakpad
 #
 #############################################################
-GOOGLE_BREAKPAD_VERSION = 1191
+GOOGLE_BREAKPAD_VERSION = 1276
 GOOGLE_BREAKPAD_SITE = http://google-breakpad.googlecode.com/svn/trunk
 GOOGLE_BREAKPAD_SITE_METHOD = svn
 
