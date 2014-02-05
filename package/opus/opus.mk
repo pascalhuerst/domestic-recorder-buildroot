@@ -14,10 +14,6 @@ OPUS_AUTORECONF = YES
 
 ifeq ($(BR2_PACKAGE_OPUS_FIXED_POINT),y)
 OPUS_CONF_OPT += --enable-fixed-point
-else
-ifeq ($(BR2_PACKAGE_OPUS_FLOAT_APPROX),y)
-OPUS_CONF_OPT += --enable-fload-approx
-endif
 endif
 
 $(eval $(autotools-package))
