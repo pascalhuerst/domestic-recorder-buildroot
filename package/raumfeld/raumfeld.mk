@@ -16,10 +16,13 @@ $(2)_OVERRIDE_SRCDIR = $(BUILD_DIR)/raumfeld-repo-$(call qstrip,$(BR2_PACKAGE_RA
 
 ifeq ($(ARCH),arm)
   CROSS = ARM
-  EXTRA_MAKE_OPTS = ARM_TYPE=$(call qstrip,$(BR2_UCLIBC_ARM_TYPE))
 endif
 ifeq ($(ARCH),i586)
   CROSS = GEODE
+endif
+
+ifeq ($(BR2_cortex_a8),y)
+  EXTRA_MAKE_OPTS = ARM_TYPE=ARM_CORTEXA8
 endif
 
 define $(2)_BUILD_CMDS

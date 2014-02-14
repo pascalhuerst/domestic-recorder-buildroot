@@ -6,13 +6,9 @@
 
 STREAM_DECODER_INSTALL_STAGING = YES
 
-ifeq ($(ARCH),arm)
-STREAM_DECODER_CONF_ENV = ARM_TYPE="$(call qstrip,$(BR2_UCLIBC_ARM_TYPE))"
-endif
-
 STREAM_DECODER_CONF_OPT = --disable-glibtest
 
-ifeq ($(BR2_UCLIBC_ARM_TYPE),"ARM_CORTEXA8")
+ifeq ($(BR2_cortex_a8),y)
 STREAM_DECODER_CONF_OPT += --enable-32bit
 endif
 
