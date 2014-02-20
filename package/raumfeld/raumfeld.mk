@@ -26,7 +26,7 @@ ifeq ($(BR2_cortex_a8),y)
 endif
 
 define $(2)_BUILD_CMDS
-  $(MAKE) -C $$($(2)_SRCDIR) CROSS=$$(CROSS) $$(EXTRA_MAKE_OPTS) DEST=$(TARGET_DIR)/raumfeld CROSS_PREFIX=$(BASE_DIR)
+  $(MAKE) -C $$($(2)_SRCDIR) TARGET_CFLAGS="$(TARGET_CFLAGS)" CROSS=$$(CROSS) $$(EXTRA_MAKE_OPTS) DEST=$(TARGET_DIR)/raumfeld CROSS_PREFIX=$(BASE_DIR)
 endef
 
 define $(2)_CLEAN_CMDS
