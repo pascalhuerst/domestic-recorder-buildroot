@@ -13,7 +13,6 @@ GST1_LIBAV_DEPENDENCIES = host-pkgconf gstreamer1 gst1-plugins-base
 GST1_LIBAV_CONF_OPT = \
 	--with-libav-extra-configure="--target-os=linux \
 	                               --disable-debug \
-				       --disable-ffmpeg \
 				       --disable-avconv \
 				       --disable-avdevice \
 				       --disable-avplay \
