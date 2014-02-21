@@ -156,7 +156,7 @@ static int gpio_set_value(int gpio, bool value)
 
 int main(void)
 {
-	int i, j, ret, error = 0;
+	int i, j, error = 0;
 	bool verbose = true;
 
 	for (i = 0; i < N_GPIO; i++)
