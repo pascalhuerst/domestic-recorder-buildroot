@@ -15,19 +15,15 @@ kill_leds
 ./leds-blink-so 1 &
 ./armada-button
 
-if [ -n "$(grep -i "Speaker L" /proc/device-tree/model)" ] ||
-   [ -n "$(grep -i "One" /proc/device-tree/model)" ]; then
+kill_leds
+./leds-blink 4 &
+echo "Turn rotary encoder counter-clock-wise."
+$INPUT_TEST rotary_cw
 
-	kill_leds
-	./leds-blink 4 &
-        echo "Turn rotary encoder counter-clock-wise."
-	$INPUT_TEST rotary_cw
-
-	kill_leds
-	./leds-blink 5 &
-        echo "Turn rotary encoder clock-wise."
-	$INPUT_TEST rotary_ccw
-fi
+kill_leds
+./leds-blink 5 &
+echo "Turn rotary encoder clock-wise."
+$INPUT_TEST rotary_ccw
 
 kill_leds
 ./leds-blink-so 3 &
@@ -39,14 +35,15 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-kill_leds
-led_on 1
-led_off 2
-echo "Testing pins..."
-$PIN_TEST
-if [ $? -ne 0 ]; then
-    ./leds-blink-so 4 1 &
-    exit 1
+if [ -n "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
+    kill_leds
+    led_on 1
+    led_off 2
+    echo "Testing pins..."
+    if ! $PINS_TEST; then
+        ./leds-blink-so 4 1 &
+        exit 1
+    fi
 fi
 
 echo "*** Updating u-boot *****"
