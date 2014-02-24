@@ -35,13 +35,15 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-kill_leds
-led_on 1
-led_off 2
-echo "Testing pins..."
-if ! $PINS_TEST; then
-    ./leds-blink-so 4 1 &
-    exit 1
+if [ -n "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
+    kill_leds
+    led_on 1
+    led_off 2
+    echo "Testing pins..."
+    if ! $PINS_TEST; then
+        ./leds-blink-so 4 1 &
+        exit 1
+    fi
 fi
 
 echo "*** Updating u-boot *****"
