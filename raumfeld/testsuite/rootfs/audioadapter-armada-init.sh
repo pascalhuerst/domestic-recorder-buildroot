@@ -39,8 +39,7 @@ kill_leds
 led_on 1
 led_off 2
 echo "Testing pins..."
-$PIN_TEST
-if [ $? -ne 0 ]; then
+if ! $PINS_TEST; then
     ./leds-blink-so 4 1 &
     exit 1
 fi
