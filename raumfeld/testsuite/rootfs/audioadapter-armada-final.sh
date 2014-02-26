@@ -57,13 +57,25 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-kill_leds
-./leds-blink-so 3 &
-./ethernet_armada
-if [ $? -ne 0 ]; then
+if [ -n "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
     kill_leds
-    ./leds-blink-so 3 1 &
-    exit 1
+    led_on 1
+    led_off 2
+    echo "Testing pins..."
+    if ! $PINS_TEST; then
+        ./leds-blink-so 3 1 &
+        exit 1
+    fi
+else
+    # do WIFI tests on all other modesl
+    kill_leds
+    ./leds-blink-so 3 &
+    ./ethernet_armada
+    if [ $? -ne 0 ]; then
+        kill_leds
+        ./leds-blink-so 3 1 &
+        exit 1
+    fi
 fi
 
 if [ -n "$(grep -i "Connector" /proc/device-tree/model)" ]; then
@@ -77,13 +89,15 @@ if [ -n "$(grep -i "Connector" /proc/device-tree/model)" ]; then
     fi
 fi
 
-kill_leds
-./leds-blink 1 &
-./nand_armada
-if [ $? -ne 0 ]; then
+if [ -z "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
     kill_leds
-    ./leds-blink-so 5 1 &
-    exit 1
+    ./leds-blink 1 &
+    ./nand_armada
+    if [ $? -ne 0 ]; then
+        kill_leds
+        ./leds-blink-so 5 1 &
+        exit 1
+    fi
 fi
 
 /update-uboot-armada.sh
@@ -93,7 +107,9 @@ kill_leds
 led_on 1
 led_on 2
 
-./audio-speaker-armada
+if [ -z "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
+    ./audio-speaker-armada
+fi
 
 echo "*********** Raumfeld Tests success ********"
 
