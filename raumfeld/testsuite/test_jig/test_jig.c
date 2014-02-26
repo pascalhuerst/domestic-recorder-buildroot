@@ -69,8 +69,6 @@ static struct test_gpio test_gpio[] = {
 
 #define N_GPIO N_ELEMENTS(test_gpio)
 
-static int led_a = GPIO(3, 4);
-static int led_b = GPIO(3, 10);
 static int regulator = GPIO(1, 18);
 
 static int gpio_export(int gpio)
@@ -162,8 +160,6 @@ int main(void)
 	for (i = 0; i < N_GPIO; i++)
 		gpio_export(test_gpio[i].gpio);
 
-	gpio_export(led_a);
-	gpio_export(led_b);
 	gpio_export(regulator);
 
 	gpio_set_output(regulator, true);
@@ -222,22 +218,5 @@ int main(void)
 			break;
 	}
 
-	if (error > 0)
-		return 1;
-
-	/* Alternate both LEDs to signal success */
-	gpio_set_output(led_a, true);
-	gpio_set_output(led_b, true);
-
-	for (;;) {
-		gpio_set_value(led_a, 0);
-		gpio_set_value(led_b, 1);
-		sleep(1);
-
-		gpio_set_value(led_a, 1);
-		gpio_set_value(led_b, 0);
-		sleep(1);
-	}
-
-	return 0;
+	return error;
 }
