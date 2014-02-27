@@ -5,7 +5,7 @@
 ################################################################################
 
 LIBARCHIVE_VERSION = 3.0.4
-LIBARCHIVE_SITE = http://github.com/downloads/libarchive/libarchive
+LIBARCHIVE_SITE = http://www.libarchive.org/downloads/
 LIBARCHIVE_INSTALL_STAGING = YES
 
 ifeq ($(BR2_PACKAGE_ZLIB),y)
