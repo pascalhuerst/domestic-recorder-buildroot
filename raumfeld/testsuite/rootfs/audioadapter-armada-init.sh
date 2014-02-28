@@ -13,7 +13,13 @@ echo "*********** Raumfeld Tests starting ********"
 
 kill_leds
 ./leds-blink-so 1 &
-./armada-button
+echo "Press the SETUP button (1)."
+$INPUT_TEST key_setup
+echo "Press the RESET button (2)."
+$INPUT_TEST key_f3
+echo "Press the POWER button (3)."
+$INPUT_TEST key_power
+
 
 if [ -n "$(grep -i "Speaker L" /proc/device-tree/model)" ] ||
    [ -n "$(grep -i "One" /proc/device-tree/model)" ]; then
