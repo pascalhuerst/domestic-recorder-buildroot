@@ -17,7 +17,14 @@ echo "*********** Raumfeld Tests starting ********"
 # Buttons (Setup, Reset, Power)
 kill_leds
 ./leds-blink-so 1 &
-./armada-button
+echo "Press the SETUP button (1)."
+$INPUT_TEST key_setup
+echo "Press the RESET button (2)."
+$INPUT_TEST key_f3
+if [ -z "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
+    echo "Press the POWER button (3)."
+    $INPUT_TEST key_power
+fi
 
 # Volume Buttons (only on Cube)
 if [ -n "$(grep -i "Cube" /proc/device-tree/model)" ]; then
