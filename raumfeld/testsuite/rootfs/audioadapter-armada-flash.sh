@@ -1,10 +1,5 @@
 #!/bin/sh
 
-# potentially update the boot-loader
-
-#disabled u boot for now
-#./update-uboot.sh
-
 source tests.inc
 
 led_off 1
@@ -24,6 +19,7 @@ fi
 
 kill_leds
 
+# potentially update the boot-loader
 /update-uboot-armada.sh
 
 
