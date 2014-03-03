@@ -72,7 +72,7 @@ if [ -z "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
     ./wifi_managed_ping factory_test
     if [ $? -ne 0 ]; then
         kill_leds
-        ./leds-blink-so 3 1 &
+        ./leds-blink-so 2 1 &
         exit 1
     fi
 fi
@@ -83,7 +83,7 @@ kill_leds
 ./ethernet_armada
 if [ $? -ne 0 ]; then
     kill_leds
-    ./leds-blink-so 2 1 &
+    ./leds-blink-so 3 1 &
     exit 1
 fi
 
