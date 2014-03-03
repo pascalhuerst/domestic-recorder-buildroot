@@ -59,8 +59,10 @@ if [ -n "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
     led_on 1
     led_off 2
     echo "Testing pins..."
-    if ! $PINS_TEST; then
-        ./leds-blink-so 3 1 &
+    $PINS_TEST
+    if [ $? -ne 0 ]; then
+        kill_leds
+        ./leds-blink-so 2 1 &
         exit 1
     fi
 fi
