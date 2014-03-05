@@ -60,7 +60,7 @@ static struct test_gpio test_gpio[] = {
 	{ .gpio = GPIO(0, 13),	.connected_to = GPIO(3, 16),	.pull = pull_up },	/* I2C2_SCL */
 	{ .gpio = GPIO(0, 9),	.connected_to = GPIO(1, 16),	.pull = pull_up },	/* I2S_DATA_OUT3 */
 	{ .gpio = GPIO(0, 8),	.connected_to = GPIO(0, 12),	.pull = pull_up },	/* I2S_DATA_OUT2 */
-	{ .gpio = GPIO(0, 10),	.connected_to = GPIO(3, 21),	.pull = pull_down },	/* I2S_DATA_OUT1 */
+	//{ .gpio = GPIO(0, 10),	.connected_to = GPIO(3, 21),	.pull = pull_down },	/* I2S_DATA_OUT1 */
 	{ .gpio = GPIO(3, 16),	.connected_to = GPIO(0, 13),	.pull = pull_up },	/* I2S_DATA_OUT0 */
 	{ .gpio = GPIO(3, 15),	.connected_to = GPIO(1, 20),	.pull = pull_up },	/* I2S_WCLK_OUT */
 	{ .gpio = GPIO(3, 14),	.connected_to = GPIO(1, 19),	.pull = pull_up },	/* I2S_BCLK_OUT */
