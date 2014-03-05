@@ -1,0 +1,47 @@
+From 8ba32796784754590d8001791f2a77261202f991 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Wed, 5 Mar 2014 22:04:47 +0100
+Subject: [PATCH] jpeg: do not wrap setjmp()
+
+Wrapping the call to setjmp() into a helper function is a bad
+idea as setjmp() saves the stack for later use by longjmp().
+
+The way it was done here totally broke error handling for fatal
+errors from libjpeg. Reverting this part of commit aaebf60b86
+restores error handling in the JPEG image provider.
+---
+ .../IDirectFBImageProvider/idirectfbimageprovider_jpeg.c      | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
+
+diff --git a/interfaces/IDirectFBImageProvider/idirectfbimageprovider_jpeg.c b/interfaces/IDirectFBImageProvider/idirectfbimageprovider_jpeg.c
+index 2b64e72..fa968cb 100644
+--- a/interfaces/IDirectFBImageProvider/idirectfbimageprovider_jpeg.c
++++ b/interfaces/IDirectFBImageProvider/idirectfbimageprovider_jpeg.c
+@@ -402,15 +402,6 @@ Construct( IDirectFBImageProvider *thiz,
+      return DFB_OK;
+ }
+ 
+-static int
+-wrap_setjmp( struct my_error_mgr *jerr )
+-{
+-     if (setjmp( jerr->setjmp_buffer ))
+-          return 1;
+-     else
+-          return 0;
+-}
+-
+ static DFBResult
+ IDirectFBImageProvider_JPEG_RenderTo( IDirectFBImageProvider *thiz,
+                                       IDirectFBSurface       *destination,
+@@ -482,7 +473,7 @@ IDirectFBImageProvider_JPEG_RenderTo( IDirectFBImageProvider *thiz,
+           cinfo.err = jpeg_std_error(&jerr.pub);
+           jerr.pub.error_exit = jpeglib_panic;
+ 
+-          if (wrap_setjmp( &jerr )) {
++          if (setjmp (jerr.setjmp_buffer)) {
+                D_ERROR( "ImageProvider/JPEG: Error during decoding!\n" );
+ 
+                jpeg_destroy_decompress( &cinfo );
+-- 
+1.8.5.3
+
