@@ -75,6 +75,17 @@ rm -f  $1/usr/lib/*.la
 rm -fr $1/usr/lib/gdbus-2.0
 rm -fr $1/usr/lib/glib-2.0
 rm -f  $1/usr/lib/gstreamer-1.0/libgstavscale.so
+rm -f  $1/usr/lib/libgstallocators-1.0.so*
+rm -f  $1/usr/lib/libgstapp-1.0.so*
+rm -f  $1/usr/lib/libgstbasecamerabinsrc-1.0.so*
+rm -f  $1/usr/lib/libgstcodecparsers-1.0.so*
+rm -f  $1/usr/lib/libgstcontroller-1.0.so*
+rm -f  $1/usr/lib/libgstfft-1.0.so*
+rm -f  $1/usr/lib/libgstinsertbin-1.0.so*
+rm -f  $1/usr/lib/libgstmpegts-1.0.so*
+rm -f  $1/usr/lib/libgstnet-1.0.so*
+rm -f  $1/usr/lib/libgstphotography-1.0.so*
+rm -f  $1/usr/lib/libgsturidownloader-1.0.so*
 rm -f  $1/usr/lib/libvorbisenc*
 rm -f  $1/usr/lib/ssh-keysign
 rm -f  $1/usr/lib/ssh-pkcs11-helper
