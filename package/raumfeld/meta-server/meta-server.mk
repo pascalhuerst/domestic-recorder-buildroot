@@ -4,6 +4,6 @@
 #
 #############################################################
 
-META_SERVER_DEPENDENCIES = host-pkgconf libraumfeld libraumfeldcpp iso-codes sqlite taglib
+META_SERVER_DEPENDENCIES = host-pkgconf libraumfeld libraumfeldcpp iso-codes taglib
 
 $(eval $(raumfeld-cross-package))
