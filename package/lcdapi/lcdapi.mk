@@ -5,7 +5,7 @@
 ################################################################################
 
 LCDAPI_VERSION = v0.4
-LCDAPI_SITE = http://github.com/spdawson/lcdapi/tarball/$(LCDAPI_VERSION)
+LCDAPI_SITE = $(call github,spdawson,lcdapi,$(LCDAPI_VERSION))
 LCDAPI_LICENSE = LGPLv2.1+
 LCDAPI_LICENSE_FILES = COPYING
 
@@ -23,10 +23,6 @@ endef
 define LCDAPI_INSTALL_TARGET_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) \
 		DESTDIR="$(TARGET_DIR)" install
-endef
-
-define LCDAPI_CLEAN_CMDS
-	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) clean
 endef
 
 $(eval $(generic-package))

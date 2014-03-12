@@ -17,10 +17,10 @@ config BR2_PACKAGE_OPUS
 if BR2_PACKAGE_OPUS
 
 config BR2_PACKAGE_OPUS_FIXED_POINT
-	bool "opus fixed-point implementation"
+	bool "use fixed-point" if !BR2_SOFT_FLOAT
 	default y if BR2_SOFT_FLOAT
 	help
-	  Compile without floating point operations (for machines without
-	  a fast enough FPU).
+	  Compile without floating point operations (for machines
+	  without a fast enough FPU).
 
 endif
