@@ -35,9 +35,6 @@ config BR2_PACKAGE_GST_PLUGINS_UGLY_PLUGIN_REALMEDIA
 config BR2_PACKAGE_GST_PLUGINS_UGLY_PLUGIN_SYNAESTHESIA
 	bool "synaesthesia"
 
-config BR2_PACKAGE_GST_PLUGINS_UGLY_PLUGIN_XINGMUX
-	bool "xingmux"
-
 comment "plugins with external dependencies (there may be more available)"
 
 config BR2_PACKAGE_GST_PLUGINS_UGLY_PLUGIN_LAME

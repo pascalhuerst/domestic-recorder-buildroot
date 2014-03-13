@@ -329,10 +329,6 @@ source "package/rpi-userland/Config.in"
 source "package/sane-backends/Config.in"
 source "package/sdparm/Config.in"
 source "package/setserial/Config.in"
-if BR2_PACKAGE_BUSYBOX_SHOW_OTHERS
-# busybox has fdisk
-source "package/sfdisk/Config.in"
-endif
 source "package/sg3_utils/Config.in"
 source "package/smartmontools/Config.in"
 source "package/smstools3/Config.in"
@@ -500,7 +496,6 @@ source "package/libsha1/Config.in"
 source "package/libssh2/Config.in"
 source "package/nettle/Config.in"
 source "package/openssl/Config.in"
-source "package/nettle/Config.in"
 source "package/polarssl/Config.in"
 endmenu
 
