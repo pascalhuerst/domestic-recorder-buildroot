@@ -35,13 +35,6 @@ if [ ! -f /etc/ssh_host_ecdsa_key ]; then
 	/usr/bin/ssh-keygen -t ecdsa -f /etc/ssh_host_ecdsa_key -C '' -N ''
 fi
 
-# Check for the ed25519 key
-if [ ! -f /etc/ssh_host_ed25519_key ]; then
-	echo Generating ed25519 Key...
-	echo
-	/usr/bin/ssh-keygen -t ed25519 -f /etc/ssh_host_ed25519_key -C '' -N ''
-fi
-
 umask 077
 
 start() {
