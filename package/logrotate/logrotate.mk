@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LOGROTATE_VERSION = 3.8.6
+LOGROTATE_VERSION = 3.8.7
 LOGROTATE_SITE = https://www.fedorahosted.org/releases/l/o/logrotate/
 LOGROTATE_LICENSE = GPLv2+
 LOGROTATE_LICENSE_FILES = COPYING
@@ -21,10 +21,6 @@ define LOGROTATE_INSTALL_TARGET_CMDS
 		$(INSTALL) -m 0644 package/logrotate/logrotate.conf $(TARGET_DIR)/etc/logrotate.conf; \
 	fi
 	$(INSTALL) -d -m 0755 $(TARGET_DIR)/etc/logrotate.d
-endef
-
-define LOGROTATE_CLEAN_CMDS
-	-$(MAKE) -C $(@D) clean
 endef
 
 $(eval $(generic-package))

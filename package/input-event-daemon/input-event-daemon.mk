@@ -5,7 +5,7 @@
 ################################################################################
 
 INPUT_EVENT_DAEMON_VERSION = v0.1.3
-INPUT_EVENT_DAEMON_SITE = http://github.com/gandro/input-event-daemon/tarball/$(INPUT_EVENT_DAEMON_VERSION)
+INPUT_EVENT_DAEMON_SITE = $(call github,gandro,input-event-daemon,$(INPUT_EVENT_DAEMON_VERSION))
 INPUT_EVENT_DAEMON_LICENSE = input-event-daemon license
 INPUT_EVENT_DAEMON_LICENSE_FILES = README
 
@@ -24,10 +24,6 @@ define INPUT_EVENT_DAEMON_INSTALL_TARGET_CMDS
 	[ -f $(TARGET_DIR)/etc/init.d/S99input-event-daemon ] || \
 		$(INSTALL) -m 0755 -D package/input-event-daemon/S99input-event-daemon \
 			$(TARGET_DIR)/etc/init.d/S99input-event-daemon
-endef
-
-define INPUT_EVENT_DAEMON_CLEAN_CMDS
-	$(MAKE) -C $(@D) clean
 endef
 
 $(eval $(generic-package))
