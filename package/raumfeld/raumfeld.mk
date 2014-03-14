@@ -3,7 +3,6 @@
 #
 #  argument 1 is the lowercase package name
 #  argument 2 is the uppercase package name
-#  argument 3 is the package directory prefix
 ################################################################################
 
 define inner-raumfeld-cross-package
@@ -38,7 +37,7 @@ RAUMFELD_DIRCLEAN_TARGETS += $(1)-dirclean
 
 # Call the generic package infrastructure to generate the necessary
 # make targets
-$(call inner-generic-package,$(1),$(2),$(2),$(3),target)
+$(call inner-generic-package,$(1),$(2),$(2),target)
 
 # The rsync target depends on raumfeld-repo to be extracted
 $$($(2)_TARGET_RSYNC): raumfeld-repo-extract
@@ -51,7 +50,6 @@ endef # inner-raumfeld-cross-package
 #
 #  argument 1 is the lowercase package name
 #  argument 2 is the uppercase package name
-#  argument 3 is the package directory prefix
 ################################################################################
 
 define inner-raumfeld-autotools-package
@@ -92,7 +90,7 @@ RAUMFELD_DIRCLEAN_TARGETS += $(1)-dirclean
 
 # Call the generic autotools package infrastructure to generate the necessary
 # make targets
-$(call inner-autotools-package,$(1),$(2),$(2),$(3),target)
+$(call inner-autotools-package,$(1),$(2),$(2),target)
 
 # The rsync target depends on raumfeld-repo to be extracted
 $$($(2)_TARGET_RSYNC): raumfeld-repo-extract
@@ -105,7 +103,7 @@ endef # inner-raumfeld-autotools-package
 #   -- the target generator macro for Raumfeld autotools packages
 ################################################################################
 
-raumfeld-autotools-package = $(call inner-raumfeld-autotools-package,$(call pkgname),$(call UPPERCASE,$(call pkgname)),$(call pkgparentdir))
+raumfeld-autotools-package = $(call inner-raumfeld-autotools-package,$(call pkgname),$(call UPPERCASE,$(call pkgname)))
 
 
 ################################################################################
@@ -113,7 +111,7 @@ raumfeld-autotools-package = $(call inner-raumfeld-autotools-package,$(call pkgn
 #   -- the target generator macro for Raumfeld cross-compile packages
 ################################################################################
 
-raumfeld-cross-package = $(call inner-raumfeld-cross-package,$(call pkgname),$(call UPPERCASE,$(call pkgname)),$(call pkgparentdir))
+raumfeld-cross-package = $(call inner-raumfeld-cross-package,$(call pkgname),$(call UPPERCASE,$(call pkgname)))
 
 
 ################################################################################
