@@ -77,7 +77,7 @@ fi
 # WiFi (on all models but the Test JIG)
 if [ -z "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
     kill_leds
-    ./leds-blink-so 3 &
+    ./leds-blink-so 2 &
     ./wifi_managed_ping factory_test
     if [ $? -ne 0 ]; then
         kill_leds
@@ -88,7 +88,7 @@ fi
 
 # Ethernet
 kill_leds
-./leds-blink-so 2 &
+./leds-blink-so 3 &
 ./ethernet_armada
 if [ $? -ne 0 ]; then
     kill_leds
