@@ -12,6 +12,6 @@ REMOTE_CONTROL_CONF_ENV = \
 
 REMOTE_CONTROL_CONF_OPT = --disable-glibtest
 
-REMOTE_CONTROL_DEPENDENCIES = host-pkgconf host-libglib2 $(if $(BR2_NEEDS_GETTEXT_IF_LOCALE),gettext) iso-codes libraumfeld sly-toolkit
+REMOTE_CONTROL_DEPENDENCIES = host-pkgconf host-libglib2 $(if $(BR2_NEEDS_GETTEXT_IF_LOCALE),gettext) libraumfeld sly-toolkit
 
 $(eval $(raumfeld-autotools-package))
