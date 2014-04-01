@@ -4,6 +4,6 @@
 #
 #############################################################
 
-RENDERER_NG_DEPENDENCIES = host-pkgconf host-libglib2 alsa-lib flac libraumfeld libraumfeldcpp
+RENDERER_NG_DEPENDENCIES = host-pkgconf host-libglib2 alsa-lib flac libraumfelddsp
 
 $(eval $(raumfeld-cross-package))
