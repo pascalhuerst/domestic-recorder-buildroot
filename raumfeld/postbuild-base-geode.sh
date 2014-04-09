@@ -13,6 +13,8 @@ rm -f $1/etc/resolv.conf
 cp -r raumfeld/rootfs/* $1
 cp -r raumfeld/rootfs-geode/* $1
 
+cp output/staging/usr/lib/gconv/ISO8859-1.so $1/usr/lib/gconv
+
 echo "Creating the harddisk mount-point ..."
 mkdir -p $1/data
 
