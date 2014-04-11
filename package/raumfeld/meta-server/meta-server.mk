@@ -4,6 +4,6 @@
 #
 #############################################################
 
-META_SERVER_DEPENDENCIES = host-pkgconf libraumfeld libraumfeldcpp iso-codes taglib
+META_SERVER_DEPENDENCIES = host-pkgconf libraumfeld libraumfeldcpp taglib
 
 $(eval $(raumfeld-cross-package))
