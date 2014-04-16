@@ -1,0 +1,72 @@
+From 2240d1e7b1282fad2eb561e7ac549865baddc535 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Wed, 16 Apr 2014 10:22:29 +0200
+Subject: [PATCH] core: do not allow access to the gfxcard while it is
+ suspended
+
+Suspend/Resume is implemented using dfb_gfxcard_lock() so that
+the card is synced (EngineSync) on suspend and reset (EngineReset)
+on resume. This works nicely as long as no one attempts to
+lock the gfxcard while it is suspended. If this rule is violated
+then the reset will happen too early. This breaks things if
+Suspend/Resume is used in confunction with actual hardware
+suspend/resume. It is essential then that the EngineReset happens
+after the device resumed and not before it goes into suspend.
+
+Fix this by introducing a boolean flag to track the suspended
+state and refuse to lock the gfxcard while it is suspended.
+
+Signed-off-by: Sven Neumann <neumann@teufel.de>
+---
+ src/core/gfxcard.c | 7 +++++++
+ src/core/gfxcard.h | 2 ++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/src/core/gfxcard.c b/src/core/gfxcard.c
+index 58f227d..285380e 100644
+--- a/src/core/gfxcard.c
++++ b/src/core/gfxcard.c
+@@ -391,6 +391,8 @@ dfb_graphics_core_suspend( DFBGraphicsCore *data )
+ 
+      dfb_gfxcard_lock( GDLF_WAIT | GDLF_SYNC | GDLF_RESET | GDLF_INVALIDATE );
+ 
++     data->shared->suspended = true;
++
+      return DFB_OK;
+ }
+ 
+@@ -404,6 +406,8 @@ dfb_graphics_core_resume( DFBGraphicsCore *data )
+ 
+      dfb_gfxcard_unlock();
+ 
++     data->shared->suspended = false;
++
+      return DFB_OK;
+ }
+ 
+@@ -422,6 +426,9 @@ dfb_gfxcard_lock( GraphicsDeviceLockFlags flags )
+      shared = card->shared;
+      funcs  = &card->funcs;
+ 
++     if (shared->suspended)
++         return DFB_SUSPENDED;
++
+      ret = fusion_skirmish_prevail( &shared->lock );
+      if (ret)
+           return ret;
+diff --git a/src/core/gfxcard.h b/src/core/gfxcard.h
+index c8d3055..3368b5d 100644
+--- a/src/core/gfxcard.h
++++ b/src/core/gfxcard.h
+@@ -586,6 +586,8 @@ typedef struct {
+      FusionObjectID           last_allocation_id;
+      DFBAccelerationMask      last_op;
+      bool                     pending_ops;
++
++     bool                     suspended;
+ } DFBGraphicsCoreShared;
+ 
+ struct __DFB_DFBGraphicsCore {
+-- 
+1.8.3.2
+
