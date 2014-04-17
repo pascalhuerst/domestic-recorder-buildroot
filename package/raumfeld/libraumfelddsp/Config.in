@@ -1,0 +1,8 @@
+config BR2_PACKAGE_LIBRAUMFELDDSP
+	bool "libraumfelddsp"
+	select BR2_PACKAGE_LIBRAUMFELDCPP
+	select BR2_PACKAGE_RAUMFELD_REPO
+	help
+	  libraumfelddsp is Raumfeld DSP library
+
+	  http://www.raumfeld.com/

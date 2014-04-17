@@ -1,0 +1,11 @@
+config BR2_PACKAGE_RENDERER_NG
+	bool "renderer-ng"
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_FLAC
+	select BR2_PACKAGE_LIBRAUMFELDDSP
+	select BR2_PACKAGE_STREAM_DECODER
+	select BR2_PACKAGE_RAUMFELD_REPO
+	help
+	  Raumfeld renderer next generation
+
+	  http://www.raumfeld.com/
