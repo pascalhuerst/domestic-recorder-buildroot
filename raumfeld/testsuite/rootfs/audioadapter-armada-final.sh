@@ -26,8 +26,8 @@ if is_not_model "Test Jig"; then
     $INPUT_TEST key_power
 fi
 
-# Volume Buttons (only on Cube)
-if is_model "Cube"; then
+# Volume Buttons (on Cube and Element)
+if is_model "Cube" || is_model "Element"; then
     kill_leds
     ./leds-blink 4 &
     echo "Press Volume Down button (-)."
@@ -39,14 +39,14 @@ if is_model "Cube"; then
     $INPUT_TEST key_volume_up
 fi
 
-# Station Buttons (only on One)
-if is_model "One"; then
+# Station Buttons (on One, Element and Speaker M)
+if is_model "One" || is_model "Element" || is_model "Speaker M"; then
     kill_leds
     ./leds-blink 6 &
     ./station-buttons
 fi
 
-# Rotary Encoder (only on Speaker L and One)
+# Rotary Encoder (on Speaker L and One)
 if is_model "Speaker L" || is_model "One"; then
     kill_leds
     ./leds-blink 4 &

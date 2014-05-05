@@ -5,6 +5,11 @@
 # set volume
 amixer cset numid=1 160
 
+if is_model "Element"; then
+   amixer cset name="Ch1 Volume" 200
+   amixer cset name="Ch2 Volume" 200
+fi
+
 if is_model "Connector"; then
    echo "testing S/P Diff and analog outputs, check if there is output"
 else
