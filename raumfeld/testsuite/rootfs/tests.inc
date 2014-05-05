@@ -76,3 +76,12 @@ led_off() {
 		/sys/class/leds/alix:$num/brightness
 }
 
+is_model() {
+         model=$1
+         return $(test -n "$(grep -i "$i" /proc/device-tree/model)")
+}
+
+is_not_model() {
+         model=$1
+         return $(test -z "$(grep -i "$i" /proc/device-tree/model)")
+}

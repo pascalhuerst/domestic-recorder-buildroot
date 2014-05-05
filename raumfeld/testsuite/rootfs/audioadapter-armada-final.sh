@@ -21,13 +21,13 @@ echo "Press the SETUP button (1)."
 $INPUT_TEST key_setup
 echo "Press the RESET button (2)."
 $INPUT_TEST key_f3
-if [ -z "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
+if is_not_model "Test Jig"; then
     echo "Press the POWER button (3)."
     $INPUT_TEST key_power
 fi
 
 # Volume Buttons (only on Cube)
-if [ -n "$(grep -i "Cube" /proc/device-tree/model)" ]; then
+if is_model "Cube"; then
     kill_leds
     ./leds-blink 4 &
     echo "Press Volume Down button (-)."
@@ -40,15 +40,14 @@ if [ -n "$(grep -i "Cube" /proc/device-tree/model)" ]; then
 fi
 
 # Station Buttons (only on One)
-if [ -n "$(grep -i "One" /proc/device-tree/model)" ]; then
+if is_model "One"; then
     kill_leds
     ./leds-blink 6 &
     ./station-buttons
 fi
 
 # Rotary Encoder (only on Speaker L and One)
-if [ -n "$(grep -i "Speaker L" /proc/device-tree/model)" ] ||
-   [ -n "$(grep -i "One" /proc/device-tree/model)" ]; then
+if is_model "Speaker L" || is_model "One"; then
     kill_leds
     ./leds-blink 4 &
     echo "Turn rotary encoder clock-wise."
@@ -61,7 +60,7 @@ if [ -n "$(grep -i "Speaker L" /proc/device-tree/model)" ] ||
 fi
 
 # Pin Connectors (only on the Test JIG)
-if [ -n "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
+if is_model "Test Jig"; then
     kill_leds
     led_on 1
     led_off 2
@@ -75,7 +74,7 @@ if [ -n "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
 fi
 
 # WiFi (on all models but the Test JIG)
-if [ -z "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
+if is_not_model "Test Jig"; then
     kill_leds
     ./leds-blink-so 2 &
     ./wifi_managed_ping factory_test
@@ -97,7 +96,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Audio Loopback (only on Connector)
-if [ -n "$(grep -i "Connector" /proc/device-tree/model)" ]; then
+if is_model "Connector"; then
     kill_leds
     ./leds-blink-so 4 &
     ./audio-test-armada
@@ -109,7 +108,7 @@ if [ -n "$(grep -i "Connector" /proc/device-tree/model)" ]; then
 fi
 
 # NAND flash (on all models but the Test JIG)
-if [ -z "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
+if is_not_model "Test Jig"; then
     kill_leds
     ./leds-blink 1 &
     ./nand_armada
@@ -129,7 +128,7 @@ led_on 1
 led_on 2
 
 # Audio output (on all models but the Test JIG)
-if [ -z "$(grep -i "Test Jig" /proc/device-tree/model)" ]; then
+if is_not_model "Test Jig"; then
     ./audio-speaker-armada
 fi
 
