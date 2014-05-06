@@ -26,6 +26,7 @@ elif [ -n "$(grep AM33XX /proc/cpuinfo)" ]; then
     modprobe snd-soc-ak5386
     modprobe snd-soc-cs4271
     modprobe snd-soc-sigmadsp
+    modprobe snd-soc-sta350
     modprobe snd-soc-tas5086
     modprobe snd-soc-davinci-mcasp
     # FIXME: the above should actually be implicitly loaded by the next one
