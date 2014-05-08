@@ -34,7 +34,6 @@ GST1_LIBAV_CONF_OPT = \
                                        --disable-encoders \
                                        --disable-muxers \
                                        --disable-parsers \
-                                       --enable-decoder=aac \
                                        --enable-decoder=alac \
                                        --enable-decoder=wmav1 \
                                        --enable-decoder=wmav2 \
