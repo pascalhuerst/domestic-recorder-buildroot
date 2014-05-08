@@ -45,7 +45,7 @@ rm -f  $1/usr/bin/gresource
 rm -f  $1/usr/bin/gsettings
 rm -f  $1/usr/bin/gst-discoverer-1.0
 rm -f  $1/usr/bin/gst-inspect-1.0
-rm -f  $1/usr/bin/gst-launch-1.0
+rm -f  $1/usr/bin/gst-play-1.0
 rm -f  $1/usr/bin/gst-typefind-1.0
 rm -f  $1/usr/bin/gtester
 rm -f  $1/usr/bin/gtester-report
