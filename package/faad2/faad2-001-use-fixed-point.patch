@@ -1,0 +1,11 @@
+--- faad2-2.7/libfaad/common.h~	2009-02-05 01:51:03.000000000 +0100
++++ faad2-2.7/libfaad/common.h	2014-05-09 15:00:39.699061547 +0200
+@@ -65,7 +65,7 @@
+ /* use double precision */
+ /* #define USE_DOUBLE_PRECISION */
+ /* use fixed point reals */
+-//#define FIXED_POINT
++#define FIXED_POINT
+ //#define BIG_IQ_TABLE
+ 
+ /* Use if target platform has address generators with autoincrement */
