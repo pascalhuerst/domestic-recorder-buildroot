@@ -1,0 +1,13 @@
+config BR2_PACKAGE_RAUMFELD_FIRMWARE
+	bool "raumfeld-firmware"
+	help
+	  This package provides various binary firmware files (closed binary blobs).
+
+if BR2_PACKAGE_RAUMFELD_FIRMWARE
+
+config BR2_PACKAGE_RAUMFELD_FIRMWARE_ADAU1701
+	bool "ADAU1701"
+	help
+	  Firmware for ADAU1701 SigmaDSP processor
+
+endif
