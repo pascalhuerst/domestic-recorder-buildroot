@@ -1,0 +1,9 @@
+config BR2_PACKAGE_FACTORY_TESTS
+	bool "factory-tests"
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_LIBRAUMFELDDSP
+	select BR2_PACKAGE_RAUMFELD_REPO
+	help
+	  Factory tests
+
+	  http://www.raumfeld.com/
