@@ -2,5 +2,6 @@
 killall -9 raumfeld-master-sh.sh
 killall -9 raumfeld-master-process
 killall -9 p0-renderer
+killall -9 renderer-ng
 killall -9 stream-decoder
 ifconfig
