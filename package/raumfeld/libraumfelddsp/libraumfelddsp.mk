@@ -11,6 +11,6 @@ LIBRAUMFELDDSP_CONF_OPT = \
 	--disable-explicit-deps \
 	--disable-glibtest
 
-LIBRAUMFELDDSP_DEPENDENCIES = host-pkgconf libraumfeldcpp
+LIBRAUMFELDDSP_DEPENDENCIES = host-pkgconf flac libraumfeldcpp
 
 $(eval $(raumfeld-autotools-package))

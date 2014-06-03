@@ -1,5 +1,6 @@
 config BR2_PACKAGE_LIBRAUMFELDDSP
 	bool "libraumfelddsp"
+        select BR2_PACKAGE_FLAC
 	select BR2_PACKAGE_LIBRAUMFELDCPP
 	select BR2_PACKAGE_RAUMFELD_REPO
 	help
