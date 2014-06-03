@@ -23,6 +23,7 @@ fi
 
 if is_model "Element"; then
    aplay -D hw:0 /audiotest.wav
+   modprobe snd-usb-audio
    cd /raumfeld/factory-tests && ./factory-tests &
 else
    aplay -D hw:0 /audiotest.wav &
