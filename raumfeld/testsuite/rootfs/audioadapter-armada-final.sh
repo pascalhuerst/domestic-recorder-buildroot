@@ -46,8 +46,8 @@ if is_model "One" || is_model "Element" || is_model "Speaker M"; then
     ./station-buttons
 fi
 
-# Rotary Encoder (on Speaker L and One)
-if is_model "Speaker L" || is_model "One"; then
+# Rotary Encoder (on Speaker M/L and One)
+if is_model "Speaker M" || is_model "Speaker L" || is_model "One"; then
     kill_leds
     ./leds-blink 4 &
     echo "Turn rotary encoder clock-wise."
