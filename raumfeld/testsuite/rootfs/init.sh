@@ -14,7 +14,7 @@ exec 1>/dev/console
 exec 2>/dev/console
 
 export PATH="/sbin:/usr/sbin:$PATH"
-/lib/udev/udevd --daemon
+/sbin/udevd --daemon
 
 if [ -n "$(grep Geode /proc/cpuinfo)" ]; then
     # modules for GEODE
