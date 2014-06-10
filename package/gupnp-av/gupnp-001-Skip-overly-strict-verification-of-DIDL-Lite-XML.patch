@@ -1,4 +1,4 @@
-From c13dfe082febf2e0243bc594f1fac2b0e27ab2b7 Mon Sep 17 00:00:00 2001
+From d6013fb4e1e870e0942809105b6b334d6152f441 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <neumann@teufel.de>
 Date: Mon, 25 Nov 2013 16:05:23 +0100
 Subject: [PATCH] Skip overly strict verification of DIDL-Lite XML
@@ -8,10 +8,10 @@ Subject: [PATCH] Skip overly strict verification of DIDL-Lite XML
  1 file changed, 9 deletions(-)
 
 diff --git a/libgupnp-av/gupnp-didl-lite-parser.c b/libgupnp-av/gupnp-didl-lite-parser.c
-index c5b8500..0170be2 100644
+index c11340e..4d3fc49 100644
 --- a/libgupnp-av/gupnp-didl-lite-parser.c
 +++ b/libgupnp-av/gupnp-didl-lite-parser.c
-@@ -388,15 +388,6 @@ parse_elements (GUPnPDIDLLiteParser *parser,
+@@ -352,15 +352,6 @@ parse_elements (GUPnPDIDLLiteParser *parser,
                          }
                  } else if (GUPNP_IS_DIDL_LITE_ITEM (object)) {
                          node = gupnp_didl_lite_object_get_xml_node (object);

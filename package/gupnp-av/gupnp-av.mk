@@ -5,7 +5,7 @@
 #############################################################
 
 GUPNP_AV_MAJOR_VERSION = 0.12
-GUPNP_AV_MINOR_VERSION = 5
+GUPNP_AV_MINOR_VERSION = 6
 GUPNP_AV_VERSION = $(GUPNP_AV_MAJOR_VERSION).$(GUPNP_AV_MINOR_VERSION)
 GUPNP_AV_SOURCE = gupnp-av-$(GUPNP_AV_VERSION).tar.xz
 GUPNP_AV_SITE = http://ftp.gnome.org/pub/GNOME/sources/gupnp-av/$(GUPNP_AV_MAJOR_VERSION)
