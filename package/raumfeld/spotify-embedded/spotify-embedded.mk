@@ -4,11 +4,13 @@
 #
 #############################################################
 
-SPOTIFY_EMBEDDED_VERSION = 1.1.0
+SPOTIFY_EMBEDDED_VERSION = 1.6.0
 SPOTIFY_EMBEDDED_SITE = http://rf-devel.teufel.local/devel/builldroot/dl
 SPOTIFY_EMBEDDED_INSTALL_STAGING = YES
 
-ifeq ($(BR2_cortex_a8),y)
+ifeq ($(BR2_xscale),y)
+  SPOTIFY_EMBEDDED_ARCHITECTURE = Linux-armv5-64bit
+else ifeq ($(BR2_cortex_a8),y)
   SPOTIFY_EMBEDDED_ARCHITECTURE = TI-Sitara-AM3x
 else ifeq ($(BR2_i386),y)
   SPOTIFY_EMBEDDED_ARCHITECTURE = Linux-32bit
