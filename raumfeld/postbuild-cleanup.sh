@@ -119,17 +119,7 @@ rm -f  $1/usr/share/gvfs/mounts/sftp.mount
 rm -f  $1/usr/share/gvfs/mounts/trash.mount
 rm -fr $1/usr/share/pkgconfig
 rm -fr $1/usr/share/sounds
-rm -f  $1/usr/share/xml/iso-codes/iso_639.xml
-rm -f  $1/usr/share/xml/iso-codes/iso_639_3.xml
-rm -f  $1/usr/share/xml/iso-codes/iso_3166_2.xml
-rm -f  $1/usr/share/xml/iso-codes/iso_4217.xml
-rm -f  $1/usr/share/xml/iso-codes/iso_15924.xml
 find $1/usr/share/locale -name e2fsprogs.mo -exec rm -f {} \;
-find $1/usr/share/locale -name iso_639.mo -exec rm -f {} \;
-find $1/usr/share/locale -name iso_639_3.mo -exec rm -f {} \;
-find $1/usr/share/locale -name iso_3166_2.mo -exec rm -f {} \;
-find $1/usr/share/locale -name iso_4217.mo -exec rm -f {} \;
-find $1/usr/share/locale -name iso_15924.mo -exec rm -f {} \;
 if test -d $1/usr/lib/directfb-1.4-6; then
     find $1/usr/lib/directfb-1.4-6 -name '*.o' -exec rm -f {} \;
     rm -fr $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBVideoProvider
