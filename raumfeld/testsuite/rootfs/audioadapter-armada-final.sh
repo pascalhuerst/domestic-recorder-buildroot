@@ -11,8 +11,23 @@ cd /tests
 led_off 1
 led_off 2
 
-echo "*********** Raumfeld Tests starting ********"
 
+# Check if USB sound card is connected on a Raumfeld Element
+
+if is_model "Element"; then
+    modprobe snd-usb-audio
+    if test -n "$(cat /proc/asound/cards | grep USB)"; then
+        echo "*********** USB Input Test ********"
+        cd /raumfeld/factory-tests && ./factory-tests &
+        kill_leds
+        led_on 1
+        led_on 2
+        exit 0
+    fi
+fi
+
+
+echo "*********** Raumfeld Tests starting ********"
 
 # Buttons (Setup, Reset, Power)
 kill_leds
@@ -123,7 +138,6 @@ fi
 /update-uboot-armada.sh
 
 kill_leds
-
 led_on 1
 led_on 2
 
@@ -132,7 +146,7 @@ if is_not_model "Test Jig"; then
     ./audio-speaker-armada
 fi
 
-echo "*********** Raumfeld Tests success ********"
 
+echo "*********** Raumfeld Tests success ********"
 
 exit 0
