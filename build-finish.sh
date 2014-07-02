@@ -53,16 +53,16 @@ fi
 
 case $target in
     audioadapter-armada)
-        IMAGES="init flash final repair"
+        IMAGES="flash final repair"
         ;;
     audioadapter-arm)
-        IMAGES="init flash final repair"
+        IMAGES="flash repair"
         ;;
     remotecontrol-arm)
-        IMAGES="init flash final"
+        IMAGES="flash"
         ;;
     base-geode)
-        IMAGES="init flash repair"
+        IMAGES="flash repair"
         ;;
 esac
 
