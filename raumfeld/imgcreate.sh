@@ -118,18 +118,11 @@ cp -a raumfeld/testsuite/rootfs/* $tmpdir/
 
 # add special files according to the image we are creating
 case $target in
-    audioadapter-arm-init)
-        add_rootfs_tgz
-        add_audiotest_wav
-        ;;
     audioadapter-arm-flash)
         add_rootfs_tgz
 	cp raumfeld/U-Boot/raumfeld-connector.bin $tmpdir/
 	cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
 	;;
-    audioadapter-arm-final)
-        add_audiotest_wav
-        ;;
     audioadapter-arm-repair)
         add_rootfs_tgz
         ;;
@@ -138,12 +131,6 @@ case $target in
 	cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
 	;;
 
-    audioadapter-armada-init)
-        add_rootfs_tgz
-        add_audiotest_wav
-        cp raumfeld/U-Boot/u-boot-armada.img $tmpdir/
-	add_dtb_cramfs
-        ;;
     audioadapter-armada-flash)
         add_rootfs_tgz
 	add_dtb_cramfs
@@ -160,10 +147,6 @@ case $target in
 	add_dtb_cramfs
         ;;
 
-    base-geode-init)
-        add_rootfs_tgz
-        add_raumfeld_demo
-        ;;
     base-geode-flash)
         add_rootfs_tgz
         add_raumfeld_demo
@@ -177,9 +160,6 @@ case $target in
 	cp -a raumfeld/testsuite/coreboot $tmpdir/
 	;;
 
-    remotecontrol-arm-init)
-        add_rootfs_tgz
-	;;
     remotecontrol-arm-flash)
         add_rootfs_tgz
 	cp raumfeld/U-Boot/raumfeld-controller.bin $tmpdir/
