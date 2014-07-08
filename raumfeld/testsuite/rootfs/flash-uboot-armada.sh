@@ -1,13 +1,22 @@
 #!/bin/sh
 
-FILENAME=/u-boot-armada.img
+FILENAME_MLO=/MLO-armada
+FILENAME_UBOOT=/u-boot-armada.img
 
-if [ ! -f $FILENAME ]; then
-	echo "$FILENAME does not exist. U-Boot will not be updated"
+if [ ! -f $FILENAME_UBOOT ]; then
+	echo "$FILENAME_UBOOT does not exist. U-Boot and MLO will not be updated"
 	exit 0
 fi
 
-flash_erase /dev/mtd4 0 0
-nandwrite --pad /dev/mtd4 $FILENAME
+if [ ! -f $FILENAME_MLO ]; then
+	echo "$FILENAME_MLO does not exist. U-Boot and MLO will not be updated"
+	exit 0
+fi
 
-echo "u-boot updated"
+flash_erase /dev/mtd0 0 0
+nandwrite --pad /dev/mtd0 $FILENAME_MLO
+
+flash_erase /dev/mtd4 0 0
+nandwrite --pad /dev/mtd4 $FILENAME_UBOOT
+
+echo "u-boot and MLO written"
