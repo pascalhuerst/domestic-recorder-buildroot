@@ -20,8 +20,4 @@ define TAGLIB_EXTRAS_INSTALL_TARGET_CMDS
 	cp -a $(STAGING_DIR)/usr/lib/libtag-extras.so* $(TARGET_DIR)/usr/lib
 endef
 
-define TAGLIB_EXTRAS_UNINSTALL_TARGET_CMDS
-        rm -f $(TARGET_DIR)/usr/lib/libtag-extras.so*
-endef
-
 $(eval $(cmake-package))
