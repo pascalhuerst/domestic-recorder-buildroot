@@ -134,8 +134,8 @@ if is_not_model "Test Jig"; then
     fi
 fi
 
-# Potentially update the boot-loader
-/update-uboot-armada.sh
+# update the boot-loader
+/flash-uboot-armada.sh
 
 kill_leds
 led_on 1
