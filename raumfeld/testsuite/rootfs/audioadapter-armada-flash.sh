@@ -19,10 +19,6 @@ fi
 
 kill_leds
 
-# potentially update the boot-loader
-/update-uboot-armada.sh
-
-
 led_on 1
 led_on 2
 
