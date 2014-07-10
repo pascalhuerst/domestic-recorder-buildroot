@@ -77,13 +77,13 @@ led_off() {
 }
 
 is_model() {
-         model=$1
-         test -n "$(grep -i "$model" /proc/device-tree/model)"
+         test -n "$(grep -i "$1" /proc/device-tree/model)"
          return $?
 }
 
 is_not_model() {
-         model=$1
-         test -z "$(grep -i "$model" /proc/device-tree/model)"
-         return $?
+         if is_model "$1"; then
+            return 1
+         fi
+         return 0
 }
