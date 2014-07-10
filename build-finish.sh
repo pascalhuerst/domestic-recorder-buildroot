@@ -53,7 +53,7 @@ fi
 
 case $target in
     audioadapter-armada)
-        IMAGES="flash final repair"
+        IMAGES="flash final repair uboot"
         ;;
     audioadapter-arm)
         IMAGES="flash repair"
