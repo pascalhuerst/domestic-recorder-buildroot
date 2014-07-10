@@ -35,12 +35,12 @@ endef
 
 RAUMFELD_DIRCLEAN_TARGETS += $(1)-dirclean
 
+# The rsync target depends on raumfeld-repo to be extracted
+$(2)_DEPENDENCIES += raumfeld-repo
+
 # Call the generic package infrastructure to generate the necessary
 # make targets
 $(call inner-generic-package,$(1),$(2),$(2),target)
-
-# The rsync target depends on raumfeld-repo to be extracted
-$$($(2)_TARGET_RSYNC): raumfeld-repo-extract
 
 endef # inner-raumfeld-cross-package
 
@@ -86,14 +86,14 @@ ifeq ($$($(2)_GTKDOCIZE),YES)
 $(2)_PRE_CONFIGURE_HOOKS += $(2)_GTKDOCIZE_HOOK
 endif
 
+# The rsync target depends on raumfeld-repo to be extracted
+$(2)_DEPENDENCIES += raumfeld-repo
+
 RAUMFELD_DIRCLEAN_TARGETS += $(1)-dirclean
 
 # Call the generic autotools package infrastructure to generate the necessary
 # make targets
 $(call inner-autotools-package,$(1),$(2),$(2),target)
-
-# The rsync target depends on raumfeld-repo to be extracted
-$$($(2)_TARGET_RSYNC): raumfeld-repo-extract
 
 endef # inner-raumfeld-autotools-package
 
