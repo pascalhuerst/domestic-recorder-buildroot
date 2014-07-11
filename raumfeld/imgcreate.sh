@@ -134,13 +134,12 @@ case $target in
     audioadapter-armada-flash)
         add_rootfs_tgz
 	add_dtb_cramfs
-        cp raumfeld/U-Boot/u-boot-armada.img $tmpdir/
         ;;
     audioadapter-armada-final)
         add_rootfs_tgz
+	add_dtb_cramfs
         add_audiotest_wav
         cp raumfeld/U-Boot/u-boot-armada.img $tmpdir/
-	add_dtb_cramfs
         ;;
     audioadapter-armada-repair)
         add_rootfs_tgz
