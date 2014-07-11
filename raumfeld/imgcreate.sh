@@ -145,6 +145,9 @@ case $target in
         add_rootfs_tgz
 	add_dtb_cramfs
         ;;
+    audioadapter-armada-uboot)
+        cp raumfeld/U-Boot/u-boot-armada.img $tmpdir/
+        ;;
 
     base-geode-flash)
         add_rootfs_tgz
