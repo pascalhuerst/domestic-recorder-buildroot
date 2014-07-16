@@ -20,3 +20,6 @@ flash_erase /dev/mtd4 0 0
 nandwrite --pad /dev/mtd4 $FILENAME_UBOOT
 
 echo "u-boot and MLO written"
+
+flash_erase /dev/mtd5 0 0
+echo "u-boot environment flushed."
