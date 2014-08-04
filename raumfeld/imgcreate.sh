@@ -139,6 +139,7 @@ case $target in
         add_rootfs_tgz
 	add_dtb_cramfs
         add_audiotest_wav
+        cp raumfeld/U-Boot/MLO-armada $tmpdir/
         cp raumfeld/U-Boot/u-boot-armada.img $tmpdir/
         ;;
     audioadapter-armada-repair)
@@ -146,6 +147,7 @@ case $target in
 	add_dtb_cramfs
         ;;
     audioadapter-armada-uboot)
+        cp raumfeld/U-Boot/MLO-armada $tmpdir/
         cp raumfeld/U-Boot/u-boot-armada.img $tmpdir/
         ;;
 
