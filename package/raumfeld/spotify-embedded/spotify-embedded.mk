@@ -4,16 +4,14 @@
 #
 #############################################################
 
+SPOTIFY_EMBEDDED_VERSION = 1.9.0
 SPOTIFY_EMBEDDED_SITE = http://rf-devel.teufel.local/devel/builldroot/dl
 SPOTIFY_EMBEDDED_INSTALL_STAGING = YES
 
 ifeq ($(BR2_xscale),y)
-  SPOTIFY_EMBEDDED_VERSION = 1.8.0
   SPOTIFY_EMBEDDED_SOURCE = spotify_embedded-v$(SPOTIFY_EMBEDDED_VERSION)-Raumfeld-PXA300-Release.tar.gz
-
 else ifeq ($(BR2_cortex_a8),y)
-  SPOTIFY_EMBEDDED_VERSION = 1.8.2
-  SPOTIFY_EMBEDDED_SOURCE = spotify_embedded-v$(SPOTIFY_EMBEDDED_VERSION)-Raumfeld-AM33x-Release_NO_NEON.tar.gz
+  SPOTIFY_EMBEDDED_SOURCE = spotify_embedded-v$(SPOTIFY_EMBEDDED_VERSION)-Raumfeld-AM33x-Release.tar.gz
 endif
 
 define SPOTIFY_EMBEDDED_INSTALL_STAGING_CMDS
