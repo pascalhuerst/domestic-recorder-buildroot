@@ -1,9 +1,0 @@
-#!/bin/sh
-
-. ../tests.inc
-TITLE="DISPLAY"
-DIALOGOPTS="--title $TITLE"
-
-cat testimg.raw > /dev/fb0
-dialog_msg "Testing the display. Press enter if the test image looks ok." $DIALOGOPTS
-
