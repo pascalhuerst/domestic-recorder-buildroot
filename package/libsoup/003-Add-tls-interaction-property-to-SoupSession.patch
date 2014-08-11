@@ -1,0 +1,289 @@
+From 93b29c67671549e46ebe2c6296fdae7a4abe6ffd Mon Sep 17 00:00:00 2001
+From: Colin Walters <walters@verbum.org>
+Date: Thu, 1 May 2014 15:08:53 -0400
+Subject: [PATCH] Add tls-interaction property to
+ Soup{Connection,Session,Socket}
+
+This can be used by applications to do client-side certificates via
+the new g_tls_interaction_request_certificate().  Will be used by
+OSTree at least.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=334021
+---
+ libsoup/soup-connection.c | 17 +++++++++++++++++
+ libsoup/soup-connection.h |  1 +
+ libsoup/soup-session.c    | 33 +++++++++++++++++++++++++++++++++
+ libsoup/soup-session.h    |  1 +
+ libsoup/soup-socket.c     | 22 ++++++++++++++++++++++
+ libsoup/soup-socket.h     |  1 +
+ 6 files changed, 75 insertions(+)
+
+diff --git a/libsoup/soup-connection.c b/libsoup/soup-connection.c
+index fce589f..8b40cb8 100644
+--- a/libsoup/soup-connection.c
++++ b/libsoup/soup-connection.c
+@@ -20,6 +20,7 @@ typedef struct {
+ 	SoupAddress *local_addr;
+ 	SoupURI *remote_uri, *proxy_uri;
+ 	GProxyResolver *proxy_resolver;
++	GTlsInteraction *tls_interaction;
+ 	GTlsDatabase *tlsdb;
+ 	gboolean ssl, ssl_strict, ssl_fallback;
+ 
+@@ -49,6 +50,7 @@ enum {
+ 	PROP_0,
+ 
+ 	PROP_LOCAL_ADDRESS,
++	PROP_TLS_INTERACTION,
+ 	PROP_REMOTE_URI,
+ 	PROP_PROXY_RESOLVER,
+ 	PROP_SSL,
+@@ -84,6 +86,7 @@ soup_connection_finalize (GObject *object)
+ 	g_clear_pointer (&priv->remote_uri, soup_uri_free);
+ 	g_clear_pointer (&priv->proxy_uri, soup_uri_free);
+ 	g_clear_object (&priv->tlsdb);
++	g_clear_object (&priv->tls_interaction);
+ 	g_clear_object (&priv->proxy_resolver);
+ 	g_clear_object (&priv->local_addr);
+ 	g_clear_pointer (&priv->async_context, g_main_context_unref);
+@@ -117,6 +120,9 @@ soup_connection_set_property (GObject *object, guint prop_id,
+ 	case PROP_LOCAL_ADDRESS:
+ 		priv->local_addr = g_value_dup_object (value);
+ 		break;
++	case PROP_TLS_INTERACTION:
++		priv->tls_interaction = g_value_dup_object (value);
++		break;
+ 	case PROP_REMOTE_URI:
+ 		priv->remote_uri = g_value_dup_boxed (value);
+ 		break;
+@@ -170,6 +176,9 @@ soup_connection_get_property (GObject *object, guint prop_id,
+ 	case PROP_LOCAL_ADDRESS:
+ 		g_value_set_object (value, priv->local_addr);
+ 		break;
++	case PROP_TLS_INTERACTION:
++		g_value_set_object (value, priv->tls_interaction);
++		break;
+ 	case PROP_REMOTE_URI:
+ 		g_value_set_boxed (value, priv->remote_uri);
+ 		break;
+@@ -248,6 +257,13 @@ soup_connection_class_init (SoupConnectionClass *connection_class)
+ 				     SOUP_TYPE_ADDRESS,
+ 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+ 	g_object_class_install_property (
++		object_class, PROP_TLS_INTERACTION,
++		g_param_spec_object (SOUP_CONNECTION_TLS_INTERACTION,
++				     "TLS interaction",
++				     "TLS interaction",
++				     G_TYPE_TLS_INTERACTION,
++				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
++	g_object_class_install_property (
+ 		object_class, PROP_REMOTE_URI,
+ 		g_param_spec_boxed (SOUP_CONNECTION_REMOTE_URI,
+ 				    "Remote URI",
+@@ -551,6 +567,7 @@ soup_connection_connect_async (SoupConnection      *conn,
+ 				 SOUP_SOCKET_TIMEOUT, priv->io_timeout,
+ 				 SOUP_SOCKET_CLEAN_DISPOSE, TRUE,
+ 				 SOUP_SOCKET_LOCAL_ADDRESS, priv->local_addr,
++				 SOUP_SOCKET_TLS_INTERACTION, priv->tls_interaction,
+ 				 NULL);
+ 	g_object_unref (remote_addr);
+ 
+diff --git a/libsoup/soup-connection.h b/libsoup/soup-connection.h
+index b70a8a3..3e934af 100644
+--- a/libsoup/soup-connection.h
++++ b/libsoup/soup-connection.h
+@@ -36,6 +36,7 @@ GType soup_connection_get_type (void);
+ 
+ 
+ #define SOUP_CONNECTION_LOCAL_ADDRESS   "local-address"
++#define SOUP_CONNECTION_TLS_INTERACTION "tls-interaction"
+ #define SOUP_CONNECTION_REMOTE_URI      "remote-uri"
+ #define SOUP_CONNECTION_PROXY_RESOLVER  "proxy-resolver"
+ #define SOUP_CONNECTION_SSL             "ssl"
+diff --git a/libsoup/soup-session.c b/libsoup/soup-session.c
+index 132554d..0984a9f 100644
+--- a/libsoup/soup-session.c
++++ b/libsoup/soup-session.c
+@@ -86,6 +86,7 @@ typedef struct {
+ 	gboolean disposed;
+ 
+ 	GTlsDatabase *tlsdb;
++	GTlsDatabase *tls_interaction;
+ 	char *ssl_ca_file;
+ 	gboolean ssl_strict;
+ 	gboolean tlsdb_use_default;
+@@ -197,6 +198,7 @@ enum {
+ 	PROP_HTTP_ALIASES,
+ 	PROP_HTTPS_ALIASES,
+ 	PROP_LOCAL_ADDRESS,
++	PROP_TLS_INTERACTION,
+ 
+ 	LAST_PROP
+ };
+@@ -334,6 +336,7 @@ soup_session_finalize (GObject *object)
+ 	g_free (priv->accept_language);
+ 
+ 	g_clear_object (&priv->tlsdb);
++	g_clear_object (&priv->tls_interaction);
+ 	g_free (priv->ssl_ca_file);
+ 
+ 	g_clear_pointer (&priv->async_context, g_main_context_unref);
+@@ -640,6 +643,9 @@ soup_session_set_property (GObject *object, guint prop_id,
+ 	case PROP_TLS_DATABASE:
+ 		set_tlsdb (session, g_value_get_object (value));
+ 		break;
++	case PROP_TLS_INTERACTION:
++		priv->tls_interaction = g_value_dup_object (value);
++		break;
+ 	case PROP_SSL_STRICT:
+ 		priv->ssl_strict = g_value_get_boolean (value);
+ 		break;
+@@ -788,6 +794,9 @@ soup_session_get_property (GObject *object, guint prop_id,
+ 	case PROP_TLS_DATABASE:
+ 		g_value_set_object (value, get_tls_database (session));
+ 		break;
++	case PROP_TLS_INTERACTION:
++		g_value_set_object (value, priv->tls_interaction);
++		break;
+ 	case PROP_SSL_STRICT:
+ 		g_value_set_boolean (value, priv->ssl_strict);
+ 		break;
+@@ -1783,6 +1792,7 @@ get_connection_for_host (SoupSession *session,
+ 		SOUP_CONNECTION_IDLE_TIMEOUT, priv->idle_timeout,
+ 		SOUP_CONNECTION_SSL_FALLBACK, host->ssl_fallback,
+ 		SOUP_CONNECTION_LOCAL_ADDRESS, priv->local_addr,
++		SOUP_CONNECTION_TLS_INTERACTION, priv->tls_interaction,
+ 		NULL);
+ 	g_signal_connect (conn, "disconnected",
+ 			  G_CALLBACK (connection_disconnected),
+@@ -3711,6 +3721,29 @@ soup_session_class_init (SoupSessionClass *session_class)
+ 				     "Address of local end of socket",
+ 				     SOUP_TYPE_ADDRESS,
+ 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
++
++	/**
++	 * SOUP_SESSION_TLS_INTERACTION:
++	 *
++	 * Alias for the #SoupSession:tls-interaction property, qv.
++	 *
++	 * Since: 2.42
++	 **/
++	/**
++	 * SoupSession:tls-interaction:
++	 *
++	 * Set this property to allow interacting with the underlying
++	 * #GTlsConnection.
++	 *
++	 * Since: 2.42
++	 **/
++	g_object_class_install_property (
++		object_class, PROP_TLS_INTERACTION,
++		g_param_spec_object (SOUP_SESSION_TLS_INTERACTION,
++				     "TLS Interaction",
++				     "TLS interaction to use",
++				     G_TYPE_TLS_INTERACTION,
++				     G_PARAM_READWRITE));
+ }
+ 
+ 
+diff --git a/libsoup/soup-session.h b/libsoup/soup-session.h
+index 67a59ea..eed392d 100644
+--- a/libsoup/soup-session.h
++++ b/libsoup/soup-session.h
+@@ -70,6 +70,7 @@ GType soup_session_get_type (void);
+ #define SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE "ssl-use-system-ca-file"
+ #define SOUP_SESSION_TLS_DATABASE           "tls-database"
+ #define SOUP_SESSION_SSL_STRICT             "ssl-strict"
++#define SOUP_SESSION_TLS_INTERACTION        "tls-interaction"
+ #define SOUP_SESSION_ASYNC_CONTEXT          "async-context"
+ #define SOUP_SESSION_USE_THREAD_CONTEXT     "use-thread-context"
+ #define SOUP_SESSION_TIMEOUT                "timeout"
+diff --git a/libsoup/soup-socket.c b/libsoup/soup-socket.c
+index b9f1dfc..f3c24db 100644
+--- a/libsoup/soup-socket.c
++++ b/libsoup/soup-socket.c
+@@ -59,6 +59,7 @@ enum {
+ 	PROP_CLEAN_DISPOSE,
+ 	PROP_TLS_CERTIFICATE,
+ 	PROP_TLS_ERRORS,
++	PROP_TLS_INTERACTION,
+ 	PROP_PROXY_RESOLVER,
+ 
+ 	LAST_PROP
+@@ -71,6 +72,7 @@ typedef struct {
+ 	GInputStream *istream;
+ 	GOutputStream *ostream;
+ 	GTlsCertificateFlags tls_errors;
++	GTlsInteraction *tls_interaction;
+ 	GProxyResolver *proxy_resolver;
+ 
+ 	guint non_blocking:1;
+@@ -150,6 +152,7 @@ soup_socket_finalize (GObject *object)
+ 	g_clear_object (&priv->local_addr);
+ 	g_clear_object (&priv->remote_addr);
+ 
++	g_clear_object (&priv->tls_interaction);
+ 	g_clear_object (&priv->proxy_resolver);
+ 
+ 	if (priv->watch_src) {
+@@ -210,6 +213,9 @@ soup_socket_set_property (GObject *object, guint prop_id,
+ 	case PROP_SSL_FALLBACK:
+ 		priv->ssl_fallback = g_value_get_boolean (value);
+ 		break;
++	case PROP_TLS_INTERACTION:
++		priv->tls_interaction = g_value_dup_object (value);
++		break;
+ 	case PROP_ASYNC_CONTEXT:
+ 		priv->async_context = g_value_get_pointer (value);
+ 		if (priv->async_context)
+@@ -263,6 +269,9 @@ soup_socket_get_property (GObject *object, guint prop_id,
+ 	case PROP_SSL_FALLBACK:
+ 		g_value_set_boolean (value, priv->ssl_fallback);
+ 		break;
++	case PROP_TLS_INTERACTION:
++		g_value_set_object (value, priv->tls_interaction);
++		break;
+ 	case PROP_TRUSTED_CERTIFICATE:
+ 		g_value_set_boolean (value, priv->tls_errors == 0);
+ 		break;
+@@ -517,6 +526,18 @@ soup_socket_class_init (SoupSocketClass *socket_class)
+ 				      FALSE,
+ 				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+ 	/**
++	 * SOUP_SOCKET_TLS_INTERACTION:
++	 *
++	 * Alias for the #SoupSocket:tls-interaction property.
++	 **/
++	g_object_class_install_property (
++		object_class, PROP_TLS_INTERACTION,
++		g_param_spec_object (SOUP_SOCKET_TLS_INTERACTION,
++				     "TLS Interaction",
++				     "TLS Interaction",
++				     G_TYPE_TLS_INTERACTION,
++				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
++	/**
+ 	 * SOUP_SOCKET_TRUSTED_CERTIFICATE:
+ 	 *
+ 	 * Alias for the #SoupSocket:trusted-certificate
+@@ -1134,6 +1155,7 @@ soup_socket_setup_ssl (SoupSocket    *sock,
+ 				       "database", priv->ssl_creds,
+ 				       "require-close-notify", FALSE,
+ 				       "use-ssl3", priv->ssl_fallback,
++				       "interaction", priv->tls_interaction,
+ 				       NULL);
+ 		g_object_unref (identity);
+ 
+diff --git a/libsoup/soup-socket.h b/libsoup/soup-socket.h
+index 5c1264f..6d9ee61 100644
+--- a/libsoup/soup-socket.h
++++ b/libsoup/soup-socket.h
+@@ -51,6 +51,7 @@ typedef struct {
+ #define SOUP_SOCKET_USE_THREAD_CONTEXT  "use-thread-context"
+ #define SOUP_SOCKET_TIMEOUT             "timeout"
+ #define SOUP_SOCKET_TLS_CERTIFICATE     "tls-certificate"
++#define SOUP_SOCKET_TLS_INTERACTION     "tls-interaction"
+ #define SOUP_SOCKET_TLS_ERRORS          "tls-errors"
+ 
+ typedef void (*SoupSocketCallback)            (SoupSocket         *sock,
+-- 
+1.8.3.1
