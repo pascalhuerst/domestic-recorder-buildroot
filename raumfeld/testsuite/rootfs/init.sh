@@ -50,7 +50,6 @@ rm -fr /var/empty
 mkdir -p /var/empty
 chmod 755 /var/empty
 mkdir /var/lock
-/etc/init.d/S50sshd start
 
 export TERM=xterm-color
 dmesg -n 1
