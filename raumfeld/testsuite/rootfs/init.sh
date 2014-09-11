@@ -14,7 +14,10 @@ exec 1>/dev/console
 exec 2>/dev/console
 
 export PATH="/sbin:/usr/sbin:$PATH"
-/sbin/udevd --daemon
+
+if [ -x /sbin/udevd ]; then
+    /sbin/udevd --daemon
+fi
 
 if [ -n "$(grep Geode /proc/cpuinfo)" ]; then
     # modules for GEODE
@@ -47,7 +50,6 @@ rm -fr /var/empty
 mkdir -p /var/empty
 chmod 755 /var/empty
 mkdir /var/lock
-/etc/init.d/S50sshd start
 
 export TERM=xterm-color
 dmesg -n 1
