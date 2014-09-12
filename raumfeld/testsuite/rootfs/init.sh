@@ -36,14 +36,8 @@ elif [ -n "$(grep AM33XX /proc/cpuinfo)" ]; then
     modprobe snd-soc-s800
     modprobe mwifiex_sdio
 else
-    # modules for ARM
-    modprobe eeti_ts flip_y=1
+    # modules for legacy ARM
     modprobe pxamci
-    modprobe libertas_sdio
-    modprobe wire.ko delay_coef=3
-    modprobe w1-gpio.ko
-    modprobe w1_ds2760.ko
-    modprobe ds2760_battery.ko pmod_enabled=1 rated_capacity=10
 fi
 
 rm -fr /var/empty
