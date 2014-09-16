@@ -10,9 +10,6 @@ export PATH=\
 
 umask 022
 
-alias ll="ls -la"
-export PS1="\u@\h:\w $ "
-
 if [ -f ~/.bashrc ]; then
     source ~/.bashrc
 fi
