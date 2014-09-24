@@ -15,14 +15,14 @@ TMPROOT=/tmp/root
 ./leds-blink 1 &
 pid=$!
 
-echo "Mounting filesystems ..."
+echo "Mounting filesystem ..."
 
 mkdir $TMPROOT
 mount -t ubifs -o rw ubi0:RootFS $TMPROOT
 
-zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
-	/percent `cat /rootfs.tgz.numfiles` | \
-	dialog_progress "Copying files to flash. Please wait." $DIALOGOPTS
+echo "Copying files to flash. Please wait ..."
+
+zcat /rootfs.tgz | tar -f - -C $TMPROOT -x
 sync
 
 # copy the DTB cramfs image to its own partition
@@ -34,7 +34,7 @@ flash_erase /dev/mtd6 0 0
 nandwrite --pad /dev/mtd6 $TMPROOT/boot/uImage
 rm $TMPROOT/boot/uImage
 
-echo "Unmounting filesystems ..."
+echo "Unmounting filesystem ..."
 
 chmod 0755 $TMPROOT
 umount $TMPROOT

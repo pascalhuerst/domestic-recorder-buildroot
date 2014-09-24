@@ -3,60 +3,10 @@ INPUT_TEST=/input_test
 PINS_TEST=/test_jig
 TEST_HOST_WIRELESS=192.168.23.1
 
-IP_ETHERNET=10.0.0.2
-IP_WIRELESS=192.168.23.2
-
-dialog_msg() {
-	text=$1; shift;
-	DIALOGRC=$RELPATH/dialogrc.msg \
-	dialog $* --msgbox "$text" 20 40;
-}
-
-dialog_err() {
-	text=$1; shift;
-	DIALOGRC=$RELPATH/dialogrc.err \
-	dialog $* --msgbox "$text" 20 40;
-	touch /tmp/test-failed
-	sleep 3;
-}
-
-dialog_success() {
-	text=$1; shift;
-	DIALOGRC=$RELPATH/dialogrc.success \
-	dialog $* --infobox "$text" 20 40;
-	sleep 3;
-}
-
-dialog_info() {
-	text=$1; shift;
-	DIALOGRC=$RELPATH/dialogrc.msg \
-	dialog $* --infobox "$text" 20 40;
-	sleep 3;
-}
-
-dialog_progress() {
-	text=$1; shift;
-	DIALOGRC=$RELPATH/dialogrc.msg \
-	dialog $* --gauge "$text" 10 40;
-}
-
-test_result() {
-	if [ -f /tmp/test-failed ]; then
-		dialog_err "ONE OR MORE TESTS FAILED. ALARM."
-	else
-		dialog_msg "ALL TESTS PASSED."
-	fi
-}
-
-suspend() {
-	echo mem > /sys/power/state
-}
-
 kill_leds() {
 	killall -q leds-blink
 	killall -q leds-blink-so
 }
-
 
 led_on() {
 	num=$1

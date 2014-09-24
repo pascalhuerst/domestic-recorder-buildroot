@@ -29,6 +29,8 @@ done
 mkdir $TMPROOT
 mount -t ext3 ${DEV}2 $TMPROOT
 
+echo "Mounting filesystems ..."
+
 mkdir $TMPROOT/boot
 mount -t ext3 ${DEV}1 $TMPROOT/boot
 
@@ -37,9 +39,10 @@ if [ -z "$(mount | grep $TMPROOT)" ]; then
 	exit
 fi
 
-zcat /rootfs.tgz | tar -f - -C $TMPROOT -xv | \
-	/percent `cat /rootfs.tgz.numfiles` | \
-	dialog_progress "Copying files to harddisk. Please wait." $DIALOGOPTS
+echo "Copying files to harddisk. Please wait ..."
+
+zcat /rootfs.tgz | tar -f - -C $TMPROOT -x
+sync
 
 if [ -f "/Raumfeld Demo.mp3" ]; then
     mkdir -p -m 755 $TMPROOT/data
@@ -49,6 +52,8 @@ if [ -f "/Raumfeld Demo.mp3" ]; then
     chown -R 99:99 $TMPROOT/data/Music
     umount $TMPROOT/data
 fi
+
+echo "Unmounting filesystems ..."
 
 chmod 0755 $TMPROOT
 umount $TMPROOT/boot

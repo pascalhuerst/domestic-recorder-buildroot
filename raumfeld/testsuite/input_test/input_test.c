@@ -123,7 +123,7 @@ static int test_touch(int fd)
 
 #define ROTARY_STEPS 24
 
-static int _test_rotary(int fd, int expected, int scale, int offset)
+static int _test_rotary(int fd, int expected)
 {
 	int cnt, ret;
 	struct input_event ev;
@@ -137,11 +137,6 @@ static int _test_rotary(int fd, int expected, int scale, int offset)
 			continue;
 
 		cnt++;
-
-		/* output percentage for dialog */
-		printf("%d\n", offset +
-				((cnt * 100) / (ROTARY_STEPS * scale)));
-		fflush(stdout);
 	}
 
 	return 0;
@@ -149,20 +144,20 @@ static int _test_rotary(int fd, int expected, int scale, int offset)
 
 static int test_rotary(int fd)
 {
-	_test_rotary(fd, 1, 2, 0);
-	_test_rotary(fd, -1, 2, 50);
+	_test_rotary(fd, 1);
+	_test_rotary(fd, -1);
 	return 0;
 }
 
 static int test_rotary_cw(int fd)
 {
-	_test_rotary(fd, 1, 1, 0);
+	_test_rotary(fd, 1);
 	return 0;
 }
 
 static int test_rotary_ccw(int fd)
 {
-	_test_rotary(fd, -1, 1, 0);
+	_test_rotary(fd, -1);
 	return 0;
 }
 

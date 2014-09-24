@@ -2,16 +2,21 @@
 
 set -e
 
+echo "Mounting filesystem ..."
+
 mount -t ubifs ubi:RootFS /mnt
 
-cd /mnt
-zcat /rootfs.tgz | tar -xv
+echo "Copying files to flash. Please wait ..."
+
+zcat /rootfs.tgz | tar -C mnt -x
+sync
 
 # 'move' the uImage from the rootfs to its own partition
 flash_erase /dev/mtd6 0 0
-nandwrite --pad /dev/mtd6 boot/uImage
-rm boot/uImage
+nandwrite --pad /dev/mtd6 /mnt/boot/uImage
+rm /mnt/boot/uImage
 
-cd /
+echo "Unmounting filesystem ..."
+
 umount /mnt
 

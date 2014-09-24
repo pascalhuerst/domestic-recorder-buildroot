@@ -1,15 +1,5 @@
 #!/bin/sh
 
 . ../tests.inc
-TITLE="NANDFLASH"
-DIALOGOPTS="--title $TITLE"
 
-# 2023 is hardcoded for 128MiB NAND
-
-(./init_flash || dialog_err "ERROR!" $DIALOGOPTS; exit 1) | \
-    /percent 2023 | \
-    dialog_progress "Initializing NAND flash. Please wait." $DIALOGOPTS
-
-(./copy_rootfs || dialog_err "ERROR!" $DIALOGOPTS; exit 1) | \
-    /percent `cat /rootfs.tgz.numfiles` | \
-    dialog_progress "Copying files to NAND flash. Please wait." $DIALOGOPTS
+./init_flash && ./copy_rootfs

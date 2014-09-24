@@ -5,16 +5,13 @@
 
 source tests.inc
 
-TITLE="NANDFLASH"
-DIALOGOPTS="--title $TITLE"
-
 COLOR="ffff"
 
-(tests/init_flash || dialog_err "ERROR!" $DIALOGOPTS; exit 1) | \
+(tests/init_flash || echo "ERROR! Failed to initialize flash"; exit 1) | \
     /percent 2023 | \
     /progress_fb 0 0 20 136 $COLOR
 
-(tests/copy_rootfs || dialog_err "ERROR!" $DIALOGOPTS; exit 1) | \
+(tests/copy_rootfs || echo "ERROR! Failed to copy files to flash"; exit 1) | \
     /percent `cat /rootfs.tgz.numfiles` | \
     /progress_fb 0 136 20 136 $COLOR
 
