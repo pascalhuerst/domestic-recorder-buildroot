@@ -7,13 +7,11 @@ killall aplay
 
 amixer cset numid=1 122
 
-/raumfeld/p0-audiotest/p0-audiotest -armada
+(cd /raumfeld/factory-tests; ./audio-loopback)
 
 if [ $? -eq 0 ]; then
         echo "success"
+        exit 0
 else
         exit 1
 fi
-
-exit 0
-

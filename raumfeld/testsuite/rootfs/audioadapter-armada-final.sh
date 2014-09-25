@@ -18,7 +18,7 @@ if is_model "Element"; then
     modprobe snd-usb-audio
     if test -n "$(cat /proc/asound/cards | grep USB)"; then
         echo "*********** USB Input Test ********"
-        cd /raumfeld/factory-tests && ./factory-tests &
+        cd /raumfeld/factory-tests && ./audio-usb-input &
         kill_leds
         led_on 1
         led_on 2
