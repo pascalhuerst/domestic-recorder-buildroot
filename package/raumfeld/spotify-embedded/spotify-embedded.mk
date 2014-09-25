@@ -4,7 +4,7 @@
 #
 #############################################################
 
-SPOTIFY_EMBEDDED_VERSION = 1.12.0
+SPOTIFY_EMBEDDED_VERSION = 1.12.11
 SPOTIFY_EMBEDDED_SITE = http://rf-devel.teufel.local/devel/builldroot/dl
 SPOTIFY_EMBEDDED_INSTALL_STAGING = YES
 
