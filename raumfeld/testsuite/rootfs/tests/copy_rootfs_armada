@@ -8,7 +8,7 @@ mount -t ubifs ubi:RootFS /mnt
 
 echo "Copying files to flash. Please wait ..."
 
-zcat /rootfs.tgz | tar -C mnt -x
+zcat /rootfs.tgz | tar -C /mnt -x
 sync
 
 # 'move' the uImage from the rootfs to its own partition
@@ -19,4 +19,3 @@ rm /mnt/boot/uImage
 echo "Unmounting filesystem ..."
 
 umount /mnt
-
