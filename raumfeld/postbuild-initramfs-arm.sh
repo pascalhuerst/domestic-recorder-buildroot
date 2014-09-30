@@ -14,6 +14,7 @@ cp raumfeld/rootfs-arm/etc/fw_env.config $1/etc
 # below is the generic part
 
 cp raumfeld/initramfs/initramfs.sh $1
+cp raumfeld/rootfs/etc/raumfeld-version $1/etc
 
 cat << __END__ > $1/etc/inittab
 null::sysinit:/bin/mount -o remount,rw /
