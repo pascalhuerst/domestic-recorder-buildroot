@@ -2,9 +2,6 @@
 
 . ../tests.inc
 
-killall arecord
-killall aplay
-
 (cd /raumfeld/factory-tests; ./audio-loopback)
 
 if [ $? -eq 0 ]; then
