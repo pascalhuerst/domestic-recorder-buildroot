@@ -1,0 +1,38 @@
+From 5602aa5f58c2864cbb6793d7b5459f16ef858f57 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Wed, 8 Oct 2014 12:57:52 +0200
+Subject: [PATCH] gupnp-service-proxy: remove subscription timeout on subscribe
+
+We have seen crashes in subscription_expire() where user_data
+pointed to invalid memory. I do not see an obvious way how this
+can have happened, but it seems like a good idea to always
+remove the subscription timeout when sending a new subscription
+request.
+
+Signed-off-by: Sven Neumann <neumann@teufel.de>
+---
+ libgupnp/gupnp-service-proxy.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index 7a48ac9..015e926 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -2278,7 +2278,13 @@ subscribe (GUPnPServiceProxy *proxy)
+         const char *server_url;
+         char *sub_url, *delivery_url, *timeout;
+ 
+-        context = gupnp_service_info_get_context (GUPNP_SERVICE_INFO (proxy));
++        /* Remove subscription timeout */
++        if (proxy->priv->subscription_timeout_src) {
++                g_source_destroy (proxy->priv->subscription_timeout_src);
++                proxy->priv->subscription_timeout_src = NULL;
++        }
++
++	context = gupnp_service_info_get_context (GUPNP_SERVICE_INFO (proxy));
+ 
+         /* Create subscription message */
+         sub_url = gupnp_service_info_get_event_subscription_url
+-- 
+1.9.3
+
