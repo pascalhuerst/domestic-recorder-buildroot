@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-TAGLIB_VERSION = 1.7.2
+TAGLIB_VERSION = 1.9.1
 TAGLIB_SOURCE = taglib-$(TAGLIB_VERSION).tar.gz
 TAGLIB_SITE = http://developer.kde.org/~wheeler/files/src
 TAGLIB_INSTALL_STAGING = YES
