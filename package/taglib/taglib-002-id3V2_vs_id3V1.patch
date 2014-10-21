@@ -1,6 +1,47 @@
---- taglib-1.5-orig/taglib/mpeg/mpegproperties.cpp	(Revision 957511)
-+++ taglib-1.5/taglib/mpeg/mpegproperties.cpp	(Arbeitskopie)
-@@ -148,56 +148,57 @@
+From 50d41159e28e1b786022faf4cfba37bbb70a12de Mon Sep 17 00:00:00 2001
+From: Max Blagay <max.blagaj@gmail.com>
+Date: Fri, 10 Oct 2014 14:23:40 +0200
+Subject: [PATCH] id3V2_vs_id3V1
+
+---
+ taglib/mpeg/mpegfile.cpp       | 18 +++++-----
+ taglib/mpeg/mpegproperties.cpp | 74 +++++++++++++++++++++---------------------
+ 2 files changed, 47 insertions(+), 45 deletions(-)
+
+diff --git a/taglib/mpeg/mpegfile.cpp b/taglib/mpeg/mpegfile.cpp
+index f765bef..9b85a9f 100644
+--- a/taglib/mpeg/mpegfile.cpp
++++ b/taglib/mpeg/mpegfile.cpp
+@@ -480,14 +480,16 @@ void MPEG::File::read(bool readProperties, Properties::ReadStyle propertiesStyle
+     else
+       d->hasID3v2 = true;
+   }
+-
+-  // Look for an ID3v1 tag
+-
+-  d->ID3v1Location = findID3v1();
+-
+-  if(d->ID3v1Location >= 0) {
+-    d->tag.set(ID3v1Index, new ID3v1::Tag(this, d->ID3v1Location));
+-    d->hasID3v1 = true;
++  else
++  {
++    // Look for an ID3v1 tag
++    
++    d->ID3v1Location = findID3v1();
++    
++    if(d->ID3v1Location >= 0) {
++      d->tag.set(ID3v1Index, new ID3v1::Tag(this, d->ID3v1Location));
++      d->hasID3v1 = true;
++    }
+   }
+ 
+   // Look for an APE tag
+diff --git a/taglib/mpeg/mpegproperties.cpp b/taglib/mpeg/mpegproperties.cpp
+index 3af9566..e1dac97 100644
+--- a/taglib/mpeg/mpegproperties.cpp
++++ b/taglib/mpeg/mpegproperties.cpp
+@@ -148,56 +148,57 @@ bool MPEG::Properties::isOriginal() const
  
  void MPEG::Properties::read()
  {
@@ -26,29 +67,35 @@
    }
  
 -  if(!lastHeader.isValid()) {
+-
+-    long pos = last;
+-
+-    while(pos > first) {
 +  // Now jump back to the front of the file and read what we need from there.
  
--    long pos = last;
+-      pos = d->file->previousFrameOffset(pos);
 +  d->file->seek(first);
 +  Header firstHeader(d->file->readBlock(4));
  
--    while(pos > first) {
+-      if(pos < 0)
+-        break;
 +  if(!firstHeader.isValid()) {
 +    last = d->file->lastFrameOffset();
  
--      pos = d->file->previousFrameOffset(pos);
+-      d->file->seek(pos);
+-      Header header(d->file->readBlock(4));
 +    if(last < 0) {
 +      debug("MPEG::Properties::read() -- Could not find a valid last MPEG frame in the stream.");
 +      return;
 +    }
  
--      if(pos < 0)
+-      if(header.isValid()) {
+-        lastHeader = header;
+-        last = pos;
 -        break;
 +    d->file->seek(last);
 +    Header lastHeader(d->file->readBlock(4));
- 
--      d->file->seek(pos);
--      Header header(d->file->readBlock(4));
++
 +    if(!lastHeader.isValid()) {
 +      
 +      long pos = last;
@@ -59,11 +106,7 @@
 +	
 +	if(pos < 0)
 +	  break;
- 
--      if(header.isValid()) {
--        lastHeader = header;
--        last = pos;
--        break;
++
 +	d->file->seek(pos);
 +	Header header(d->file->readBlock(4));
 +	
@@ -92,7 +135,7 @@
    }
  
    // Check for a Xing header that will help us in gathering information about a
-@@ -240,7 +241,6 @@
+@@ -242,7 +243,6 @@ void MPEG::Properties::read()
      }
    }
  
@@ -100,30 +143,6 @@
    d->sampleRate = firstHeader.sampleRate();
    d->channels = firstHeader.channelMode() == Header::SingleChannel ? 1 : 2;
    d->version = firstHeader.version();
---- taglib-1.5-orig/taglib/mpeg/mpegfile.cpp	(Revision 957511)
-+++ taglib-1.5/taglib/mpeg/mpegfile.cpp	(Arbeitskopie)
-@@ -407,14 +407,16 @@
-     else
-       d->hasID3v2 = true;
-   }
--
--  // Look for an ID3v1 tag
--
--  d->ID3v1Location = findID3v1();
--
--  if(d->ID3v1Location >= 0) {
--    d->tag.set(ID3v1Index, new ID3v1::Tag(this, d->ID3v1Location));
--    d->hasID3v1 = true;
-+  else
-+  {
-+    // Look for an ID3v1 tag
-+    
-+    d->ID3v1Location = findID3v1();
-+    
-+    if(d->ID3v1Location >= 0) {
-+      d->tag.set(ID3v1Index, new ID3v1::Tag(this, d->ID3v1Location));
-+      d->hasID3v1 = true;
-+    }
-   }
- 
-   // Look for an APE tag
+-- 
+1.9.1
+

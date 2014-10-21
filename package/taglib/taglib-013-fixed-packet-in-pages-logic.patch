@@ -1,6 +1,17 @@
---- a/taglib/ogg/oggpage.cpp	2012-05-21 10:23:08.352000248 +0200
-+++ b/taglib/ogg/oggpage.cpp	2012-05-18 17:45:06.595212155 +0200
-@@ -107,6 +107,9 @@
+From c3b9a7d0d5ec4e156d9386b2baa3ab6448cc6419 Mon Sep 17 00:00:00 2001
+From: Max Blagay <max.blagaj@gmail.com>
+Date: Mon, 20 Oct 2014 17:42:29 +0200
+Subject: [PATCH] fixed-packet-in-pages-logic
+
+---
+ taglib/ogg/oggpage.cpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/taglib/ogg/oggpage.cpp b/taglib/ogg/oggpage.cpp
+index e5f767e..68c748c 100644
+--- a/taglib/ogg/oggpage.cpp
++++ b/taglib/ogg/oggpage.cpp
+@@ -107,6 +107,9 @@ Ogg::Page::ContainsPacketFlags Ogg::Page::containsPacket(int index) const
    if(index == lastPacketIndex)
      flags = ContainsPacketFlags(flags | EndsWithPacket);
  
@@ -9,4 +20,7 @@
 +
    // If there's only one page and it's complete:
  
-   // peek into the next page to see if the current
+   if(packetCount() == 1 &&
+-- 
+1.9.1
+

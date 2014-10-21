@@ -1,6 +1,17 @@
---- a/taglib/ogg/xiphcomment.cpp	2012-03-17 11:02:24.000000000 +0100
-+++ b/taglib/ogg/xiphcomment.cpp	2012-05-18 17:53:23.579212142 +0200
-@@ -318,7 +318,7 @@
+From 7ba724ef5bf1656e7416862d0c79ea7b859ad30d Mon Sep 17 00:00:00 2001
+From: Max Blagay <max.blagaj@gmail.com>
+Date: Mon, 20 Oct 2014 17:38:30 +0200
+Subject: [PATCH] fixed-skipping-CDex-comment
+
+---
+ taglib/ogg/xiphcomment.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/taglib/ogg/xiphcomment.cpp b/taglib/ogg/xiphcomment.cpp
+index 51c2f9f..e00a5ad 100644
+--- a/taglib/ogg/xiphcomment.cpp
++++ b/taglib/ogg/xiphcomment.cpp
+@@ -371,7 +371,7 @@ void Ogg::XiphComment::parse(const ByteVector &data)
  
      int commentSeparatorPosition = comment.find("=");
      if(commentSeparatorPosition == -1) {
@@ -9,3 +20,6 @@
      }
  
      String key = comment.substr(0, commentSeparatorPosition);
+-- 
+1.9.1
+

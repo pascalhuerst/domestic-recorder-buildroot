@@ -1,6 +1,17 @@
---- taglib-1.5/taglib/mpeg/id3v2/id3v2tag.cpp	2008-02-04 21:33:54.000000000 +0100
-+++ taglib-1.5/taglib/mpeg/id3v2/id3v2tag.cpp	2010-01-08 17:20:36.000000000 +0100
-@@ -441,18 +441,13 @@
+From a54a2a055ccaf04a618e428a777c71f901626143 Mon Sep 17 00:00:00 2001
+From: Max Blagay <max.blagaj@gmail.com>
+Date: Mon, 20 Oct 2014 17:41:06 +0200
+Subject: [PATCH] ignore-empty-frames-instead-of-failing
+
+---
+ taglib/mpeg/id3v2/id3v2tag.cpp | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/taglib/mpeg/id3v2/id3v2tag.cpp b/taglib/mpeg/id3v2/id3v2tag.cpp
+index 57637a3..df4e325 100644
+--- a/taglib/mpeg/id3v2/id3v2tag.cpp
++++ b/taglib/mpeg/id3v2/id3v2tag.cpp
+@@ -699,18 +699,13 @@ void ID3v2::Tag::parse(const ByteVector &origData)
      Frame *frame = d->factory->createFrame(data.mid(frameDataPosition),
                                             &d->header);
  
@@ -24,3 +35,6 @@
    }
  }
  
+-- 
+1.9.1
+

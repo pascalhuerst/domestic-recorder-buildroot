@@ -1,35 +1,16 @@
-diff -Naur '-x*ake*' ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit//tbytevector.cpp ./taglib/toolkit//tbytevector.cpp
---- ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit//tbytevector.cpp	2011-09-01 12:07:49.812655456 +0200
-+++ ./taglib/toolkit//tbytevector.cpp	2011-09-01 15:41:40.395353188 +0200
-@@ -208,7 +208,10 @@
-     T sum = 0;
- 
-     if(data.size() <= 0) {
--      debug("ByteVectorMirror::toNumber<T>() -- data is empty, returning 0");
-+      if(!ExceptionHandlingScope::throwException("ByteVectorMirror::toNumber<T>() -- data is empty, returning 0"))
-+      {
-+        debug("ByteVectorMirror::toNumber<T>() -- data is empty, returning 0");
-+      }
-       return sum;
-     }
- 
-@@ -473,7 +476,7 @@
- 
-     tPatternPositions::const_iterator itPos = morePatternPositions.begin();
- 
--    for (int i = 0; i < numPatternPositions; i++)
-+    for (size_t i = 0; i < numPatternPositions; i++)
-     {
-       int patternPos = (i < numDefaultStorageFields) ? defaultStorageForPatternPositions[i] : *(itPos++);
- 
-@@ -741,3 +744,4 @@
-     s << v[i];
-   return s;
- }
-+
-diff -Naur '-x*ake*' ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit//tbytevector.h ./taglib/toolkit//tbytevector.h
---- ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit//tbytevector.h	2011-03-11 14:15:38.000000000 +0100
-+++ ./taglib/toolkit//tbytevector.h	2011-09-01 16:10:40.793473421 +0200
+From 25d3335ccab3bacceb218ac501190069fd5be811 Mon Sep 17 00:00:00 2001
+From: Max Blagay <max.blagaj@gmail.com>
+Date: Fri, 10 Oct 2014 16:00:55 +0200
+Subject: [PATCH] added exception handler scope
+
+---
+ taglib/toolkit/tbytevector.h | 73 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 73 insertions(+)
+
+diff --git a/taglib/toolkit/tbytevector.h b/taglib/toolkit/tbytevector.h
+index 538565b..184b7d2 100644
+--- a/taglib/toolkit/tbytevector.h
++++ b/taglib/toolkit/tbytevector.h
 @@ -31,9 +31,82 @@
  
  #include <vector>
@@ -113,3 +94,6 @@ diff -Naur '-x*ake*' ../../buildroot_arm/output/build/taglib-1.7/taglib/toolkit/
    //! A byte vector
  
    /*!
+-- 
+1.9.1
+
