@@ -5,10 +5,10 @@
 ################################################################################
 
 TAGLIB_VERSION = 1.9.1
-TAGLIB_SOURCE = taglib-$(TAGLIB_VERSION).tar.gz
-TAGLIB_SITE = http://developer.kde.org/~wheeler/files/src
+TAGLIB_SITE = http://taglib.github.io/releases
 TAGLIB_INSTALL_STAGING = YES
-TAGLIB_DEPENDENCIES = host-pkgconf libglib2
+TAGLIB_LICENSE = LGPLv2.1 MPL
+TAGLIB_LICENSE_FILES = COPYING.LGPL COPYING.MPL
 
 ifeq ($(BR2_PACKAGE_ZLIB),y)
 TAGLIB_DEPENDENCIES += zlib
