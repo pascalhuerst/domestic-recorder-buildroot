@@ -79,10 +79,10 @@ names=( \
     "Raumfeld Base"         \
     "Raumfeld Stereo M"     \
     "Raumfeld Stereo L"     \
-    "Raumfeld One"          \
+    "Raumfeld One M"        \
     "Raumfeld Connector 2"  \
     "Raumfeld Stereo Cubes" \
-    "Raumfeld One 2"        \
+    "Raumfeld One M 2"      \
     "Raumfeld Stereo L 2"   \
     "Raumfeld One S"        \
     "Raumfeld Stereo M 2")
