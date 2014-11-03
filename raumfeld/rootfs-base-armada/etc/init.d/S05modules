@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Load modules ...
+#
+
+case "$1" in
+  start)
+ 	echo "Loading modules..."
+	;;
+  *)
+        ;;
+esac
+
+exit $?
+

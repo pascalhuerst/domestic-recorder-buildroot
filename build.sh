@@ -6,6 +6,7 @@ targets="initramfs-arm imgrootfs-arm		\
          audioadapter-arm                       \
          audioadapter-armada                    \
          remotecontrol-arm	                \
+         base-armada                            \
          base-geode"
 
 # create a timestamp
