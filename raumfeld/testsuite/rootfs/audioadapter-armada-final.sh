@@ -12,6 +12,21 @@ led_off 1
 led_off 2
 
 
+# Load modules
+
+modprobe snd-soc-adau1701
+modprobe snd-soc-ak4104
+modprobe snd-soc-ak5386
+modprobe snd-soc-cs4271
+modprobe snd-soc-sigmadsp
+modprobe snd-soc-sta350
+modprobe snd-soc-tas5086
+modprobe snd-soc-davinci-mcasp
+# FIXME: the above should actually be implicitly loaded by the next one
+modprobe snd-soc-s800
+modprobe mwifiex_sdio
+
+
 # Check if USB sound card is connected on a Raumfeld Element
 
 if is_model "Element"; then
