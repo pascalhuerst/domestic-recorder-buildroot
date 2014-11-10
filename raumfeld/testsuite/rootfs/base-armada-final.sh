@@ -10,6 +10,7 @@ cd /tests
 
 led_off 1
 led_off 2
+led_off 3
 
 
 echo "*********** Raumfeld Tests starting ********"
@@ -48,6 +49,7 @@ fi
 kill_leds
 led_on 1
 led_on 2
+led_on 3
 
 
 echo "*********** Raumfeld Tests success ********"
