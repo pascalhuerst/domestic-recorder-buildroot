@@ -1,3 +1,7 @@
+config BR2_RAUMFELD_LINUX_CONFIG_BRIDGE
+       bool "Ethernet bridging support"
+       depends on BR2_LINUX_KERNEL
+
 config BR2_RAUMFELD_LINUX_CONFIG_USB_AUDIO
 	bool "USB audio support"
         depends on BR2_LINUX_KERNEL
