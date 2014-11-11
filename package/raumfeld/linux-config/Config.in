@@ -5,3 +5,19 @@ config BR2_RAUMFELD_LINUX_CONFIG_BRIDGE
 config BR2_RAUMFELD_LINUX_CONFIG_USB_AUDIO
 	bool "USB audio support"
         depends on BR2_LINUX_KERNEL
+
+config BR2_RAUMFELD_LINUX_CONFIG_ATH9K
+       bool "Atheros 802.11n wireless cards support"
+       depends on BR2_LINUX_KERNEL
+
+config BR2_RAUMFELD_LINUX_CONFIG_MWIFIEX_SDIO
+       bool "Marvell WiFi-Ex wireless module support"
+       select BR2_PACKAGE_LINUX_FIRMWARE
+       select BR2_PACKAGE_LINUX_FIRMWARE_MWIFIEX_SD8787
+       depends on BR2_LINUX_KERNEL
+
+config BR2_RAUMFELD_LINUX_CONFIG_RT2800USB_RT55XX
+       bool "Ralink rt55xx USB wireless card support"
+       select BR2_PACKAGE_LINUX_FIRMWARE
+       select BR2_PACKAGE_LINUX_FIRMWARE_RALINK_RT2XX
+       depends on BR2_LINUX_KERNEL
