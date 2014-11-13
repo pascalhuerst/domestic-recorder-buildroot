@@ -4,10 +4,12 @@ config BR2_RAUMFELD_LINUX_CONFIG_BRIDGE
 
 config BR2_RAUMFELD_LINUX_CONFIG_USB_AUDIO
 	bool "USB audio support"
-        depends on BR2_LINUX_KERNEL
+	depends on BR2_LINUX_KERNEL
 
-config BR2_RAUMFELD_LINUX_CONFIG_ATH9K
-       bool "Atheros 802.11n wireless cards support"
+config BR2_RAUMFELD_LINUX_CONFIG_ATH9K_HTC
+       bool "Atheros HTC wireless cards support"
+       select BR2_PACKAGE_LINUX_FIRMWARE
+       select BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_7010
        depends on BR2_LINUX_KERNEL
 
 config BR2_RAUMFELD_LINUX_CONFIG_MWIFIEX_SDIO
