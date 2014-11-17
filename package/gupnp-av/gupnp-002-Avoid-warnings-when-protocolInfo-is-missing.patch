@@ -1,0 +1,45 @@
+From a59f683f5c1bf00fb5d678d3fdddee0449a7a99c Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Mon, 17 Nov 2014 10:49:03 +0100
+Subject: [PATCH] Avoid warnings when protocolInfo is missing
+
+There should not be run-time warnings when the protocolInfo is
+missing in an DIDL-Lite XML fragment.
+
+Signed-off-by: Sven Neumann <neumann@teufel.de>
+---
+ libgupnp-av/gupnp-didl-lite-object.c   | 3 +++
+ libgupnp-av/gupnp-didl-lite-resource.c | 3 ++-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/libgupnp-av/gupnp-didl-lite-object.c b/libgupnp-av/gupnp-didl-lite-object.c
+index b6f7bd2..cc54750 100644
+--- a/libgupnp-av/gupnp-didl-lite-object.c
++++ b/libgupnp-av/gupnp-didl-lite-object.c
+@@ -835,6 +835,9 @@ is_resource_compatible (GUPnPDIDLLiteResource *resource,
+ 
+                 res_info = gupnp_didl_lite_resource_get_protocol_info
+                                                         (resource);
++                if (res_info == NULL)
++                        continue;
++
+                 ret = gupnp_protocol_info_is_compatible (info, res_info);
+ 
+                 g_object_unref (info);
+diff --git a/libgupnp-av/gupnp-didl-lite-resource.c b/libgupnp-av/gupnp-didl-lite-resource.c
+index f524207..eddabfc 100644
+--- a/libgupnp-av/gupnp-didl-lite-resource.c
++++ b/libgupnp-av/gupnp-didl-lite-resource.c
+@@ -980,7 +980,8 @@ gupnp_didl_lite_resource_get_protocol_info (GUPnPDIDLLiteResource *resource)
+         protocol_info = xml_util_get_attribute_content
+                                         (resource->priv->xml_node,
+                                          "protocolInfo");
+-        g_return_val_if_fail (protocol_info != NULL, NULL);
++        if (protocol_info == NULL)
++                return NULL;
+ 
+         error = NULL;
+         info = gupnp_protocol_info_new_from_string (protocol_info, &error);
+-- 
+1.9.1
+
