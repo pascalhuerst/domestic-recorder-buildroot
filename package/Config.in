@@ -692,6 +692,7 @@ source "package/zlog/Config.in"
 endmenu
 
 menu "Multimedia"
+source "package/libasf/Config.in"
 source "package/libass/Config.in"
 source "package/libbluray/Config.in"
 source "package/libdvbsi/Config.in"
