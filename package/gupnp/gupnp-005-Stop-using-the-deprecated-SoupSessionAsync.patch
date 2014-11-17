@@ -1,0 +1,84 @@
+From e978653d926d8e8b8151e0af99fc47baf46e3ab2 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Mon, 17 Nov 2014 15:22:50 +0100
+Subject: [PATCH 2/2] Stop using the deprecated SoupSessionAsync
+
+As of libsoup 2.42, this is deprecated in favor of the plain
+SoupSession class. The plain SoupSession also already has
+a SoupContentDecoder attached to it by default, so we can
+omit doing this explicitly.
+
+Signed-off-by: Sven Neumann <neumann@teufel.de>
+
+fixup
+---
+ libgupnp/gupnp-context.c   | 11 ++---------
+ libgupnp/gupnp-service.c   |  9 +++------
+ tests/gtest/test-context.c |  2 +-
+ 3 files changed, 6 insertions(+), 16 deletions(-)
+
+diff --git a/libgupnp/gupnp-context.c b/libgupnp/gupnp-context.c
+index e145c69..281eeb9 100644
+--- a/libgupnp/gupnp-context.c
++++ b/libgupnp/gupnp-context.c
+@@ -191,12 +191,8 @@ gupnp_context_initable_init (GInitable     *initable,
+ 
+         context = GUPNP_CONTEXT (initable);
+ 
+-        context->priv->session = soup_session_async_new_with_options
+-                (SOUP_SESSION_IDLE_TIMEOUT,
+-                 60,
+-                 SOUP_SESSION_ASYNC_CONTEXT,
+-                 g_main_context_get_thread_default (),
+-                 NULL);
++        context->priv->session = soup_session_new_with_options (SOUP_SESSION_IDLE_TIMEOUT, 60,
++                                                                NULL);
+ 
+         user_agent = g_strdup_printf ("%s GUPnP/" VERSION " DLNADOC/1.50",
+                                       g_get_prgname ()? : "");
+@@ -213,9 +209,6 @@ gupnp_context_initable_init (GInitable     *initable,
+                                           SOUP_SESSION_FEATURE (logger));
+         }
+ 
+-        soup_session_add_feature_by_type (context->priv->session,
+-                                          SOUP_TYPE_CONTENT_DECODER);
+-
+         /* Create the server already if the port is not null*/
+         if (context->priv->port != 0) {
+                 gupnp_context_get_server (context);
+diff --git a/libgupnp/gupnp-service.c b/libgupnp/gupnp-service.c
+index d971118..5952ce1 100644
+--- a/libgupnp/gupnp-service.c
++++ b/libgupnp/gupnp-service.c
+@@ -126,12 +126,9 @@ gupnp_service_get_session (GUPnPService *service)
+                  * order. The session from GUPnPContext may use
+                  * multiple connections.
+                  */
+-                service->priv->session = soup_session_async_new_with_options
+-                  (SOUP_SESSION_IDLE_TIMEOUT, 60,
+-                   SOUP_SESSION_ASYNC_CONTEXT,
+-                   g_main_context_get_thread_default (),
+-                   SOUP_SESSION_MAX_CONNS_PER_HOST, 1,
+-                   NULL);
++                service->priv->session = soup_session_new_with_options (SOUP_SESSION_IDLE_TIMEOUT, 60,
++                                                                        SOUP_SESSION_MAX_CONNS_PER_HOST, 1,
++                                                                        NULL);
+ 
+                 if (g_getenv ("GUPNP_DEBUG")) {
+                         SoupLogger *logger;
+diff --git a/tests/gtest/test-context.c b/tests/gtest/test-context.c
+index bbcfd27..0bfda7c 100644
+--- a/tests/gtest/test-context.c
++++ b/tests/gtest/test-context.c
+@@ -149,7 +149,7 @@ test_gupnp_context_http_ranged_requests (void)
+         uri = g_strdup_printf ("http://127.0.0.1:%u/random4k.bin", port);
+         g_assert (uri != NULL);
+ 
+-        session = soup_session_async_new ();
++        session = soup_session_new ();
+ 
+         /* Corner cases: First byte */
+         request_range_and_compare (file, session, loop, uri, 0, 0);
+-- 
+1.9.1
+
