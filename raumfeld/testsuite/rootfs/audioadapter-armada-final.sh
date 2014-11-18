@@ -95,7 +95,7 @@ if is_model "Test Jig"; then
     led_on 1
     led_off 2
     echo "Testing pins..."
-    $PINS_TEST
+    (cd /raumfeld/factory-tests; ./ioboard-pins)
     if [ $? -ne 0 ]; then
         kill_leds
         ./leds-blink-so 2 1 &

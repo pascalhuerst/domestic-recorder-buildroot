@@ -1,6 +1,5 @@
 RELPATH=../
 INPUT_TEST=/input_test
-PINS_TEST=/test_jig
 TEST_HOST_WIRELESS=192.168.23.1
 
 kill_leds() {
