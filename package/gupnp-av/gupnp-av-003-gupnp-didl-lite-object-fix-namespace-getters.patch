@@ -1,0 +1,60 @@
+From 1306f25fffc8a7dc60285090893e904d372de1e3 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Wed, 19 Nov 2014 14:12:04 +0100
+Subject: [PATCH 2/2] gupnp-didl-lite-object: fix namespace getters
+
+---
+ libgupnp-av/gupnp-didl-lite-object.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/libgupnp-av/gupnp-didl-lite-object.c b/libgupnp-av/gupnp-didl-lite-object.c
+index cc54750..9d669d7 100644
+--- a/libgupnp-av/gupnp-didl-lite-object.c
++++ b/libgupnp-av/gupnp-didl-lite-object.c
+@@ -1032,7 +1032,9 @@ gupnp_didl_lite_object_get_upnp_namespace (GUPnPDIDLLiteObject *object)
+ {
+         g_return_val_if_fail (GUPNP_IS_DIDL_LITE_OBJECT (object), NULL);
+ 
+-        return object->priv->upnp_ns;
++        return xml_util_get_ns (object->priv->xml_doc->doc,
++                                GUPNP_XML_NAMESPACE_UPNP,
++                                &(object->priv->upnp_ns));
+ }
+ 
+ /**
+@@ -1049,7 +1051,9 @@ gupnp_didl_lite_object_get_dc_namespace (GUPnPDIDLLiteObject *object)
+ {
+         g_return_val_if_fail (GUPNP_IS_DIDL_LITE_OBJECT (object), NULL);
+ 
+-        return object->priv->dc_ns;
++        return xml_util_get_ns (object->priv->xml_doc->doc,
++                                GUPNP_XML_NAMESPACE_DC,
++                                &(object->priv->dc_ns));
+ }
+ 
+ /**
+@@ -1083,7 +1087,9 @@ gupnp_didl_lite_object_get_dlna_namespace (GUPnPDIDLLiteObject *object)
+ {
+         g_return_val_if_fail (GUPNP_IS_DIDL_LITE_OBJECT (object), NULL);
+ 
+-        return object->priv->dlna_ns;
++        return xml_util_get_ns (object->priv->xml_doc->doc,
++                                GUPNP_XML_NAMESPACE_DLNA,
++                                &(object->priv->dlna_ns));
+ }
+ 
+ /**
+@@ -1100,7 +1106,9 @@ gupnp_didl_lite_object_get_pv_namespace (GUPnPDIDLLiteObject *object)
+ {
+         g_return_val_if_fail (GUPNP_IS_DIDL_LITE_OBJECT (object), NULL);
+ 
+-        return object->priv->pv_ns;
++        return xml_util_get_ns (object->priv->xml_doc->doc,
++                                GUPNP_XML_NAMESPACE_PV,
++                                &(object->priv->pv_ns));
+ }
+ 
+ 
+-- 
+1.9.1
+
