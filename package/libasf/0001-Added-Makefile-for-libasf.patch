@@ -13,7 +13,7 @@ new file mode 100644
 index 0000000..ef9619f
 --- /dev/null
 +++ b/Makefile
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,69 @@
 +
 +GCC ?= gcc
 +DESTDIR ?= /usr/local
@@ -76,6 +76,11 @@ index 0000000..ef9619f
 +	mkdir -p $(DESTDIR)/include/asf/
 +	cp $(OBJDIR)/$(LIBNAME).a $(DESTDIR)/lib/
 +	cp -r $(HEADERS) $(DESTDIR)/include/asf/
++
++
++install-exec: all
++	mkdir -p $(DESTDIR)/lib/
++	cp $(OBJDIR)/$(LIBNAME).a $(DESTDIR)/lib/
 +
 +
 -- 
