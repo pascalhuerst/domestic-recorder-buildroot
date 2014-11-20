@@ -13,7 +13,7 @@ new file mode 100644
 index 0000000..ef9619f
 --- /dev/null
 +++ b/Makefile
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,72 @@
 +
 +GCC ?= gcc
 +DESTDIR ?= /usr/local
@@ -83,7 +83,6 @@ index 0000000..ef9619f
 +
 +install-exec: all
 +	mkdir -p $(DESTDIR)/lib/
-+	cp $(OBJDIR)/$(LIBNAME).a $(DESTDIR)/lib/
 +	cp $(OBJDIR)/$(LIBNAME).so $(DESTDIR)/lib/
 +
 +
