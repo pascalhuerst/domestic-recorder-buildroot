@@ -13,7 +13,7 @@ new file mode 100644
 index 0000000..ef9619f
 --- /dev/null
 +++ b/Makefile
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,73 @@
 +
 +GCC ?= gcc
 +DESTDIR ?= /usr/local
@@ -45,7 +45,7 @@ index 0000000..ef9619f
 +OBJS= $(patsubst %.c, $(OBJDIR)/%.o, $(SRC))
 +
 +COMPILE_C = @echo "compiling $@";\
-+	$(GCC) -Isrc -c -MD -o $@ $< $(CFLAGS);
++	$(GCC) -Isrc -c -MD -fPIC -o $@ $< $(CFLAGS);
 +
 +
 +all: MKDIR $(LIBNAME)
@@ -54,6 +54,8 @@ index 0000000..ef9619f
 +$(LIBNAME): $(OBJS)
 +	@echo "link static library $@"
 +	@$(AR) crs $(OBJDIR)/$(LIBNAME).a $(OBJS)
++	@echo "link shared library $@.so"
++	@$(GCC) -fPIC -shared -o  $(OBJDIR)/$(LIBNAME).so $(OBJS)
 +
 +
 +$(OBJDIR)/%.o: %.c
@@ -75,12 +77,14 @@ index 0000000..ef9619f
 +	mkdir -p $(DESTDIR)/lib/
 +	mkdir -p $(DESTDIR)/include/asf/
 +	cp $(OBJDIR)/$(LIBNAME).a $(DESTDIR)/lib/
++	cp $(OBJDIR)/$(LIBNAME).so $(DESTDIR)/lib/
 +	cp -r $(HEADERS) $(DESTDIR)/include/asf/
 +
 +
 +install-exec: all
 +	mkdir -p $(DESTDIR)/lib/
 +	cp $(OBJDIR)/$(LIBNAME).a $(DESTDIR)/lib/
++	cp $(OBJDIR)/$(LIBNAME).so $(DESTDIR)/lib/
 +
 +
 -- 
