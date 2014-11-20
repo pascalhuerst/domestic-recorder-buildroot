@@ -4,6 +4,6 @@
 #
 #############################################################
 
-STREAM_RELAY_DEPENDENCIES = host-pkgconf libraumfeld libraumfeldcpp libmms libvorbis taglib
+STREAM_RELAY_DEPENDENCIES = host-pkgconf libraumfeld libraumfeldcpp libasf libmms libvorbis taglib
 
 $(eval $(raumfeld-cross-package))
