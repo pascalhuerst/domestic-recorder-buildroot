@@ -74,16 +74,16 @@ index 0000000..ef9619f
 +
 +
 +install: all
-+	mkdir -p $(DESTDIR)/lib/
-+	mkdir -p $(DESTDIR)/include/asf/
-+	cp $(OBJDIR)/$(LIBNAME).a $(DESTDIR)/lib/
-+	cp $(OBJDIR)/$(LIBNAME).so $(DESTDIR)/lib/
-+	cp -r $(HEADERS) $(DESTDIR)/include/asf/
++	mkdir -p $(DESTDIR)/usr/lib/
++	mkdir -p $(DESTDIR)/usr/include/asf/
++	cp $(OBJDIR)/$(LIBNAME).a $(DESTDIR)/usr/lib/
++	cp $(OBJDIR)/$(LIBNAME).so $(DESTDIR)/usr/lib/
++	cp -r $(HEADERS) $(DESTDIR)/usr/include/asf/
 +
 +
 +install-exec: all
-+	mkdir -p $(DESTDIR)/lib/
-+	cp $(OBJDIR)/$(LIBNAME).so $(DESTDIR)/lib/
++	mkdir -p $(DESTDIR)/usr/lib/
++	cp $(OBJDIR)/$(LIBNAME).so $(DESTDIR)/usr/lib/
 +
 +
 -- 
