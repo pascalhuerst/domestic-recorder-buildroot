@@ -1,0 +1,57 @@
+From 94740c956d8ce58616044fac3752f06a7ec7dba1 Mon Sep 17 00:00:00 2001
+From: Max Blagay <max.blagaj@gmail.com>
+Date: Fri, 21 Nov 2014 16:17:13 +0100
+Subject: [PATCH] fixed build errors
+
+---
+ src/asfint.h | 2 +-
+ src/compat.h | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/asfint.h b/src/asfint.h
+index 99031dd..31f88fe 100644
+--- a/src/asfint.h
++++ b/src/asfint.h
+@@ -28,7 +28,7 @@
+ static INLINE void
+ GetGUID(const void *pointer, asf_guid_t *guid)
+ {
+-	const uint8_t *data = pointer;
++	const uint8_t *data = (const uint8_t *)pointer;
+ 	guid->v1 = GetDWLE(data);
+ 	guid->v2 = GetWLE(data + 4);
+ 	guid->v3 = GetWLE(data + 6);
+diff --git a/src/compat.h b/src/compat.h
+index 5a95630..0cf4af2 100644
+--- a/src/compat.h
++++ b/src/compat.h
+@@ -28,7 +28,7 @@
+ static INLINE uint16_t
+ GetWLE(const void *pointer)
+ {
+-	const uint8_t *data = pointer;
++	const uint8_t *data = (const uint8_t *)pointer;
+ 	return ((uint16_t)data[1] << 8) |
+ 	       ((uint16_t)data[0]);
+ }
+@@ -36,7 +36,7 @@ GetWLE(const void *pointer)
+ static INLINE uint32_t
+ GetDWLE(const void *pointer)
+ {
+-	const uint8_t *data = pointer;
++	const uint8_t *data = (const uint8_t *)pointer;
+ 	return ((uint32_t)data[3] << 24) |
+ 	       ((uint32_t)data[2] << 16) |
+ 	       ((uint32_t)data[1] <<  8) |
+@@ -46,7 +46,7 @@ GetDWLE(const void *pointer)
+ static INLINE uint64_t
+ GetQWLE(const void *pointer)
+ {
+-	const uint8_t *data = pointer;
++	const uint8_t *data = (const uint8_t *)pointer;
+ 	return ((uint64_t)data[7] << 56) |
+ 	       ((uint64_t)data[6] << 48) |
+ 	       ((uint64_t)data[5] << 40) |
+-- 
+1.9.1
+
