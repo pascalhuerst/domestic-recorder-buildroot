@@ -1,0 +1,11 @@
+prefix=@PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+datarootdir=${prefix}/share
+
+Name: ASF library
+Description: Library for ASF format
+Version: 2012
+Libs: -L${libdir} -lasf
+Cflags: -I${includedir}
