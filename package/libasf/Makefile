@@ -1,7 +1,7 @@
 
 GCC ?= gcc
-DESTDIR ?= /usr/local
-PACKAGE_DIR ?= $(DESTDIR)
+PREFIX ?= /usr
+PACKAGE_DIR ?= $(DESTDIR)/$(PREFIX)
 
 OBJDIR = obj
 
@@ -65,13 +65,13 @@ libasf.pc: libasf.pc.in
 
 
 install: all libasf.pc
-	mkdir -p $(DESTDIR)/usr/lib/
-	mkdir -p $(DESTDIR)/usr/include/asf/
-	mkdir -p $(DESTDIR)/usr/lib/pkgconfig/
-	cp $(OBJDIR)/$(LIBNAME).a $(DESTDIR)/usr/lib/
-	cp $(OBJDIR)/$(LIBNAME).so $(DESTDIR)/usr/lib/
-	cp -r $(HEADERS) $(DESTDIR)/usr/include/asf/
-	cp $(OBJDIR)/libasf.pc $(DESTDIR)/usr/lib/pkgconfig/
+	mkdir -p $(DESTDIR)$(PREFIX)/lib/
+	mkdir -p $(DESTDIR)$(PREFIX)/include/asf/
+	mkdir -p $(DESTDIR)$(PREFIX)/lib/pkgconfig/
+	cp $(OBJDIR)/$(LIBNAME).a $(DESTDIR)$(PREFIX)/lib/
+	cp $(OBJDIR)/$(LIBNAME).so $(DESTDIR)$(PREFIX)/lib/
+	cp -r $(HEADERS) $(DESTDIR)$(PREFIX)/include/asf/
+	cp $(OBJDIR)/libasf.pc $(DESTDIR)$(PREFIX)/lib/pkgconfig/
 
 
 install-exec: all
