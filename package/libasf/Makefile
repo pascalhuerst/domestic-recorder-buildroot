@@ -79,3 +79,13 @@ install-exec: all
 	cp $(OBJDIR)/$(LIBNAME).so $(DESTDIR)/usr/lib/
 
 
+dist:
+	@rm -rf _dist
+	@echo Creating distribution tarball...
+	@mkdir _dist
+	@mkdir _dist/libasf
+	@cp AUTHORS COPYING README Makefile libasf.pc.in _dist/libasf
+	@mkdir _dist/libasf/src
+	@cp src/*.c src/*.h _dist/libasf/src
+	@tar zcf libasf.tar.gz -C _dist libasf
+	@rm -rf _dist
