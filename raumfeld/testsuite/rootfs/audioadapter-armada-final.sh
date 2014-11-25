@@ -94,6 +94,7 @@ if is_model "Test Jig"; then
     kill_leds
     led_on 1
     led_off 2
+    modprobe snd-usb-audio
     echo "Testing pins and line-in..."
     (cd /raumfeld/factory-tests; ./ioboard-pins && ./ioboard-audiopins && ./audio-line-in)
     if [ $? -ne 0 ]; then
