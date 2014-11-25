@@ -15,13 +15,23 @@ led_off 3
 
 echo "*********** Raumfeld Tests starting ********"
 
-# Buttons (Setup, Reset, Power)
+# Buttons (Setup, Reset)
 kill_leds
 ./leds-blink-so 1 &
 echo "Press the SETUP button (1)."
 $INPUT_TEST key_setup
 echo "Press the RESET button (2)."
 $INPUT_TEST key_f3
+
+# WiFi
+kill_leds
+./leds-blink-so 2 &
+./wifi_managed_ping factory_test
+if [ $? -ne 0 ]; then
+    kill_leds
+    ./leds-blink-so 2 1 &
+    exit 1
+fi
 
 # Ethernet
 kill_leds
