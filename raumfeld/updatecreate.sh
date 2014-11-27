@@ -37,18 +37,18 @@ mkdir -p $tmpdir/tmp
 
 cp $kexec $tmpdir/tmp/raumfeld-update.zImage
 
-if [ $target = audioadapter-armada ]; then
-    HOSTDIR=$(pwd)/output/host
+case $target in
+    *-armada)
+        # first copy the device-tree blobs for direct inclusion
+        cp output/images/dts/*.dtb $tmpdir/tmp
+        # work around a bug in the update mechanism in 1.10
+        # which looks for the files without the .dtb extension
+        cp $tmpdir/tmp/am33xx-raumfeld-connector-0-0.dtb $tmpdir/tmp/am33xx-raumfeld-connector-0-0
 
-    # first copy the device-tree blobs for direct inclusion
-    cp output/images/dts/*.dtb $tmpdir/tmp
-    # work around a bug in the update mechanism in 1.10
-    # which looks for the files without the .dtb extension
-    cp $tmpdir/tmp/am33xx-raumfeld-connector-0-0.dtb $tmpdir/tmp/am33xx-raumfeld-connector-0-0
-
-    # then copy the cramfs containing the device-tree blobs
-    cp output/images/dts.cramfs $tmpdir/tmp
-fi
+        # then copy the cramfs containing the device-tree blobs
+        cp output/images/dts.cramfs $tmpdir/tmp
+        ;;
+esac
 
 for bootloader in $(echo $bootloaders | tr ',' ' '); do
     cp $bootloader $tmpdir/tmp
