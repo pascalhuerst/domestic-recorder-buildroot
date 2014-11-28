@@ -9,4 +9,7 @@ cp -r raumfeld/rootfs-base-armada/* $1
 
 cp output/staging/usr/lib/gconv/ISO8859-1.so $1/usr/lib/gconv
 
+echo "Creating the update mount-point ..."
+mkdir -p $1/update
+
 raumfeld/postbuild-cleanup.sh $*
