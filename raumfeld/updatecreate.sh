@@ -76,7 +76,7 @@ names=( \
     "Raumfeld Controller"   \
     "Raumfeld Connector"    \
     "Raumfeld Stereo S"     \
-    "Raumfeld Base"         \
+    "Raumfeld Expand"       \
     "Raumfeld Stereo M"     \
     "Raumfeld Stereo L"     \
     "Raumfeld One M"        \
