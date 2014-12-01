@@ -2,5 +2,58 @@
 
 . ../tests.inc
 
-./init_flash_armada && ./copy_rootfs_armada
+set -e
 
+UBIDEV=0
+DTBMTD=7
+UBIMTD=8
+ROOT_SIZE=191MiB
+UPDATE_SIZE=42MiB
+
+# first, detach the volume attached by the kernel
+# (and don't fail if it isn't attached for whatever reason)
+ubidetach /dev/ubi_ctrl -d $UBIDEV || true
+
+
+echo "Initializing flash partitions ..."
+
+# erase the whole thing
+flash_erase /dev/mtd$UBIMTD 0 0
+ubiformat /dev/mtd$UBIMTD -s 512 -O 2048
+
+# re-attach the partition
+ubiattach /dev/ubi_ctrl -d $UBIDEV -m $UBIMTD -O 2048
+
+# create the volume
+ubimkvol /dev/ubi$UBIDEV -N RootFS -s $ROOT_SIZE
+ubimkvol /dev/ubi$UBIDEV -N Updates -s $UPDATE_SIZE
+
+
+
+echo "Copying device-tree blobs to flash ..."
+
+flash_erase /dev/mtd$DTBMTD 0 0
+nandwrite --pad /dev/mtd$DTBMTD /dts.cramfs
+
+
+echo "Mounting filesystem ..."
+
+mount -t ubifs ubi:RootFS /mnt
+
+
+echo "Copying root file-system to flash. Please wait ..."
+
+zcat /rootfs.tgz | tar -C /mnt -x
+sync
+
+
+echo "Copying Linux kernel to flash. Please wait ..."
+
+flash_erase /dev/mtd6 0 0
+nandwrite --pad /dev/mtd6 /mnt/boot/uImage
+rm /mnt/boot/uImage
+
+
+echo "Unmounting filesystem ..."
+
+umount /mnt
