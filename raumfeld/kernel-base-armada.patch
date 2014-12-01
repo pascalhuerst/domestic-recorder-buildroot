@@ -1,0 +1,37 @@
+From b6b5a2a7db9e423d5bce18b7057dacaf1b8da1c4 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Mon, 1 Dec 2014 13:00:23 +0100
+Subject: [PATCH] ti/cpsw: disable lookup table in promiscuous mode
+
+Without this change multicast packages are not received on
+the ethernet port.
+---
+ drivers/net/ethernet/ti/cpsw.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+index b988d16..82dc691 100644
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -610,11 +610,18 @@ static void cpsw_set_promiscious(struct net_device *ndev, bool enable)
+ 
+ 			/* Flood All Unicast Packets to Host port */
+ 			cpsw_ale_control_set(ale, 0, ALE_P0_UNI_FLOOD, 1);
++
++			/* Enable Bypass */
++			cpsw_ale_control_set(ale, 0, ALE_BYPASS, 1);
++
+ 			dev_dbg(&ndev->dev, "promiscuity enabled\n");
+ 		} else {
+ 			/* Flood All Unicast Packets to Host port */
+ 			cpsw_ale_control_set(ale, 0, ALE_P0_UNI_FLOOD, 0);
+ 
++			/* Disable Bypass */
++			cpsw_ale_control_set(ale, 0, ALE_BYPASS, 0);
++
+ 			/* Enable Learn for all ports */
+ 			for (i = 0; i < priv->data.slaves; i++) {
+ 				cpsw_ale_control_set(ale, i,
+-- 
+1.9.1
+
