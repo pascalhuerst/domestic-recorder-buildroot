@@ -1,0 +1,35 @@
+From 653b631aea231d6cd9ec8825f55495d2280bbe63 Mon Sep 17 00:00:00 2001
+From: Tsuda Kageyu <tsuda.kageyu@gmail.com>
+Date: Thu, 19 Jun 2014 16:53:29 +0900
+Subject: [PATCH 28/28] Added a check for patternSize and removed a useless
+ check.
+
+---
+ taglib/toolkit/tbytevector.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/taglib/toolkit/tbytevector.cpp b/taglib/toolkit/tbytevector.cpp
+index 9522f0a..1ecd93d 100644
+--- a/taglib/toolkit/tbytevector.cpp
++++ b/taglib/toolkit/tbytevector.cpp
+@@ -109,7 +109,7 @@ int findChar(
+   char c, uint offset, int byteAlign)
+ {
+   const size_t dataSize = dataEnd - dataBegin;
+-  if(dataSize == 0 || offset + 1 > dataSize)
++  if(offset + 1 > dataSize)
+     return -1;
+ 
+   // n % 0 is invalid
+@@ -137,7 +137,7 @@ int findVector(
+ {
+   const size_t dataSize    = dataEnd    - dataBegin;
+   const size_t patternSize = patternEnd - patternBegin;
+-  if(dataSize == 0 || offset + patternSize > dataSize)
++  if(patternSize == 0 || offset + patternSize > dataSize)
+     return -1;
+ 
+   // n % 0 is invalid
+-- 
+1.8.4.5
+
