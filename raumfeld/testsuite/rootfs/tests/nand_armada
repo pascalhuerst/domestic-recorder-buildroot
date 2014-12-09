@@ -7,7 +7,18 @@ set -e
 UBIDEV=0
 DTBMTD=7
 UBIMTD=8
-ROOT_SIZE=191MiB
+
+# check if we have 256 or 512 MiB available
+MTD8_SIZE=$(cat /proc/mtd | grep mtd8 | cut -d ' ' -f 2)
+if [ $MTD8_SIZE = 0f820000 ]; then
+	ROOT_SIZE=191MiB
+elif [ $MTD8_SIZE = 1f820000 ]; then
+	ROOT_SIZE=435MiB
+else
+	echo "Can not evaluate flash size. Aborting."
+	exit 1;
+fi
+
 UPDATE_SIZE=42MiB
 
 # first, detach the volume attached by the kernel
