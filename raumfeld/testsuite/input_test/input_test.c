@@ -397,6 +397,13 @@ static int open_input_dev(const char *name)
 
 		if (strncmp(buf, name, strlen(name)) == 0)
 			break;
+
+                /* newer kernels prefix the device name with 'ocb:' so try a match after the colon */
+                const char *colon = strchr(buf, ':');
+                if (colon) {
+                        if (strncmp(colon + 1, name, strlen(name)) == 0)
+                                break;
+                }
 	}
 
 	return fd;
