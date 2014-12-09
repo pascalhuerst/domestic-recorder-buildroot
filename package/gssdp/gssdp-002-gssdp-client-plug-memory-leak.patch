@@ -1,0 +1,38 @@
+From 5bdd23ef9a2ae42ce8500ae1cd3fce5a9fb02166 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Richard=20R=C3=B6jfors?= <richard@puffinpack.se>
+Date: Sat, 4 Oct 2014 03:40:57 +0200
+Subject: [PATCH] gssdp-client: Plug memory leak
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+In socket_source_callback all messages are leaked,
+plug that by unref each message and free the array.
+
+Signed-off-by: Richard Röjfors <richard.rojfors@gmail.com>
+---
+ libgssdp/gssdp-client.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/libgssdp/gssdp-client.c b/libgssdp/gssdp-client.c
+index 0fc7831..9ded993 100644
+--- a/libgssdp/gssdp-client.c
++++ b/libgssdp/gssdp-client.c
+@@ -1275,6 +1275,14 @@ out:
+         if (address)
+                 g_object_unref (address);
+ 
++        if (messages) {
++                int i;
++                for (i = 0; i < num_messages; i++)
++                        g_object_unref(messages[i]);
++
++                g_free(messages);
++        }
++
+         return TRUE;
+ }
+ 
+-- 
+1.9.1
+
