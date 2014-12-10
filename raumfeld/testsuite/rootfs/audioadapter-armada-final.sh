@@ -26,9 +26,14 @@ modprobe snd-soc-davinci-mcasp
 modprobe snd-soc-s800
 modprobe mwifiex_sdio
 
+# Enable the internal USB port on a Raumfeld Expand (version 2)
+if is_model "Base"; then
+    echo 50 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio50/direction
+    echo 1 > /sys/class/gpio/gpio50/value
+fi
 
 # Check if USB sound card is connected on a Raumfeld Element
-
 if is_model "Element"; then
     modprobe snd-usb-audio
     if test -n "$(cat /proc/asound/cards | grep USB)"; then
