@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# Final script for end of line tests, usually fully assembled.
-# Mostly the same for connector and speakers.
+# Final script for end of line tests on Raumfeld Expand 2
 
 
 source tests.inc
@@ -11,6 +10,17 @@ cd /tests
 led_off 1
 led_off 2
 led_off 3
+
+
+# Enable the internal USB port
+if is_model "Base"; then
+    echo 50 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio50/direction
+    echo 1 > /sys/class/gpio/gpio50/value
+fi
+
+# Load modules
+modprobe rt2800usb
 
 
 echo "*********** Raumfeld Tests starting ********"
