@@ -8,18 +8,14 @@ UBIDEV=0
 DTBMTD=7
 UBIMTD=8
 
-# check if we have 256 or 512 MiB available
-MTD8_SIZE=$(cat /proc/mtd | grep mtd8 | cut -d ' ' -f 2)
-if [ $MTD8_SIZE = 0f820000 ]; then
-	ROOT_SIZE=191MiB
-elif [ $MTD8_SIZE = 1f820000 ]; then
-	ROOT_SIZE=435MiB
-else
-	echo "Can not evaluate flash size. Aborting."
-	exit 1;
-fi
-
+ROOT_SIZE=191MiB
 UPDATE_SIZE=42MiB
+
+# check if we have 512 MiB available and enlarge the root partition accordingly
+MTD8_SIZE=$(cat /proc/mtd | grep mtd8 | cut -d ' ' -f 2)
+if [ $MTD8_SIZE = 1f820000 ]; then
+	ROOT_SIZE=435MiB
+fi
 
 # first, detach the volume attached by the kernel
 # (and don't fail if it isn't attached for whatever reason)
