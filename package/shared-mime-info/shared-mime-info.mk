@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-SHARED_MIME_INFO_VERSION = 0.90
-SHARED_MIME_INFO_SOURCE = shared-mime-info-$(SHARED_MIME_INFO_VERSION).tar.bz2
+SHARED_MIME_INFO_VERSION = 1.3
+SHARED_MIME_INFO_SOURCE = shared-mime-info-$(SHARED_MIME_INFO_VERSION).tar.xz
 SHARED_MIME_INFO_SITE = http://freedesktop.org/~hadess
 
 SHARED_MIME_INFO_INSTALL_STAGING = YES
