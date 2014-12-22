@@ -32,6 +32,11 @@ if test "$1" = add; then
     log "handle insertion of $DEVNAME"
 
     if [ -z "$ID_FS_UUID" ]; then
+        log "filesystem does not have UUID, using UUID from partition entry"
+        ID_FS_UUID="$ID_PART_ENTRY_UUID"
+    fi
+
+    if [ -z "$ID_FS_UUID" ]; then
         log "unable to determine UUID"
     	exit 0
     fi
@@ -49,7 +54,7 @@ if test "$1" = add; then
 
     log "starting usbmount add"
 
-    MOUNTPOINTS=$MOUNT_POINT PATH=$PATH /usr/share/usbmount/usbmount add
+    MOUNTPOINTS=$MOUNT_POINT PATH=$PATH ID_FS_UUID=$ID_FS_UUID /usr/share/usbmount/usbmount add
 
 elif test "$1" = remove; then
 
