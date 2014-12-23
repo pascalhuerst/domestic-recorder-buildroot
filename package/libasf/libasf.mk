@@ -16,24 +16,20 @@ endef
 LIBASF_POST_EXTRACT_HOOKS += LIBASF_COPY_FILES
 
 define LIBASF_CONFIGURE_CMDS
-        (cd $(@D); \
-                $(TARGET_CONFIGURE_OPTS)        \
-                $(MAKE1) clean \
-        )
+        (cd $(@D); $(TARGET_CONFIGURE_OPTS) $(MAKE1) clean)
 endef
 
 define LIBASF_BUILD_CMDS
-        (cd $(@D); $(TARGET_CONFIGURE_OPTS) $(MAKE))
+        (cd $(@D); $(TARGET_CONFIGURE_OPTS) $(MAKE1))
 endef
 
 define LIBASF_INSTALL_STAGING_CMDS
         (cd $(@D); \
-            $(TARGET_CONFIGURE_OPTS) $(MAKE) PACKAGE_DIR=/usr DESTDIR=$(STAGING_DIR) install)
+            $(TARGET_CONFIGURE_OPTS) $(MAKE1) PACKAGE_DIR=/usr DESTDIR=$(STAGING_DIR) install)
 endef
 
 define LIBASF_INSTALL_TARGET_CMDS
-        (cd $(@D); $(TARGET_CONFIGURE_OPTS) $(MAKE) DESTDIR=$(TARGET_DIR) \
-                install-exec)
+        (cd $(@D); $(TARGET_CONFIGURE_OPTS) $(MAKE1) DESTDIR=$(TARGET_DIR) install-exec)
 endef
 
 $(eval $(generic-package))
