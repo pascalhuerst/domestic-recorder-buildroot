@@ -8,9 +8,13 @@ targets="initramfs-arm imgrootfs-arm		\
          remotecontrol-arm	                \
          base-geode"
 
+
 # create a timestamp
 
 ./buildlog.sh $0 $*
+
+
+# check command-line parameters
 
 echo_usage() {
 cat << __EOF__ >&2
