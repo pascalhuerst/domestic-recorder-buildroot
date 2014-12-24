@@ -91,7 +91,7 @@ names=( \
     "Raumfeld Stereo L 2"   \
     "Raumfeld One S"        \
     "Raumfeld Stereo M 2"   \
-    "Raumfeld Base 2")
+    "Raumfeld Expand 2")
 
 case $target in
 	remotecontrol-arm)
