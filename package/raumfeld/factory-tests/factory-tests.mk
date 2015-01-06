@@ -4,7 +4,7 @@
 #
 #############################################################
 
-FACTORY_TESTS_DEPENDENCIES = host-pkgconf alsa-lib libraumfelddsp renderer-ng-extract
+FACTORY_TESTS_DEPENDENCIES = host-pkgconf alsa-lib libraumfelddsp renderer-extract
 
 FACTORY_TESTS_MODELS = raumfeld-one-s
 
