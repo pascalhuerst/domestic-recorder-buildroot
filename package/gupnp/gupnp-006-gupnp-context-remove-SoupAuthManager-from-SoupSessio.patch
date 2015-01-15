@@ -1,0 +1,32 @@
+From 6732beb4a0521c9f1e8aa4263a6acf8c633bfcf6 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Thu, 20 Nov 2014 17:23:03 +0100
+Subject: [PATCH] gupnp-context: remove SoupAuthManager from SoupSession
+
+This is mainly a workaround for crashes we have seen that
+involve SoupAuthManager. But in general it seems safe to
+assume that the SoupContext used for UPnP will not need
+client-side authentication support.
+---
+ libgupnp/gupnp-context.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/libgupnp/gupnp-context.c b/libgupnp/gupnp-context.c
+index adc0dea..5a7ff83 100644
+--- a/libgupnp/gupnp-context.c
++++ b/libgupnp/gupnp-context.c
+@@ -198,7 +198,10 @@ gupnp_context_initable_init (GInitable     *initable,
+                  g_main_context_get_thread_default (),
+                  NULL);
+ 
+-        user_agent = g_strdup_printf ("%s GUPnP/" VERSION " DLNADOC/1.50",
++	soup_session_remove_feature_by_type (context->priv->session,
++					     SOUP_TYPE_AUTH_MANAGER);
++
++	user_agent = g_strdup_printf ("%s GUPnP/" VERSION " DLNADOC/1.50",
+                                       g_get_prgname ()? : "");
+         g_object_set (context->priv->session,
+                       SOUP_SESSION_USER_AGENT,
+-- 
+1.9.3
+
