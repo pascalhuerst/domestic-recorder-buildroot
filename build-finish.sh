@@ -9,9 +9,13 @@ targets="initramfs-arm imgrootfs-arm		\
          base-armada                            \
          base-geode"
 
+
 # create a timestamp
 
 ./buildlog.sh $0 $*
+
+
+# check command-line parameters
 
 echo_usage() {
 cat << __EOF__ >&2

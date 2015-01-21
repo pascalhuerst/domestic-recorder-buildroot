@@ -73,6 +73,7 @@ make oldconfig
 
 # cleanup from previous builds
 
+make raumfeld-dirclean
 make clean
 
 
