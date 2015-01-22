@@ -12,7 +12,7 @@ SLY_TOOLKIT_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
 	ac_cv_path_GLIB_MKENUMS=$(HOST_DIR)/usr/bin/glib-mkenums
 
-SLY_TOOLKIT_CONF_OPT = \
+SLY_TOOLKIT_CONF_OPTS = \
 	--enable-shared		\
 	--disable-explicit-deps \
 	--disable-glibtest	\
