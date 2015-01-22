@@ -3,6 +3,7 @@
 # taglib-extras
 #
 #############################################################
+
 TAGLIB_EXTRAS_VERSION = 0.1.6
 TAGLIB_EXTRAS_SOURCE = taglib-extras-$(TAGLIB_EXTRAS_VERSION).tar.gz
 TAGLIB_EXTRAS_SITE = http://kollide.net/~jefferai
@@ -12,7 +13,7 @@ TAGLIB_EXTRAS_SOVERSION = 0.1.0
 
 TAGLIB_EXTRAS_DEPENDENCIES = taglib
 
-TAGLIB_EXTRAS_CONF_OPT = \
+TAGLIB_EXTRAS_CONF_OPTS = \
 	-DCMAKE_LINKER_FLAGS=-L$(STAGING_DIR)/usr/lib \
 	-DCMAKE_SHARED_LINKER_FLAGS=-L$(STAGING_DIR)/usr/lib \
 
