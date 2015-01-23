@@ -4,7 +4,7 @@
 #
 #############################################################
 
-REMOTE_CONTROL_GETTEXTIZE = YES
+REMOTE_CONTROL_INTLTOOLIZE = YES
 
 REMOTE_CONTROL_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
