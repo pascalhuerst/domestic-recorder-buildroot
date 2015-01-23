@@ -21,6 +21,7 @@ rm -f  $1/lib/udev/rules.d/60-persistent-storage-tape.rules
 rm -f  $1/lib/udev/rules.d/60-persistent-v4l.rules
 rm -f  $1/lib/udev/rules.d/61-accelerometer.rules
 rm -f  $1/lib/udev/rules.d/78-sound-card.rules
+rm -f  $1/lib/udev/rules.d/80-net-name-slot.rules
 rm -fr $1/media/usb*
 rm -fr $1/usr/include
 rm -f  $1/usr/bin/arm-linux-directfb-csource

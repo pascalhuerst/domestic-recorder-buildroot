@@ -6,7 +6,7 @@
 
 LIBRAUMFELDCPP_INSTALL_STAGING = YES
 
-LIBRAUMFELDCPP_CONF_OPT = \
+LIBRAUMFELDCPP_CONF_OPTS = \
 	--enable-shared		\
 	--disable-explicit-deps \
 	--disable-glibtest
