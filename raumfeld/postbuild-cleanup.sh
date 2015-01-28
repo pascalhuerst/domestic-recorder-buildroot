@@ -8,6 +8,7 @@ test -d $1/etc/raumfeld/ || mkdir $1/etc/raumfeld/
 echo "Purging unwanted files ..."
 
 rm -fr $1/etc/bash_completion.d
+rm -fr $1/etc/udev/hwdb.d
 rm -fr $1/etc/usbmount/usbmount.d
 rm -fr $1/home
 rm -f  $1/lib/udev/accelerometer
