@@ -43,9 +43,17 @@ set -e
 if [ ! -z "$update_configs" ]; then
 	for x in $targets; do
 		echo "updating config for $x ..."
+		if [ -e .config ]; then
+		    mv .config .config.last.active
+		else
+			rm -f .config.last.active
+		fi
 		cp raumfeld/br2-$x.config .config
 		/usr/bin/make oldconfig
 		cp .config raumfeld/br2-$x.config
+		if [ -e .config.last.active ]; then
+		    mv .config.last.active .config
+		fi
 	done
 
 	exit 0
