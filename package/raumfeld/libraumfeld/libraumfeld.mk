@@ -24,6 +24,6 @@ LIBRAUMFELD_CONF_OPTS += --enable-profiling
 endif
 
 LIBRAUMFELD_DEPENDENCIES = \
-	host-pkgconf host-libglib2 avahi gupnp-av openssl libglib2 libarchive libunwind
+	host-pkgconf host-libglib2 avahi gupnp-av openssl libglib2 libarchive libunwind yajl
 
 $(eval $(raumfeld-autotools-package))
