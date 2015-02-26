@@ -37,18 +37,23 @@ mkdir -p $tmpdir/tmp
 
 cp $kexec $tmpdir/tmp/raumfeld-update.zImage
 
-if [ $target = audioadapter-armada ]; then
-    HOSTDIR=$(pwd)/output/host
-
-    # first copy the device-tree blobs for direct inclusion
-    cp output/images/dts/*.dtb $tmpdir/tmp
-    # work around a bug in the update mechanism in 1.10
-    # which looks for the files without the .dtb extension
-    cp $tmpdir/tmp/am33xx-raumfeld-connector-0-0.dtb $tmpdir/tmp/am33xx-raumfeld-connector-0-0
-
-    # then copy the cramfs containing the device-tree blobs
-    cp output/images/dts.cramfs $tmpdir/tmp
-fi
+case $target in
+    audioadapter-armada)
+        # first copy all am33xx-raumfeld device-tree blobs for direct inclusion
+        cp output/images/dts/am33xx-raumfeld-*.dtb $tmpdir/tmp
+        # work around a bug in the update mechanism in 1.10
+        # which looks for the files without the .dtb extension
+        cp $tmpdir/tmp/am33xx-raumfeld-connector-0-0.dtb $tmpdir/tmp/am33xx-raumfeld-connector-0-0
+        # then copy the cramfs containing the device-tree blobs
+        cp output/images/dts.cramfs $tmpdir/tmp
+        ;;
+    base-armada)
+        # first copy the am33xx-raumfeld-base device-tree blobs for direct inclusion
+        cp output/images/dts/am33xx-raumfeld-base-*.dtb $tmpdir/tmp
+        # then copy the cramfs containing the device-tree blobs
+        cp output/images/dts.cramfs $tmpdir/tmp
+        ;;
+esac
 
 for bootloader in $(echo $bootloaders | tr ',' ' '); do
     cp $bootloader $tmpdir/tmp
@@ -90,14 +95,17 @@ names=( \
     "Raumfeld One Bar")
 
 case $target in
+	remotecontrol-arm)
+		hardwareids="2"
+		;;
 	audioadapter-arm)
 		hardwareids="3 4 6 7 8"
 		;;
 	audioadapter-armada)
 		hardwareids="9 10 11 12 13 14 16"
 		;;
-	remotecontrol-arm)
-		hardwareids="2"
+	base-armada)
+		hardwareids="15"
 		;;
 	base-geode)
 		hardwareids="5"
