@@ -26,9 +26,7 @@ modprobe snd-soc-davinci-mcasp
 modprobe snd-soc-s800
 modprobe mwifiex_sdio
 
-
 # Check if USB sound card is connected on a Raumfeld Element
-
 if is_model "Element"; then
     modprobe snd-usb-audio
     if test -n "$(cat /proc/asound/cards | grep USB)"; then

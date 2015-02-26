@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Power on the internal USB port with WiFi module.
+#
+
+case "$1" in
+    start)
+        echo 50 > /sys/class/gpio/export
+        echo out > /sys/class/gpio/gpio50/direction
+        echo 1 > /sys/class/gpio/gpio50/value
+	;;
+    stop)
+        echo 0 > /sys/class/gpio/gpio50/value
+        ;;
+    *)
+        ;;
+esac
+
+exit 0

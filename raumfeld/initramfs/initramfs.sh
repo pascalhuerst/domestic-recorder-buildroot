@@ -18,6 +18,9 @@ case "$hw" in
 	offset="8658944"
         model=$(cat /proc/device-tree/model | cut -f 2 -d' ')
         case "$model" in
+            Base)
+                img="base2.img"
+                ;;
             Connector)
                 img="connect2.img"
                 ;;
