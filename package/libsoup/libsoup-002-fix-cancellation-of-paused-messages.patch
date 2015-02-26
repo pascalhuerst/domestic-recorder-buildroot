@@ -1,0 +1,37 @@
+From b5b8b63907b98e50b140b99842b993206dde09bf Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Wed, 25 Feb 2015 10:18:01 +0100
+Subject: [PATCH 2/2] soup-session: fix cancellation of paused messages
+
+If a paused message is cancelled the SoupSessionCallback
+would not have always been called. This is fixed by making
+sure that the message I/O is unpaused when the message
+is cancelled.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=745094
+---
+ libsoup/soup-session.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/libsoup/soup-session.c b/libsoup/soup-session.c
+index f2bd34b..bec4c92 100644
+--- a/libsoup/soup-session.c
++++ b/libsoup/soup-session.c
+@@ -2372,7 +2372,13 @@ soup_session_real_cancel_message (SoupSession *session, SoupMessage *msg, guint
+ 	item = soup_message_queue_lookup (priv->queue, msg);
+ 	g_return_if_fail (item != NULL);
+ 
+-	item->paused = FALSE;
++	if (item->paused) {
++		item->paused = FALSE;
++
++		if (item->state == SOUP_MESSAGE_RUNNING)
++			soup_message_io_unpause (msg);
++	}
++
+ 	soup_message_set_status (msg, status_code);
+ 	g_cancellable_cancel (item->cancellable);
+ 
+-- 
+1.9.1
+
