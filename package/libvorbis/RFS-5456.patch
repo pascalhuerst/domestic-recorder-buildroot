@@ -1,0 +1,14 @@
+diff --git a/lib/synthesis.c b/lib/synthesis.c
+index 1af211d..55a0d5f 100644
+--- a/lib/synthesis.c
++++ b/lib/synthesis.c
+@@ -165,6 +165,9 @@ long vorbis_packet_blocksize(vorbis_info *vi,ogg_packet *op){
+     mode=oggpack_read(&opb,modebits);
+   }
+   if(mode==-1)return(OV_EBADPACKET);
++  if(!ci->mode_param[mode]){
++    return(OV_EBADPACKET);
++  }
+   return(ci->blocksizes[ci->mode_param[mode]->blockflag]);
+ }
+ 
