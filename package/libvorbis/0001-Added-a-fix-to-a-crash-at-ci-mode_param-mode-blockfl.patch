@@ -1,0 +1,27 @@
+From 6e78c0ad6cccb859f143370fdc251edfcbb91c9b Mon Sep 17 00:00:00 2001
+From: Max Blagay <max.blagaj@gmail.com>
+Date: Thu, 5 Mar 2015 11:03:39 +0100
+Subject: [PATCH] Added a fix to a crash at ci->mode_param[mode]->blockflag
+ when library is not initialized properly
+
+---
+ lib/synthesis.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/lib/synthesis.c b/lib/synthesis.c
+index 1af211d..55a0d5f 100644
+--- a/lib/synthesis.c
++++ b/lib/synthesis.c
+@@ -165,6 +165,9 @@ long vorbis_packet_blocksize(vorbis_info *vi,ogg_packet *op){
+     mode=oggpack_read(&opb,modebits);
+   }
+   if(mode==-1)return(OV_EBADPACKET);
++  if(!ci->mode_param[mode]){
++    return(OV_EBADPACKET);
++  }
+   return(ci->blocksizes[ci->mode_param[mode]->blockflag]);
+ }
+ 
+-- 
+1.9.1
+
