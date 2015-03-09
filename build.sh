@@ -15,7 +15,7 @@ targets="initramfs-arm imgrootfs-arm		\
 
 echo_usage() {
 cat << __EOF__ >&2
-Usage: $0 --target=<target> [--image=<image> --build=<number>]
+Usage: $0 --target=<target> [--image=<image> --version=<version> --build=<number>]
        $0 --update-configs
 
    target is one of
@@ -26,7 +26,9 @@ for t in $targets; do echo "		$t"; done
 cat << __EOF__ >&2
 
    image   is optional and can be one of 'init flash final'
-   build   is an optional number needed for the update image
+   version is optional and can be used to specify the version;
+           if unspecified the version is taken from the last git tag
+   build   is an optional number which is appened to the version
 
    If --update-configs is specified, the target configs are all ran
    thru 'make oldconfig'. No further action is taken.
@@ -87,8 +89,10 @@ make clean
 
 # update the raumfeld-version
 
-git_version=$(git describe --tags --abbrev=0)
-version=${git_version#raumfeld-}
+if [ -z "$version" ]; then
+  git_version=$(git describe --tags --abbrev=0)
+  version=${git_version#raumfeld-}
+fi
 
 if [ -n "$build" ]; then
   versionstr="$version.$build"
