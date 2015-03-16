@@ -11,9 +11,14 @@ case "$1" in
        # - set the standby (spindown) delay to 10 minutes
        hdparm -Xudma2 -B 128 -S 120 /dev/hda
 
-       # start the master-process
-       cd /raumfeld/master-process
-       ./raumfeld-master-sh.sh &
+       # start the setup process
+       connmanctl enable wifi
+       sleep 1
+       # TODO: pick wlan frequency via select-wlan-channel
+       connmanctl tether wifi on 'Raumfeld Setup' '' 2452 lone-ap
+
+       cd /raumfeld/raumfeld-setup
+       ./raumfeld-setup --verbose &
        ;;
   *)
        ;;

@@ -1,8 +1,7 @@
-From def172a44818aa83e646b42536d6c1d5dfec1749 Mon Sep 17 00:00:00 2001
+From 4a85004faabd80a57720c7e90dff8084a03adaa1 Mon Sep 17 00:00:00 2001
 From: Oliver Tappe <zooey@hirschkaefer.de>
 Date: Thu, 12 Mar 2015 15:30:07 +0100
-Subject: [PATCH 3/3] connman: RFS-5503 -> Fix lone-ap mode for mwifiex
- devices.
+Subject: [PATCH] connman: RFS-5503 -> Fix lone-ap mode for mwifiex devices.
 
 * For some unknown reason, the tether bridge device does not see the
   dhcp requests done by the first connecting client.
@@ -13,149 +12,157 @@ Subject: [PATCH 3/3] connman: RFS-5503 -> Fix lone-ap mode for mwifiex
   concern in connman's code), but it seems to work such that even the
   first client can connect to the soft-AP of mwifiex devices reliably.
 ---
- include/technology.h       |  2 +-
- plugins/bluetooth.c        |  2 +-
- plugins/bluetooth_legacy.c |  4 ++--
- plugins/ethernet.c         |  4 ++--
- plugins/gadget.c           |  4 ++--
- plugins/wifi.c             |  8 ++++----
- src/connman.h              |  2 +-
- src/technology.c           |  4 ++--
- src/tethering.c            | 38 ++++++++++++++++++++++++++++----------
- 9 files changed, 43 insertions(+), 25 deletions(-)
+ client/commands.c    | 43 +++++++++++++++++++++++++++++++++++--------
+ include/technology.h |  2 ++
+ plugins/wifi.c       |  8 ++++++++
+ src/connman.h        |  2 +-
+ src/technology.c     | 49 ++++++++++++++++++++++++++++++++++++++++++++++---
+ src/tethering.c      | 38 ++++++++++++++++++++++++++++----------
+ 6 files changed, 120 insertions(+), 22 deletions(-)
 
-diff --git a/include/technology.h b/include/technology.h
-index 1c2bb2b..90ccb81 100644
---- a/include/technology.h
-+++ b/include/technology.h
-@@ -43,7 +43,7 @@ enum tethering_mode {
- struct connman_technology;
+diff --git a/client/commands.c b/client/commands.c
+index 9fdc24a..55d8a59 100644
+--- a/client/commands.c
++++ b/client/commands.c
+@@ -492,19 +492,22 @@ struct tether_properties {
+ 	int passphrase_result;
+ 	int frequency_result;
+ 	int mode_result;
++	int interface_result;
+ 	int set_tethering;
+ };
  
- void connman_technology_tethering_notify(struct connman_technology *technology,
--							bool enabled);
-+							bool enabled, const char *ifname);
- int connman_technology_set_regdom(const char *alpha2);
- void connman_technology_regdom_notify(struct connman_technology *technology,
- 							const char *alpha2);
-diff --git a/plugins/bluetooth.c b/plugins/bluetooth.c
-index d9d4b18..5d53547 100644
---- a/plugins/bluetooth.c
-+++ b/plugins/bluetooth.c
-@@ -688,7 +688,7 @@ static void tethering_create_cb(DBusMessage *message, void *user_data)
+ static int tether_update(struct tether_properties *tether)
+ {
+ 	if (tether->ssid_result == 0 && tether->passphrase_result == 0 &&
+-			tether->frequency_result == 0 && tether->mode_result == 0)
++			tether->frequency_result == 0 && tether->mode_result == 0 &&
++			tether->interface_result == 0)
+ 		return tether_set("wifi", tether->set_tethering);
  
- 	if (tethering->technology)
- 		connman_technology_tethering_notify(tethering->technology,
--				tethering->enable);
-+				tethering->enable, NULL);
- }
- 
- static void tethering_append(DBusMessageIter *iter, void *user_data)
-diff --git a/plugins/bluetooth_legacy.c b/plugins/bluetooth_legacy.c
-index 0ab9b92..5a9efb6 100644
---- a/plugins/bluetooth_legacy.c
-+++ b/plugins/bluetooth_legacy.c
-@@ -1122,7 +1122,7 @@ static void server_register_reply(DBusPendingCall *call, void *user_data)
- 	dbus_message_unref(reply);
- 	dbus_pending_call_unref(call);
- 
--	connman_technology_tethering_notify(technology, true);
-+	connman_technology_tethering_notify(technology, true, NULL);
- }
- 
- static void server_unregister_reply(DBusPendingCall *call, void *user_data)
-@@ -1148,7 +1148,7 @@ static void server_unregister_reply(DBusPendingCall *call, void *user_data)
- 	dbus_message_unref(reply);
- 	dbus_pending_call_unref(call);
- 
--	connman_technology_tethering_notify(technology, false);
-+	connman_technology_tethering_notify(technology, false, NULL);
- }
- 
- 
-diff --git a/plugins/ethernet.c b/plugins/ethernet.c
-index c335f0c..460e5b0 100644
---- a/plugins/ethernet.c
-+++ b/plugins/ethernet.c
-@@ -276,7 +276,7 @@ static void eth_tech_enable_tethering(struct connman_technology *technology,
- 				remove_network(device, ethernet);
- 		}
- 
--		connman_technology_tethering_notify(technology, true);
-+		connman_technology_tethering_notify(technology, true, NULL);
- 
- 		connman_inet_ifup(index);
- 
-@@ -298,7 +298,7 @@ static void eth_tech_disable_tethering(struct connman_technology *technology,
- 
- 		connman_inet_remove_from_bridge(index, bridge);
- 
--		connman_technology_tethering_notify(technology, false);
-+		connman_technology_tethering_notify(technology, false, NULL);
- 
- 		if (device)
- 			connman_device_reconnect_service(device);
-diff --git a/plugins/gadget.c b/plugins/gadget.c
-index 1569724..3ae74ec 100644
---- a/plugins/gadget.c
-+++ b/plugins/gadget.c
-@@ -265,7 +265,7 @@ static void gadget_tech_enable_tethering(struct connman_technology *technology,
- 				remove_network(device, gadget);
- 		}
- 
--		connman_technology_tethering_notify(technology, true);
-+		connman_technology_tethering_notify(technology, true, NULL);
- 
- 		connman_inet_ifup(index);
- 
-@@ -285,7 +285,7 @@ static void gadget_tech_disable_tethering(struct connman_technology *technology,
- 
- 		connman_inet_ifdown(index);
- 
--		connman_technology_tethering_notify(technology, false);
-+		connman_technology_tethering_notify(technology, false, NULL);
- 	}
- }
- 
-diff --git a/plugins/wifi.c b/plugins/wifi.c
-index c2925de..24bae74 100644
---- a/plugins/wifi.c
-+++ b/plugins/wifi.c
-@@ -2920,7 +2920,7 @@ static void ap_start_callback(int result, GSupplicantInterface *interface,
- 	if (result < 0) {
- 		connman_inet_remove_from_bridge(info->wifi->index,
- 							info->wifi->bridge);
--		connman_technology_tethering_notify(info->technology, false);
-+		connman_technology_tethering_notify(info->technology, false, NULL);
- 	}
- 
- 	g_free(info->ifname);
-@@ -2939,7 +2939,7 @@ static void ap_create_callback(int result,
- 	if (result < 0) {
- 		connman_inet_remove_from_bridge(info->wifi->index,
- 							info->wifi->bridge);
--		connman_technology_tethering_notify(info->technology, false);
-+		connman_technology_tethering_notify(info->technology, false, NULL);
- 
- 		g_free(info->ifname);
- 		g_free(info->ssid);
-@@ -2977,7 +2977,7 @@ static void sta_remove_callback(int result,
- 
- 	info->wifi->interface = NULL;
- 
--	connman_technology_tethering_notify(info->technology, true);
-+	connman_technology_tethering_notify(info->technology, true, info->ifname);
- 
- 	g_supplicant_interface_create(info->ifname, driver, info->wifi->bridge,
- 						ap_create_callback,
-@@ -3013,7 +3013,7 @@ static int tech_set_tethering(struct connman_technology *technology,
- 			}
- 		}
- 
--		connman_technology_tethering_notify(technology, false);
-+		connman_technology_tethering_notify(technology, false, NULL);
- 
+ 	if (tether->ssid_result != -EINPROGRESS &&
+ 			tether->passphrase_result != -EINPROGRESS &&
+ 			tether->frequency_result != -EINPROGRESS &&
+-			tether->mode_result != -EINPROGRESS) {
++			tether->mode_result != -EINPROGRESS &&
++			tether->interface_result != -EINPROGRESS) {
+ 		g_free(tether);
  		return 0;
  	}
+@@ -576,8 +579,24 @@ static int tether_set_mode_return(DBusMessageIter *iter,
+ 	return tether_update(tether);
+ }
+ 
++static int tether_set_interface_return(DBusMessageIter *iter, const char *error,
++		void *user_data)
++{
++	struct tether_properties *tether = user_data;
++
++	if (!error) {
++		fprintf(stdout, "Wifi interface set\n");
++		tether->interface_result = 0;
++	} else {
++		fprintf(stderr, "Error setting wifi interface: %s\n", error);
++		tether->interface_result = -EINVAL;
++	}
++
++	return tether_update(tether);
++}
++
+ static int tether_set_ssid(char *ssid, char *passphrase, char *frequency,
+-		char *mode, int set_tethering)
++		char *mode, char *interface, int set_tethering)
+ {
+ 	struct tether_properties *tether = g_new(struct tether_properties, 1);
+ 
+@@ -607,10 +626,17 @@ static int tether_set_ssid(char *ssid, char *passphrase, char *frequency,
+ 			tether_set_mode_return, tether,
+ 			"TetheringMode", DBUS_TYPE_STRING, &mode);
+ 
++	tether->interface_result =__connmanctl_dbus_set_property(connection,
++			"/net/connman/technology/wifi",
++			"net.connman.Technology",
++			tether_set_interface_return, tether,
++			"TetheringInterface", DBUS_TYPE_STRING, &interface);
++
+ 	if (tether->ssid_result != -EINPROGRESS &&
+ 			tether->passphrase_result != -EINPROGRESS &&
+ 			tether->frequency_result != -EINPROGRESS &&
+-			tether->mode_result != -EINPROGRESS) {
++			tether->mode_result != -EINPROGRESS  &&
++			tether->interface_result != -EINPROGRESS) {
+ 		g_free(tether);
+ 		return -ENXIO;
+ 	}
+@@ -620,7 +646,7 @@ static int tether_set_ssid(char *ssid, char *passphrase, char *frequency,
+ 
+ static int cmd_tether(char *args[], int num, struct connman_option *options)
+ {
+-	char *ssid, *passphrase, *frequency, *mode;
++	char *ssid, *passphrase, *frequency, *mode, *interface;
+ 	int set_tethering;
+ 
+ 	if (num < 3)
+@@ -630,15 +656,16 @@ static int cmd_tether(char *args[], int num, struct connman_option *options)
+ 
+ 	if (strcmp(args[1], "wifi") == 0) {
+ 
+-		if (num > 7)
++		if (num > 8)
+ 			return -E2BIG;
+ 
+ 		ssid = num > 3 ? args[3] : "";
+ 		passphrase = num > 4 ? args[4] : "";
+ 		frequency = num > 5 ? args[5] : "";
+ 		mode = num > 6 ? args[6] : "nat";
++		interface = num > 7 ? args[7] : "wlan0";
+ 
+-		if (num == 7 && set_tethering == -1)
++		if (num == 8 && set_tethering == -1)
+ 			return -EINVAL;
+ 
+ 		if (num == 4)
+@@ -646,7 +673,7 @@ static int cmd_tether(char *args[], int num, struct connman_option *options)
+ 
+ 		if (num > 3)
+ 			return tether_set_ssid(ssid, passphrase, frequency,
+-					mode, set_tethering);
++					mode, interface, set_tethering);
+ 	}
+ 
+ 	if (num > 3)
+diff --git a/include/technology.h b/include/technology.h
+index 1c2bb2b..1c20c0a 100644
+--- a/include/technology.h
++++ b/include/technology.h
+@@ -52,6 +52,8 @@ bool connman_technology_get_wifi_tethering(const char **ssid,
+ 							const char **psk);
+ bool connman_technology_is_tethering_allowed(enum connman_service_type type);
+ 
++const char *connman_technology_get_tethering_interface(struct connman_technology *technology);
++
+ struct connman_technology_driver {
+ 	const char *name;
+ 	enum connman_service_type type;
+diff --git a/plugins/wifi.c b/plugins/wifi.c
+index c2925de..9013e73 100644
+--- a/plugins/wifi.c
++++ b/plugins/wifi.c
+@@ -3027,6 +3027,14 @@ static int tech_set_tethering(struct connman_technology *technology,
+ 			continue;
+ 
+ 		ifname = g_supplicant_interface_get_ifname(wifi->interface);
++		const char *tethering_interface =
++			connman_technology_get_tethering_interface(technology);
++		if (tethering_interface &&
++			g_strcmp0(tethering_interface, ifname) != 0) {
++			DBG("%s does not match explicitly set tethering interface %s",
++				ifname, tethering_interface);
++			continue;
++		}
+ 
+ 		mode = g_supplicant_interface_get_mode(interface);
+ 		if ((mode & G_SUPPLICANT_CAPABILITY_MODE_AP) == 0) {
 diff --git a/src/connman.h b/src/connman.h
 index 1f855e3..ca35d81 100644
 --- a/src/connman.h
@@ -170,27 +177,111 @@ index 1f855e3..ca35d81 100644
  
  int __connman_private_network_request(DBusMessage *msg, const char *owner);
 diff --git a/src/technology.c b/src/technology.c
-index 8c8b349..da3ae7e 100644
+index 8c8b349..ecf60ba 100644
 --- a/src/technology.c
 +++ b/src/technology.c
-@@ -251,7 +251,7 @@ static void tethering_changed(struct connman_technology *technology)
- }
+@@ -68,6 +68,7 @@ struct connman_technology {
+ 	char *tethering_passphrase;
+ 	char *tethering_frequency;
+ 	enum tethering_mode tethering_mode;
++	char *tethering_interface;
  
- void connman_technology_tethering_notify(struct connman_technology *technology,
--							bool enabled)
-+							bool enabled, const char *ifname)
- {
- 	DBG("technology %p enabled %u", technology, enabled);
+ 	bool enable_persistent; /* Save the tech state */
  
-@@ -263,7 +263,7 @@ void connman_technology_tethering_notify(struct connman_technology *technology,
+@@ -229,6 +230,11 @@ static void technology_save(struct connman_technology *technology)
+ 		g_key_file_set_string(keyfile, identifier,
+ 					"Tethering.Mode", tether_mode);
+ 
++	if (technology->tethering_interface)
++		g_key_file_set_string(keyfile, identifier,
++					"Tethering.Interface",
++					technology->tethering_interface);
++
+ done:
+ 	g_free(identifier);
+ 
+@@ -262,9 +268,10 @@ void connman_technology_tethering_notify(struct connman_technology *technology,
+ 
  	tethering_changed(technology);
  
- 	if (enabled)
+-	if (enabled)
 -		__connman_tethering_set_enabled(technology->tethering_mode);
+-	else
++	if (enabled) {
++		const char *ifname = technology->tethering_interface ? technology->tethering_interface : "wlan0";
 +		__connman_tethering_set_enabled(technology->tethering_mode, ifname);
- 	else
++	} else
  		__connman_tethering_set_disabled(technology->tethering_mode);
  }
+ 
+@@ -483,6 +490,9 @@ static void technology_load(struct connman_technology *technology)
+ 			? TETHERING_MODE_NAT
+ 			: tether_mode;
+ 
++	technology->tethering_interface = g_key_file_get_string(keyfile,
++				identifier, "Tethering.Interface", NULL);
++
+ done:
+ 	g_free(identifier);
+ 
+@@ -592,6 +602,11 @@ static void append_properties(DBusMessageIter *iter,
+ 		connman_dbus_dict_append_basic(&dict, "TetheringMode",
+ 					DBUS_TYPE_STRING, &str);
+ 
++	if (technology->tethering_interface)
++		connman_dbus_dict_append_basic(&dict, "TetheringInterface",
++					DBUS_TYPE_STRING,
++					&technology->tethering_interface);
++
+ 	connman_dbus_dict_close(iter, &dict);
+ }
+ 
+@@ -1040,6 +1055,28 @@ static DBusMessage *set_property(DBusConnection *conn,
+ 						DBUS_TYPE_STRING,
+ 						&str);
+ 		}
++	} else if (g_str_equal(name, "TetheringInterface")) {
++		const char *str;
++
++		dbus_message_iter_get_basic(&value, &str);
++
++		if (technology->type != CONNMAN_SERVICE_TYPE_WIFI)
++			return __connman_error_not_supported(msg);
++
++		if (strlen(str) < 1 || strlen(str) > 8)
++			return __connman_error_invalid_arguments(msg);
++
++		if (g_strcmp0(technology->tethering_interface, str) != 0) {
++			g_free(technology->tethering_interface);
++			technology->tethering_interface = g_strdup(str);
++			technology_save(technology);
++
++			connman_dbus_property_changed_basic(technology->path,
++						CONNMAN_TECHNOLOGY_INTERFACE,
++						"TetheringInterface",
++						DBUS_TYPE_STRING,
++						&technology->tethering_interface);
++		}
+ 	} else if (g_str_equal(name, "Powered")) {
+ 		dbus_bool_t enable;
+ 
+@@ -1253,6 +1290,7 @@ static void technology_put(struct connman_technology *technology)
+ 	g_free(technology->tethering_ident);
+ 	g_free(technology->tethering_passphrase);
+ 	g_free(technology->tethering_frequency);
++	g_free(technology->tethering_interface);
+ 	g_free(technology);
+ }
+ 
+@@ -1928,3 +1966,8 @@ void __connman_technology_cleanup(void)
+ 
+ 	dbus_connection_unref(connection);
+ }
++
++const char *connman_technology_get_tethering_interface(struct connman_technology *technology)
++{
++	return technology->tethering_interface;
++}
 diff --git a/src/tethering.c b/src/tethering.c
 index c465e79..b8c984b 100644
 --- a/src/tethering.c
