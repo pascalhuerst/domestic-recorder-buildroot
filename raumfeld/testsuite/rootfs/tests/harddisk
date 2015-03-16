@@ -23,7 +23,7 @@ __EOF__
 
 for x in 1 2 3; do
 	echo "****** Creating filesystem $x/3. ******"
-	mkfs.ext3 ${DEV}${x}
+	mkfs.ext3 -F ${DEV}${x}
 done
 
 mkdir $TMPROOT
