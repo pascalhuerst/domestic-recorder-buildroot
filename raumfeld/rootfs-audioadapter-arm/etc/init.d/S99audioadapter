@@ -3,8 +3,14 @@
 
 case "$1" in
   start)
-        cd /raumfeld/master-process/
-        ./raumfeld-master-sh.sh &
+	iw dev wlan0 interface add uap0 type __ap
+	connmanctl enable wifi
+	sleep 1
+	# TODO: pick wlan frequency via select-wlan-channel
+	connmanctl tether wifi on 'RaumfeldNewSetup' '' 2452 lone-ap uap0
+
+	cd /raumfeld/raumfeld-setup
+	./raumfeld-setup --verbose &
 	;;
   *)
         ;;
