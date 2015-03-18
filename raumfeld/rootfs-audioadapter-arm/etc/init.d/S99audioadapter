@@ -3,14 +3,6 @@
 
 case "$1" in
   start)
-	iw dev wlan0 interface add uap0 type __ap
-	connmanctl enable wifi
-	sleep 1
-	# TODO: pick wlan frequency via select-wlan-channel
-	connmanctl tether wifi on 'Raumfeld Setup' '' 2452 lone-ap uap0
-
-	cd /raumfeld/raumfeld-setup
-	./raumfeld-setup --verbose &
 	;;
   *)
         ;;
