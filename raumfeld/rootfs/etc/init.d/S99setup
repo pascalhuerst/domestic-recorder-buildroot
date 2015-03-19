@@ -2,13 +2,6 @@
 
 case "$1" in
   start)
-       echo "starting connman"
-       iw dev wlan0 interface add uap0 type __ap
-       connmanctl enable wifi
-       sleep 1
-       # TODO: pick wlan frequency via select-wlan-channel
-       connmanctl tether wifi on 'Raumfeld Setup' '' 2452 lone-ap
-
        echo "starting logger"
        mknod /var/run/raumfeld-setup-logger-pipe pipe
        logger -t "raumfeld" < /var/run/raumfeld-setup-logger-pipe &
