@@ -1,4 +1,4 @@
-From 089e71a878e8306f08b0ed8c0b4a161301fbdeb0 Mon Sep 17 00:00:00 2001
+From f9a67dfd405b4b8819263775477234f0a19c7598 Mon Sep 17 00:00:00 2001
 From: Oliver Tappe <zooey@hirschkaefer.de>
 Date: Mon, 9 Mar 2015 15:51:29 +0100
 Subject: [PATCH 1/3] Export BSSID and Frequency via D-Bus.
@@ -9,10 +9,11 @@ Subject: [PATCH 1/3] Export BSSID and Frequency via D-Bus.
  plugins/wifi.c            |  4 ++++
  src/network.c             |  8 ++++++++
  src/service.c             | 10 ++++++++++
+ tools/supplicant.h        |  1 +
  6 files changed, 32 insertions(+)
 
 diff --git a/gsupplicant/gsupplicant.h b/gsupplicant/gsupplicant.h
-index 187dc65..c44f751 100644
+index 187dc65..0234b2f 100644
 --- a/gsupplicant/gsupplicant.h
 +++ b/gsupplicant/gsupplicant.h
 @@ -308,6 +308,7 @@ const char *g_supplicant_network_get_identifier(GSupplicantNetwork *network);
@@ -24,7 +25,7 @@ index 187dc65..c44f751 100644
  const char *g_supplicant_network_get_security(GSupplicantNetwork *network);
  dbus_int16_t g_supplicant_network_get_signal(GSupplicantNetwork *network);
 diff --git a/gsupplicant/supplicant.c b/gsupplicant/supplicant.c
-index cd91f95..3135327 100644
+index cd91f95..917c0f8 100644
 --- a/gsupplicant/supplicant.c
 +++ b/gsupplicant/supplicant.c
 @@ -956,6 +956,14 @@ const char *g_supplicant_network_get_identifier(GSupplicantNetwork *network)
@@ -34,7 +35,7 @@ index cd91f95..3135327 100644
 +const unsigned char *g_supplicant_network_get_bssid (GSupplicantNetwork *network)
 +{
 +	if (!network || !network->best_bss)
-+		return "";
++		return (unsigned char *)"";
 +
 +	return network->best_bss->bssid;
 +}
@@ -125,6 +126,18 @@ index f5fb868..05dda19 100644
  	case CONNMAN_SERVICE_TYPE_ETHERNET:
  	case CONNMAN_SERVICE_TYPE_BLUETOOTH:
  	case CONNMAN_SERVICE_TYPE_GADGET:
+diff --git a/tools/supplicant.h b/tools/supplicant.h
+index 556dc7d..c4924f4 100644
+--- a/tools/supplicant.h
++++ b/tools/supplicant.h
+@@ -120,6 +120,7 @@ struct supplicant_network;
+ struct supplicant_interface *supplicant_network_get_interface(struct supplicant_network *network);
+ const char *supplicant_network_get_name(struct supplicant_network *network);
+ const char *supplicant_network_get_identifier(struct supplicant_network *network);
++const unsigned char *supplicant_network_get_bssid(struct supplicant_network *network);
+ enum supplicant_mode supplicant_network_get_mode(struct supplicant_network *network);
+ 
+ struct supplicant_callbacks {
 -- 
 1.8.4.5
 
