@@ -1,0 +1,30 @@
+From bbde4b077633db234334c14ac159361c5e07875f Mon Sep 17 00:00:00 2001
+From: Oliver Tappe <zooey@hirschkaefer.de>
+Date: Fri, 27 Mar 2015 15:32:40 +0100
+Subject: [PATCH] connman: RFS-5563 -> Set maximum scan interval to 120
+ seconds.
+
+* Doing a scan every 2 minutes allows us to setup wpa_supplicant to
+  drop networks that haven't been seen for a little over 5 minutes.
+  With that kind of setup, networks that didn't get detected in a single
+  scan instance won't be dropped.
+---
+ plugins/wifi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plugins/wifi.c b/plugins/wifi.c
+index 9013e73..f7ee36e 100644
+--- a/plugins/wifi.c
++++ b/plugins/wifi.c
+@@ -64,7 +64,7 @@
+ #define FAVORITE_MAXIMUM_RETRIES 2
+ 
+ #define BGSCAN_DEFAULT "simple:30:-45:300"
+-#define AUTOSCAN_DEFAULT "exponential:3:300"
++#define AUTOSCAN_DEFAULT "exponential:3:120"
+ 
+ #define P2P_FIND_TIMEOUT 30
+ #define P2P_CONNECTION_TIMEOUT 100
+-- 
+1.8.4.5
+
