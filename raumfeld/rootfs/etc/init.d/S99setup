@@ -2,7 +2,10 @@
 
 case "$1" in
   start)
-    iw dev wlan0 interface add uap0 type __ap
+    if [ -e /sys/module/mwifiex ]; then
+        iw dev wlan0 interface add uap0 type __ap
+    fi
+
     connmanctl enable wifi
 
     echo "starting logger"
