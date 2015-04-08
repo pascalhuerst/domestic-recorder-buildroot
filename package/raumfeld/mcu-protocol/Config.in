@@ -1,5 +1,5 @@
-menuconfig BR2_PACKAGE_RAUMFELD_MCU_PROTOCOL
-	bool "raumfeld-mcu-protocol"
+menuconfig BR2_PACKAGE_MCU_PROTOCOL
+	bool "mcu-protocol"
 	select BR2_PACKAGE_ALSA_LIB
 	depends on BR2_arm
 	help
@@ -7,13 +7,13 @@ menuconfig BR2_PACKAGE_RAUMFELD_MCU_PROTOCOL
 
 	  http://www.raumfeld.com/
 
-if BR2_PACKAGE_RAUMFELD_MCU_PROTOCOL
+if BR2_PACKAGE_MCU_PROTOCOL
 
-config BR2_PACKAGE_RAUMFELD_MCU_PROTOCOL_REPOSITORY
+config BR2_PACKAGE_MCU_PROTOCOL_REPOSITORY
         string "git repository that holds the mcu-protocol source code"
         default "ssh://git@sources.teufelhome.com/rfs/mcu-protocol.git"
 
-config BR2_PACKAGE_RAUMFELD_MCU_PROTOCOL_VERSION
+config BR2_PACKAGE_MCU_PROTOCOL_VERSION
         string "version or branch to check out from the git repository"
         default "master"
 
