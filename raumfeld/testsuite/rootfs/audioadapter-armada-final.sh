@@ -49,7 +49,7 @@ echo "Press the SETUP button (1)."
 $INPUT_TEST key_setup
 echo "Press the RESET button (2)."
 $INPUT_TEST key_f3
-if is_not_model "Test Jig"; then
+if is_not_model "Test Jig" && is_not_model "Soundbar"; then
     echo "Press the POWER button (3)."
     $INPUT_TEST key_power
 fi
