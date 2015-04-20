@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-CONNMAN_VERSION = 1.28
-CONNMAN_SOURCE = connman-$(CONNMAN_VERSION).tar.xz
-CONNMAN_SITE = $(BR2_KERNEL_MIRROR)/linux/network/connman
+CONNMAN_VERSION = 1576b77c49
+CONNMAN_SITE = $(call github,raumfeld,connman,$(CONNMAN_VERSION))
 CONNMAN_DEPENDENCIES = libglib2 dbus iptables
+CONNMAN_AUTORECONF = YES
 CONNMAN_INSTALL_STAGING = YES
 CONNMAN_LICENSE = GPLv2
 CONNMAN_LICENSE_FILES = COPYING
@@ -30,7 +30,6 @@ CONNMAN_DEPENDENCIES += \
 define CONNMAN_INSTALL_INIT_SYSV
 	$(INSTALL) -m 0755 -D package/connman/S45connman $(TARGET_DIR)/etc/init.d/S45connman
 endef
-
 
 ifeq ($(BR2_PACKAGE_CONNMAN_CLIENT),y)
 CONNMAN_CONF_OPTS += --enable-client
