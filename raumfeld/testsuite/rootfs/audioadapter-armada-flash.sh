@@ -9,6 +9,11 @@ cd tests
 
 kill_leds
 ./leds-blink 1 &
+
+if is_model "Soundbar"; then
+    ./flash_mcu
+fi
+
 ./nand_armada
 if [ $? -ne 0 ]; then
     kill_leds

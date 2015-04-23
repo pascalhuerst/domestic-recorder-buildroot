@@ -3,13 +3,20 @@
 # Final script for end of line tests, usually fully assembled.
 # Mostly the same for connector and speakers.
 
-
 source tests.inc
 
 cd /tests
 
 led_off 1
 led_off 2
+
+
+# Update the MCU firmware on the Raumfeld One Bar
+if is_model "Soundbar"; then
+    kill_leds
+    ./leds-blink 7 &
+    ./flash_mcu
+fi
 
 
 # Load modules
@@ -25,6 +32,7 @@ modprobe snd-soc-davinci-mcasp
 # FIXME: the above should actually be implicitly loaded by the next one
 modprobe snd-soc-s800
 modprobe mwifiex_sdio
+
 
 # Check if USB sound card is connected on a Raumfeld Element
 if is_model "Element"; then
