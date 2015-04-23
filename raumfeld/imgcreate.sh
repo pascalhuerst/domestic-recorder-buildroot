@@ -61,6 +61,10 @@ add_uboot_images() {
     cp raumfeld/U-Boot/u-boot-armada.img $tmpdir/
 }
 
+add_mcu_firmware() {
+    cp raumfeld/MCU/ $tmpdir/
+}
+
 ./buildlog.sh $*
 
 . ./getopt.inc
@@ -143,12 +147,14 @@ case $target in
     audioadapter-armada-flash)
         add_rootfs_tgz
 	add_dtb_cramfs
+        add_mcu_firmware
         ;;
     audioadapter-armada-final)
         add_rootfs_tgz
 	add_dtb_cramfs
         add_audiotest_wav
         add_uboot_images
+        add_mcu_firmware
         ;;
     audioadapter-armada-repair)
         add_rootfs_tgz
