@@ -62,7 +62,7 @@ add_uboot_images() {
 }
 
 add_mcu_firmware() {
-    cp raumfeld/MCU/ $tmpdir/
+    cp -rv raumfeld/MCU $tmpdir/
 }
 
 ./buildlog.sh $*
