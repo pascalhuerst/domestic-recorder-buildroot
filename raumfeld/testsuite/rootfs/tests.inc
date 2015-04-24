@@ -1,5 +1,6 @@
 RELPATH=../
-INPUT_TEST=/input_test
+INPUT_TEST="/input_test"
+MCU_TEST="/usr/bin/rfpcmdtestc /dev/ttyO5"
 TEST_HOST_WIRELESS=192.168.23.1
 
 kill_leds() {

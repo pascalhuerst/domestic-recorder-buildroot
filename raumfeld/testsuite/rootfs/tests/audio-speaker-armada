@@ -3,7 +3,12 @@
 . ../tests.inc
 
 # set volume
-amixer cset numid=1 160
+if is_model "Soundbar"; then
+    $MCU_TEST set-control 'Power State Switch' 1
+    $MCU_TEST set-control 'Master Playback Volume' 140  
+else
+   amixer cset numid=1 160
+fi
 
 if is_model "Element"; then
    amixer cset name="Ch1 Volume" 200
@@ -21,4 +26,6 @@ if is_model "One"; then
    dd if=/dev/zero bs=1024 count=800 | aplay -D hw:0,2 -f cd -
 fi
 
-aplay -D hw:0 /audiotest.wav &
+if 
+
+aplay -D hw:0,1 /audiotest.wav &
