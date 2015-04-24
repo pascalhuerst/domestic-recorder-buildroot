@@ -1,13 +1,23 @@
 menuconfig BR2_PACKAGE_MCU_PROTOCOL
 	bool "mcu-protocol"
-	select BR2_PACKAGE_ALSA_LIB
 	depends on BR2_arm
 	help
-	  ALSA Control Plugin and helper programs for Teufel MCU.
+	  ALSA control plug-in and helper programs for Teufel MCU.
 
 	  http://www.raumfeld.com/
 
 if BR2_PACKAGE_MCU_PROTOCOL
+
+config BR2_PACKAGE_MCU_PROTOCOL_ALSA_PLUGIN
+	bool "mcu-protocol alsa plug-in"
+	select BR2_PACKAGE_ALSA_LIB
+	help
+	  Build the ALSA control plug-in.
+
+config BR2_PACKAGE_MCU_PROTOCOL_TOOLS
+	bool "mcu-protocol command-line tools"
+	help
+	  Build the command-line utilities.
 
 config BR2_PACKAGE_MCU_PROTOCOL_REPOSITORY
         string "git repository that holds the mcu-protocol source code"
