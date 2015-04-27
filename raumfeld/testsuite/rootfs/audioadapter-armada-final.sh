@@ -75,7 +75,7 @@ if is_model "Cube" || is_model "Element" || is_model "Soundbar"; then
     ./leds-blink 4 &
     echo "Press Volume Down button (-)."
     if is_model "Soundbar"; then
-        $MCU_TEST wait-event 'Master Playback Volume'
+        $MCU_TEST wait-event-inc 'Master Playback Volume'
     else
         $INPUT_TEST key_volume_down
     fi
@@ -84,7 +84,7 @@ if is_model "Cube" || is_model "Element" || is_model "Soundbar"; then
     ./leds-blink 5 &
     echo "Press Volume Up button (+)."
     if is_model "Soundbar"; then
-        $MCU_TEST wait-event 'Master Playback Volume'
+        $MCU_TEST wait-event-dec 'Master Playback Volume'
     else
         $INPUT_TEST key_volume_up
     fi
