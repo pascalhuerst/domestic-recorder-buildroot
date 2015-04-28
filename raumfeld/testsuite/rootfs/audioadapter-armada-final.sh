@@ -29,6 +29,9 @@ modprobe snd-soc-sigmadsp
 modprobe snd-soc-sta350
 modprobe snd-soc-tas5086
 modprobe snd-soc-davinci-mcasp
+modprobe snd-soc-edma
+modprobe snd-soc-spdif-rx
+modprobe snd-soc-spdif-tx
 # FIXME: the above should actually be implicitly loaded by the next one
 modprobe snd-soc-s800
 modprobe mwifiex_sdio
