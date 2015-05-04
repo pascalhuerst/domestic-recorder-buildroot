@@ -17,4 +17,12 @@ GUPNP_CONF_ENV = \
 
 GUPNP_DEPENDENCIES = host-pkgconf host-libglib2 libxml2 gssdp util-linux
 
+ifeq ($(BR2_PACKAGE_NETWORK_MANAGER),y)
+	GUPNP_CONF_OPTS = --with-context-manager=network-manager
+	GUPNP_DEPENDENCIES += networkmanager
+else ifeq ($(BR2_PACKAGE_CONNMAN),y)
+	GUPNP_CONF_OPTS = --with-context-manager=connman
+	GUPNP_DEPENDENCIES += connman
+endif
+
 $(eval $(autotools-package))
