@@ -7,6 +7,7 @@ case "$1" in
     DBUS_SERVICE=`dbus-launch --sh-syntax`
     echo $DBUS_SERVICE > /var/run/raumfeld.session
     eval $DBUS_SERVICE
+    export DBUS_SESSION_BUS_ADDRESS
 
     if [ -e /sys/module/mwifiex ]; then
         iw dev wlan0 interface add uap0 type __ap
@@ -14,13 +15,7 @@ case "$1" in
 
     connmanctl enable wifi
 
-    echo "starting logger"
-    mknod /var/run/raumfeld-setup-logger-pipe pipe
-    logger -t "raumfeld" < /var/run/raumfeld-setup-logger-pipe &
-
-    echo "starting raumfeld-setup"
-    cd /raumfeld/raumfeld-setup
-    ./raumfeld-setup --verbose > /var/run/raumfeld-setup-logger-pipe 2>&1 &
+    /raumfeld/raumfeld-setup/start-raumfeld-setup.sh &
     ;;
   *)
     ;;
