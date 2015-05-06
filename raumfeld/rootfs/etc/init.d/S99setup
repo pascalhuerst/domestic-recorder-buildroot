@@ -7,7 +7,6 @@ case "$1" in
     DBUS_SERVICE=`dbus-launch --sh-syntax`
     echo $DBUS_SERVICE > /var/run/raumfeld.session
     eval $DBUS_SERVICE
-    export DBUS_SESSION_BUS_ADDRESS
 
     if [ -e /sys/module/mwifiex ]; then
         iw dev wlan0 interface add uap0 type __ap
