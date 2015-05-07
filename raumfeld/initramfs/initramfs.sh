@@ -155,6 +155,11 @@ else
     mkdir /rootfs
     mount -t ext2 -o ro /dev/loop0 /rootfs
 
+    # work around strange behaviour of the kernel firmware loader
+    if [ -d /rootfs/lib/firmware ]; then
+        cp -r /rootfs/lib/firmware /lib
+    fi
+
     echo "Jumping to the newly mounted rootfs"
     chroot /rootfs /init.sh
 fi
