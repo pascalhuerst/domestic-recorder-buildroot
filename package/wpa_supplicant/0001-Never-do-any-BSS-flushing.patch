@@ -1,0 +1,36 @@
+From 84c37ca4ace3ba54d868c920c14708dca2a361ed Mon Sep 17 00:00:00 2001
+From: Oliver Tappe <zooey@hirschkaefer.de>
+Date: Sat, 9 May 2015 23:40:21 +0200
+Subject: [PATCH] Never do any BSS flushing.
+
+---
+ wpa_supplicant/bss.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/wpa_supplicant/bss.c b/wpa_supplicant/bss.c
+index 46ed5aa..32409d5 100644
+--- a/wpa_supplicant/bss.c
++++ b/wpa_supplicant/bss.c
+@@ -810,6 +810,9 @@ void wpa_bss_flush_by_age(struct wpa_supplicant *wpa_s, int age)
+ 	struct wpa_bss *bss, *n;
+ 	struct os_reltime t;
+ 
++	/* for now, don't do any flushing by age */
++	return;
++
+ 	if (dl_list_empty(&wpa_s->bss))
+ 		return;
+ 
+@@ -869,6 +872,9 @@ void wpa_bss_flush(struct wpa_supplicant *wpa_s)
+ 	if (wpa_s->bss.next == NULL)
+ 		return; /* BSS table not yet initialized */
+ 
++        /* for now, don't do any flushing */
++        return;
++
+ 	dl_list_for_each_safe(bss, n, &wpa_s->bss, struct wpa_bss, list) {
+ 		if (wpa_bss_in_use(wpa_s, bss))
+ 			continue;
+-- 
+2.1.4
+
