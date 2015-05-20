@@ -14,7 +14,7 @@ case "$1" in
 
     connmanctl enable wifi
 
-    /raumfeld/raumfeld-setup/start-raumfeld-setup.sh &
+    /raumfeld/master-process/start-master-processs.sh &
     ;;
   *)
     ;;
