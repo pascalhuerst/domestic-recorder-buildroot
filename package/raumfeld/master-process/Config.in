@@ -1,8 +1,11 @@
 config BR2_PACKAGE_MASTER_PROCESS
 	bool "master-process"
-	select BR2_PACKAGE_LIBRAUMFELD
+	select BR2_PACKAGE_CONNMAN
+	select BR2_PACKAGE_CONNMAN_ETHERNET
+	select BR2_PACKAGE_CONNMAN_WIFI
+	select BR2_PACKAGE_LIBRAUMFELDCPP
 	select BR2_PACKAGE_RAUMFELD_REPO
 	help
-	  Raumfeld master-process
-
+	  Raumfeld master process
+          
 	  http://www.raumfeld.com/
