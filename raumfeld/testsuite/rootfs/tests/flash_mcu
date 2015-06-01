@@ -2,7 +2,7 @@
 
 set -e
 
-MCU_FIRMWARE=/MCU/Raumfeld_OneBar.bin
+MCU_FIRMWARE=/MCU/RaumfeldSoundbar.bin
 MCU_SERIAL_DEVICE=/dev/ttyO5
 
 if [ -f $MCU_FIRMWARE ]; then
