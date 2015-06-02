@@ -65,9 +65,9 @@ $INPUT_TEST key_f3
 
 if is_model "Soundbar"; then
     echo "Press the POWER button (3)."
-    $MCU_TEST wait-event 'Power State Switch'
-    $MCU_TEST set-control 'Power State Switch' 1    
-elif is_not_model "Test Jig"; then 
+    $MCU_TEST wait-rc-input 0x6b
+    $MCU_TEST set-control 'Power State Switch' 1
+elif is_not_model "Test Jig"; then
     echo "Press the POWER button (3)."
     $INPUT_TEST key_power
 fi
