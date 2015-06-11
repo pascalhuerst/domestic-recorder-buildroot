@@ -1,6 +1,6 @@
 #!/bin/sh
-killall -9 raumfeld-master-sh.sh
-killall -9 raumfeld-master-process
+killall -9 start-master-process.sh
+killall -9 master-process
 killall -9 renderer
 killall -9 stream-decoder
 ifconfig
