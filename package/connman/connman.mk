@@ -44,4 +44,12 @@ else
 CONNMAN_CONF_OPTS += --disable-client
 endif
 
+define CONNMAN_INSTALL_TARGET_FIXUP
+        mkdir -p $(TARGET_DIR)/var/lib
+        rm -rf $(TARGET_DIR)/var/lib/conmman
+        ln -sf /tmp/connman $(TARGET_DIR)/var/lib/connman
+endef
+
+CONNMAN_POST_INSTALL_TARGET_HOOKS += CONNMAN_INSTALL_TARGET_FIXUP
+
 $(eval $(autotools-package))
