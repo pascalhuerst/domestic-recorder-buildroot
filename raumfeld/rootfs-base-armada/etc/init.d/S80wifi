@@ -1,0 +1,12 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+       # reduce WiFi transmit power
+       iw dev wlan0 set txpower fixed 1800
+       ;;
+  *)
+       ;;
+esac
+
+exit $?
