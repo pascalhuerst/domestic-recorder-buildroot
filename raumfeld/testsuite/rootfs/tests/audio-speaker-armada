@@ -27,9 +27,7 @@ if is_model "One"; then
 fi
 
 if is_model "Soundbar"; then
-    AUDIO_DEVICE=hw:0,1
+    aplay -D hw:0,1 /audiotest.wav && $MCU_TEST set-control 'Power State Switch' 0 &
 else
-    AUDIO_DEVICE=hw:0
+    aplay -D hw:0 /audiotest.wav &
 fi	
-
-(aplay -D $AUDIO_DEVICE /audiotest.wav && is_model "Soundbar" && $MCU_TEST set-control 'Power State Switch' 0) &
