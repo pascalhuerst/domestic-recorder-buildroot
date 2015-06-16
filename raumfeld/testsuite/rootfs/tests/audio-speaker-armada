@@ -26,4 +26,10 @@ if is_model "One"; then
    dd if=/dev/zero bs=1024 count=800 | aplay -D hw:0,2 -f cd -
 fi
 
-(aplay -D hw:0 /audiotest.wav && is_model "Soundbar" && $MCU_TEST set-control 'Power State Switch' 0) &
+if is_model "Soundbar"; then
+    AUDIO_DEVICE=hw:0,1
+else
+    AUDIO_DEVICE=hw:0
+fi	
+
+(aplay -D $AUDIO_DEVICE /audiotest.wav && is_model "Soundbar" && $MCU_TEST set-control 'Power State Switch' 0) &
