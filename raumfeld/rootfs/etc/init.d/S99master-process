@@ -13,7 +13,6 @@ case "$1" in
     fi
 
     connmanctl enable wifi
-    connmanctl disable ethernet
 
     /raumfeld/master-process/start-master-process.sh &
     ;;
