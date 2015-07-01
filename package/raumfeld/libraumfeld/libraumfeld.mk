@@ -12,7 +12,7 @@ LIBRAUMFELD_CONF_ENV = \
 	ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/usr/bin/glib-genmarshal \
 	ac_cv_path_GLIB_MKENUMS=$(HOST_DIR)/usr/bin/glib-mkenums
 
-LIBRAUMFELD_CONF_OPT = \
+LIBRAUMFELD_CONF_OPTS = \
 	--localstatedir=/var	\
 	--enable-shared		\
 	--disable-explicit-deps \
@@ -20,10 +20,10 @@ LIBRAUMFELD_CONF_OPT = \
 	--disable-gtk-doc --without-html-dir
 
 ifeq ($(BR2_PACKAGE_LIBRAUMFELD_PROFILING),y)
-LIBRAUMFELD_CONF_OPT += --enable-profiling
+LIBRAUMFELD_CONF_OPTS += --enable-profiling
 endif
 
 LIBRAUMFELD_DEPENDENCIES = \
-	host-pkgconf host-libglib2 avahi gupnp-av openssl libglib2 libarchive libunwind
+	host-pkgconf host-libglib2 avahi gupnp-av openssl libglib2 libarchive libunwind yajl
 
 $(eval $(raumfeld-autotools-package))

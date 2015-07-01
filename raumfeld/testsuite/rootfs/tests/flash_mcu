@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+MCU_FIRMWARE=/MCU/Raumfeld_OneBar.bin
+MCU_SERIAL_DEVICE=/dev/ttyO5
+
+if [ -f $MCU_FIRMWARE ]; then
+    /usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -w $MCU_FIRMWARE $MCU_SERIAL_DEVICE
+fi

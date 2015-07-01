@@ -56,6 +56,15 @@ add_dtb_cramfs() {
     cp output/images/dts.cramfs $tmpdir/
 }
 
+add_uboot_images() {
+    cp raumfeld/U-Boot/MLO-armada $tmpdir/
+    cp raumfeld/U-Boot/u-boot-armada.img $tmpdir/
+}
+
+add_mcu_firmware() {
+    cp -rv raumfeld/MCU $tmpdir/
+}
+
 ./buildlog.sh $*
 
 . ./getopt.inc
@@ -105,7 +114,11 @@ echo "Operating in $tmpdir"
 case $target in
     audioadapter-armada-*)
 	img_version=1
-        dts_image=output/images/dts.cramfs
+	dts_image=output/images/dts.cramfs
+        ;;
+    base-armada-*)
+	img_version=1
+	dts_image=output/images/dts.cramfs
         ;;
     *)
         img_version=0
@@ -120,35 +133,52 @@ cp -a raumfeld/testsuite/rootfs/* $tmpdir/
 case $target in
     audioadapter-arm-flash)
         add_rootfs_tgz
-	cp raumfeld/U-Boot/raumfeld-connector.bin $tmpdir/
-	cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
+        cp raumfeld/U-Boot/raumfeld-connector.bin $tmpdir/
+        cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
 	;;
     audioadapter-arm-repair)
         add_rootfs_tgz
         ;;
     audioadapter-arm-uboot)
-	cp raumfeld/U-Boot/raumfeld-connector.bin $tmpdir/
-	cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
+        cp raumfeld/U-Boot/raumfeld-connector.bin $tmpdir/
+        cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
 	;;
 
     audioadapter-armada-flash)
         add_rootfs_tgz
 	add_dtb_cramfs
+        add_mcu_firmware
         ;;
     audioadapter-armada-final)
         add_rootfs_tgz
 	add_dtb_cramfs
         add_audiotest_wav
-        cp raumfeld/U-Boot/MLO-armada $tmpdir/
-        cp raumfeld/U-Boot/u-boot-armada.img $tmpdir/
+        add_uboot_images
+        add_mcu_firmware
         ;;
     audioadapter-armada-repair)
         add_rootfs_tgz
 	add_dtb_cramfs
         ;;
     audioadapter-armada-uboot)
-        cp raumfeld/U-Boot/MLO-armada $tmpdir/
-        cp raumfeld/U-Boot/u-boot-armada.img $tmpdir/
+        add_uboot_images
+        ;;
+
+    base-armada-flash)
+        add_rootfs_tgz
+	add_dtb_cramfs
+        ;;
+    base-armada-final)
+        add_rootfs_tgz
+	add_dtb_cramfs
+        add_uboot_images
+        ;;
+    base-armada-repair)
+        add_rootfs_tgz
+	add_dtb_cramfs
+        ;;
+    base-armada-uboot)
+        add_uboot_images
         ;;
 
     base-geode-flash)

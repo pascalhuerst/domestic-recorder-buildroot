@@ -1,0 +1,6 @@
+PermitRootLogin         yes
+PermitEmptyPasswords    yes
+AuthorizedKeysFile	.ssh/authorized_keys
+UseDNS                  no
+# override default of no subsystems
+Subsystem	sftp	/usr/libexec/sftp-server

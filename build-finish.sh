@@ -6,6 +6,7 @@ targets="initramfs-arm imgrootfs-arm		\
          audioadapter-arm                       \
          audioadapter-armada                    \
          remotecontrol-arm	                \
+         base-armada                            \
          base-geode"
 
 
@@ -56,8 +57,8 @@ fi
 # decide which images should be created ...
 
 case $target in
-    audioadapter-armada)
-        IMAGES="flash final repair uboot"
+    *-armada)
+        IMAGES="flash final repair"
         ;;
     audioadapter-arm)
         IMAGES="flash repair"
@@ -123,19 +124,6 @@ case $target in
 		done
 		;;
 
-	audioadapter-armada)
-                ROOTFS=output/images/rootfs.tar.gz
-                KERNEL=binaries/initramfs-armada/uImage
-		for t in $IMAGES; do
-			raumfeld/imgcreate.sh \
-				--target=$target-$t \
-				--base-rootfs-img=binaries/imgrootfs-armada/rootfs.ext2 \
-				--target-rootfs-tgz=$ROOTFS \
-				--kernel=$KERNEL \
-			        --version=$version
-		done
-		;;
-
 	remotecontrol-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/uImage
@@ -144,6 +132,19 @@ case $target in
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
+				--target-rootfs-tgz=$ROOTFS \
+				--kernel=$KERNEL \
+			        --version=$version
+		done
+		;;
+
+	*-armada)
+                ROOTFS=output/images/rootfs.tar.gz
+                KERNEL=binaries/initramfs-armada/uImage
+		for t in $IMAGES; do
+			raumfeld/imgcreate.sh \
+				--target=$target-$t \
+				--base-rootfs-img=binaries/imgrootfs-armada/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
 			        --version=$version

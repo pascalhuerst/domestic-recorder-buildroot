@@ -1,0 +1,6 @@
+config BR2_PACKAGE_STM32FLASH
+	bool "stm32flash"
+	help
+	  Tool to flash STM32 micro controllers via UART or I2C.
+
+	  https://code.google.com/p/stm32flash/

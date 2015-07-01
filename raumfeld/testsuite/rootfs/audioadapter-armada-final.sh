@@ -3,13 +3,20 @@
 # Final script for end of line tests, usually fully assembled.
 # Mostly the same for connector and speakers.
 
-
 source tests.inc
 
 cd /tests
 
 led_off 1
 led_off 2
+
+
+# Update the MCU firmware on the Raumfeld One Bar
+if is_model "Soundbar"; then
+    kill_leds
+    ./leds-blink 7 &
+    ./flash_mcu
+fi
 
 
 # Load modules
@@ -22,13 +29,15 @@ modprobe snd-soc-sigmadsp
 modprobe snd-soc-sta350
 modprobe snd-soc-tas5086
 modprobe snd-soc-davinci-mcasp
+modprobe snd-soc-edma
+modprobe snd-soc-spdif-rx
+modprobe snd-soc-spdif-tx
 # FIXME: the above should actually be implicitly loaded by the next one
 modprobe snd-soc-s800
 modprobe mwifiex_sdio
 
 
 # Check if USB sound card is connected on a Raumfeld Element
-
 if is_model "Element"; then
     modprobe snd-usb-audio
     if test -n "$(cat /proc/asound/cards | grep USB)"; then
@@ -47,26 +56,41 @@ echo "*********** Raumfeld Tests starting ********"
 # Buttons (Setup, Reset, Power)
 kill_leds
 ./leds-blink-so 1 &
+
 echo "Press the SETUP button (1)."
 $INPUT_TEST key_setup
+
 echo "Press the RESET button (2)."
 $INPUT_TEST key_f3
-if is_not_model "Test Jig"; then
+
+if is_model "Soundbar"; then
+    echo "Press the POWER button (3)."
+    $MCU_TEST wait-event 'Power State Switch'
+    $MCU_TEST set-control 'Power State Switch' 1    
+elif is_not_model "Test Jig"; then 
     echo "Press the POWER button (3)."
     $INPUT_TEST key_power
 fi
 
-# Volume Buttons (on Cube and Element)
-if is_model "Cube" || is_model "Element"; then
+# Volume Buttons (on Cube, Element and Soundbar)
+if is_model "Cube" || is_model "Element" || is_model "Soundbar"; then
     kill_leds
     ./leds-blink 4 &
     echo "Press Volume Down button (-)."
-    $INPUT_TEST key_volume_down
+    if is_model "Soundbar"; then
+        $MCU_TEST wait-event-inc 'Master Playback Volume'
+    else
+        $INPUT_TEST key_volume_down
+    fi
 
     kill_leds
     ./leds-blink 5 &
     echo "Press Volume Up button (+)."
-    $INPUT_TEST key_volume_up
+    if is_model "Soundbar"; then
+        $MCU_TEST wait-event-dec 'Master Playback Volume'
+    else
+        $INPUT_TEST key_volume_up
+    fi
 fi
 
 # Station Buttons (on One, Element and Speaker M)
