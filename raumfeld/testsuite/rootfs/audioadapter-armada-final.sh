@@ -11,7 +11,7 @@ led_off 1
 led_off 2
 
 
-# Update the MCU firmware on the Raumfeld One Bar
+# Update the MCU firmware on the Raumfeld Soundbar
 if is_model "Soundbar"; then
     kill_leds
     ./leds-blink 7 &
@@ -37,7 +37,7 @@ modprobe snd-soc-s800
 modprobe mwifiex_sdio
 
 
-# Check if USB sound card is connected on a Raumfeld Element
+# Check if USB sound card is connected on a Raumfeld One S
 if is_model "Element"; then
     modprobe snd-usb-audio
     if test -n "$(cat /proc/asound/cards | grep USB)"; then
@@ -72,7 +72,7 @@ elif is_not_model "Test Jig"; then
     $INPUT_TEST key_power
 fi
 
-# Volume Buttons (on Cube, Element and Soundbar)
+# Volume Buttons (on Cube, One S and Soundbar)
 if is_model "Cube" || is_model "Element" || is_model "Soundbar"; then
     kill_leds
     ./leds-blink 4 &
@@ -93,7 +93,7 @@ if is_model "Cube" || is_model "Element" || is_model "Soundbar"; then
     fi
 fi
 
-# Station Buttons (on One, Element and Speaker M)
+# Station Buttons (on One M, One S and Stereo M)
 if is_model "One" || is_model "Element" || is_model "Speaker M"; then
     kill_leds
     ./leds-blink 6 &
