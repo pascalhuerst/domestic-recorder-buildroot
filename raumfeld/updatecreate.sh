@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo_usage() {
-	echo "Usage: $0 --target=<target> --targz=<tar.gz> --kexec=<zimage> --bootloaders=<uboot1.bin,uboot2.bin>"
+	echo "Usage: $0 --target=<target> --targz=<tar.gz> --kexec=<zimage> --payload=<uboot1.bin,uboot2.bin>"
         exit 1
 }
 
@@ -55,8 +55,8 @@ case $target in
         ;;
 esac
 
-for bootloader in $(echo $bootloaders | tr ',' ' '); do
-    cp $bootloader $tmpdir/tmp
+for payloaditem in $(echo $payload | tr ',' ' '); do
+    cp $payloaditem $tmpdir/tmp
 done
 
 echo "chown -R root.root $tmpdir/tmp" > $tmpdir/.fakeroot
