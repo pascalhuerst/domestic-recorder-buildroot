@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Create needed directories.
+[ -d /tmp/connman ] || mkdir -p /tmp/connman
+
 case "$1" in
 	start)
 		echo -n "Starting connman ... "
