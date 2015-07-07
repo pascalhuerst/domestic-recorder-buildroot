@@ -168,11 +168,16 @@ case $target in
                 ;;
 esac
 
-if [ -n "$PAYLOAD" ]; then
+
+if [ -z "$PAYLOAD" ]; then
     PAYLOAD="$BOOTLOADERS"
 else
-    PAYLOAD="$PAYLOAD,$BOOTLOADERS"
+    if [ -n "$BOOTLOADERS" ]; then
+	PAYLOAD="$PAYLOAD,$BOOTLOADERS"
+    fi
 fi
+
+echo "Payload=$PAYLOAD"
 
 if [ -n "$ROOTFS" ]; then
     # create  the update image
