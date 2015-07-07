@@ -24,6 +24,10 @@ case "$hw" in
             Connector)
                 img="connect2.img"
                 ;;
+	    Soundbar)
+		img="speaker2.img"
+		mcu="/tmp/RaumfeldSoundbar.bin"
+                ;;
             *)
                 img="speaker2.img"
                 ;;
@@ -92,6 +96,12 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	gunzip -c $update | tar x ./tmp/$bios
 	echo "Checking the BIOS ..."
 	(cd /tmp; /update-coreboot.sh; rm -f $bios)
+    fi
+
+    if [ -n "$mcu" ]; then
+	gunzip -c $update | tar x ./tmp/$mcu
+	echo "Flashing the mcu ..."
+	/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -w ./tmp/$mcu /dev/ttyO5
     fi
 
     cd /mnt
