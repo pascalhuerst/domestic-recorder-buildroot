@@ -558,6 +558,22 @@ endef
 TARGET_FINALIZE_HOOKS += PURGE_LOCALES
 endif
 
+# RPATH fixing
+# - The host hook sets RPATH in host ELF binaries, using relative paths to the
+#   library locations.
+PACKAGES += host-patchelf
+
+define HOST_FIX_RPATH_HOOK
+	$(TOPDIR)/support/scripts/fix_rpaths \
+		set $(HOST_DIR) \
+		$(if $(V),--verbose) \
+		--patchelf-program $(HOST_DIR)/usr/bin/patchelf \
+		--libdirs $(HOST_DIR)/usr/lib \
+		--exclude-dirs sysroot opt/ext-toolchain
+endef
+
+TARGET_FINALIZE_HOOKS += HOST_FIX_RPATH_HOOK
+
 $(TARGETS_ROOTFS): target-finalize
 
 target-finalize: $(TARGETS)
