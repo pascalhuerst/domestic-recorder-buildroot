@@ -78,7 +78,7 @@ then echo_usage; fi
 
 if [ -z "$version" ]; then
     version=$(date +%F-%T)
-    auto_version=1
+   auto_version=1
 else
     auto_version=0
 fi
@@ -213,7 +213,7 @@ echo "exec /$target.sh \$*" > $tmpdir/start-test.sh
 chmod a+x $tmpdir/start-test.sh
 
 rm -f $ext2_img
-genext2fs -b 1024 -x $base_rootfs_img -d $tmpdir $ext2_img
+genext2fs -b 1200 -x $base_rootfs_img -d $tmpdir $ext2_img
 
 # shrink the filesystem to the minimum size
 # add 4 blocks to work around a bug in resize2fs which sometimes
