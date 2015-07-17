@@ -114,7 +114,7 @@ case $target in
 	audioadapter-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/uImage
-                BOOTLOADERS=raumfeld/U-Boot/raumfeld-connector.bin,raumfeld/U-Boot/raumfeld-speaker.bin
+                PAYLOAD=raumfeld/U-Boot/raumfeld-connector.bin,raumfeld/U-Boot/raumfeld-speaker.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -128,7 +128,7 @@ case $target in
 	remotecontrol-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/uImage
-                BOOTLOADERS=raumfeld/U-Boot/raumfeld-controller.bin
+                PAYLOAD=raumfeld/U-Boot/raumfeld-controller.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -142,7 +142,7 @@ case $target in
 	*-armada)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-armada/uImage
-		PAYLOAD=./raumfeld/MCU/RaumfeldSoundbar.bin
+		PAYLOAD=raumfeld/MCU/RaumfeldSoundbar.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -156,7 +156,7 @@ case $target in
 	base-geode)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-geode/bzImage
-                BOOTLOADERS=raumfeld/Coreboot/raumfeld-base.rom
+                PAYLOAD=raumfeld/Coreboot/raumfeld-base.rom
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -168,14 +168,6 @@ case $target in
                 ;;
 esac
 
-
-if [ -z "$PAYLOAD" ]; then
-    PAYLOAD="$BOOTLOADERS"
-else
-    if [ -n "$BOOTLOADERS" ]; then
-	PAYLOAD="$PAYLOAD,$BOOTLOADERS"
-    fi
-fi
 
 echo "Payload=$PAYLOAD"
 
