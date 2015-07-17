@@ -29,7 +29,7 @@ case "$hw" in
 	    Soundbar)
 		echo "Model is a Soundbar"
 		img="speaker2.img"
-		mcu="/tmp/RaumfeldSoundbar.bin"
+		mcu="RaumfeldSoundbar.bin"
                 ;;
             *)
                 img="speaker2.img"
@@ -61,8 +61,6 @@ case "$hw" in
 	echo "unknown hardware type '$hw'"
 	;;
 esac
-
-echo "MCU file is $mcu"
 
 if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     param=$(cat /proc/cmdline | sed -e 's/^.*raumfeld-update=//' -e 's/ .*$//')
