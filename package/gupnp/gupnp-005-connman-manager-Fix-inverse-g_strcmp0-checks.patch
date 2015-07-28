@@ -1,0 +1,68 @@
+From 61db50c272557c6355347c9d76de8c509f369f2e Mon Sep 17 00:00:00 2001
+From: Oliver Tappe <zooey@hirschkaefer.de>
+Date: Mon, 27 Jul 2015 12:51:40 +0200
+Subject: [PATCH] connman-manager: Fix inverse g_strcmp0 checks.
+
+* I suppose the checks against name and interface are meant to update
+  the respective value in the service when they have changed, not when
+  they stayed the same.
+* As the interface of an existing context can't be changed, delete
+  and re-create the context when the interface of a connman service
+  changes.
+---
+ libgupnp/gupnp-connman-manager.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
+
+diff --git a/libgupnp/gupnp-connman-manager.c b/libgupnp/gupnp-connman-manager.c
+index afce14c..a01936a 100644
+--- a/libgupnp/gupnp-connman-manager.c
++++ b/libgupnp/gupnp-connman-manager.c
+@@ -196,11 +196,10 @@ on_service_property_signal (GDBusConnection *connection,
+                 g_free (cm_service->iface);
+                 g_variant_lookup (value, "Interface", "s", &cm_service->iface);
+ 
+-                if (cm_service->context != NULL)
+-                        g_object_set (G_OBJECT (cm_service->context),
+-                                               "interface",
+-                                               cm_service->iface,
+-                                               NULL);
++                if (cm_service->context != NULL) {
++                        service_context_delete (cm_service);
++                        service_context_create (cm_service);
++                }
+ 
+         } else if (g_strcmp0 (name, "State") == 0) {
+                 state_str = g_variant_get_string (value, 0);
+@@ -315,7 +314,7 @@ cm_service_update (CMService *cm_service, GVariant *dict, guint port)
+                     (g_strcmp0 (state, "ready") == 0))
+                         new_state = CM_SERVICE_STATE_ACTIVE;
+ 
+-        if (is_name && (g_strcmp0 (cm_service->name, name) == 0)) {
++        if (is_name && (g_strcmp0 (cm_service->name, name) != 0)) {
+                 g_free (cm_service->name);
+                 cm_service->name = name;
+ 
+@@ -326,15 +325,14 @@ cm_service_update (CMService *cm_service, GVariant *dict, guint port)
+                                       NULL);
+         }
+ 
+-        if (is_iface && (g_strcmp0 (cm_service->iface, iface) == 0)) {
++        if (is_iface && (g_strcmp0 (cm_service->iface, iface) != 0)) {
+                 g_free (cm_service->iface);
+                 cm_service->iface = iface;
+ 
+-                if (cm_service->context != NULL)
+-                        g_object_set (G_OBJECT (cm_service->context),
+-                                      "interface",
+-                                      cm_service->iface,
+-                                      NULL);
++                if (cm_service->context != NULL) {
++                        service_context_delete (cm_service);
++                        service_context_create (cm_service);
++                }
+         }
+ 
+         cm_service->port = port;
+-- 
+2.1.4
+
