@@ -1,0 +1,1 @@
+KERNEL=="wlan0", RUN+="/usr/sbin/iw dev wlan0 set txpower fixed 1800"

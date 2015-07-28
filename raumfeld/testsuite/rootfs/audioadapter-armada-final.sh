@@ -36,6 +36,15 @@ modprobe snd-soc-spdif-tx
 modprobe snd-soc-s800
 modprobe mwifiex_sdio
 
+# handle fallback mode
+if is_model "fallback"; then
+	# If we came up in fallback mode, we have to flash a newer version
+	# of u-boot and restart. u-boot flag 'usbboot_once' tells u-boot to
+	# boot from usb. Just as if 'reset' is pressed.
+	/flash-uboot-armada.sh
+	/usr/sbin/fw_setenv "usbboot_once" "yes"
+	reboot
+fi
 
 # Check if USB sound card is connected on a Raumfeld One S
 if is_model "Element"; then
