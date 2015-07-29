@@ -9,7 +9,7 @@ GCC=$2gcc
 $GCC -o $1/update-boardrev -Wall raumfeld/testsuite/bootloader/update-boardrev.c
 
 cp raumfeld/testsuite/rootfs/update-uboot.sh $1
-cp raumdeld/U-Boot/initramfs-arm-fw-env.config $1/etc/fw_env.config
+cp raumfeld/U-Boot/initramfs-arm-fw-env.config $1/etc/fw_env.config
 
 # below is the generic part
 
