@@ -113,7 +113,6 @@ case $target in
 	audioadapter-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/uImage
-                BOOTLOADERS=raumfeld/U-Boot/raumfeld-connector.bin,raumfeld/U-Boot/raumfeld-speaker.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -127,7 +126,6 @@ case $target in
 	remotecontrol-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/uImage
-                BOOTLOADERS=raumfeld/U-Boot/raumfeld-controller.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
