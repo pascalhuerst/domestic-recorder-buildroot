@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# potentially update the boot-loader
-./update-uboot.sh
-
 source tests.inc
 
 cd tests
