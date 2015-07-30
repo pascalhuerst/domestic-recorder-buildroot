@@ -133,16 +133,10 @@ cp -a raumfeld/testsuite/rootfs/* $tmpdir/
 case $target in
     audioadapter-arm-flash)
         add_rootfs_tgz
-        cp raumfeld/U-Boot/raumfeld-connector.bin $tmpdir/
-        cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
 	;;
     audioadapter-arm-repair)
         add_rootfs_tgz
         ;;
-    audioadapter-arm-uboot)
-        cp raumfeld/U-Boot/raumfeld-connector.bin $tmpdir/
-        cp raumfeld/U-Boot/raumfeld-speaker.bin $tmpdir/
-	;;
 
     audioadapter-armada-flash)
         add_rootfs_tgz
@@ -196,10 +190,6 @@ case $target in
 
     remotecontrol-arm-flash)
         add_rootfs_tgz
-	cp raumfeld/U-Boot/raumfeld-controller.bin $tmpdir/
-	;;
-    remotecontrol-arm-uboot)
-	cp raumfeld/U-Boot/raumfeld-controller.bin $tmpdir/
 	;;
 esac
 
