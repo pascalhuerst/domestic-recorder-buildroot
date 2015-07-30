@@ -178,15 +178,10 @@ case $target in
     base-geode-flash)
         add_rootfs_tgz
         add_raumfeld_demo
-	cp raumfeld/Coreboot/raumfeld-base.rom $tmpdir/
         ;;
     base-geode-repair)
         add_rootfs_tgz
         ;;
-    base-geode-coreboot)
-	cp raumfeld/Coreboot/raumfeld-base.rom $tmpdir/
-	cp -a raumfeld/testsuite/coreboot $tmpdir/
-	;;
 
     remotecontrol-arm-flash)
         add_rootfs_tgz

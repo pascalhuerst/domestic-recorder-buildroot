@@ -44,7 +44,6 @@ case "$hw" in
     Geode*)
 	arch="geode"
 	img="base.img"
-	bios="raumfeld-base.rom"
 	;;
     *)
 	img="uImage"
@@ -78,12 +77,6 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	    echo "unknown architecture '$arch'"
 	    ;;
     esac
-
-    if [ -n "$bios" ]; then
-	gunzip -c $update | tar x ./tmp/$bios
-	echo "Checking the BIOS ..."
-	(cd /tmp; /update-coreboot.sh; rm -f $bios)
-    fi
 
     cd /mnt
     raumfeld-extract-update $update $numfiles
