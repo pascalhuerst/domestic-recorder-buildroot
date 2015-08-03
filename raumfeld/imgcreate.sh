@@ -65,6 +65,11 @@ add_mcu_firmware() {
     cp -rv raumfeld/MCU $tmpdir/
 }
 
+add_dsp_firmware() {
+    cp -rv raumfeld/DSP $tmpdir/
+}
+
+
 ./buildlog.sh $*
 
 . ./getopt.inc
@@ -148,6 +153,7 @@ case $target in
         add_rootfs_tgz
 	add_dtb_cramfs
         add_mcu_firmware
+	add_dsp_firmware
         ;;
     audioadapter-armada-final)
         add_rootfs_tgz
@@ -155,6 +161,7 @@ case $target in
         add_audiotest_wav
         add_uboot_images
         add_mcu_firmware
+	add_dsp_firmware
         ;;
     audioadapter-armada-repair)
         add_rootfs_tgz

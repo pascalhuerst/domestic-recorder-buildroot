@@ -12,6 +12,7 @@ kill_leds
 
 if is_model "Soundbar"; then
     ./flash_mcu
+    ./flash_dsp
 fi
 
 ./nand_armada

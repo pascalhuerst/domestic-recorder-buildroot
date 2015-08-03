@@ -163,18 +163,6 @@ else
 	sleep 1
     done
     
-    if [ -n "$mcu" ]; then
-	gunzip -c $update | tar x ./tmp/$mcu
-	echo "Flashing the mcu ..."
-	/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -w ./tmp/$mcu /dev/ttyO5
-    fi
-    
-    if [ -n "$dsp" ]; then
-	gunzip -c $update | tar x ./tmp/$dsp
-	echo "Flashing the dsp ..."
-	rfpfwupdate /dev/ttyO5 2 ./tmp/$dsp
-    fi
-
     # It takes a while for partitions to be recognized after the disk
     # was found.  Sleep three more seconds...
     sleep 3
