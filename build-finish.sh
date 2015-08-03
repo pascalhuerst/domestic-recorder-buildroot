@@ -142,7 +142,7 @@ case $target in
 	*-armada)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-armada/uImage
-		PAYLOAD=raumfeld/MCU/RaumfeldSoundbar.bin
+		PAYLOAD=raumfeld/MCU/RaumfeldSoundbar.bin,raumfeld/DSP/RaumfeldSoundbarDSP.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \

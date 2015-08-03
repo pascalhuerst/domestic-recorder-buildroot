@@ -30,6 +30,7 @@ case "$hw" in
 		echo "Model is a Soundbar"
 		img="speaker2.img"
 		mcu="RaumfeldSoundbar.bin"
+		dsp="RaumfeldSoundbarDSP.bin"
                 ;;
             *)
                 img="speaker2.img"
@@ -107,6 +108,12 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -w ./tmp/$mcu /dev/ttyO5
     fi
 
+    if [ -n "$dsp" ]; then
+	gunzip -c $update | tar x ./tmp/$dsp
+	echo "Flashing the dsp ..."
+	rfpfwupdate /dev/ttyO5 2 ./tmp/$dsp
+    fi
+    
     cd /mnt
     raumfeld-extract-update $update $numfiles
     cd /
