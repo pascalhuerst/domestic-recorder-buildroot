@@ -17,6 +17,4 @@ $GCC -o $1/input_test -Wall raumfeld/testsuite/input_test/input_test.c
 $GCC -o $1/progress_fb -Wall raumfeld/testsuite/progress_fb/progress_fb.c
 $GCC -o $1/percent -Wall raumfeld/testsuite/percent/percent.c
 
-$GCC -o $1/update-boardrev -Wall raumfeld/testsuite/bootloader/update-boardrev.c
-
 raumfeld/postbuild-cleanup.sh $*

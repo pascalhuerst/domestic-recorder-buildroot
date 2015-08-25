@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CONNMAN_VERSION = fae549b7b6
+CONNMAN_VERSION = 95386f909d
 CONNMAN_SITE = $(call github,raumfeld,connman,$(CONNMAN_VERSION))
 CONNMAN_DEPENDENCIES = libglib2 dbus iptables
 CONNMAN_AUTORECONF = YES

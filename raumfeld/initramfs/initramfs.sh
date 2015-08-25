@@ -27,7 +27,6 @@ case "$hw" in
                 img="connect2.img"
                 ;;
 	    Soundbar)
-		echo "Model is a Soundbar"
 		img="speaker2.img"
 		mcu="RaumfeldSoundbar.bin"
 		dsp="RaumfeldSoundbarDSP.bin"
@@ -40,22 +39,18 @@ case "$hw" in
     Controller)
 	arch="arm"
 	img="control.img"
-	bootloader="raumfeld-controller.bin"
 	;;
     Connector)
 	arch="arm"
 	img="connect.img"
-	bootloader="raumfeld-connector.bin"
 	;;
     Speaker)
 	arch="arm"
 	img="speaker.img"
-	bootloader="raumfeld-speaker.bin"
 	;;
     Geode*)
 	arch="geode"
 	img="base.img"
-	bios="raumfeld-base.rom"
 	;;
     *)
 	img="uImage"
@@ -89,18 +84,6 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	    echo "unknown architecture '$arch'"
 	    ;;
     esac
-
-    if [ -n "$bootloader" ]; then
-	gunzip -c $update | tar x ./tmp/$bootloader
-	echo "Checking the boot-loader ..."
-	(cd /tmp; /update-uboot.sh; rm -f $bootloader)
-    fi
-
-    if [ -n "$bios" ]; then
-	gunzip -c $update | tar x ./tmp/$bios
-	echo "Checking the BIOS ..."
-	(cd /tmp; /update-coreboot.sh; rm -f $bios)
-    fi
 
     if [ -n "$mcu" ]; then
 	gunzip -c $update | tar x ./tmp/$mcu

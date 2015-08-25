@@ -114,7 +114,6 @@ case $target in
 	audioadapter-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/uImage
-                PAYLOAD=raumfeld/U-Boot/raumfeld-connector.bin,raumfeld/U-Boot/raumfeld-speaker.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -128,7 +127,6 @@ case $target in
 	remotecontrol-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/uImage
-                PAYLOAD=raumfeld/U-Boot/raumfeld-controller.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -156,7 +154,6 @@ case $target in
 	base-geode)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-geode/bzImage
-                PAYLOAD=raumfeld/Coreboot/raumfeld-base.rom
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -168,8 +165,6 @@ case $target in
                 ;;
 esac
 
-
-echo "Payload=$PAYLOAD"
 
 if [ -n "$ROOTFS" ]; then
     # create  the update image
