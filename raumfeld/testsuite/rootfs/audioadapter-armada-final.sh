@@ -16,6 +16,7 @@ if is_model "Soundbar"; then
     kill_leds
     ./leds-blink 7 &
     ./flash_mcu
+    ./flash_dsp
 fi
 
 
