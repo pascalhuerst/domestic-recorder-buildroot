@@ -10,7 +10,7 @@ cd tests
 kill_leds
 ./leds-blink 1 &
 
-if is_model "Soundbar"; then
+if is_model "Soundbar" || is_model "Sounddeck"; then
     ./flash_mcu
     ./flash_dsp
 fi
