@@ -26,7 +26,7 @@ case "$hw" in
             Connector)
                 img="connect2.img"
                 ;;
-	    Soundbar)
+	    Soundbar|Sounddeck)
 		img="speaker2.img"
 		mcu="RaumfeldSoundbar.bin"
 		dsp="RaumfeldSoundbarDSP.bin"

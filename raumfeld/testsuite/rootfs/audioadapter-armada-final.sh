@@ -11,8 +11,8 @@ led_off 1
 led_off 2
 
 
-# Update the MCU firmware on the Raumfeld Soundbar
-if is_model "Soundbar"; then
+# Update the MCU firmware on the Raumfeld Soundbar and Sounddeck
+if is_model "Soundbar" || is_model "Sounddeck"; then
     kill_leds
     ./leds-blink 7 &
     ./flash_mcu
@@ -73,7 +73,7 @@ $INPUT_TEST key_setup
 echo "Press the RESET button (2)."
 $INPUT_TEST key_f3
 
-if is_model "Soundbar"; then
+if is_model "Soundbar" || is_model "Sounddeck" ; then
     echo "Press the POWER button (3)."
     $MCU_TEST wait-rc-input 0x6b
     $MCU_TEST set-control 'Power State Switch' 1
@@ -82,12 +82,12 @@ elif is_not_model "Test Jig"; then
     $INPUT_TEST key_power
 fi
 
-# Volume Buttons (on Cube, One S and Soundbar)
-if is_model "Cube" || is_model "Element" || is_model "Soundbar"; then
+# Volume Buttons (on Cube, One S, Soundbar and Sounddeck)
+if is_model "Cube" || is_model "Element" || is_model "Soundbar" || is_model "Sounddeck"; then
     kill_leds
     ./leds-blink 4 &
     echo "Press Volume Down button (-)."
-    if is_model "Soundbar"; then
+    if is_model "Soundbar" || is_model "Sounddeck"; then
         $MCU_TEST wait-event-inc 'Master Playback Volume'
     else
         $INPUT_TEST key_volume_down
@@ -96,7 +96,7 @@ if is_model "Cube" || is_model "Element" || is_model "Soundbar"; then
     kill_leds
     ./leds-blink 5 &
     echo "Press Volume Up button (+)."
-    if is_model "Soundbar"; then
+    if is_model "Soundbar" || is_model "Sounddeck"; then
         $MCU_TEST wait-event-dec 'Master Playback Volume'
     else
         $INPUT_TEST key_volume_up

@@ -92,7 +92,8 @@ names=( \
     "Raumfeld One S"        \
     "Raumfeld Stereo M 2"   \
     "Raumfeld Expand 2"     \
-    "Raumfeld Soundbar")
+    "Raumfeld Soundbar"     \
+    "Raumfeld Sounddeck")
 
 case $target in
 	remotecontrol-arm)
@@ -102,7 +103,7 @@ case $target in
 		hardwareids="3 4 6 7 8"
 		;;
 	audioadapter-armada)
-		hardwareids="9 10 11 12 13 14 16"
+		hardwareids="9 10 11 12 13 14 16 17"
 		;;
 	base-armada)
 		hardwareids="15"
