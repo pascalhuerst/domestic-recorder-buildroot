@@ -6,6 +6,9 @@ DSP_FIRMWARE=/DSP/RaumfeldSoundbarDSP.bin
 
 if [ -f $DSP_FIRMWARE ]; then
     echo "Flashing DSP firmware...."
+    usleep 100000
+    rfpcmdtestc /dev/ttyO5 --eol-test set-control 'Power State Switch' 1
+    sleep 1
     rfpfwupdate /dev/ttyO5 2 $DSP_FIRMWARE
     echo "... Done!"
 fi
