@@ -89,8 +89,15 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	gunzip -c $update | tar x ./tmp/$mcu
 	echo "Flashing the MCU firmware ..."
 	/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -w ./tmp/$mcu /dev/ttyO5
+    fi
+
+    if [ -n "$dsp" ]; then
+	gunzip -c $update | tar x ./tmp/$dsp
+	echo "Flashing the DSP firmware ..."
         usleep 50000
         rfpcmdtestc /dev/ttyO5 --eol-test set-control 'Power State Switch' 1
+        sleep 5
+	rfpfwupdate /dev/ttyO5 2 ./tmp/$dsp
     fi
 
     echo "Extracting the Raumfeld firmware ..."
@@ -131,12 +138,6 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	    echo "unknown architecture '$arch'"
 	    ;;
     esac
-
-    if [ -n "$dsp" ]; then
-	gunzip -c $update | tar x ./tmp/$dsp
-	echo "Flashing the DSP firmware ..."
-	rfpfwupdate /dev/ttyO5 2 ./tmp/$dsp
-    fi
 
     echo "Rebooting ..."
     reboot
