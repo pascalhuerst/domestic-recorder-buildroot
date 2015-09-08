@@ -94,9 +94,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     if [ -n "$dsp" ]; then
 	gunzip -c $update | tar x ./tmp/$dsp
 	echo "Flashing the DSP firmware ..."
-        rfpcmdtestc /dev/ttyO5 --eol-test set-control 'Power State Switch' 1
-        sleep 5
-	rfpfwupdate /dev/ttyO5 2 ./tmp/$dsp
+	rfpfwupdate /dev/ttyO5 2 ./tmp/$dsp 'Power State Switch'=1
     fi
 
     echo "Extracting the Raumfeld firmware ..."

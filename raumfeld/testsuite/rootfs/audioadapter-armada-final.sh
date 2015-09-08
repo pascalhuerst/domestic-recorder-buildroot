@@ -16,6 +16,7 @@ if is_model "Soundbar" || is_model "Sounddeck"; then
     kill_leds
     ./leds-blink 7 &
     ./flash_mcu
+    usleep 50000
     ./flash_dsp
 fi
 
