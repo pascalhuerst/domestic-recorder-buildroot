@@ -17,12 +17,19 @@ case "$hw" in
 	arch="armada"
 	offset="8658944"
         model=$(cat /proc/device-tree/model | cut -f 2 -d' ')
+	echo "Model: $model"
+	
         case "$model" in
             Base)
                 img="base2.img"
                 ;;
             Connector)
                 img="connect2.img"
+                ;;
+	    Soundbar|Sounddeck)
+		img="speaker2.img"
+		mcu="RaumfeldSoundbar.bin"
+		dsp="RaumfeldSoundbarDSP.bin"
                 ;;
             *)
                 img="speaker2.img"
@@ -78,6 +85,19 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	    ;;
     esac
 
+    if [ -n "$mcu" ]; then
+	gunzip -c $update | tar x ./tmp/$mcu
+	echo "Flashing the MCU firmware ..."
+	/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -w ./tmp/$mcu /dev/ttyO5
+    fi
+
+    if [ -n "$dsp" ]; then
+	gunzip -c $update | tar x ./tmp/$dsp
+	echo "Flashing the DSP firmware ..."
+	rfpfwupdate /dev/ttyO5 2 ./tmp/$dsp 'Power State Switch'=1
+    fi
+
+    echo "Extracting the Raumfeld firmware ..."
     cd /mnt
     raumfeld-extract-update $update $numfiles
     cd /
@@ -126,7 +146,7 @@ else
     while [ -z "$(grep sda /proc/partitions)" ]; do
 	sleep 1
     done
-
+    
     # It takes a while for partitions to be recognized after the disk
     # was found.  Sleep three more seconds...
     sleep 3

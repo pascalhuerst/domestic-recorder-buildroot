@@ -117,7 +117,7 @@ raumfeld-cross-package = $(call inner-raumfeld-cross-package,$(call pkgname),$(c
 ################################################################################
 ################################################################################
 
-RAUMFELD_DIRCLEAN_TARGETS = raumfeld-repo-dlclean raumfeld-repo-dirclean
+RAUMFELD_DIRCLEAN_TARGETS = mcu-protocol-dlclean mcu-protocol-dirclean raumfeld-repo-dlclean raumfeld-repo-dirclean
 
 include package/raumfeld/*/*.mk
 
