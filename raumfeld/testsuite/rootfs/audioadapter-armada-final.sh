@@ -13,20 +13,22 @@ led_off 2
 
 # Handle fallback mode
 if is_model "fallback"; then
-	# If we came up in fallback mode, we have to flash a newer version
-	# of u-boot and restart. u-boot flag 'usbboot_once' tells u-boot to
-	# boot from usb. Just as if 'reset' is pressed.
-	/flash-uboot-armada.sh
-	/usr/sbin/fw_setenv "usbboot_once" "yes"
-	reboot
+    # If we came up in fallback mode, we have to flash a newer version
+    # of u-boot and restart. u-boot flag 'usbboot_once' tells u-boot to
+    # boot from usb. Just as if 'reset' is pressed.
+    /flash-uboot-armada.sh
+    /usr/sbin/fw_setenv "usbboot_once" "yes"
+    reboot
 fi
 
 
-# Update the MCU firmware on the Raumfeld Soundbar
-if is_model "Soundbar"; then
+# Update the MCU firmware on the Raumfeld Soundbar and Sounddeck
+if is_model "Soundbar" || is_model "Sounddeck"; then
     kill_leds
     ./leds-blink 7 &
     ./flash_mcu
+    usleep 50000
+    ./flash_dsp
 fi
 
 
@@ -74,21 +76,21 @@ $INPUT_TEST key_setup
 echo "Press the RESET button (2)."
 $INPUT_TEST key_f3
 
-if is_model "Soundbar"; then
+if is_model "Soundbar" || is_model "Sounddeck" ; then
     echo "Press the POWER button (3)."
-    $MCU_TEST wait-event 'Power State Switch'
-    $MCU_TEST set-control 'Power State Switch' 1    
-elif is_not_model "Test Jig"; then 
+    $MCU_TEST wait-rc-input 0x6b
+    $MCU_TEST set-control 'Power State Switch' 1
+elif is_not_model "Test Jig"; then
     echo "Press the POWER button (3)."
     $INPUT_TEST key_power
 fi
 
-# Volume Buttons (on Cube, One S and Soundbar)
-if is_model "Cube" || is_model "Element" || is_model "Soundbar"; then
+# Volume Buttons (on Cube, One S, Soundbar and Sounddeck)
+if is_model "Cube" || is_model "Element" || is_model "Soundbar" || is_model "Sounddeck"; then
     kill_leds
     ./leds-blink 4 &
     echo "Press Volume Down button (-)."
-    if is_model "Soundbar"; then
+    if is_model "Soundbar" || is_model "Sounddeck"; then
         $MCU_TEST wait-event-inc 'Master Playback Volume'
     else
         $INPUT_TEST key_volume_down
@@ -97,7 +99,7 @@ if is_model "Cube" || is_model "Element" || is_model "Soundbar"; then
     kill_leds
     ./leds-blink 5 &
     echo "Press Volume Up button (+)."
-    if is_model "Soundbar"; then
+    if is_model "Soundbar" || is_model "Sounddeck"; then
         $MCU_TEST wait-event-dec 'Master Playback Volume'
     else
         $INPUT_TEST key_volume_up
