@@ -80,30 +80,23 @@ if is_model "Soundbar" || is_model "Sounddeck" ; then
     $MCU_TEST set-control 'Power State Switch' 1
     echo "Press the POWER button (3)."
     $MCU_TEST wait-rc-input 0x6b
+    $MCU_TEST set-control 'Power State Switch' 1
 elif is_not_model "Test Jig"; then
     echo "Press the POWER button (3)."
     $INPUT_TEST key_power
 fi
 
-# Volume Buttons (on Cube, One S, Soundbar and Sounddeck)
-if is_model "Cube" || is_model "Element" || is_model "Soundbar" || is_model "Sounddeck"; then
+# Volume Buttons (on Cube and One S)
+if is_model "Cube" || is_model "Element"; then
     kill_leds
     ./leds-blink 4 &
     echo "Press Volume Down button (-)."
-    if is_model "Soundbar" || is_model "Sounddeck"; then
-        $MCU_TEST wait-event-inc 'Master Playback Volume'
-    else
-        $INPUT_TEST key_volume_down
-    fi
+    $INPUT_TEST key_volume_down
 
     kill_leds
     ./leds-blink 5 &
     echo "Press Volume Up button (+)."
-    if is_model "Soundbar" || is_model "Sounddeck"; then
-        $MCU_TEST wait-event-dec 'Master Playback Volume'
-    else
-        $INPUT_TEST key_volume_up
-    fi
+    $INPUT_TEST key_volume_up
 fi
 
 # Station Buttons (on One M, One S and Stereo M)
@@ -161,6 +154,19 @@ if [ $? -ne 0 ]; then
     kill_leds
     ./leds-blink-so 3 1 &
     exit 1
+fi
+
+# Volume Buttons (on Soundbar and Sounddeck)
+if is_model "Soundbar" || is_model "Sounddeck"; then
+    kill_leds
+    ./leds-blink 4 &
+    echo "Press Volume Down button (-)."
+    $MCU_TEST wait-event-inc 'Master Playback Volume'
+
+    kill_leds
+    ./leds-blink 5 &
+    echo "Press Volume Up button (+)."
+    $MCU_TEST wait-event-dec 'Master Playback Volume'
 fi
 
 # Audio Loopback (only on Connector)
