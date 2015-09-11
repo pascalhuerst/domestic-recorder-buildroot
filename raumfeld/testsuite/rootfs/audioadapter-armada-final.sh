@@ -80,7 +80,6 @@ if is_model "Soundbar" || is_model "Sounddeck" ; then
     $MCU_TEST set-control 'Power State Switch' 1
     echo "Press the POWER button (3)."
     $MCU_TEST wait-rc-input 0x6b
-    $MCU_TEST set-control 'Power State Switch' 1
 elif is_not_model "Test Jig"; then
     echo "Press the POWER button (3)."
     $INPUT_TEST key_power
@@ -134,6 +133,7 @@ if is_model "Test Jig"; then
     fi
 fi
 
+
 # WiFi (on all models but the Test JIG)
 if is_not_model "Test Jig"; then
     kill_leds
@@ -144,6 +144,11 @@ if is_not_model "Test Jig"; then
         ./leds-blink-so 2 1 &
         exit 1
     fi
+fi
+
+
+if is_model "Soundbar" || is_model "Sounddeck"; then
+    $MCU_TEST set-control 'Power State Switch' 1
 fi
 
 # Ethernet
@@ -161,12 +166,12 @@ if is_model "Soundbar" || is_model "Sounddeck"; then
     kill_leds
     ./leds-blink 4 &
     echo "Press Volume Down button (-)."
-    $MCU_TEST wait-event-inc 'Master Playback Volume'
+    $MCU_TEST wait-event-dec 'Master Playback Volume'
 
     kill_leds
     ./leds-blink 5 &
     echo "Press Volume Up button (+)."
-    $MCU_TEST wait-event-dec 'Master Playback Volume'
+    $MCU_TEST wait-event-inc 'Master Playback Volume'
 fi
 
 # Audio Loopback (only on Connector)
