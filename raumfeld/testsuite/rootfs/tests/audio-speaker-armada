@@ -5,7 +5,7 @@
 # set volume
 if is_model "Soundbar" || is_model "Sounddeck"; then
     $MCU_TEST set-control 'Power State Switch' 1
-    $MCU_TEST set-control 'Master Playback Volume' 140
+    $MCU_TEST set-control 'Master Playback Volume' 30
 else
    amixer cset numid=1 160
 fi
