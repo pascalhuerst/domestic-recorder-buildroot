@@ -22,7 +22,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-
 kill_leds
 
 led_on 1
