@@ -11,11 +11,24 @@ led_off 1
 led_off 2
 
 
-# Update the MCU firmware on the Raumfeld Soundbar
-if is_model "Soundbar"; then
+# Handle fallback mode
+if is_model "fallback"; then
+    # If we came up in fallback mode, we have to flash a newer version
+    # of u-boot and restart. u-boot flag 'usbboot_once' tells u-boot to
+    # boot from usb. Just as if 'reset' is pressed.
+    /flash-uboot-armada.sh
+    /usr/sbin/fw_setenv "usbboot_once" "yes"
+    reboot
+fi
+
+
+# Update the MCU firmware on the Raumfeld Soundbar and Sounddeck
+if is_model "Soundbar" || is_model "Sounddeck"; then
     kill_leds
     ./leds-blink 7 &
     ./flash_mcu
+    usleep 50000
+    ./flash_dsp
 fi
 
 
@@ -36,15 +49,6 @@ modprobe snd-soc-spdif-tx
 modprobe snd-soc-s800
 modprobe mwifiex_sdio
 
-# handle fallback mode
-if is_model "fallback"; then
-	# If we came up in fallback mode, we have to flash a newer version
-	# of u-boot and restart. u-boot flag 'usbboot_once' tells u-boot to
-	# boot from usb. Just as if 'reset' is pressed.
-	/flash-uboot-armada.sh
-	/usr/sbin/fw_setenv "usbboot_once" "yes"
-	reboot
-fi
 
 # Check if USB sound card is connected on a Raumfeld One S
 if is_model "Element"; then
@@ -72,34 +76,26 @@ $INPUT_TEST key_setup
 echo "Press the RESET button (2)."
 $INPUT_TEST key_f3
 
-if is_model "Soundbar"; then
+if is_model "Soundbar" || is_model "Sounddeck" ; then
+    $MCU_TEST set-control 'Power State Switch' 1
     echo "Press the POWER button (3)."
-    $MCU_TEST wait-event 'Power State Switch'
-    $MCU_TEST set-control 'Power State Switch' 1    
-elif is_not_model "Test Jig"; then 
+    $MCU_TEST wait-rc-input 0x6b
+elif is_not_model "Test Jig"; then
     echo "Press the POWER button (3)."
     $INPUT_TEST key_power
 fi
 
-# Volume Buttons (on Cube, One S and Soundbar)
-if is_model "Cube" || is_model "Element" || is_model "Soundbar"; then
+# Volume Buttons (on Cube and One S)
+if is_model "Cube" || is_model "Element"; then
     kill_leds
     ./leds-blink 4 &
     echo "Press Volume Down button (-)."
-    if is_model "Soundbar"; then
-        $MCU_TEST wait-event-inc 'Master Playback Volume'
-    else
-        $INPUT_TEST key_volume_down
-    fi
+    $INPUT_TEST key_volume_down
 
     kill_leds
     ./leds-blink 5 &
     echo "Press Volume Up button (+)."
-    if is_model "Soundbar"; then
-        $MCU_TEST wait-event-dec 'Master Playback Volume'
-    else
-        $INPUT_TEST key_volume_up
-    fi
+    $INPUT_TEST key_volume_up
 fi
 
 # Station Buttons (on One M, One S and Stereo M)
@@ -129,13 +125,14 @@ if is_model "Test Jig"; then
     led_off 2
     modprobe snd-usb-audio
     echo "Testing pins and line-in..."
-    (cd /raumfeld/factory-tests; ./ioboard-pins && ./ioboard-audiopins && ./audio-line-in)
+    (cd /raumfeld/factory-tests; ./ioboard-pins && ./audio-line-in)
     if [ $? -ne 0 ]; then
         kill_leds
         ./leds-blink-so 2 1 &
         exit 1
     fi
 fi
+
 
 # WiFi (on all models but the Test JIG)
 if is_not_model "Test Jig"; then
@@ -149,6 +146,11 @@ if is_not_model "Test Jig"; then
     fi
 fi
 
+
+if is_model "Soundbar" || is_model "Sounddeck"; then
+    $MCU_TEST set-control 'Power State Switch' 1
+fi
+
 # Ethernet
 kill_leds
 ./leds-blink-so 3 &
@@ -157,6 +159,19 @@ if [ $? -ne 0 ]; then
     kill_leds
     ./leds-blink-so 3 1 &
     exit 1
+fi
+
+# Volume Buttons (on Soundbar and Sounddeck)
+if is_model "Soundbar" || is_model "Sounddeck"; then
+    kill_leds
+    ./leds-blink 4 &
+    echo "Press Volume Down button (-)."
+    $MCU_TEST wait-event-dec 'Master Playback Volume'
+
+    kill_leds
+    ./leds-blink 5 &
+    echo "Press Volume Up button (+)."
+    $MCU_TEST wait-event-inc 'Master Playback Volume'
 fi
 
 # Audio Loopback (only on Connector)

@@ -1,0 +1,66 @@
+From a5c0025cf7039dc9b78062497833b923c133a576 Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Wed, 30 Sep 2015 21:30:12 +0200
+Subject: [PATCH 3/3] connman: make the GetServices call cancellable
+
+If a GetServices DBus call is pending, then it needs to be
+cancelled when the context-manager is disposed.
+---
+ libgupnp/gupnp-connman-manager.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/libgupnp/gupnp-connman-manager.c b/libgupnp/gupnp-connman-manager.c
+index 50da0ed..c4d0c61 100644
+--- a/libgupnp/gupnp-connman-manager.c
++++ b/libgupnp/gupnp-connman-manager.c
+@@ -59,6 +59,7 @@ struct _GUPnPConnmanManagerPrivate {
+         GHashTable *cm_services;
+         guint      sig_change_id;
+         GDBusConnection *system_bus;
++        GCancellable *cancellable;
+ };
+ 
+ #define CM_DBUS_CONNMAN_NAME      "net.connman"
+@@ -545,7 +546,8 @@ get_services_cb (GObject      *source_object,
+                                         &error);
+ 
+         if (error != NULL) {
+-                g_warning ("Error fetching service list: %s", error->message);
++                if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
++                        g_warning ("Error fetching service list: %s", error->message);
+                 g_error_free (error);
+ 
+                 return;
+@@ -634,7 +636,7 @@ init_connman_manager (GUPnPConnmanManager *manager)
+                            NULL,
+                            G_DBUS_CALL_FLAGS_NONE,
+                            -1,
+-                           NULL,
++                           priv->cancellable,
+                            get_services_cb,
+                            manager);
+ 
+@@ -683,6 +685,12 @@ gupnp_connman_manager_dispose (GObject *object)
+                 priv->cm_services = NULL;
+         }
+ 
++        if (priv->cancellable != NULL)  {
++                g_cancellable_cancel (priv->cancellable);
++                g_object_unref (priv->cancellable);
++                priv->cancellable = NULL;
++        }
++
+         g_clear_object (&(priv->system_bus));
+ 
+         /* Call super */
+@@ -698,6 +706,7 @@ gupnp_connman_manager_constructed (GObject *object)
+ 
+         manager = GUPNP_CONNMAN_MANAGER (object);
+ 
++        manager->priv->cancellable = g_cancellable_new ();
+         manager->priv->system_bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
+                                                     NULL,
+                                                     NULL);
+-- 
+2.4.3
+

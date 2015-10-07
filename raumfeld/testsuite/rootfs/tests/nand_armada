@@ -61,6 +61,11 @@ nandwrite --pad /dev/mtd6 /mnt/boot/uImage
 rm /mnt/boot/uImage
 
 
+echo "Flush boot environment ..."
+
+flash_erase /dev/mtd5 0 0
+
+
 echo "Unmounting filesystem ..."
 
 umount /mnt

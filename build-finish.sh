@@ -89,6 +89,7 @@ fi
 
 # do post-processing ...
 
+
 mkdir -p binaries/$target
 
 case $target in
@@ -139,6 +140,7 @@ case $target in
 	*-armada)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-armada/uImage
+		PAYLOAD=raumfeld/MCU/RaumfeldSoundbar.bin,raumfeld/MCU/RaumfeldSounddeck.bin,raumfeld/DSP/RaumfeldSoundbarDSP.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
@@ -170,5 +172,5 @@ if [ -n "$ROOTFS" ]; then
 	--target=$target \
 	--targz=$ROOTFS \
         --kexec=$KERNEL \
-        --bootloaders=$BOOTLOADERS
+        --payload=$PAYLOAD
 fi
