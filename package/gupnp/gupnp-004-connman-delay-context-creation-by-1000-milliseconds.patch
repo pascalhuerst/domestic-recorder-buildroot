@@ -1,7 +1,7 @@
-From 95b87f45e66ebe4a7f52fa5aeb06d0ce9dcf659a Mon Sep 17 00:00:00 2001
+From e2abbf2fde7ccd013b9bbeacbf7325c6ead37fcc Mon Sep 17 00:00:00 2001
 From: Sven Neumann <neumann@teufel.de>
 Date: Wed, 1 Jul 2015 14:23:24 +0200
-Subject: [PATCH] connman: delay context creation by 1000 milliseconds
+Subject: [PATCH 1/6] connman: delay context creation by 1000 milliseconds
 
 It appears that connman signals an interface to be 'ready' as
 soon as it has an IP. However the routes may not have been
@@ -98,5 +98,5 @@ index afce14c..dd70d02 100644
                  g_signal_emit_by_name (cm_service->manager,
                                         "context-unavailable",
 -- 
-1.9.1
+2.4.3
 

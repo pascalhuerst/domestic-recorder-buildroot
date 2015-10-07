@@ -1,7 +1,7 @@
-From c3126c59ec0a78e0f8ff311fcfe1ee87516167b9 Mon Sep 17 00:00:00 2001
+From ffac5b9f519946f39359325800eb75c38801b2dc Mon Sep 17 00:00:00 2001
 From: Sven Neumann <neumann@teufel.de>
 Date: Wed, 30 Sep 2015 21:21:12 +0200
-Subject: [PATCH 2/3] connman: cancel a pending g_dbus_proxy_new_for_bus() call
+Subject: [PATCH 4/6] connman: cancel a pending g_dbus_proxy_new_for_bus() call
 
 If a service is removed while the g_dbus_proxy_new_for_bus()
 call is pending, then this call needs to be cancelled.
@@ -10,10 +10,10 @@ call is pending, then this call needs to be cancelled.
  1 file changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/libgupnp/gupnp-connman-manager.c b/libgupnp/gupnp-connman-manager.c
-index a764c80..50da0ed 100644
+index 22fa8a5..1666e97 100644
 --- a/libgupnp/gupnp-connman-manager.c
 +++ b/libgupnp/gupnp-connman-manager.c
-@@ -44,6 +44,7 @@ typedef struct {
+@@ -46,6 +46,7 @@ typedef struct {
          GUPnPConnmanManager *manager;
          GUPnPContext        *context;
          GDBusProxy          *proxy;
@@ -21,7 +21,7 @@ index a764c80..50da0ed 100644
          CMServiceState      current;
          guint               sig_prop_id;
          guint               port;
-@@ -248,6 +249,14 @@ cm_service_free (CMService *cm_service)
+@@ -281,6 +282,14 @@ cm_service_free (CMService *cm_service)
  
                  g_object_unref (cm_service->proxy);
          }
@@ -34,9 +34,9 @@ index a764c80..50da0ed 100644
 +                cm_service->cancellable = NULL;
 +        }
  
-         if (cm_service->context != NULL) {
-                 g_signal_emit_by_name (cm_service->manager,
-@@ -357,7 +366,8 @@ service_proxy_new_cb (GObject      *source_object,
+         service_context_remove_creation_timeout (cm_service);
+ 
+@@ -391,7 +400,8 @@ service_proxy_new_cb (GObject      *source_object,
          service_proxy = g_dbus_proxy_new_for_bus_finish (res, &error);
  
          if (error != NULL) {
@@ -46,7 +46,7 @@ index a764c80..50da0ed 100644
                  g_error_free (error);
  
                  return;
-@@ -420,6 +430,8 @@ cm_service_add (GUPnPConnmanManager *manager,
+@@ -454,6 +464,8 @@ cm_service_add (GUPnPConnmanManager *manager,
                               g_strdup (path),
                               cm_service);
  
@@ -55,7 +55,7 @@ index a764c80..50da0ed 100644
          g_dbus_proxy_new_for_bus (G_BUS_TYPE_SYSTEM,
                                    G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
                                    G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
-@@ -427,7 +439,7 @@ cm_service_add (GUPnPConnmanManager *manager,
+@@ -461,7 +473,7 @@ cm_service_add (GUPnPConnmanManager *manager,
                                    CM_DBUS_CONNMAN_NAME,
                                    path,
                                    CM_DBUS_SERVICE_INTERFACE,

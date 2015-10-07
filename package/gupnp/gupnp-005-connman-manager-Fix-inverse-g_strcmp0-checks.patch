@@ -1,7 +1,7 @@
-From 61db50c272557c6355347c9d76de8c509f369f2e Mon Sep 17 00:00:00 2001
+From a22b57cc4a9bb7ed37290a668901c009e03d5c68 Mon Sep 17 00:00:00 2001
 From: Oliver Tappe <zooey@hirschkaefer.de>
 Date: Mon, 27 Jul 2015 12:51:40 +0200
-Subject: [PATCH] connman-manager: Fix inverse g_strcmp0 checks.
+Subject: [PATCH 2/6] connman-manager: Fix inverse g_strcmp0 checks.
 
 * I suppose the checks against name and interface are meant to update
   the respective value in the service when they have changed, not when
@@ -14,10 +14,10 @@ Subject: [PATCH] connman-manager: Fix inverse g_strcmp0 checks.
  1 file changed, 10 insertions(+), 12 deletions(-)
 
 diff --git a/libgupnp/gupnp-connman-manager.c b/libgupnp/gupnp-connman-manager.c
-index afce14c..a01936a 100644
+index dd70d02..c8f1ba6 100644
 --- a/libgupnp/gupnp-connman-manager.c
 +++ b/libgupnp/gupnp-connman-manager.c
-@@ -196,11 +196,10 @@ on_service_property_signal (GDBusConnection *connection,
+@@ -230,11 +230,10 @@ on_service_property_signal (GDBusConnection *connection,
                  g_free (cm_service->iface);
                  g_variant_lookup (value, "Interface", "s", &cm_service->iface);
  
@@ -33,7 +33,7 @@ index afce14c..a01936a 100644
  
          } else if (g_strcmp0 (name, "State") == 0) {
                  state_str = g_variant_get_string (value, 0);
-@@ -315,7 +314,7 @@ cm_service_update (CMService *cm_service, GVariant *dict, guint port)
+@@ -351,7 +350,7 @@ cm_service_update (CMService *cm_service, GVariant *dict, guint port)
                      (g_strcmp0 (state, "ready") == 0))
                          new_state = CM_SERVICE_STATE_ACTIVE;
  
@@ -42,7 +42,7 @@ index afce14c..a01936a 100644
                  g_free (cm_service->name);
                  cm_service->name = name;
  
-@@ -326,15 +325,14 @@ cm_service_update (CMService *cm_service, GVariant *dict, guint port)
+@@ -362,15 +361,14 @@ cm_service_update (CMService *cm_service, GVariant *dict, guint port)
                                        NULL);
          }
  
@@ -64,5 +64,5 @@ index afce14c..a01936a 100644
  
          cm_service->port = port;
 -- 
-2.1.4
+2.4.3
 
