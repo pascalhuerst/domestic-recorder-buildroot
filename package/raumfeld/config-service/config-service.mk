@@ -4,6 +4,6 @@
 #
 #############################################################
 
-CONFIG_SERVICE_DEPENDENCIES = host-pkgconf libraumfeld libraumfeldcpp
+CONFIG_SERVICE_DEPENDENCIES = libraumfeld libraumfeldcpp
 
-$(eval $(raumfeld-cross-package))
+$(eval $(raumfeld-cmake-package))
