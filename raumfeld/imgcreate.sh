@@ -96,6 +96,7 @@ make -C raumfeld/imgtool
 
 tmpdir=$(mktemp)-$PPID
 testdir=raumfeld/testsuite/
+
 imgcreate=raumfeld/imgtool/imgcreate
 imginfo=raumfeld/imgtool/imginfo
 resize2fs=/sbin/resize2fs
@@ -104,6 +105,12 @@ resize2fs=/sbin/resize2fs
 ext2_img=binaries/$target.ext2
 
 target_img=binaries/$target-$version.img
+
+if [ -z "$GENEXT2FS" ]; then
+    genext2fs="$(which genext2fs)"
+else
+    genext2fs="$GENEXT2FS"
+fi
 
 test -f $kernel		|| echo "ERROR: $kernel not found"
 test -f $kernel		|| exit 1
@@ -205,7 +212,7 @@ echo "exec /$target.sh \$*" > $tmpdir/start-test.sh
 chmod a+x $tmpdir/start-test.sh
 
 rm -f $ext2_img
-genext2fs -b 1200 -x $base_rootfs_img -d $tmpdir $ext2_img
+"$genext2fs" -b 1200 -x $base_rootfs_img -d $tmpdir $ext2_img
 
 # shrink the filesystem to the minimum size
 # add 4 blocks to work around a bug in resize2fs which sometimes
