@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 targets="initramfs-arm imgrootfs-arm		\
          initramfs-armada imgrootfs-armada      \
          initramfs-geode imgrootfs-geode	\
