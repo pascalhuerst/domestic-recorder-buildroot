@@ -34,7 +34,7 @@ case "$hw" in
 	    Sounddeck)
 		img="speaker2.img"
 		mcu="RaumfeldSounddeck.bin"
-		dsp="RaumfeldSoundbarDSP.bin"
+		dsp="RaumfeldSounddeckDSP.bin"
                 ;;
             *)
                 img="speaker2.img"
