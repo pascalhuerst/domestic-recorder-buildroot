@@ -2,7 +2,15 @@
 
 set -e
 
-DSP_FIRMWARE=/DSP/RaumfeldSoundbarDSP.bin
+if is_model "Soundbar"; then
+    DSP_FIRMWARE=/DSP/RaumfeldSoundbarDSP.bin
+elif is_model "Sounddeck"; then
+    DSP_FIRMWARE=/DSP/RaumfeldSounddeckDSP.bin
+else
+    echo "Model is not Soundbar nor Sounddeck"
+    exit 1
+fi
+
 MCU_SERIAL_DEVICE=/dev/ttyO5
 
 if [ -f $DSP_FIRMWARE ]; then
