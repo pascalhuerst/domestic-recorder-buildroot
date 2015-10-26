@@ -132,6 +132,11 @@ $(2)_PRE_CONFIGURE_HOOKS += RAUMFELD_CUSTOM_CMAKE_MODULES_HOOK
 # the toolchain file that pkg-cmake.mk generates, it doesn't at the moment.
 $(2)_CONF_OPTS += -DCMAKE_SYSTEM_PROCESSOR=$(KERNEL_ARCH)
 
+# If additional cmake options have been passed in, add them now
+ifeq ($(RAUMFELD_TOPLEVEL_INSTALL),YES)
+  $(2)_CONF_OPTS += -DCMAKE_INSTALL_PREFIX=
+endif
+
 RAUMFELD_DIRCLEAN_TARGETS += $(1)-dirclean
 
 # Call the generic autotools package infrastructure to generate the necessary
