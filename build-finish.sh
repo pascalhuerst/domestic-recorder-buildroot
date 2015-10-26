@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 targets="initramfs-arm imgrootfs-arm		\
          initramfs-armada imgrootfs-armada      \
          initramfs-geode imgrootfs-geode	\
@@ -140,7 +142,7 @@ case $target in
 	*-armada)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-armada/uImage
-		PAYLOAD=raumfeld/MCU/RaumfeldSoundbar.bin,raumfeld/MCU/RaumfeldSounddeck.bin,raumfeld/DSP/RaumfeldSoundbarDSP.bin
+		PAYLOAD=raumfeld/MCU/RaumfeldSoundbar.bin,raumfeld/MCU/RaumfeldSounddeck.bin,raumfeld/DSP/RaumfeldSoundbarDSP.bin,raumfeld/DSP/RaumfeldSounddeckDSP.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--target=$target-$t \
