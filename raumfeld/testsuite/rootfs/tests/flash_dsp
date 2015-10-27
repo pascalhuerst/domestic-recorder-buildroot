@@ -1,5 +1,7 @@
 #!/bin/sh
 
+. ../tests.inc
+
 set -e
 
 if is_model "Soundbar"; then
