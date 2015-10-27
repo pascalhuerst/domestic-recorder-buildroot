@@ -19,6 +19,7 @@ set -e
 echo_usage() {
 cat << __EOF__ >&2
 Usage: $0 --target=<target>
+	--output-file=<filename>
 	--base-rootfs-img=<base-rootfs-img>
 	--target-rootfs-tgz=<target-rootfs-tgz>
 	--kernel=<kernel>
@@ -75,7 +76,8 @@ add_dsp_firmware() {
 . ./getopt.inc
 getopt $*
 
-if [ -z "$target" ]		|| \
+if [ -z "$output_file" ]	|| \
+   [ -z "$target" ]		|| \
    [ -z "$base_rootfs_img" ]	|| \
    [ -z "$kernel" ]		|| \
    [ -z "$target_rootfs_tgz" ];
@@ -102,9 +104,9 @@ imginfo=raumfeld/imgtool/imginfo
 resize2fs=/sbin/resize2fs
 
 # ext2_img is created in binaries temporarily; will be removed later
-ext2_img=binaries/$target.ext2
+ext2_img=$output_file.ext2
 
-target_img=binaries/$target-$version.img
+target_img=$output_file
 
 if [ -z "$GENEXT2FS" ]; then
     genext2fs="$(which genext2fs)"
@@ -235,13 +237,13 @@ if [ -n "$dts_image" ]; then
 		--kernel $kernel		\
 		--description $tmpdir/desc	\
 		--rootfs $ext2_img 		\
-		--output $target_img
+		--output $output_file
 else
     $imgcreate	--version $img_version		\
 		--kernel $kernel		\
 		--description $tmpdir/desc	\
 		--rootfs $ext2_img 		\
-		--output $target_img
+		--output $output_file
 fi
 
 ####### CLEANUP ########
@@ -251,11 +253,5 @@ rm -fr $tmpdir
 rm -fr $ext2_img
 
 echo "Image ready:"
-$imginfo --version $img_version $target_img
-ls -hl $target_img
-
-if [ "$auto_version" -eq 1 ]; then
-    cd binaries
-    ln -svf $target-$version.img $target-LATEST.img
-    cd ..
-fi
+$imginfo --version $img_version $output_file
+ls -hl $output_file

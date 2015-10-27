@@ -118,6 +118,7 @@ case $target in
                 KERNEL=binaries/initramfs-arm/uImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
+				--output-file=binaries/${target}-${t}-${version}.img \
 				--target=$target-$t \
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
@@ -131,6 +132,7 @@ case $target in
                 KERNEL=binaries/initramfs-arm/uImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
+				--output-file=binaries/${target}-${t}-${version}.img \
 				--target=$target-$t \
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
@@ -145,6 +147,7 @@ case $target in
 		PAYLOAD=raumfeld/MCU/RaumfeldSoundbar.bin,raumfeld/MCU/RaumfeldSounddeck.bin,raumfeld/DSP/RaumfeldSoundbarDSP.bin,raumfeld/DSP/RaumfeldSounddeckDSP.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
+				--output-file=binaries/${target}-${t}-${version}.img \
 				--target=$target-$t \
 				--base-rootfs-img=binaries/imgrootfs-armada/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
@@ -158,6 +161,7 @@ case $target in
                 KERNEL=binaries/initramfs-geode/bzImage
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
+				--output-file=binaries/${target}-${t}-${version}.img \
 				--target=$target-$t \
 				--base-rootfs-img=binaries/imgrootfs-geode/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
