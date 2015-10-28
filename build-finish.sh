@@ -112,6 +112,7 @@ case $target in
 	audioadapter-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/uImage
+                HARDWARE_IDS="3,4,6,7,8"
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--output-file=binaries/${target}-${t}-${version}.img \
@@ -126,6 +127,7 @@ case $target in
 	remotecontrol-arm)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-arm/uImage
+                HARDWARE_IDS="2"
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--output-file=binaries/${target}-${t}-${version}.img \
@@ -137,10 +139,27 @@ case $target in
 		done
 		;;
 
-	*-armada)
+	audioadapter-armada)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-armada/uImage
+                HARDWARE_IDS="9,10,11,12,13,14,16,17"
 		PAYLOAD=raumfeld/MCU/RaumfeldSoundbar.bin,raumfeld/MCU/RaumfeldSounddeck.bin,raumfeld/DSP/RaumfeldSoundbarDSP.bin,raumfeld/DSP/RaumfeldSounddeckDSP.bin
+		for t in $IMAGES; do
+			raumfeld/imgcreate.sh \
+				--output-file=binaries/${target}-${t}-${version}.img \
+				--target=$target-$t \
+				--base-rootfs-img=binaries/imgrootfs-armada/rootfs.ext2 \
+				--target-rootfs-tgz=$ROOTFS \
+				--kernel=$KERNEL \
+			        --version=$version
+		done
+		;;
+
+	base-armada)
+                ROOTFS=output/images/rootfs.tar.gz
+                KERNEL=binaries/initramfs-armada/uImage
+                HARDWARE_IDS="15"
+		PAYLOAD=raumfeld/MCU/RaumfeldSoundbar.bin,raumfeld/MCU/RaumfeldSounddeck.bin,raumfeld/DSP/RaumfeldSoundbarDSP.bin
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--output-file=binaries/${target}-${t}-${version}.img \
@@ -155,6 +174,7 @@ case $target in
 	base-geode)
                 ROOTFS=output/images/rootfs.tar.gz
                 KERNEL=binaries/initramfs-geode/bzImage
+                HARDWARE_IDS="5"
 		for t in $IMAGES; do
 			raumfeld/imgcreate.sh \
 				--output-file=binaries/${target}-${t}-${version}.img \
@@ -169,10 +189,14 @@ esac
 
 
 if [ -n "$ROOTFS" ]; then
-    # create  the update image
+    # create  the update images
+    # only one update per target for the time being
+
     raumfeld/updatecreate.sh \
-	--target=$target \
-	--targz=$ROOTFS \
+        --output-file=binaries/updates-${target}-${version}.tar \
+        --target=$target \
+        --hardware-ids="$HARDWARE_IDS" \
+        --targz=$ROOTFS \
         --kexec=$KERNEL \
         --payload=$PAYLOAD
 fi

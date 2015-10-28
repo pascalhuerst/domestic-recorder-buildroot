@@ -1,17 +1,18 @@
 #!/bin/bash
 
+set -e
+
 echo_usage() {
-	echo "Usage: $0 --target=<target> --targz=<tar.gz> --kexec=<zimage> --payload=<uboot1.bin,uboot2.bin>"
-        exit 1
+    echo "Usage: $0 --output-file=<file> --target=<target> --hardware-ids=<1,2,...> --targz=<tar.gz> --kexec=<zimage> --payload=<uboot1.bin,uboot2.bin>"
+    exit 1
 }
 
 . ./getopt.inc
 getopt $*
 
-if [ -z "$target" ] || [ -z "$targz" ] || [ -z "$kexec" ]; then
+if [ -z "$output_file" ] || [ -z "$target" ] || [ -z "$hardware_ids" ] || [ -z "$targz" ] || [ -z "$kexec" ]; then
     echo_usage
 fi
-
 
 version=$(tar -f $targz -zx --to-stdout ./etc/raumfeld-version)
 
@@ -95,52 +96,27 @@ names=( \
     "Raumfeld Soundbar"     \
     "Raumfeld Sounddeck")
 
-case $target in
-	remotecontrol-arm)
-		hardwareids="2"
-		;;
-	audioadapter-arm)
-		hardwareids="3 4 6 7 8"
-		;;
-	audioadapter-armada)
-		hardwareids="9 10 11 12 13 14 16 17"
-		;;
-	base-armada)
-		hardwareids="15"
-		;;
-	base-geode)
-		hardwareids="5"
-		;;
-	*)
-		echo "Unable to map $target to hardware ID. bummer."
-		exit 1
-		;;
-esac
 
+staging_dir=$(mktemp --directory)
 
-# only one update per target for the time being
+# Create the update image in the staging dir
+mv $tmpgz $staging_dir/$shasum
+openssl dgst -sha256 -sign $privatekey \
+    -out $staging_dir/$shasum.sign $staging_dir/$shasum
 
-for hardwareid in $hardwareids; do
-    hardwarename=${names[$hardwareid]}
-    update_dir=binaries/updates/$hardwareid/
-    rm -fr $update_dir
-    mkdir -p $update_dir
-
-    cp $tmpgz $update_dir/$shasum
-    openssl dgst -sha256 -sign $privatekey \
-        -out $update_dir/$shasum.sign $update_dir/$shasum
-
-    cat > $update_dir/$hardwareid.updates << __EOF__
-[$shasum]
-	description=Software update ($version) for $hardwarename
-	num_files=$numfiles
-	hardware=$hardwareid
-	version=$version
-
+# Create a metadata file for each device of this target type
+for hardwareid in $(echo $hardwareids | tr , ' '); do
+    hardwarename=${names[$hardware_id]}
+    cat > $staging_dir/$hardware_id.updates << __EOF__
+    [$shasum]
+    description=Software update ($version) for $hardwarename
+    num_files=$numfiles
+    hardware=$hardware_id
+    version=$version
 __EOF__
-    echo "Update $shasum ($version) created in $update_dir"
 done
 
+( cd $staging_dir; tar --create --file=$output_file * )
+rm -Rf "$staging_dir"
 
-# remove the temporary targz that we created earlier
-rm $tmpgz
+echo "Update $shasum ($version) created in $output_file"
