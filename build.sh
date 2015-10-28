@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 targets="initramfs-arm imgrootfs-arm		\
          initramfs-armada imgrootfs-armada      \
          initramfs-geode imgrootfs-geode	\
@@ -110,5 +112,7 @@ make
 
 
 # do post-processing for some targets ...
+
+export GENEXT2FS="$(pwd)/output/host/usr/bin/genext2fs"
 
 ./build-finish.sh --target=$target --image=$image --version=$versionstr

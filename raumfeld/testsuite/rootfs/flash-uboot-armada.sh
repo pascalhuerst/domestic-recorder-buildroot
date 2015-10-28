@@ -1,5 +1,7 @@
 #!/bin/sh
 
+source tests.inc
+
 FILENAME_MLO=/MLO-armada
 FILENAME_UBOOT=/u-boot-armada.img
 
@@ -20,3 +22,8 @@ flash_erase /dev/mtd4 0 0
 nandwrite --pad /dev/mtd4 $FILENAME_UBOOT
 
 echo "u-boot and MLO written"
+
+if is_not_model "fallback"; then
+	flash_erase /dev/mtd5 0 0
+	echo "u-boot environment flushed"
+fi

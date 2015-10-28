@@ -34,7 +34,7 @@ case "$hw" in
 	    Sounddeck)
 		img="speaker2.img"
 		mcu="RaumfeldSounddeck.bin"
-		dsp="RaumfeldSoundbarDSP.bin"
+		dsp="RaumfeldSounddeckDSP.bin"
                 ;;
             *)
                 img="speaker2.img"
@@ -93,7 +93,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     if [ -n "$mcu" ]; then
 	gunzip -c $update | tar x ./tmp/$mcu
 	echo "Flashing the MCU firmware ..."
-	/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -w ./tmp/$mcu /dev/ttyO5
+	/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -e 62 -w ./tmp/$mcu /dev/ttyO5
     fi
 
     if [ -n "$dsp" ]; then

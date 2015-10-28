@@ -1,7 +1,7 @@
-From 2a72901d0ee848a9f9432b4016a1c4c8136a57d4 Mon Sep 17 00:00:00 2001
+From 9aa203734086804b250b5c7e96723de288d7e8f5 Mon Sep 17 00:00:00 2001
 From: Sven Neumann <neumann@teufel.de>
-Date: Wed, 30 Sep 2015 19:57:11 +0200
-Subject: [PATCH] connman: fix a potential crash
+Date: Fri, 2 Oct 2015 16:19:44 +0200
+Subject: [PATCH 3/6] connman: fix a potential crash
 
 cm_service_add() creates a CMService struct with a NULL
 service_proxy field and then uses the asynchronous
@@ -13,10 +13,10 @@ before the proxy is actually created.
  1 file changed, 10 insertions(+), 8 deletions(-)
 
 diff --git a/libgupnp/gupnp-connman-manager.c b/libgupnp/gupnp-connman-manager.c
-index afce14c..a764c80 100644
+index c8f1ba6..22fa8a5 100644
 --- a/libgupnp/gupnp-connman-manager.c
 +++ b/libgupnp/gupnp-connman-manager.c
-@@ -235,17 +235,19 @@ cm_service_new (GUPnPConnmanManager *manager,
+@@ -268,17 +268,19 @@ cm_service_new (GUPnPConnmanManager *manager,
  static void
  cm_service_free (CMService *cm_service)
  {
@@ -42,8 +42,8 @@ index afce14c..a764c80 100644
 +                g_object_unref (cm_service->proxy);
 +        }
  
-         if (cm_service->context != NULL) {
-                 g_signal_emit_by_name (cm_service->manager,
+         service_context_remove_creation_timeout (cm_service);
+ 
 -- 
 2.4.3
 
