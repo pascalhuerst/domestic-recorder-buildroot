@@ -4,6 +4,6 @@
 #
 #############################################################
 
-STREAM_RELAY_DEPENDENCIES = host-intltool host-pkgconf libraumfeld libraumfeldcpp libasf libmms libvorbis taglib
+STREAM_RELAY_DEPENDENCIES = libraumfeld libraumfeldcpp libasf libmms libvorbis taglib
 
-$(eval $(raumfeld-cross-package))
+$(eval $(raumfeld-cmake-package))
