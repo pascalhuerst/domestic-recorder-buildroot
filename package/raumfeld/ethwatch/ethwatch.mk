@@ -4,4 +4,4 @@
 #
 #############################################################
 
-$(eval $(raumfeld-cross-package))
+$(eval $(raumfeld-cmake-package))

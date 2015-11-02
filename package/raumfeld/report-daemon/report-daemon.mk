@@ -4,6 +4,6 @@
 #
 #############################################################
 
-REPORT_DAEMON_DEPENDENCIES = host-pkgconf libsoup
+REPORT_DAEMON_DEPENDENCIES = libsoup
 
-$(eval $(raumfeld-cross-package))
+$(eval $(raumfeld-cmake-package))

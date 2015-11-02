@@ -1,11 +1,11 @@
 #############################################################
 #
-# libraumfeldcpp
+# libraumfeldtest
 #
 #############################################################
 
-LIBRAUMFELDCPP_INSTALL_STAGING = YES
+LIBRAUMFELDTEST_INSTALL_STAGING = YES
 
-LIBRAUMFELDCPP_DEPENDENCIES = libsoup libraumfeld
+LIBRAUMFELDTEST_DEPENDENCIES = libraumfeldcpp
 
 $(eval $(raumfeld-cmake-package))

@@ -4,7 +4,7 @@
 #
 #############################################################
 
-FACTORY_TESTS_DEPENDENCIES = host-pkgconf alsa-lib libraumfelddsp renderer-extract
+FACTORY_TESTS_DEPENDENCIES = alsa-lib libraumfelddsp renderer-extract
 
 FACTORY_TESTS_MODELS = raumfeld-one-s
 
@@ -14,4 +14,4 @@ endef
 
 FACTORY_TESTS_POST_INSTALL_TARGET_HOOKS += FACTORY_TESTS_INSTALL_DSP_CONFIG_FILES
 
-$(eval $(raumfeld-cross-package))
+$(eval $(raumfeld-cmake-package))

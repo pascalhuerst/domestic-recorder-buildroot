@@ -1,0 +1,10 @@
+config BR2_PACKAGE_LIBRAUMFELDTEST
+	bool "libraumfeldtest"
+	select BR2_PACKAGE_LIBRAUMFELDCPP
+	select BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_RAUMFELD_REPO
+	help
+	  libraumfeldtest is a test utility library for the Raumfeld software
+          stack
+
+	  http://www.raumfeld.com/
