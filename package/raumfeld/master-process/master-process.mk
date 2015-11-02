@@ -4,6 +4,6 @@
 #
 #############################################################
 
-MASTER_PROCESS_DEPENDENCIES = host-pkgconf host-libglib2 libraumfeldcpp
+MASTER_PROCESS_DEPENDENCIES = libraumfeldcpp
 
-$(eval $(raumfeld-cross-package))
+$(eval $(raumfeld-cmake-package))
