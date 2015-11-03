@@ -3,7 +3,7 @@
 set -e
 
 echo_usage() {
-    echo "Usage: $0 --output-file=<file> --target=<target> --hardware-ids=<1,2,...> --targz=<tar.gz> --kexec=<zimage> --payload=<uboot1.bin,uboot2.bin>"
+    echo "Usage: $0 --output-file=<file> --target=<target> --hardware-ids=<1,2,...> --targz=<tar.gz> --kexec=<zimage> --payload=<uboot1.bin,uboot2.bin> --dts-dir=<dir>"
     exit 1
 }
 
@@ -38,21 +38,27 @@ mkdir -p $tmpdir/tmp
 
 cp $kexec $tmpdir/tmp/raumfeld-update.zImage
 
+check_dts_dir() {
+    [[ -d "$dts_dir" ]] || (echo "ERROR: Please pass --dts-dir to point to the directory containing dts.cramfs and dts/*.dtb"; exit 1)
+}
+
 case $target in
     audioadapter-armada)
+        check_dts_dir
         # first copy all am33xx-raumfeld device-tree blobs for direct inclusion
-        cp output/images/dts/am33xx-raumfeld-*.dtb $tmpdir/tmp
+        cp $dts_dir/dts/am33xx-raumfeld-*.dtb $tmpdir/tmp
         # work around a bug in the update mechanism in 1.10
         # which looks for the files without the .dtb extension
         cp $tmpdir/tmp/am33xx-raumfeld-connector-0-0.dtb $tmpdir/tmp/am33xx-raumfeld-connector-0-0
         # then copy the cramfs containing the device-tree blobs
-        cp output/images/dts.cramfs $tmpdir/tmp
+        cp $dts_dir/dts.cramfs $tmpdir/tmp
         ;;
     base-armada)
+        check_dts_dir
         # first copy the am33xx-raumfeld-base device-tree blobs for direct inclusion
-        cp output/images/dts/am33xx-raumfeld-base-*.dtb $tmpdir/tmp
+        cp $dts_dir/dts/am33xx-raumfeld-base-*.dtb $tmpdir/tmp
         # then copy the cramfs containing the device-tree blobs
-        cp output/images/dts.cramfs $tmpdir/tmp
+        cp $dts_dir/dts.cramfs $tmpdir/tmp
         ;;
 esac
 

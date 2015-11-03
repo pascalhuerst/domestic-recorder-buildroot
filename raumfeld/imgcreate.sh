@@ -23,6 +23,7 @@ Usage: $0 --target=<target>
 	--base-rootfs-img=<base-rootfs-img>
 	--target-rootfs-tgz=<target-rootfs-tgz>
 	--kernel=<kernel>
+	--dts-dir=<dir>
 	[--version=<version>]
 
 __EOF__
@@ -54,7 +55,7 @@ add_rootfs_tgz() {
 }
 
 add_dtb_cramfs() {
-    cp output/images/dts.cramfs $tmpdir/
+    cp $dts_dir/dts.cramfs $tmpdir/
 }
 
 add_uboot_images() {
@@ -124,15 +125,22 @@ test -f $rootfstgz	|| exit 1
 mkdir $tmpdir
 echo "Operating in $tmpdir"
 
+check_dts_dir() {
+    [[ -d "$dts_dir" ]] || (echo "ERROR: Please pass --dts-dir to point to the directory containing dts.cramfs"; exit 1)
+}
+
+
 # decide what image format we need to create
 case $target in
     audioadapter-armada-*)
-	img_version=1
-	dts_image=output/images/dts.cramfs
+        check_dts_dir
+        img_version=1
+        dts_image=$dts_dir/dts.cramfs
         ;;
     base-armada-*)
-	img_version=1
-	dts_image=output/images/dts.cramfs
+        check_dts_dir
+        img_version=1
+        dts_image=$dts_dir/dts.cramfs
         ;;
     *)
         img_version=0

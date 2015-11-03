@@ -120,6 +120,7 @@ case $target in
 				--base-rootfs-img=binaries/imgrootfs-armada/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
+				--dts-dir=output/images \
 			        --version=$version
 		done
 		;;
@@ -137,6 +138,7 @@ case $target in
 				--base-rootfs-img=binaries/imgrootfs-armada/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
+				--dts-dir=output/images \
 			        --version=$version
 		done
 		;;
