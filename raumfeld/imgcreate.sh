@@ -213,6 +213,11 @@ fi
 echo "exec /$target.sh \$*" > $tmpdir/start-test.sh
 chmod a+x $tmpdir/start-test.sh
 
+# ensure the root fs ext2 image is large enough that genext2fs will find free
+# inodes when building the deployment targets.
+# this should probably be made part of br2 some day.
+/sbin/resize2fs $base_rootfs_img 64M
+
 rm -f $ext2_img
 "$genext2fs" -b 1200 -x $base_rootfs_img -d $tmpdir $ext2_img
 

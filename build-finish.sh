@@ -106,11 +106,7 @@ case $target in
                 ;;
 
 	imgrootfs-*)
-		# resize the root fs ext2 image so that genext2fs will
-		# find free inodes when building the deployment targets.
-		# this should probably be made part of br2 some day.
                 cp output/images/rootfs.ext2 binaries/$target
-		/sbin/resize2fs binaries/$target/rootfs.ext2 64M
 		;;
 
 	audioadapter-arm)
