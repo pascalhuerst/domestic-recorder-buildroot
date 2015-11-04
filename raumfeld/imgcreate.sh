@@ -24,6 +24,7 @@ Usage: $0 --target=<target>
 	--target-rootfs-tgz=<target-rootfs-tgz>
 	--kernel=<kernel>
 	--dts-dir=<dir>
+	--download-dir=<dir>
 	[--version=<version>]
 
 __EOF__
@@ -33,19 +34,19 @@ __EOF__
 add_raumfeld_demo() {
     DOWNLOAD_SITE=http://rf-devel.teufel.local/buildroot/dl
     DOWNLOAD_FILE="Raumfeld Demo.mp3"
-    test -f "output/dl/$DOWNLOAD_FILE" || \
-        wget -P output/dl "$DOWNLOAD_SITE/$DOWNLOAD_FILE"
-    cp "output/dl/$DOWNLOAD_FILE" $tmpdir/
+    test -f "$download_dir/$DOWNLOAD_FILE" || \
+        wget -P $download_dir "$DOWNLOAD_SITE/$DOWNLOAD_FILE"
+    cp "$download_dir/$DOWNLOAD_FILE" $tmpdir/
 }
 
 add_audiotest_wav() {
     DOWNLOAD_PRIMARY_SITE=http://rf-devel.teufel.local/buildroot/dl
     DOWNLOAD_BACKUP_SITE=http://caiaq.de/download/raumfeld
     DOWNLOAD_FILE="audiotest.wav"
-    test -f output/dl/$DOWNLOAD_FILE || \
+    test -f $download_dir/$DOWNLOAD_FILE || \
         for site in $DOWNLOAD_PRIMARY_SITE $DOWNLOAD_BACKUP_SITE; \
-        do wget -P output/dl $site/$DOWNLOAD_FILE && break; done
-    cp output/dl/$DOWNLOAD_FILE $tmpdir/
+        do wget -P $download_dir $site/$DOWNLOAD_FILE && break; done
+    cp $download_dir/$DOWNLOAD_FILE $tmpdir/
 }
 
 add_rootfs_tgz() {
@@ -81,7 +82,8 @@ if [ -z "$output_file" ]	|| \
    [ -z "$target" ]		|| \
    [ -z "$base_rootfs_img" ]	|| \
    [ -z "$kernel" ]		|| \
-   [ -z "$target_rootfs_tgz" ];
+   [ -z "$target_rootfs_tgz" ] ||
+   [ -z "$download_dir" ];
 then echo_usage; fi
 
 if [ -z "$version" ]; then

@@ -87,6 +87,7 @@ case $target in
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
+				--download-dir=output/dl \
 			        --version=$version
 		done
 		;;
@@ -103,6 +104,7 @@ case $target in
 				--base-rootfs-img=binaries/imgrootfs-arm/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
+				--download-dir=output/dl \
 			        --version=$version
 		done
 		;;
@@ -121,6 +123,7 @@ case $target in
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
 				--dts-dir=output/images \
+				--download-dir=output/dl \
 			        --version=$version
 		done
 		;;
@@ -139,6 +142,7 @@ case $target in
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
 				--dts-dir=output/images \
+				--download-dir=output/dl \
 			        --version=$version
 		done
 		;;
@@ -155,6 +159,7 @@ case $target in
 				--base-rootfs-img=binaries/imgrootfs-geode/rootfs.ext2 \
 				--target-rootfs-tgz=$ROOTFS \
 				--kernel=$KERNEL \
+				--download-dir=output/dl \
 				--version=$version
 		done
                 ;;
