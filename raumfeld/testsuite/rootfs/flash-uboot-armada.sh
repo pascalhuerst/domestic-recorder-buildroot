@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source tests.inc
+source /tests.inc
 
 FILENAME_MLO=/MLO-armada
 FILENAME_UBOOT=/u-boot-armada.img
