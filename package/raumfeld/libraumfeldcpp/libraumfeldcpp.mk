@@ -6,6 +6,6 @@
 
 LIBRAUMFELDCPP_INSTALL_STAGING = YES
 
-LIBRAUMFELDCPP_DEPENDENCIES = libsoup libraumfeld
+LIBRAUMFELDCPP_DEPENDENCIES = libsoup libraumfeld spotify-embedded
 
 $(eval $(raumfeld-cmake-package))

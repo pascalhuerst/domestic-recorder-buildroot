@@ -4,6 +4,6 @@
 #
 #############################################################
 
-RENDERER_DEPENDENCIES = alsa-lib flac kmod libraumfelddsp spotify-embedded
+RENDERER_DEPENDENCIES = alsa-lib flac kmod libraumfelddsp
 
 $(eval $(raumfeld-cmake-package))
