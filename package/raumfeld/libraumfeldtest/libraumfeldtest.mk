@@ -1,9 +1,11 @@
 #############################################################
 #
-# web-service
+# libraumfeldtest
 #
 #############################################################
 
-WEB_SERVICE_DEPENDENCIES = host-intltool libraumfeld libraumfeldcpp
+LIBRAUMFELDTEST_INSTALL_STAGING = YES
+
+LIBRAUMFELDTEST_DEPENDENCIES = libraumfeldcpp
 
 $(eval $(raumfeld-cmake-package))

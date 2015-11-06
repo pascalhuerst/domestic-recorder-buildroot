@@ -4,6 +4,6 @@
 #
 #############################################################
 
-RENDERER_DEPENDENCIES = host-pkgconf host-libglib2 alsa-lib flac kmod libraumfelddsp spotify-embedded
+RENDERER_DEPENDENCIES = alsa-lib flac kmod libraumfelddsp
 
-$(eval $(raumfeld-cross-package))
+$(eval $(raumfeld-cmake-package))

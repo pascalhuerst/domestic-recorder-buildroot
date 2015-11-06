@@ -166,12 +166,12 @@ if is_model "Soundbar" || is_model "Sounddeck"; then
     kill_leds
     ./leds-blink 4 &
     echo "Press Volume Down button (-)."
-    $MCU_TEST wait-event-dec 'Master Playback Volume'
+    $MCU_TEST wait-event-inc 'Master Playback Volume'
 
     kill_leds
     ./leds-blink 5 &
     echo "Press Volume Up button (+)."
-    $MCU_TEST wait-event-inc 'Master Playback Volume'
+    $MCU_TEST wait-event-dec 'Master Playback Volume'
 fi
 
 # Audio Loopback (only on Connector)
