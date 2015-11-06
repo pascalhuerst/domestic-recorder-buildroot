@@ -4,6 +4,6 @@
 #
 #############################################################
 
-WEB_SERVICE_DEPENDENCIES = host-pkgconf host-libglib2 libraumfeld libraumfeldcpp
+WEB_SERVICE_DEPENDENCIES = host-intltool libraumfeld libraumfeldcpp
 
-$(eval $(raumfeld-cross-package))
+$(eval $(raumfeld-cmake-package))

@@ -4,6 +4,6 @@
 #
 #############################################################
 
-TIMESERVER_DEPENDENCIES = host-pkgconf libraumfeld
+TIMESERVER_DEPENDENCIES = libraumfeld
 
-$(eval $(raumfeld-cross-package))
+$(eval $(raumfeld-cmake-package))

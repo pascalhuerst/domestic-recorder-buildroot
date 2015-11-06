@@ -4,6 +4,6 @@
 #
 #############################################################
 
-META_SERVER_DEPENDENCIES = host-pkgconf libraumfeld libraumfeldcpp taglib yajl
+META_SERVER_DEPENDENCIES = host-intltool libraumfeld libraumfeldcpp taglib yajl
 
-$(eval $(raumfeld-cross-package))
+$(eval $(raumfeld-cmake-package))
