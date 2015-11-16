@@ -316,3 +316,39 @@ raumfeld_updates_target(
         KERNEL buildroot-initramfs-geode
         ROOTFS buildroot-base-geode
 )
+
+
+# Wrapper for the Buildroot 'raumfeld-dirclean' targets. These are used to
+# update and rebuild the modules from core. This 'raumfeld-dirclean' target
+# should no longer be needed when we split the core.git modules out of the
+# Buildroot build process.
+
+add_custom_target(raumfeld-dirclean)
+
+set(targets_building_core
+    buildroot-initramfs-arm
+    buildroot-imgrootfs-arm
+    buildroot-audioadapter-arm
+    buildroot-remotecontrol-arm
+    buildroot-initramfs-armada
+    buildroot-imgrootfs-armada
+    buildroot-audioadapter-armada
+    buildroot-base-armada
+    buildroot-initramfs-geode
+    buildroot-imgrootfs-geode
+    buildroot-base-geode)
+
+foreach(target ${targets_building_core})
+    get_target_property(build_dir ${target} BUILDROOT_BUILD_DIR)
+    get_target_property(build_output ${target} BUILDROOT_OUTPUT)
+    add_custom_target(${target}-raumfeld-dirclean
+        COMMAND
+            [ -e ${build_dir}/Makefile ] && make O=${build_dir} raumfeld-dirclean || true
+        COMMAND
+            rm --force ${build_output}
+        WORKING_DIRECTORY
+            ${CMAKE_CURRENT_SOURCE_DIR}
+        VERBATIM
+    )
+    add_dependencies(raumfeld-dirclean ${target}-raumfeld-dirclean)
+endforeach()
