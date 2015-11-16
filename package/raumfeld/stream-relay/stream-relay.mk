@@ -4,6 +4,6 @@
 #
 #############################################################
 
-STREAM_RELAY_DEPENDENCIES = libraumfeld libraumfeldcpp libasf libmms libvorbis taglib
+STREAM_RELAY_DEPENDENCIES = libraumfeld libraumfeldcpp libraumfeldtest libasf libmms libvorbis taglib
 
 $(eval $(raumfeld-cmake-package))
