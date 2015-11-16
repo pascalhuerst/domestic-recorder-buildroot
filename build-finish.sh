@@ -171,6 +171,7 @@ esac
 if [ -n "$ROOTFS" ]; then
     # create  the update image
     raumfeld/updatecreate.sh \
+	--buildroot=$(pwd) \
 	--target=$target \
 	--targz=$ROOTFS \
         --kexec=$KERNEL \
