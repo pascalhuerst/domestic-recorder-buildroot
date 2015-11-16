@@ -110,11 +110,11 @@ echo $versionstr > raumfeld/rootfs/etc/raumfeld-version
 # Set up for CMake build
 
 if [ -d build ]; then
-    echo "Please remove existing build/ directory, to ensure a clean build."
-    exit 1
+	make -C build buildroot-$target-clean
+else
+	mkdir build
 fi
 
-mkdir build
 cd build
 
 cmake -G 'Unix Makefiles' -DCMAKE_VERBOSE_MAKEFILE=1 -DRAUMFELD_VERSION="$versionstr" ..
