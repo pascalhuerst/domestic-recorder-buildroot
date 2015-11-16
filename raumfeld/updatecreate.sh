@@ -26,6 +26,12 @@ if [ ! -f "$kexec" ]; then
     exit 1
 fi
 
+if [ -z "$FAKEROOT" ]; then
+    fakeroot="$(which fakeroot)"
+else
+    fakeroot="$FAKEROOT"
+fi
+
 # create a temporary tgz that contains the kexec kernel at the beginning,
 # followed by device-tree blobs (optionally), the dts.cramfs (optionally)
 # and replacement boot-loaders (optionally).
@@ -69,7 +75,7 @@ done
 echo "chown -R root.root $tmpdir/tmp" > $tmpdir/.fakeroot
 echo "tar -C $tmpdir -f $tmpdir/new.tar -c ./tmp" >> $tmpdir/.fakeroot
 chmod a+x $tmpdir/.fakeroot
-fakeroot $tmpdir/.fakeroot
+$fakeroot $tmpdir/.fakeroot
 tar -f $tmpdir/new.tar -A $tmp
 mv $tmpdir/new.tar $tmp
 rm -rf $tmpdir
