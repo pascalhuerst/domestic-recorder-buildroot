@@ -105,10 +105,16 @@ function(raumfeld_image_target filename)
                 --download-dir=${CMAKE_CURRENT_BINARY_DIR}/dl
                 ${extra_args}
         DEPENDS
-            ${RAUMFELD_KERNEL}
-            ${RAUMFELD_IMGROOTFS}
-            ${RAUMFELD_ROOTFS}
-            ${RAUMFELD_DEVICE_TREE}
+            ${kernel_file}
+            ${imgrootfs_file}
+            ${rootfs_file}
+            # FIXME: we don't know the names of the device tree files,
+            # so can't depend on them here. It's not possible to add a
+            # dependency on the ${RAUMFELD_DEVICE_TREE} target here --
+            # we can only list actual files. And it's not possible to
+            # make ${filename} depend on ${RAUMFELD_DEVICE_TREE} using
+            # the add_dependencies() command because that is only for
+            # target -> target dependencies.
         WORKING_DIRECTORY
             ${CMAKE_CURRENT_SOURCE_DIR}
     )
@@ -218,8 +224,10 @@ function(raumfeld_updates_target filename)
                 --kexec=${kernel_file}
                 ${extra_args}
         DEPENDS
-            ${RAUMFELD_KERNEL}
-            ${RAUMFELD_ROOTFS}
+            # Note you can only depend on files here, not targets. Targets
+            # will be silently ignored.
+            ${kernel_file}
+            ${rootfs_file}
         WORKING_DIRECTORY
             ${CMAKE_CURRENT_SOURCE_DIR}
     )
