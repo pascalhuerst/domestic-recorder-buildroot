@@ -115,6 +115,10 @@ else
 	mkdir build
 fi
 
+if [ ! -e binaries ]; then
+    ln -s build/binaries binaries
+fi
+
 cd build
 
 cmake -G 'Unix Makefiles' -DCMAKE_VERBOSE_MAKEFILE=1 -DRAUMFELD_VERSION="$versionstr" ..
