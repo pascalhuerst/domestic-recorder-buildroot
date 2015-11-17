@@ -1,17 +1,19 @@
 #!/bin/bash
 
 echo_usage() {
-	echo "Usage: $0 --target=<target> --targz=<tar.gz> --kexec=<zimage> --payload=<uboot1.bin,uboot2.bin>"
+	echo "Usage: $0 --buildroot=<dir> --target=<target> --targz=<tar.gz> --kexec=<zimage> --payload=<uboot1.bin,uboot2.bin>"
         exit 1
 }
 
 . ./getopt.inc
 getopt $*
 
-if [ -z "$target" ] || [ -z "$targz" ] || [ -z "$kexec" ]; then
+if [ -z "$buildroot" ] || [ -z "$target" ] || [ -z "$targz" ] || [ -z "$kexec" ]; then
     echo_usage
 fi
 
+HOSTTOOLS="${buildroot}/output/host/usr/bin/"
+fakeroot="${HOSTTOOLS}fakeroot"
 
 version=$(tar -f $targz -zx --to-stdout ./etc/raumfeld-version)
 
@@ -62,7 +64,7 @@ done
 echo "chown -R root.root $tmpdir/tmp" > $tmpdir/.fakeroot
 echo "tar -C $tmpdir -f $tmpdir/new.tar -c ./tmp" >> $tmpdir/.fakeroot
 chmod a+x $tmpdir/.fakeroot
-fakeroot $tmpdir/.fakeroot
+$fakeroot $tmpdir/.fakeroot
 tar -f $tmpdir/new.tar -A $tmp
 mv $tmpdir/new.tar $tmp
 rm -rf $tmpdir
