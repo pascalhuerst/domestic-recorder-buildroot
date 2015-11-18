@@ -3,16 +3,18 @@
 set -e
 
 echo_usage() {
-    echo "Usage: $0 --output-file=<file> --target=<target> --hardware-ids=<1,2,...> --targz=<tar.gz> --kexec=<zimage> --payload=<uboot1.bin,uboot2.bin> --dts-dir=<dir>"
+    echo "Usage: $0 --buildroot-host-tools-prefix=<dir> --output-file=<file> --target=<target> --hardware-ids=<1,2,...> --targz=<tar.gz> --kexec=<zimage> --payload=<uboot1.bin,uboot2.bin> --dts-dir=<dir>"
     exit 1
 }
 
 . ./getopt.inc
 getopt $*
 
-if [ -z "$output_file" ] || [ -z "$target" ] || [ -z "$hardware_ids" ] || [ -z "$targz" ] || [ -z "$kexec" ]; then
+if [ -z "$buildroot-host-tools-prefix" ] || [ -z "$output_file" ] || [ -z "$target" ] || [ -z "$hardware_ids" ] || [ -z "$targz" ] || [ -z "$kexec" ]; then
     echo_usage
 fi
+
+fakeroot="${buildroot_host_tools_prefix}/bin/fakeroot"
 
 version=$(tar -f $targz -zx --to-stdout ./etc/raumfeld-version)
 
@@ -24,12 +26,6 @@ fi
 if [ ! -f "$kexec" ]; then
     echo "Cowardly refusing to build an update without a kexec kernel."
     exit 1
-fi
-
-if [ -z "$FAKEROOT" ]; then
-    fakeroot="$(which fakeroot)"
-else
-    fakeroot="$FAKEROOT"
 fi
 
 # create a temporary tgz that contains the kexec kernel at the beginning,

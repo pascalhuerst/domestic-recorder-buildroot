@@ -208,19 +208,16 @@ function(raumfeld_updates_target filename)
 
     string(REPLACE ";" "," hardware_ids_comma_list "${RAUMFELD_HARDWARE_IDS}")
 
-    # This is a bit ugly -- we assume that the audioadapter/remotecontrol/base
-    # images contain genext2fs (i.e. BR2_HOST_GENEXT2FS is enabled in the
-    # config). Nicer than requiring it on the host, though, as it isn't
-    # generally packaged anywhere.
+    # We assume that the rootfs build includes the Buildroot 'host-fakeroot'
+    # package, which is required by updatecreate.sh.
     get_target_property(host_tools_prefix ${RAUMFELD_ROOTFS} BUILDROOT_HOST_TOOLS_PREFIX)
-    set(fakeroot ${host_tools_prefix}/bin/fakeroot)
 
     add_custom_command(
         OUTPUT
             ${filename}
         COMMAND
-            env FAKEROOT=${fakeroot}
             ${CMAKE_CURRENT_SOURCE_DIR}/raumfeld/updatecreate.sh
+                --buildroot-host-tools-prefix=${host_tools_prefix}
                 --output-file=${filename}
                 --hardware-ids=${hardware_ids_comma_list}
                 --target=${RAUMFELD_TARGET_TYPE}
