@@ -6,11 +6,20 @@ cmake_minimum_required(VERSION 3.2)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
+set(RAUMFELD_VERSION)
+
+if(NOT RAUMFELD_VERSION)
+    # We expect the caller to define this with -DRAUMFELD_VERSION.
+    message(WARNING "RAUMFELD_VERSION not defined, defaulting to version 0.0")
+    set(RAUMFELD_VERSION 0.0)
+endif()
+
 include("CMakeParseArguments")
 include("Buildroot")
 include("Raumfeld")
 
 set(version ${RAUMFELD_VERSION})
+raumfeld_set_version_in_rootfs(${version})
 
 ######################
 ## Top level targets

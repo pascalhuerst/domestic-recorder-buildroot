@@ -1,28 +1,32 @@
-set(RAUMFELD_VERSION_FILE raumfeld/rootfs/etc/raumfeld-version)
+include("CMakeParseArguments")
 
-set(RAUMFELD_VERSION)
+# ::
+#
+#    raumfeld_set_version_in_rootfs(<version>)
+#
+# Sets the version number that is embedded in the rootfs. This is written
+# to the file `raumfeld/rootfs/etc/raumfeld-version`.
+#
+# FIXME: currently the filesystems built by Buildroot will not be rebuilt
+# when the version number is changed. You need to manually delete the
+# generated rootfs files and rerun 'make' when changing the version number
+# file.
 
-if(NOT RAUMFELD_VERSION)
-    message(WARNING "RAUMFELD_VERSION not defined, defaulting to version 0.0")
-    set(RAUMFELD_VERSION 0.0)
-endif()
+set(RAUMFELD_VERSION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/raumfeld/rootfs/etc/raumfeld-version)
 
-get_filename_component(RAUMFELD_VERSION_DIR ${RAUMFELD_VERSION_FILE} DIRECTORY)
-file(MAKE_DIRECTORY ${RAUMFELD_VERSION_DIR})
+function(raumfeld_set_version_in_rootfs version)
+    get_filename_component(dir ${RAUMFELD_VERSION_FILE} DIRECTORY)
+    file(MAKE_DIRECTORY ${dir})
 
-file(WRITE ${RAUMFELD_VERSION_FILE} "${RAUMFELD_VERSION}\n")
-
-function(_rerun_cmake_if_file_is_modified filename)
-    # This is a hack but it's the only way to do it currently...
+    # Instead of creating the file directly, we use configure_file() so that
+    # if something changes ${version_file} manually, CMake will rerun next time
+    # 'make' is run.
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/version.in ${version})
     configure_file(
-        ${filename}
-        ${CMAKE_CURRENT_BINARY_DIR}/stamps/${filename}.stamp
+        ${CMAKE_CURRENT_BINARY_DIR}/version.in
+        ${RAUMFELD_VERSION_FILE}
     )
 endfunction()
-
-# Ensure the configure stage reruns if the user modifies the version file,
-# so that the version embedded in the images always matches the filename.
-_rerun_cmake_if_file_is_modified(${RAUMFELD_VERSION_FILE})
 
 # ::
 #
@@ -123,7 +127,7 @@ endfunction()
 # ::
 #
 #   raumfeld_updates_target(<filename>
-#                           TARGET_TYPE <directory>
+#                           TARGET_TYPE <type>
 #                           HARDWARE_IDS <id> [<id> ...]
 #                           KERNEL <buildroot_target>
 #                           ROOTFS <buildroot_target>
