@@ -10,7 +10,7 @@ echo_usage() {
 . ./getopt.inc
 getopt $*
 
-if [ -z "$buildroot-host-tools-prefix" ] || [ -z "$output_file" ] || [ -z "$target" ] || [ -z "$hardware_ids" ] || [ -z "$targz" ] || [ -z "$kexec" ]; then
+if [ -z "$buildroot_host_tools_prefix" ] || [ -z "$output_file" ] || [ -z "$target" ] || [ -z "$hardware_ids" ] || [ -z "$targz" ] || [ -z "$kexec" ]; then
     echo_usage
 fi
 
