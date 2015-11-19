@@ -134,6 +134,11 @@ function(raumfeld_image_target filename)
             # FIXME: we don't know the names of the device tree files,
             # so can't list them here.
             ${RAUMFELD_DEVICE_TREE}
+
+            # These are "normal" targets (not custom targets) so we can depend
+            # on them in the usual way.
+            ${raumfeld_imgcreate}
+            ${raumfeld_imginfo}
         WORKING_DIRECTORY
             ${CMAKE_CURRENT_SOURCE_DIR}
     )
