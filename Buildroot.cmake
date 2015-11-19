@@ -252,11 +252,8 @@ function(_buildroot_make buildroot_target cmake_target_name build_dir outputs ch
 
     add_custom_command(
         OUTPUT ${outputs}
-        # The `tee` is used in order that the individual build logs are easier
-        # to find. Without '-o pipefail', Make / Ninja would see the exit code
-        # `tee` rather than `make`, which would cause errors to be ignored.
         COMMAND
-            set -o pipefail && make O=${build_dir} ${buildroot_target} | tee --append ${build_log}
+            support/scripts/buildroot-make-wrapper ${build_dir} ${buildroot_target} ${build_log}
 
         ${stamp_command}
 
