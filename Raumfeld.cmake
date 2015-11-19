@@ -1,5 +1,10 @@
 include("CMakeParseArguments")
 
+add_subdirectory("raumfeld/imgtool")
+
+set(raumfeld_imgcreate ${CMAKE_CURRENT_BINARY_DIR}/raumfeld/imgtool/imgcreate)
+set(raumfeld_imginfo ${CMAKE_CURRENT_BINARY_DIR}/raumfeld/imgtool/imginfo)
+
 # ::
 #
 #    raumfeld_set_version_in_rootfs(<version>)
@@ -99,7 +104,10 @@ function(raumfeld_image_target filename)
         OUTPUT
             ${filename}
         COMMAND
-            env GENEXT2FS=${genext2fs}
+            env
+                GENEXT2FS=${genext2fs}
+                IMGCREATE=${raumfeld_imgcreate}
+                IMGINFO=${raumfeld_imginfo}
             ${CMAKE_CURRENT_SOURCE_DIR}/raumfeld/imgcreate.sh
                 --output-file=${filename}
                 --target=${RAUMFELD_TARGET_TYPE}

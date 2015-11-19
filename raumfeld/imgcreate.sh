@@ -93,29 +93,31 @@ else
     auto_version=0
 fi
 
-###### BUILD BINARIES #######
-echo "building prerequisites ..."
-make -C raumfeld/imgtool
-
 ###### CHECK PARMS #######
 
 tmpdir=$(mktemp)-$PPID
 testdir=raumfeld/testsuite/
 
-imgcreate=raumfeld/imgtool/imgcreate
-imginfo=raumfeld/imgtool/imginfo
+find_program() {
+    name="$1"
+    suggested_path="$2"
+    if [ -z "$suggested_path" ]; then
+        which $name
+    else
+        echo $suggested_path
+    fi
+}
+
+genext2fs=$(find_program genextfs "$GENEXT2FS")
+imgcreate=$(find_program imgcreate "$IMGCREATE")
+imginfo=$(find_program imginfo "$IMGINFO")
+
 resize2fs=/sbin/resize2fs
 
 # ext2_img is created in binaries temporarily; will be removed later
 ext2_img=$output_file.ext2
 
 target_img=$output_file
-
-if [ -z "$GENEXT2FS" ]; then
-    genext2fs="$(which genext2fs)"
-else
-    genext2fs="$GENEXT2FS"
-fi
 
 test -f $kernel		|| echo "ERROR: $kernel not found"
 test -f $kernel		|| exit 1
