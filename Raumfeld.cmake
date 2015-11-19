@@ -117,16 +117,23 @@ function(raumfeld_image_target filename)
                 --download-dir=${CMAKE_CURRENT_BINARY_DIR}/dl
                 ${extra_args}
         DEPENDS
-            ${kernel_file}
-            ${imgrootfs_file}
-            ${rootfs_file}
+            # We must depend on all files AND all targets here.
+            #
+            # If we don't depend on the targets, and parallel Make is used,
+            # each Buildroot build will be started multiple times in parallel,
+            # causing disaster. See: https://cmake.org/Bug/view.php?id=10082
+            #
+            # File level dependencies of custom targets are not propagated
+            # automatically, so we need to manually list the files here as well.
+            # Otherwise, changes/rebuilds in the Buildroot output files
+            # wouldn't cause the images to be rebuilt.
+            #
+            ${RAUMFELD_KERNEL} ${kernel_file}
+            ${RAUMFELD_IMGROOTFS} ${imgrootfs_file}
+            ${RAUMFELD_ROOTFS} ${rootfs_file}
             # FIXME: we don't know the names of the device tree files,
-            # so can't depend on them here. It's not possible to add a
-            # dependency on the ${RAUMFELD_DEVICE_TREE} target here --
-            # we can only list actual files. And it's not possible to
-            # make ${filename} depend on ${RAUMFELD_DEVICE_TREE} using
-            # the add_dependencies() command because that is only for
-            # target -> target dependencies.
+            # so can't list them here.
+            ${RAUMFELD_DEVICE_TREE}
         WORKING_DIRECTORY
             ${CMAKE_CURRENT_SOURCE_DIR}
     )
@@ -233,10 +240,19 @@ function(raumfeld_updates_target filename)
                 --kexec=${kernel_file}
                 ${extra_args}
         DEPENDS
-            # Note you can only depend on files here, not targets. Targets
-            # will be silently ignored.
-            ${kernel_file}
-            ${rootfs_file}
+            # We must depend on all files AND all targets here.
+            #
+            # If we don't depend on the targets, and parallel Make is used,
+            # each Buildroot build will be started multiple times in parallel,
+            # causing disaster. See: https://cmake.org/Bug/view.php?id=10082
+            #
+            # File level dependencies of custom targets are not propagated
+            # automatically, so we need to manually list the files here as well.
+            # Otherwise, changes/rebuilds in the Buildroot output files
+            # wouldn't cause the images to be rebuilt.
+            #
+            ${BUILDROOT_KERNEL} ${kernel_file}
+            ${BUILDROOT_ROOTFS} ${rootfs_file}
         WORKING_DIRECTORY
             ${CMAKE_CURRENT_SOURCE_DIR}
     )
