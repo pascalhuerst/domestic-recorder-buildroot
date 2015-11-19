@@ -228,10 +228,17 @@ chmod a+x $tmpdir/start-test.sh
 # ensure the root fs ext2 image is large enough that genext2fs will find free
 # inodes when building the deployment targets.
 # this should probably be made part of br2 some day.
-/sbin/resize2fs $base_rootfs_img 64M
+#
+# We take a copy of the img file before operating on it, in case there are
+# multiple imgcreate.sh scripts running in parallel.
+base_rootfs_copy=$(mktemp)
+cp $base_rootfs_img ${base_rootfs_copy}
+/sbin/resize2fs $base_rootfs_copy 64M
 
 rm -f $ext2_img
-"$genext2fs" -b 1200 -x $base_rootfs_img -d $tmpdir $ext2_img
+"$genext2fs" -b 1200 -x $base_rootfs_copy -d $tmpdir $ext2_img
+
+rm $base_rootfs_copy
 
 # shrink the filesystem to the minimum size
 # add 4 blocks to work around a bug in resize2fs which sometimes
