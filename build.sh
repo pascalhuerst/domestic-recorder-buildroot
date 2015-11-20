@@ -1,21 +1,40 @@
 #!/bin/bash
+#
+# build.sh: Top level Raumfeld build script
+#
+# This is a thin wrapper about the CMake build system, which in turn handles
+# running the various Buildroot builds and the image creation.
+#
+# You don't need to run this to make a build. You can the CMake build system
+# directly, for example:
+#
+#   ./raumfeld-update-version
+#   mkdir build
+#   cd build
+#   cmake ..
+#   make all-armada
+#
+# This script is kept around for now for compatibility.
 
-targets="initramfs-arm imgrootfs-arm		\
-         initramfs-armada imgrootfs-armada      \
-         initramfs-geode imgrootfs-geode	\
-         audioadapter-arm                       \
+set -e
+
+targets="audioadapter-arm                       \
          audioadapter-armada                    \
-         remotecontrol-arm	                \
+         remotecontrol-arm                      \
          base-armada                            \
-         base-geode"
+         base-geode                             \
+         all-arm                                \
+         all-armada                             \
+         all-geode"
 
-# create a timestamp
-
-./buildlog.sh $0 $*
+# For compatibility with existing BuildBot and TeamCity instances.
+targets="$targets \
+         initramfs-arm initramfs-armada initramfs-geode \
+         imgrootfs-arm imgrootfs-armada imgrootfs-geode"
 
 echo_usage() {
 cat << __EOF__ >&2
-Usage: $0 --target=<target> [--image=<image> --version=<version> --build=<number>]
+Usage: $0 --target=<target> [--version=<version> --build=<number>]
        $0 --update-configs
 
    target is one of
@@ -25,7 +44,6 @@ for t in $targets; do echo "		$t"; done
 
 cat << __EOF__ >&2
 
-   image   is optional and can be one of 'init flash final'
    version is optional and can be used to specify the version;
            if unspecified the version is taken from the last git tag
    build   is an optional number which is appened to the version
@@ -74,19 +92,6 @@ if [ "$found" != "1" ]; then
 	exit 1
 fi
 
-
-# put the .config file in place
-
-cp raumfeld/br2-$target.config .config
-make oldconfig
-
-
-# cleanup from previous builds
-
-make raumfeld-dirclean
-make clean
-
-
 # update the raumfeld-version
 
 if [ -z "$version" ]; then
@@ -98,19 +103,32 @@ if [ -n "$build" ]; then
   versionstr="$version.$build"
 fi
 
-./buildlog.sh $0: versionstr=$versionstr
-
 mkdir -p raumfeld/rootfs/etc
 echo $versionstr > raumfeld/rootfs/etc/raumfeld-version
 
 
+# Set up for CMake build
+
+if [ -d build ]; then
+	make -C build buildroot-$target-clean
+else
+	mkdir build
+fi
+
+if [ ! -e binaries ]; then
+    ln -s build/binaries binaries
+fi
+
+cd build
+
+cmake -G 'Unix Makefiles' -DCMAKE_VERBOSE_MAKEFILE=1 -DRAUMFELD_VERSION="$versionstr" ..
+
 # run the actual build process
 
-make
+case $target in
+    initramfs-*|imgrootfs-*)
+        target=buildroot-$target
+        ;;
+esac
 
-
-# do post-processing for some targets ...
-
-export GENEXT2FS="$(pwd)/output/host/usr/bin/genext2fs"
-
-./build-finish.sh --target=$target --image=$image --version=$versionstr
+make $target
