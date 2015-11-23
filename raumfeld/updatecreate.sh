@@ -116,7 +116,7 @@ openssl dgst -sha256 -sign $privatekey \
 for hardware_id in $(echo $hardware_ids | tr , ' '); do
     hardwarename=${names[$hardware_id]}
     cat > $staging_dir/$hardware_id.updates << __EOF__
-    [$shasum]
+[$shasum]
     description=Software update ($version) for $hardwarename
     num_files=$numfiles
     hardware=$hardware_id
