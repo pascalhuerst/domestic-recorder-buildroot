@@ -113,7 +113,7 @@ openssl dgst -sha256 -sign $privatekey \
     -out $staging_dir/$shasum.sign $staging_dir/$shasum
 
 # Create a metadata file for each device of this target type
-for hardwareid in $(echo $hardwareids | tr , ' '); do
+for hardware_id in $(echo $hardware_ids | tr , ' '); do
     hardwarename=${names[$hardware_id]}
     cat > $staging_dir/$hardware_id.updates << __EOF__
     [$shasum]
