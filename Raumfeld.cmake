@@ -256,8 +256,8 @@ function(raumfeld_updates_target filename)
             # Otherwise, changes/rebuilds in the Buildroot output files
             # wouldn't cause the images to be rebuilt.
             #
-            ${BUILDROOT_KERNEL} ${kernel_file}
-            ${BUILDROOT_ROOTFS} ${rootfs_file}
+            ${RAUMFELD_KERNEL} ${kernel_file}
+            ${RAUMFELD_ROOTFS} ${rootfs_file}
         WORKING_DIRECTORY
             ${CMAKE_CURRENT_SOURCE_DIR}
     )
