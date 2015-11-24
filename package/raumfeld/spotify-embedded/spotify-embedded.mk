@@ -12,6 +12,8 @@ ifeq ($(BR2_xscale),y)
   SPOTIFY_EMBEDDED_RELEASE = spotify_embedded-v$(SPOTIFY_EMBEDDED_VERSION)-Raumfeld-PXA300-Release
 else ifeq ($(BR2_cortex_a8),y)
   SPOTIFY_EMBEDDED_RELEASE = spotify_embedded-v$(SPOTIFY_EMBEDDED_VERSION)-Raumfeld-AM33x-Release
+else ifeq ($(BR2_x86_64),y)
+  SPOTIFY_EMBEDDED_RELEASE = spotify_embedded-v$(SPOTIFY_EMBEDDED_VERSION)-Linux-64bit-Release
 endif
 
 SPOTIFY_EMBEDDED_SOURCE = $(SPOTIFY_EMBEDDED_RELEASE).tar.gz
