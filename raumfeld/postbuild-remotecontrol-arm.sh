@@ -10,7 +10,7 @@ if [ -d raumfeld/rootfs-remotecontrol-arm ]; then
     cp -r raumfeld/rootfs-remotecontrol-arm/* $1
 fi
 
-cp output/staging/usr/lib/gconv/ISO8859-1.so $1/usr/lib/gconv
+cp $STAGING_DIR/usr/lib/gconv/ISO8859-1.so $1/usr/lib/gconv
 
 echo "Creating the update mount-point ..."
 mkdir -p $1/update
