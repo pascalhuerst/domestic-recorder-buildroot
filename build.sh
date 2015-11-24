@@ -23,6 +23,7 @@ targets="audioadapter-arm                       \
          remotecontrol-arm                      \
          base-armada                            \
          base-geode                             \
+         development-x86_64                     \
          all-arm                                \
          all-armada                             \
          all-geode"

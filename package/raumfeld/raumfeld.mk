@@ -19,6 +19,9 @@ endif
 ifeq ($(ARCH),i586)
   CROSS = GEODE
 endif
+ifeq ($(ARCH),x86_64)
+  CROSS = X86_64
+endif
 
 ifeq ($(BR2_cortex_a8),y)
   EXTRA_MAKE_OPTS = ARM_TYPE=ARM_CORTEXA8

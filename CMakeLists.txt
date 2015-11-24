@@ -263,6 +263,19 @@ raumfeld_updates_target(
 )
 
 ###################
+## 'development-x86_64' target
+##
+
+add_custom_target(development-x86_64
+    DEPENDS buildroot-development-x86_64)
+
+buildroot_target(
+    buildroot-development-x86_64
+        CONFIG raumfeld/br2-development-x86_64.config
+        OUTPUT images/rootfs.tar.gz
+)
+
+###################
 ## 'geode' target
 ##
 
