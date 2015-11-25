@@ -19,7 +19,7 @@ GLIB_NETWORKING_LICENSE_FILES = COPYING
 
 ifeq ($(BR2_PACKAGE_GNUTLS),y)
 GLIB_NETWORKING_DEPENDENCIES += gnutls
-GLIB_NETWORKING_CONF_OPTS += --with-libgcrypt-prefix=$(STAGING_DIR)/usr
+GLIB_NETWORKING_CONF_OPTS += --with-libgcrypt-prefix=$(STAGING_DIR)/usr --without-ca-certificates
 else
 GLIB_NETWORKING_CONF_OPTS += --without-gnutls
 endif
