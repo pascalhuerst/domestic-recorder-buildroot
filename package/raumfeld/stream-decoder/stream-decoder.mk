@@ -12,4 +12,4 @@ endif
 
 STREAM_DECODER_DEPENDENCIES = libsoup gstreamer1
 
-$(eval $(raumfeld-cmake-package))
+$(eval $(raumfeld-dummy-package))

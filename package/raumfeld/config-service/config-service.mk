@@ -6,4 +6,4 @@
 
 CONFIG_SERVICE_DEPENDENCIES = libraumfeld libraumfeldcpp
 
-$(eval $(raumfeld-cmake-package))
+$(eval $(raumfeld-dummy-package))

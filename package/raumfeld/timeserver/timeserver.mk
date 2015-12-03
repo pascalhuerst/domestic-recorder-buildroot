@@ -6,4 +6,4 @@
 
 TIMESERVER_DEPENDENCIES = libraumfeld
 
-$(eval $(raumfeld-cmake-package))
+$(eval $(raumfeld-dummy-package))

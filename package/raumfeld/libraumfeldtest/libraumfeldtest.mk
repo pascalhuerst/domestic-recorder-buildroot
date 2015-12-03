@@ -8,4 +8,4 @@ LIBRAUMFELDTEST_INSTALL_STAGING = YES
 
 LIBRAUMFELDTEST_DEPENDENCIES = libraumfeldcpp
 
-$(eval $(raumfeld-cmake-package))
+$(eval $(raumfeld-dummy-package))

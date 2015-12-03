@@ -13,4 +13,4 @@ endif
 LIBRAUMFELD_DEPENDENCIES = \
 	avahi gupnp-av openssl libglib2 libarchive libunwind yajl
 
-$(eval $(raumfeld-cmake-package))
+$(eval $(raumfeld-dummy-package))

@@ -8,4 +8,4 @@ RAUMFELD_EXTRACT_MODULE = raumfeld-extract
 
 RAUMFELD_EXTRACT_DEPENDENCIES = libarchive
 
-$(eval $(raumfeld-cmake-package))
+$(eval $(raumfeld-dummy-package))
