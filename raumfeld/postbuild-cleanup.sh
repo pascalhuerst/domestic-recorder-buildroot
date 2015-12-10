@@ -67,8 +67,13 @@ rm -f  $1/usr/bin/orc-bugreport
 rm -f  $1/usr/bin/p11tool
 rm -f  $1/usr/bin/pkcs1-conv
 rm -f  $1/usr/bin/psktool
+rm -f  $1/usr/bin/scp
 rm -f  $1/usr/bin/sexp-conv
+rm -f  $1/usr/bin/sftp
 rm -f  $1/usr/bin/srptool
+rm -f  $1/usr/bin/ssh
+rm -f  $1/usr/bin/ssh-add
+rm -f  $1/usr/bin/ssh-agent
 rm -f  $1/usr/bin/ssh-keyscan
 rm -f  $1/usr/bin/xml2-config
 rm -f  $1/usr/bin/xmlcatalog
@@ -91,8 +96,6 @@ rm -f  $1/usr/lib/libgstphotography-1.0.so*
 rm -f  $1/usr/lib/libgsturidownloader-1.0.so*
 rm -f  $1/usr/lib/libraumfeldtest.so
 rm -f  $1/usr/lib/libvorbisenc*
-rm -f  $1/usr/lib/ssh-keysign
-rm -f  $1/usr/lib/ssh-pkcs11-helper
 rm -f  $1/usr/lib/xml2Conf.sh
 rm -f  $1/usr/libexec/gvfsd-archive
 rm -f  $1/usr/libexec/gvfsd-burn
@@ -102,6 +105,8 @@ rm -f  $1/usr/libexec/gvfsd-http
 rm -f  $1/usr/libexec/gvfsd-localtest
 rm -f  $1/usr/libexec/gvfsd-sftp
 rm -f  $1/usr/libexec/gvfsd-trash
+rm -f  $1/usr/libexec/ssh-keysign
+rm -f  $1/usr/libexec/ssh-pkcs11-helper
 rm -fr $1/usr/share/GConf
 rm -fr $1/usr/share/aclocal
 rm -fr $1/usr/share/bash-completion
