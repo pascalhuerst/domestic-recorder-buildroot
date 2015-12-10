@@ -88,6 +88,7 @@ rm -f  $1/usr/lib/libgstmpegts-1.0.so*
 rm -f  $1/usr/lib/libgstnet-1.0.so*
 rm -f  $1/usr/lib/libgstphotography-1.0.so*
 rm -f  $1/usr/lib/libgsturidownloader-1.0.so*
+rm -f  $1/usr/lib/libraumfeldtest.so
 rm -f  $1/usr/lib/libvorbisenc*
 rm -f  $1/usr/lib/ssh-keysign
 rm -f  $1/usr/lib/ssh-pkcs11-helper
