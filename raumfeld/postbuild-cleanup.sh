@@ -67,7 +67,6 @@ rm -f  $1/usr/bin/orc-bugreport
 rm -f  $1/usr/bin/p11tool
 rm -f  $1/usr/bin/pkcs1-conv
 rm -f  $1/usr/bin/psktool
-rm -f  $1/usr/bin/scp
 rm -f  $1/usr/bin/sexp-conv
 rm -f  $1/usr/bin/sftp
 rm -f  $1/usr/bin/srptool
