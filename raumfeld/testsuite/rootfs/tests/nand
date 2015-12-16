@@ -1,5 +1,0 @@
-#!/bin/sh
-
-. ../tests.inc
-
-./init_flash && ./copy_rootfs
