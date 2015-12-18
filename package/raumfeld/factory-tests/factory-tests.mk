@@ -6,12 +6,12 @@
 
 FACTORY_TESTS_DEPENDENCIES = alsa-lib libraumfelddsp renderer-extract
 
-FACTORY_TESTS_MODELS = raumfeld-one-s
+#FACTORY_TESTS_MODELS = raumfeld-one-s
 
-define FACTORY_TESTS_INSTALL_DSP_CONFIG_FILES
-	$(foreach model,$(FACTORY_TESTS_MODELS),$(INSTALL) $(RENDERER_SRCDIR)/dsp-config/$(model).xml $(TARGET_DIR)/raumfeld/factory-tests/dsp-config)
-endef
+#define FACTORY_TESTS_INSTALL_DSP_CONFIG_FILES
+#	$(foreach model,$(FACTORY_TESTS_MODELS),$(INSTALL) $(RENDERER_SRCDIR)/dsp-config/$(model).xml $(TARGET_DIR)/raumfeld/factory-tests/dsp-config)
+#endef
 
-FACTORY_TESTS_POST_INSTALL_TARGET_HOOKS += FACTORY_TESTS_INSTALL_DSP_CONFIG_FILES
+#FACTORY_TESTS_POST_INSTALL_TARGET_HOOKS += FACTORY_TESTS_INSTALL_DSP_CONFIG_FILES
 
-$(eval $(raumfeld-cmake-package))
+$(eval $(raumfeld-dummy-package))

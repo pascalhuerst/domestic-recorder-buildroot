@@ -6,4 +6,4 @@
 
 REPORT_DAEMON_DEPENDENCIES = libsoup
 
-$(eval $(raumfeld-cmake-package))
+$(eval $(raumfeld-dummy-package))

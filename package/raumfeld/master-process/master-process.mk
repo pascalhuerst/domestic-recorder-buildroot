@@ -6,4 +6,4 @@
 
 MASTER_PROCESS_DEPENDENCIES = libraumfeldcpp
 
-$(eval $(raumfeld-cmake-package))
+$(eval $(raumfeld-dummy-package))

@@ -78,6 +78,7 @@ rm -f  $1/usr/bin/xml2-config
 rm -f  $1/usr/bin/xmlcatalog
 rm -f  $1/usr/bin/xmllint
 rm -fr $1/usr/lib/pkg-config
+rm -fr $1/usr/lib/pkgconfig
 rm -f  $1/usr/lib/*.la
 rm -fr $1/usr/lib/gdbus-2.0
 rm -fr $1/usr/lib/glib-2.0

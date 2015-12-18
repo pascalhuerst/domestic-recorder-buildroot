@@ -1,0 +1,41 @@
+commit 7a9b45689369f90019b1f58c69b6728040be06f2
+Author: Sam Thursfield <sam.thursfield@codethink.co.uk>
+Date:   Tue Dec 15 13:21:20 2015 +0000
+
+    gdbus-codegen: Support relocation of the install tree
+    
+    This is useful when taking a Buildroot 'host/' directory built on one
+    machine, and using it as an SDK to compile stuff on a different machine.
+    
+    https://bugzilla.gnome.org/show_bug.cgi?id=759505
+
+diff --git a/gio/gdbus-2.0/codegen/Makefile.am b/gio/gdbus-2.0/codegen/Makefile.am
+index b3fb2c2..3236fd7 100644
+--- a/gio/gdbus-2.0/codegen/Makefile.am
++++ b/gio/gdbus-2.0/codegen/Makefile.am
+@@ -21,7 +21,7 @@ CLEANFILES += gdbus-codegen
+ EXTRA_DIST += gdbus-codegen.in
+ 
+ gdbus-codegen: gdbus-codegen.in Makefile $(codegen_PYTHON)
+-	$(AM_V_GEN) sed -e 's,@datadir\@,$(datadir),' -e 's,@PYTHON\@,$(PYTHON),' $< > $@.tmp && mv $@.tmp $@
++	$(AM_V_GEN) sed -e 's,@bindir\@,$(bindir),' -e 's,@datadir\@,$(datadir),' -e 's,@PYTHON\@,$(PYTHON),' $< > $@.tmp && mv $@.tmp $@
+ 	@chmod a+x $@
+ 
+ clean-local:
+diff --git a/gio/gdbus-2.0/codegen/gdbus-codegen.in b/gio/gdbus-2.0/codegen/gdbus-codegen.in
+index fd31a55..26f3dd6 100644
+--- a/gio/gdbus-2.0/codegen/gdbus-codegen.in
++++ b/gio/gdbus-2.0/codegen/gdbus-codegen.in
+@@ -31,7 +31,11 @@ elif os.name == 'nt':
+     # Makes gdbus-codegen 'relocatable' at runtime on Windows.
+     path = os.path.join(os.path.dirname(__file__), '..', 'share', 'glib-2.0')
+ else:
+-    path = os.path.join('@datadir@', 'glib-2.0')
++    # This makes gdbus-codegen 'relocatable' on other OSes too in most cases.
++    relative_datadir = os.path.relpath(
++        '@datadir@',
++        '@bindir@')
++    path = os.path.join(os.path.dirname(__file__), relative_datadir, 'glib-2.0')
+ 
+ sys.path.insert(0, os.path.abspath(path))
+ from codegen import codegen_main
