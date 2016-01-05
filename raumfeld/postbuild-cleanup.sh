@@ -3,7 +3,7 @@
 # post-build cleanup for the target rootfs
 
 echo "Creating default files"
-test -d $1/etc/raumfeld/ || mkdir $1/etc/raumfeld/
+mkdir -p $1/etc/raumfeld
 
 echo "Purging unwanted files ..."
 
@@ -128,7 +128,9 @@ rm -f  $1/usr/share/gvfs/mounts/sftp.mount
 rm -f  $1/usr/share/gvfs/mounts/trash.mount
 rm -fr $1/usr/share/pkgconfig
 rm -fr $1/usr/share/sounds
-find $1/usr/share/locale -name e2fsprogs.mo -exec rm -f {} \;
+if test -d $1/usr/share/locale; then
+    find $1/usr/share/locale -name e2fsprogs.mo -exec rm -f {} \;
+fi
 if test -d $1/usr/lib/directfb-1.4-6; then
     find $1/usr/lib/directfb-1.4-6 -name '*.o' -exec rm -f {} \;
     rm -fr $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBVideoProvider
