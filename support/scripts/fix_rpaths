@@ -167,7 +167,7 @@ def sanitize_rpath(elf_file, matcher, patchelf_bin=PATCHELF_BIN, verbose=False):
     :param matcher: Regex objects matching the paths to be removed
     :param patchelf_bin: patchelf program path
     """
-    rpath = dump_rpath(elf_file, patchelf_bin=PATCHELF_BIN)
+    rpath = dump_rpath(elf_file, patchelf_bin=patchelf_bin)
     rpath = [path for path in rpath.split(":") if not matcher.match(path)]
     if rpath:
         set_rpath(elf_file, ":".join(rpath), patchelf_bin=patchelf_bin,
@@ -223,7 +223,7 @@ def scan_and_apply(root, rpath_func, exclude_dirs=None,
         # check for valid file (discard non-ELF files and broken symlinks)
         if not is_elf_binary(path):
             return False
-        return has_rpath(path)
+        return has_rpath(path, patchelf_bin=patchelf_bin)
     exclude_dirs = exclude_dirs if exclude_dirs else list()
     for filepath in find_files(root, file_filter_func=file_filter,
                                exclude_dirs=exclude_dirs):
@@ -302,7 +302,7 @@ def main():
     if not os.path.exists(patchelf_bin):
         patchelf_found = False
         for path in os.environ.get("PATH", "").split(":"):
-            if not path:
+            if not path or not os.path.isdir(path):
                 continue
             if PATCHELF_BIN in os.listdir(path):
                 patchelf_found = True

@@ -561,7 +561,7 @@ endif
 # RPATH fixing
 # - The host hook sets RPATH in host ELF binaries, using relative paths to the
 #   library locations.
-PACKAGES += host-patchelf
+TARGETS += host-patchelf
 
 define HOST_FIX_RPATH_HOOK
 	$(TOPDIR)/support/scripts/fix_rpaths \
