@@ -34,4 +34,11 @@ $(call inner-cmake-package,$(1),$(2),$(2),target)
 
 endef # inner-raumfeld-cmake-package
 
-$(eval $(inner-raumfeld-cmake-package))
+################################################################################
+# raumfeld-cmake-package
+#   -- the target generator macro for Raumfeld CMake packages
+################################################################################
+
+raumfeld-cmake-package = $(call inner-raumfeld-cmake-package,$(call pkgname),$(call UPPERCASE,$(call pkgname)))
+
+$(eval $(raumfeld-cmake-package))
