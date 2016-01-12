@@ -35,8 +35,4 @@ raumfeld-dummy-package = $(call inner-raumfeld-dummy-package,$(call pkgname),$(c
 ################################################################################
 ################################################################################
 
-RAUMFELD_DIRCLEAN_TARGETS = mcu-protocol-dlclean mcu-protocol-dirclean
-
 include package/raumfeld/*/*.mk
-
-raumfeld-dirclean: $(RAUMFELD_DIRCLEAN_TARGETS)
