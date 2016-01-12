@@ -45,6 +45,3 @@ $(MCU_PROTOCOL_INSTALL_TOOLS)
 endef
 
 $(eval $(generic-package))
-
-mcu-protocol-dlclean:
-	rm -f $(DL_DIR)/$(MCU_PROTOCOL_SOURCE)
