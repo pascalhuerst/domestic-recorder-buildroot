@@ -1,6 +1,4 @@
-menu "Raumfeld software"
-
-source "package/raumfeld/raumfeld-repo/Config.in"
+menu "Raumfeld software (stub packages)"
 
 source "package/raumfeld/config-service/Config.in"
 source "package/raumfeld/ethwatch/Config.in"
