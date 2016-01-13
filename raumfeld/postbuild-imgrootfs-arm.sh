@@ -4,11 +4,6 @@
 
 echo "postbuild-imgrootfs-arm.sh $1 $2"
 
-echo "Populating the root filesystem ..."
-
-# raumfeld version
-cp -r raumfeld/rootfs/etc/raumfeld-version $1/etc
-
 echo "Building and installing test binaries..."
 
 GCC=$HOST_DIR/usr/bin/arm-linux-gcc
