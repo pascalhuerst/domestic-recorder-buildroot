@@ -315,7 +315,7 @@ define DOWNLOAD_INNER
 	if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
 		if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
 		echo " - Uploading artifact to artifactory ($(BR2_ARTIFACTORY_URL))" ; \
-			(cd $(DL_DIR) ; /usr/bin/artifactory-cli upload $(2) $(BR2_ARTIFACTORY_REPO)/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/) && exit ; \
+			(cd $(DL_DIR) ; artifactory-cli upload $(2) $(BR2_ARTIFACTORY_REPO)/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/) && exit ; \
 		else \
 			exit ; \
 		fi ; \
