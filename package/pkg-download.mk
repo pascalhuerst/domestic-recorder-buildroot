@@ -274,40 +274,40 @@ define DOWNLOAD_INNER
 		if test "$(BR2_PRIMARY_SITE_ONLY)" = "y" ; then \
 			exit 1 ; \
 		fi ; \
-		if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
-			echo " - Downloaded from PRIMARY SITE ($(BR2_PRIMARY_SITE))" ; \
-		else \
-			echo " - Failed to find on PRIMARY SITE ($(BR2_PRIMARY_SITE))" ; \
-			if test -n "$(1)" ; then \
-				if test -z "$($(PKG)_SITE_METHOD)" ; then \
-					scheme="$(call geturischeme,$(1))" ; \
-				else \
-					scheme="$($(PKG)_SITE_METHOD)" ; \
+	fi ; \
+	if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
+		echo " - Downloaded from PRIMARY SITE ($(BR2_PRIMARY_SITE))" ; \
+	else \
+		echo " - Failed to find on PRIMARY SITE ($(BR2_PRIMARY_SITE))" ; \
+		if test -n "$(1)" ; then \
+			if test -z "$($(PKG)_SITE_METHOD)" ; then \
+				scheme="$(call geturischeme,$(1))" ; \
+			else \
+				scheme="$($(PKG)_SITE_METHOD)" ; \
+			fi ; \
+			case "$$scheme" in \
+				git) $($(DL_MODE)_GIT) ;; \
+				svn) $($(DL_MODE)_SVN) ;; \
+				cvs) $($(DL_MODE)_CVS) ;; \
+				bzr) $($(DL_MODE)_BZR) ;; \
+				file) $($(DL_MODE)_LOCALFILES) ;; \
+				scp) $($(DL_MODE)_SCP) ;; \
+				hg) $($(DL_MODE)_HG) ;; \
+				*) $(call $(DL_MODE)_WGET,$(1),$(2)) ;; \
+			esac ; \
+			DOWNLOAD_FETCH_FAILED=$$? ; \
+			if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
+				echo " - Downloaded from PKG's SITE" ; \
+			else \
+				echo " - Failed to find on PKG's SITE" ; \
+				if test -n "$(call qstrip,$(BR2_BACKUP_SITE))" ; then \
+					$(call $(DL_MODE)_WGET,$(BR2_BACKUP_SITE)/$(2),$(2)) ; \
+					DOWNLOAD_FETCH_FAILED=$$? ; \
 				fi ; \
-				case "$$scheme" in \
-					git) $($(DL_MODE)_GIT) ;; \
-					svn) $($(DL_MODE)_SVN) ;; \
-					cvs) $($(DL_MODE)_CVS) ;; \
-					bzr) $($(DL_MODE)_BZR) ;; \
-					file) $($(DL_MODE)_LOCALFILES) ;; \
-					scp) $($(DL_MODE)_SCP) ;; \
-					hg) $($(DL_MODE)_HG) ;; \
-					*) $(call $(DL_MODE)_WGET,$(1),$(2)) ;; \
-				esac ; \
-				DOWNLOAD_FETCH_FAILED=$$? ; \
 				if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
-					echo " - Downloaded from PKG's SITE" ; \
+					echo " - Downloaded from BACKUP SITE" ; \
 				else \
-					echo " - Failed to find on PKG's SITE" ; \
-					if test -n "$(call qstrip,$(BR2_BACKUP_SITE))" ; then \
-						$(call $(DL_MODE)_WGET,$(BR2_BACKUP_SITE)/$(2),$(2)) ; \
-						DOWNLOAD_FETCH_FAILED=$$? ; \
-					fi ; \
-					if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
-						echo " - Downloaded from BACKUP SITE" ; \
-					else \
-						echo " - Failed to find on BACKUP SITE" ; \
-					fi ; \
+					echo " - Failed to find on BACKUP SITE" ; \
 				fi ; \
 			fi ; \
 		fi ; \
