@@ -313,6 +313,11 @@ define DOWNLOAD_INNER
 		fi ; \
 	fi ; \
 	if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
+		if test ! -x "/usr/bin/artifactory-cli" ; then \
+			echo "WARNING: Can't upload fetched artifact to artifactory source mirror:" ; \
+			echo "  /usr/bin/artifactory-cli is not available" ; \
+			exit ; \
+		fi ; \
 		if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
 		echo " - Uploading artifact to artifactory ($(BR2_ARTIFACTORY_URL))" ; \
 			(cd $(DL_DIR) ; artifactory-cli upload $(2) $(BR2_ARTIFACTORY_REPO)/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/) && exit ; \
