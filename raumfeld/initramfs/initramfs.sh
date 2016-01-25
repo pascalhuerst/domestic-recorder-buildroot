@@ -65,10 +65,10 @@ esac
 
 if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     param=$(cat /proc/cmdline | sed -e 's/^.*raumfeld-update=//' -e 's/ .*$//')
+    # earlier versions used to pass the number of files after the image name separated by a comma
     img=$(echo $param | cut -d, -f1)
-    numfiles=$(echo $param | cut -d, -f2)
 
-    echo "Image name $img ($numfiles files)"
+    echo "Image name $img"
     echo "Performing software update ..."
 
     mkdir -p /mnt
@@ -104,7 +104,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 
     echo "Extracting the Raumfeld firmware ..."
     cd /mnt
-    raumfeld-extract-update $update $numfiles
+    raumfeld-extract-update $update
     cd /
     sync
 
