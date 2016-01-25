@@ -6,7 +6,7 @@ menuconfig BR2_PACKAGE_RAUMFELD_EXTRACT
 
 	  http://www.raumfeld.com/
 
-if BR2_PACKAGE_RAUMFELD_RAUMFELD_EXTRACT
+if BR2_PACKAGE_RAUMFELD_EXTRACT
 
 config BR2_PACKAGE_RAUMFELD_EXTRACT_REPOSITORY
         string "git repository that holds raumfeld-extract source"
