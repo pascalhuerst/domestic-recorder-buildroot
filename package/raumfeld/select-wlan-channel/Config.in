@@ -1,5 +1,4 @@
 config BR2_PACKAGE_SELECT_WLAN_CHANNEL
-        select BR2_PACKAGE_RAUMFELD_REPOSITORY
 	bool "select-wlan-channel"
 	help
 	  Raumfeld select-wlan-channel tool
