@@ -17,6 +17,7 @@ export HG := $(call qstrip,$(BR2_HG)) $(QUIET)
 export SCP := $(call qstrip,$(BR2_SCP)) $(QUIET)
 SSH := $(call qstrip,$(BR2_SSH)) $(QUIET)
 export LOCALFILES := $(call qstrip,$(BR2_LOCALFILES))
+ARTIFACTORY_CLI := $(type -p $(call qstrip,$(BR2_ARTIFACTORY_CLI)))
 
 # Default spider mode is 'DOWNLOAD'. Other possible values are 'SOURCE_CHECK'
 # used by the _source-check target and 'SHOW_EXTERNAL_DEPS', used by the
@@ -255,7 +256,7 @@ define DOWNLOAD
 endef
 
 define DOWNLOAD_INNER
-	if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
+	$(Q)if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
 		$(call $(DL_MODE)_WGET,$(BR2_ARTIFACTORY_URL)$(BR2_ARTIFACTORY_REPO)/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/$(2),$(2)) ; \
 		DOWNLOAD_FETCH_FAILED=$$? ; \
 		if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
@@ -313,14 +314,19 @@ define DOWNLOAD_INNER
 		fi ; \
 	fi ; \
 	if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
-		if test ! -x "/usr/bin/artifactory-cli" ; then \
-			echo "WARNING: Can't upload fetched artifact to artifactory source mirror:" ; \
-			echo "  /usr/bin/artifactory-cli is not available" ; \
-			exit ; \
-		fi ; \
 		if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
-		echo " - Uploading artifact to artifactory ($(BR2_ARTIFACTORY_URL))" ; \
-			(cd $(DL_DIR) ; artifactory-cli upload $(2) $(BR2_ARTIFACTORY_REPO)/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/) && exit ; \
+			if test -z "$(BR2_ARTIFACTORY_CLI)" ; then \
+				echo "WARNING: Can't upload fetched source to artifactory source mirror:" ; \
+				echo "  BR2_ARTIFACTORY_CLI is not set" ; \
+				exit ; \
+			fi ; \
+			if test -z "$(ARTIFACTORY_CLI)" ; then \
+				echo "WARNING: Can't upload fetched source to artifactory source mirror:" ; \
+				echo "  $(BR2_ARTIFACTORY_CLI) is not available" ; \
+				exit ; \
+			fi ; \
+			echo " - Uploading artifact to ($(BR2_ARTIFACTORY_URL))" ; \
+			(cd $(DL_DIR) ; $(ARTIFACTORY_CLI) upload $(2) $(BR2_ARTIFACTORY_REPO)/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/) && exit ; \
 		else \
 			exit ; \
 		fi ; \
