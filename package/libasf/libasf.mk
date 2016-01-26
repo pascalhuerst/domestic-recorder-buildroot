@@ -10,7 +10,7 @@ LIBASF_INSTALL_STAGING = YES
 LIBASF_LICENSE = LGPLv2.1+
 
 define LIBASF_CONFIGURE_CMDS
-        (cd $(@D); $(TARGET_CONFIGURE_OPTS) ./waf configure --prefix=/usr)
+        (cd $(@D); $(TARGET_CONFIGURE_OPTS) ./waf configure --prefix=/usr --libdir=/usr/lib)
 endef
 
 define LIBASF_BUILD_CMDS
