@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBASF_VERSION = b4f8b4d817
+LIBASF_VERSION = aeff242a54
 LIBASF_SITE = $(call github,raumfeld,libasf,master,$(LIBASF_VERSION))
 LIBASF_INSTALL_STAGING = YES
 LIBASF_LICENSE = LGPLv2.1+
