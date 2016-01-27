@@ -17,7 +17,7 @@ export HG := $(call qstrip,$(BR2_HG)) $(QUIET)
 export SCP := $(call qstrip,$(BR2_SCP)) $(QUIET)
 SSH := $(call qstrip,$(BR2_SSH)) $(QUIET)
 export LOCALFILES := $(call qstrip,$(BR2_LOCALFILES))
-ARTIFACTORY_CLI := $(shell type -p $(call qstrip,$(BR2_ARTIFACTORY_CLI)))
+ARTIFACTORY_CLI := $(shell command type -p $(call qstrip,$(BR2_ARTIFACTORY_CLI)))
 
 # Default spider mode is 'DOWNLOAD'. Other possible values are 'SOURCE_CHECK'
 # used by the _source-check target and 'SHOW_EXTERNAL_DEPS', used by the
