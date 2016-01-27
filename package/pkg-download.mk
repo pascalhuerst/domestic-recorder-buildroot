@@ -256,7 +256,7 @@ define DOWNLOAD
 endef
 
 define DOWNLOAD_INNER
-	$(@)if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
+	$(Q)if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
 		$(call $(DL_MODE)_WGET,$(BR2_ARTIFACTORY_URL)$(BR2_ARTIFACTORY_REPO)/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/$(2),$(2)) ; \
 		DOWNLOAD_FETCH_FAILED=$$? ; \
 		if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
