@@ -4,46 +4,14 @@
 # transmit power, in order to comply with international standards
 #
 
-INTERFACE=wlan0
-RESULT=$(cat /sys/class/net/$INTERFACE/operstate)
-MODEL=$(cat /proc/device-tree/model)
-
-# Bail out if model is not expand
-[ "$MODEL" != "Raumfeld Base (AM33xx)" ] && exit 0
-
-start() {
-        echo -e "$INTERFACE: Waiting for interface to reduce transmit power... "
-        while [ "$RESULT" != "up" ]; do
-                sleep 1
-                RESULT=$(cat /sys/class/net/$INTERFACE/operstate)
-        done
-
-        /usr/sbin/iw dev $INTERFACE set txpower fixed 1800
-        echo "$INTERFACE: Transmit power reduced!"
-}
-
-stop() {
-	echo ""
-}
-
-restart() {
-        stop
-        start
-}
-
 case "$1" in
-  start)
-        start
-        ;;
-  stop)
-        stop
-        ;;
-  restart|reload)
-        restart
-        ;;
-  *)
-        echo "Usage: $0 {start|stop|restart}"
-        exit 1
+	start)
+		/raumfeld/wlan0-txpower-fixup.sh &
+	;;
+	*)
+		echo "Usage: $0 {start}"
+		exit 1
+	;;
 esac
 
 exit $?

@@ -122,6 +122,10 @@ config BR2_TAR_OPTIONS
 	  E.g. " -v --exclude='*.svn*'" to exclude all .svn internal files
 	  and to be verbose.
 
+config BR2_ARTIFACTORY_CLI
+	string "Artifactory command-line interface command"
+	default "artifactory-cli"
+
 endmenu
 
 config BR2_DEFCONFIG_FROM_ENV
@@ -157,6 +161,26 @@ config BR2_HOST_DIR
 	  The default is $(BASE_DIR)/host
 
 menu "Mirrors and Download locations"
+
+config BR2_ARTIFACTORY_URL
+	string "URL for Artifactory-based download server"
+	default ""
+	help
+	  Standard location to download from. If this option is set then
+          buildroot will look for an artifact here.  If not found it will
+          fall back to the Primary download site.
+          If the artifact is not found here, and but is found from a
+          fallback site, buildroot will upload the artifact to artifactory
+          for future use.
+
+config BR2_ARTIFACTORY_REPO
+	string "Repo to use on Artifactory"
+	default ""
+	help
+	  Buildroot will use this artifactory repo for storing its
+          source artifacts.
+          NOTE: To upload source artifacts, you must have
+          /usr/bin/artifactory-cli installed.
 
 config BR2_PRIMARY_SITE
 	string "Primary download site"

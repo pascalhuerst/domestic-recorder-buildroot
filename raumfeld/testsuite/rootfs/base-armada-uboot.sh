@@ -1,1 +1,0 @@
-audioadapter-armada-uboot.sh

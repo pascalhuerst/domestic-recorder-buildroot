@@ -4,33 +4,25 @@
 #
 ################################################################################
 
-LIBASF_VERSION = 93152f139d3bcb3cf18dda3bdc513172002de5b4
-LIBASF_SITE = $(call github,juhovh,libasf,master,$(LIBASF_VERSION))
+LIBASF_VERSION = aeff242a54
+LIBASF_SITE = $(call github,raumfeld,libasf,master,$(LIBASF_VERSION))
 LIBASF_INSTALL_STAGING = YES
 LIBASF_LICENSE = LGPLv2.1+
 
-define LIBASF_COPY_FILES
-        (cp package/libasf/Makefile package/libasf/libasf.pc.in $(@D)/)
-endef
-
-LIBASF_POST_EXTRACT_HOOKS += LIBASF_COPY_FILES
-
 define LIBASF_CONFIGURE_CMDS
-        (cd $(@D); $(TARGET_CONFIGURE_OPTS) $(MAKE1) clean)
+        (cd $(@D); $(TARGET_CONFIGURE_OPTS) ./waf configure --prefix=/usr --libdir=/usr/lib)
 endef
 
 define LIBASF_BUILD_CMDS
-        (cd $(@D); $(TARGET_CONFIGURE_OPTS) $(MAKE1))
+        (cd $(@D); ./waf build)
 endef
 
 define LIBASF_INSTALL_STAGING_CMDS
-        (cd $(@D); \
-            $(TARGET_CONFIGURE_OPTS) $(MAKE1) PACKAGE_DIR=/usr DESTDIR=$(STAGING_DIR) install)
+        (cd $(@D); ./waf install --destdir=$(STAGING_DIR))
 endef
 
 define LIBASF_INSTALL_TARGET_CMDS
-        (cd $(@D); $(TARGET_CONFIGURE_OPTS) $(MAKE1) DESTDIR=$(TARGET_DIR) install-exec)
+        $(INSTALL) -m 0755 -D $(@D)/build/src/libasf.so $(TARGET_DIR)/usr/lib
 endef
 
 $(eval $(generic-package))
-

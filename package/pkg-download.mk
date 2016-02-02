@@ -17,6 +17,7 @@ export HG := $(call qstrip,$(BR2_HG)) $(QUIET)
 export SCP := $(call qstrip,$(BR2_SCP)) $(QUIET)
 SSH := $(call qstrip,$(BR2_SSH)) $(QUIET)
 export LOCALFILES := $(call qstrip,$(BR2_LOCALFILES))
+ARTIFACTORY_CLI := $(shell command type -p $(call qstrip,$(BR2_ARTIFACTORY_CLI)))
 
 # Default spider mode is 'DOWNLOAD'. Other possible values are 'SOURCE_CHECK'
 # used by the _source-check target and 'SHOW_EXTERNAL_DEPS', used by the
@@ -255,34 +256,80 @@ define DOWNLOAD
 endef
 
 define DOWNLOAD_INNER
-	$(Q)if test -n "$(call qstrip,$(BR2_PRIMARY_SITE))" ; then \
-		case "$(call geturischeme,$(BR2_PRIMARY_SITE))" in \
-			scp) $(call $(DL_MODE)_SCP,$(BR2_PRIMARY_SITE)/$(2),$(2)) && exit ;; \
-			*) $(call $(DL_MODE)_WGET,$(BR2_PRIMARY_SITE)/$(2),$(2)) && exit ;; \
-		esac ; \
-	fi ; \
-	if test "$(BR2_PRIMARY_SITE_ONLY)" = "y" ; then \
-		exit 1 ; \
-	fi ; \
-	if test -n "$(1)" ; then \
-		if test -z "$($(PKG)_SITE_METHOD)" ; then \
-			scheme="$(call geturischeme,$(1))" ; \
+	$(Q)if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
+		$(call $(DL_MODE)_WGET,$(BR2_ARTIFACTORY_URL)$(BR2_ARTIFACTORY_REPO)/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/$(2),$(2)) ; \
+		DOWNLOAD_FETCH_FAILED=$$? ; \
+		if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
+			echo " - Downloaded $(2) from artifactory" ; \
+			exit ; \
 		else \
-			scheme="$($(PKG)_SITE_METHOD)" ; \
+			echo " - Failed to find $(2) on artifactory" ; \
 		fi ; \
-		case "$$scheme" in \
-			git) $($(DL_MODE)_GIT) && exit ;; \
-			svn) $($(DL_MODE)_SVN) && exit ;; \
-			cvs) $($(DL_MODE)_CVS) && exit ;; \
-			bzr) $($(DL_MODE)_BZR) && exit ;; \
-			file) $($(DL_MODE)_LOCALFILES) && exit ;; \
-			scp) $($(DL_MODE)_SCP) && exit ;; \
-			hg) $($(DL_MODE)_HG) && exit ;; \
-			*) $(call $(DL_MODE)_WGET,$(1),$(2)) && exit ;; \
-		esac ; \
 	fi ; \
-	if test -n "$(call qstrip,$(BR2_BACKUP_SITE))" ; then \
-		$(call $(DL_MODE)_WGET,$(BR2_BACKUP_SITE)/$(2),$(2)) && exit ; \
+	if test -n "$(call qstrip,$(BR2_PRIMARY_SITE))" ; then \
+		case "$(call geturischeme,$(BR2_PRIMARY_SITE))" in \
+			scp) $(call $(DL_MODE)_SCP,$(BR2_PRIMARY_SITE)/$(2),$(2)) ;; \
+			*) $(call $(DL_MODE)_WGET,$(BR2_PRIMARY_SITE)/$(2),$(2)) ;; \
+		esac ; \
+		DOWNLOAD_FETCH_FAILED=$$? ; \
+		if test "$(BR2_PRIMARY_SITE_ONLY)" = "y" ; then \
+			exit 1 ; \
+		fi ; \
+	fi ; \
+	if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
+		echo " - Downloaded from PRIMARY SITE ($(BR2_PRIMARY_SITE))" ; \
+	else \
+		echo " - Failed to find on PRIMARY SITE ($(BR2_PRIMARY_SITE))" ; \
+		if test -n "$(1)" ; then \
+			if test -z "$($(PKG)_SITE_METHOD)" ; then \
+				scheme="$(call geturischeme,$(1))" ; \
+			else \
+				scheme="$($(PKG)_SITE_METHOD)" ; \
+			fi ; \
+			case "$$scheme" in \
+				git) $($(DL_MODE)_GIT) ;; \
+				svn) $($(DL_MODE)_SVN) ;; \
+				cvs) $($(DL_MODE)_CVS) ;; \
+				bzr) $($(DL_MODE)_BZR) ;; \
+				file) $($(DL_MODE)_LOCALFILES) ;; \
+				scp) $($(DL_MODE)_SCP) ;; \
+				hg) $($(DL_MODE)_HG) ;; \
+				*) $(call $(DL_MODE)_WGET,$(1),$(2)) ;; \
+			esac ; \
+			DOWNLOAD_FETCH_FAILED=$$? ; \
+			if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
+				echo " - Downloaded from PKG's SITE" ; \
+			else \
+				echo " - Failed to find on PKG's SITE" ; \
+				if test -n "$(call qstrip,$(BR2_BACKUP_SITE))" ; then \
+					$(call $(DL_MODE)_WGET,$(BR2_BACKUP_SITE)/$(2),$(2)) ; \
+					DOWNLOAD_FETCH_FAILED=$$? ; \
+				fi ; \
+				if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
+					echo " - Downloaded from BACKUP SITE" ; \
+				else \
+					echo " - Failed to find on BACKUP SITE" ; \
+				fi ; \
+			fi ; \
+		fi ; \
+	fi ; \
+	if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
+		if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
+			if test -z "$(BR2_ARTIFACTORY_CLI)" ; then \
+				echo "WARNING: Can't upload fetched source to artifactory source mirror:" ; \
+				echo "  BR2_ARTIFACTORY_CLI is not set" ; \
+				exit ; \
+			fi ; \
+			if test -z "$(ARTIFACTORY_CLI)" ; then \
+				echo "WARNING: Can't upload fetched source to artifactory source mirror:" ; \
+				echo "  $(BR2_ARTIFACTORY_CLI) is not available" ; \
+				exit ; \
+			fi ; \
+			echo " - Uploading artifact" ; \
+			(cd $(DL_DIR) ; $(ARTIFACTORY_CLI) upload $(2) $(call qstrip,$(BR2_ARTIFACTORY_REPO))/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/) && exit ; \
+		else \
+			exit ; \
+		fi ; \
 	fi ; \
 	exit 1
 endef

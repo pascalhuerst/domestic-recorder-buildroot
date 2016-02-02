@@ -1,0 +1,31 @@
+From ea2c89c8b7e69fe81b8c9ca8f0e3ab33a54e88e1 Mon Sep 17 00:00:00 2001
+From: Slobodan Vukanovic <slobodan.vukanovic@teufel.de>
+Date: Thu, 7 Jan 2016 14:59:55 +0100
+Subject: [PATCH] C++ strings stay in scope for g_assert_cmpstr
+
+---
+ glib/gtestutils.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/glib/gtestutils.h b/glib/gtestutils.h
+index 95e6de1..f0325cb 100644
+--- a/glib/gtestutils.h
++++ b/glib/gtestutils.h
+@@ -38,10 +38,12 @@ typedef void (*GTestFixtureFunc) (gpointer      fixture,
+                                   gconstpointer user_data);
+ 
+ /* assertion API */
+-#define g_assert_cmpstr(s1, cmp, s2)    do { const char *__s1 = (s1), *__s2 = (s2); \
++#define g_assert_cmpstr(s1, cmp, s2)    do { char *__s1 = g_strdup(s1), *__s2 = g_strdup(s2); \
+                                              if (g_strcmp0 (__s1, __s2) cmp 0) ; else \
+                                                g_assertion_message_cmpstr (G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, \
+-                                                 #s1 " " #cmp " " #s2, __s1, #cmp, __s2); } while (0)
++                                                 #s1 " " #cmp " " #s2, __s1, #cmp, __s2); \
++                                             g_free(__s2); \
++                                             g_free(__s1); } while (0)
+ #define g_assert_cmpint(n1, cmp, n2)    do { gint64 __n1 = (n1), __n2 = (n2); \
+                                              if (__n1 cmp __n2) ; else \
+                                                g_assertion_message_cmpnum (G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, \
+-- 
+2.4.3
+

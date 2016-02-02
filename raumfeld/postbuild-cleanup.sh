@@ -3,7 +3,7 @@
 # post-build cleanup for the target rootfs
 
 echo "Creating default files"
-test -d $1/etc/raumfeld/ || mkdir $1/etc/raumfeld/
+mkdir -p $1/etc/raumfeld
 
 echo "Purging unwanted files ..."
 
@@ -60,6 +60,7 @@ rm -f  $1/usr/bin/mail-lock
 rm -f  $1/usr/bin/mail-touchlock
 rm -f  $1/usr/bin/mail-unlock
 rm -f  $1/usr/bin/metaflac
+rm -f  $1/usr/bin/mpg123*
 rm -f  $1/usr/bin/nettle-lfib-stream
 rm -f  $1/usr/bin/orcc
 rm -f  $1/usr/bin/orc-bugreport
@@ -67,12 +68,17 @@ rm -f  $1/usr/bin/p11tool
 rm -f  $1/usr/bin/pkcs1-conv
 rm -f  $1/usr/bin/psktool
 rm -f  $1/usr/bin/sexp-conv
+rm -f  $1/usr/bin/sftp
 rm -f  $1/usr/bin/srptool
+rm -f  $1/usr/bin/ssh
+rm -f  $1/usr/bin/ssh-add
+rm -f  $1/usr/bin/ssh-agent
 rm -f  $1/usr/bin/ssh-keyscan
 rm -f  $1/usr/bin/xml2-config
 rm -f  $1/usr/bin/xmlcatalog
 rm -f  $1/usr/bin/xmllint
 rm -fr $1/usr/lib/pkg-config
+rm -fr $1/usr/lib/pkgconfig
 rm -f  $1/usr/lib/*.la
 rm -fr $1/usr/lib/gdbus-2.0
 rm -fr $1/usr/lib/glib-2.0
@@ -88,9 +94,8 @@ rm -f  $1/usr/lib/libgstmpegts-1.0.so*
 rm -f  $1/usr/lib/libgstnet-1.0.so*
 rm -f  $1/usr/lib/libgstphotography-1.0.so*
 rm -f  $1/usr/lib/libgsturidownloader-1.0.so*
+rm -f  $1/usr/lib/libraumfeldtest.so
 rm -f  $1/usr/lib/libvorbisenc*
-rm -f  $1/usr/lib/ssh-keysign
-rm -f  $1/usr/lib/ssh-pkcs11-helper
 rm -f  $1/usr/lib/xml2Conf.sh
 rm -f  $1/usr/libexec/gvfsd-archive
 rm -f  $1/usr/libexec/gvfsd-burn
@@ -100,6 +105,8 @@ rm -f  $1/usr/libexec/gvfsd-http
 rm -f  $1/usr/libexec/gvfsd-localtest
 rm -f  $1/usr/libexec/gvfsd-sftp
 rm -f  $1/usr/libexec/gvfsd-trash
+rm -f  $1/usr/libexec/ssh-keysign
+rm -f  $1/usr/libexec/ssh-pkcs11-helper
 rm -fr $1/usr/share/GConf
 rm -fr $1/usr/share/aclocal
 rm -fr $1/usr/share/bash-completion
@@ -121,7 +128,9 @@ rm -f  $1/usr/share/gvfs/mounts/sftp.mount
 rm -f  $1/usr/share/gvfs/mounts/trash.mount
 rm -fr $1/usr/share/pkgconfig
 rm -fr $1/usr/share/sounds
-find $1/usr/share/locale -name e2fsprogs.mo -exec rm -f {} \;
+if test -d $1/usr/share/locale; then
+    find $1/usr/share/locale -name e2fsprogs.mo -exec rm -f {} \;
+fi
 if test -d $1/usr/lib/directfb-1.4-6; then
     find $1/usr/lib/directfb-1.4-6 -name '*.o' -exec rm -f {} \;
     rm -fr $1/usr/lib/directfb-1.4-6/interfaces/IDirectFBVideoProvider

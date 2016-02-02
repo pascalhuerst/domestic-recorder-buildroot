@@ -45,6 +45,13 @@ PCIUTILS_MAKE_OPTS = \
 	LIBKMOD=$(PCIUTILS_KMOD) \
 	SHARED=$(PCIUTILS_SHARED)
 
+ifeq ($(BR2_PACKAGE_HAS_UDEV),y)
+PCIUTILS_DEPENDENCIES += udev
+PCIUTILS_MAKE_OPTS += HWDB=yes
+else
+PCIUTILS_MAKE_OPTS += HWDB=no
+endif
+
 # Build after busybox since it's got a lightweight lspci
 ifeq ($(BR2_PACKAGE_BUSYBOX),y)
 	PCIUTILS_DEPENDENCIES += busybox

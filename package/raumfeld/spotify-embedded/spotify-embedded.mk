@@ -5,7 +5,7 @@
 #############################################################
 
 SPOTIFY_EMBEDDED_VERSION = 1.20.10
-SPOTIFY_EMBEDDED_SITE = http://rf-devel.teufel.local/devel/buildroot/dl
+SPOTIFY_EMBEDDED_SITE = http://rf-devel.teufel.local/buildroot/dl
 SPOTIFY_EMBEDDED_INSTALL_STAGING = YES
 
 ifeq ($(BR2_xscale),y)
@@ -14,6 +14,9 @@ ifeq ($(BR2_xscale),y)
 else ifeq ($(BR2_cortex_a8),y)
   SPOTIFY_EMBEDDED_RELEASE = spotify_embedded-v$(SPOTIFY_EMBEDDED_VERSION)-Raumfeld-AM33x-Release
   SPOTIFY_EMBEDDED_LIB = spotify_embedded-vorbis-v$(SPOTIFY_EMBEDDED_VERSION)-Raumfeld-AM33x-Release
+else ifeq ($(BR2_x86_64),y)
+  SPOTIFY_EMBEDDED_RELEASE = spotify_embedded-v$(SPOTIFY_EMBEDDED_VERSION)-Linux-64bit-Release
+  SPOTIFY_EMBEDDED_LIB = spotify_embedded-vorbis-v$(SPOTIFY_EMBEDDED_VERSION)-Linux-64bit-Release
 else
   SPOTIFY_EMBEDDED_RELEASE = spotify_embedded-v$(SPOTIFY_EMBEDDED_VERSION)-Linux-32bit-Release
   SPOTIFY_EMBEDDED_LIB = spotify_embedded-vorbis-v$(SPOTIFY_EMBEDDED_VERSION)-Linux-32bit-Release
