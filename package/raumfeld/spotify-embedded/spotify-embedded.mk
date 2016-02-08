@@ -4,8 +4,7 @@
 #
 #############################################################
 
-SPOTIFY_EMBEDDED_VERSION = 1.20.10
-SPOTIFY_EMBEDDED_SITE = http://rf-devel.teufel.local/buildroot/dl
+SPOTIFY_EMBEDDED_VERSION = 1.20.12
 SPOTIFY_EMBEDDED_INSTALL_STAGING = YES
 
 ifeq ($(BR2_xscale),y)
