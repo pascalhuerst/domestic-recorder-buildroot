@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBSOUP_VERSION_MAJOR = 2.48
+LIBSOUP_VERSION_MAJOR = 2.52
 LIBSOUP_VERSION_MINOR = 1
 LIBSOUP_VERSION = $(LIBSOUP_VERSION_MAJOR).$(LIBSOUP_VERSION_MINOR)
 LIBSOUP_SOURCE = libsoup-$(LIBSOUP_VERSION).tar.xz
@@ -19,7 +19,7 @@ ifneq ($(BR2_INET_IPV6),y)
 LIBSOUP_CONF_ENV += soup_cv_ipv6=no
 endif
 
-LIBSOUP_CONF_OPTS = --disable-glibtest
+LIBSOUP_CONF_OPTS = --disable-glibtest --disable-vala
 
 LIBSOUP_DEPENDENCIES = host-pkgconf host-libglib2 \
 	libglib2 libxml2 sqlite host-intltool
