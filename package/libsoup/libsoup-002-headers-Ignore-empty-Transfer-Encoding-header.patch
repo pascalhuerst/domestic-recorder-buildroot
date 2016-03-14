@@ -1,0 +1,29 @@
+From a15638f05b77cd6a7ab37f39d6101f8c788bccd6 Mon Sep 17 00:00:00 2001
+From: Slobodan Vukanovic <slobodan.vukanovic@teufel.de>
+Date: Mon, 14 Mar 2016 11:53:05 +0100
+Subject: [PATCH] headers: Ignore empty Transfer-Encoding header
+
+http://geo.streamabc.xyz delivers headers with an empty
+value for Transfer-Encoding. libsoup gets confused by this and
+generates a MESSAGE_CORRUPT error. To avoid this, we ignore empty
+values set for Transfer-Encoding.
+---
+ libsoup/soup-message-headers.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libsoup/soup-message-headers.c b/libsoup/soup-message-headers.c
+index 40f45a9..d6bbad9 100644
+--- a/libsoup/soup-message-headers.c
++++ b/libsoup/soup-message-headers.c
+@@ -662,7 +662,7 @@ clear_special_headers (SoupMessageHeaders *hdrs)
+ static void
+ transfer_encoding_setter (SoupMessageHeaders *hdrs, const char *value)
+ {
+-	if (value) {
++	if (value && *value) {
+ 		if (g_ascii_strcasecmp (value, "chunked") == 0)
+ 			hdrs->encoding = SOUP_ENCODING_CHUNKED;
+ 		else
+-- 
+2.4.3
+
