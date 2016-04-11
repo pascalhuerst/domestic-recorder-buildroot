@@ -94,6 +94,13 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 	gunzip -c $update | tar x ./tmp/$mcu
 	echo "Flashing the MCU firmware ..."
 	/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -e 62 -w ./tmp/$mcu /dev/ttyO5
+	if [ $? -ne 0 ]; then
+		echo "Failed to flash the MCU Firmware, resetting MCU."
+		/usr/sbin/stm32flash -b 115200 -R -i 52,-51,51:-52,-51,51 /dev/ttyO5
+		sleep 10
+		/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -e 62 -w ./tmp/$mcu /dev/ttyO5
+	fi
+
     fi
 
     if [ -n "$dsp" ]; then
