@@ -1,1 +1,0 @@
-KERNEL=="wlan0", RUN+="/usr/sbin/iw dev wlan0 interface add uap0 type __ap"

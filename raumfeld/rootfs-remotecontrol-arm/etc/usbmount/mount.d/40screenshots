@@ -1,8 +1,0 @@
-#!/bin/sh
-
-# Check for disk label
-if test "$UM_LABEL" = "SCREENSHOTS"; then
-  mkdir -p /tmp/screenshots
-  mount --bind $UM_MOUNTPOINT /tmp/screenshots
-  mount -o remount,rw,sync /tmp/screenshots
-fi
