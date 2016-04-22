@@ -1,6 +1,0 @@
-#!/bin/sh
-
-if test -d /tmp/screenshots; then
-  umount /tmp/screenshots
-  rmdir /tmp/screenshots
-fi
