@@ -1,8 +1,0 @@
-<?xml version="1.0" standalone='no'?>
-<service-group>
-  <name>Raumfeld Expand</name>
-  <service>
-  	<type>_smb._tcp</type>
-  	<port>445</port>
-  </service>
-</service-group>
