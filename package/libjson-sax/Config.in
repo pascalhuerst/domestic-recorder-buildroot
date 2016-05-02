@@ -1,0 +1,6 @@
+config BR2_PACKAGE_LIBJSON_SAX
+	bool "libjson-sax"
+	help
+	  A JSON parser and printer library in C.
+
+	  https://github.com/vincenthz/libjson
