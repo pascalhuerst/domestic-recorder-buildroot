@@ -151,6 +151,35 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     echo "Rebooting ..."
     reboot
 
+elif [ "$(grep ip= /proc/cmdline)" ]; then
+    tftp_server=`cat /proc/cmdline | cut -d" " -f3 | cut -d"=" -f2`
+    tftp_port=`cat /proc/cmdline | cut -d" " -f4 | cut -d"=" -f2`
+    rootfs_abs=`cat /proc/cmdline | cut -d" " -f5 | cut -d"=" -f2`
+    rootfs_img=`echo $rootfs_abs | cut -d"/" -f2`
+
+
+    echo "Booting from network"
+    echo "Request for $rootfs_img to $tftp_server ..."
+
+    tftp -g -r $rootfs_abs -l /tmp/$rootfs_img $tftp_server $tftp_port -b 8192
+    if [ $? -ne 0 ]; then
+	    echo "Error receiving file from $tftp_server, exiting ..."
+	    exit 1
+    fi
+
+    losetup /dev/loop0 /tmp/$rootfs_img
+
+    mkdir /rootfs
+    mount -t ext2 -o ro /dev/loop0 /rootfs
+
+    # work around strange behaviour of the kernel firmware loader
+    if [ -d /rootfs/lib/firmware ]; then
+        cp -r /rootfs/lib/firmware /lib
+    fi
+
+    echo "Jumping to the newly mounted rootfs"
+    chroot /rootfs /init.sh
+
 else
     echo "Image name $img"
     echo "Waiting for USB device to appear ..."
