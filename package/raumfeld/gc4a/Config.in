@@ -1,0 +1,6 @@
+config BR2_PACKAGE_GC4A
+	bool "gc4a"
+	help
+	  Raumfeld gc4a integration 
+          
+	  http://www.raumfeld.com/
