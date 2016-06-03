@@ -14,11 +14,11 @@ offset="5128192"  # default value
 
 case "$hw" in
     AM33XX)
-	arch="armada"
-	offset="8658944"
+        arch="armada"
+        offset="8658944"
         model=$(cat /proc/device-tree/model | cut -f 2 -d' ')
-	echo "Model: $model"
-	
+        echo "Model: $model"
+
         case "$model" in
             Base)
                 img="base2.img"
@@ -26,41 +26,41 @@ case "$hw" in
             Connector)
                 img="connect2.img"
                 ;;
-	    Soundbar)
-		img="speaker2.img"
-		mcu="RaumfeldSoundbar.bin"
-		dsp="RaumfeldSoundbarDSP.bin"
+            Soundbar)
+                img="speaker2.img"
+                mcu="RaumfeldSoundbar.bin"
+                dsp="RaumfeldSoundbarDSP.bin"
                 ;;
-	    Sounddeck)
-		img="speaker2.img"
-		mcu="RaumfeldSounddeck.bin"
-		dsp="RaumfeldSounddeckDSP.bin"
+            Sounddeck)
+                img="speaker2.img"
+                mcu="RaumfeldSounddeck.bin"
+                dsp="RaumfeldSounddeckDSP.bin"
                 ;;
             *)
                 img="speaker2.img"
                 ;;
         esac
-	;;
+        ;;
     Controller)
-	arch="arm"
-	img="control.img"
-	;;
+        arch="arm"
+        img="control.img"
+        ;;
     Connector)
-	arch="arm"
-	img="connect.img"
-	;;
+        arch="arm"
+        img="connect.img"
+        ;;
     Speaker)
-	arch="arm"
-	img="speaker.img"
-	;;
+        arch="arm"
+        img="speaker.img"
+        ;;
     Geode*)
-	arch="geode"
-	img="base.img"
-	;;
+        arch="geode"
+        img="base.img"
+        ;;
     *)
-	img="uImage"
-	echo "unknown hardware type '$hw'"
-	;;
+        img="uImage"
+        echo "unknown hardware type '$hw'"
+        ;;
 esac
 
 if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
@@ -75,39 +75,20 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     mkdir -p /update
 
     case "$arch" in
-	arm|armada)
-	    mount -t ubifs -o rw ubi:RootFS /mnt
-	    mount -t ubifs -o ro ubi0:Updates /update
-	    update=/update/$img
-	    ;;
-	geode)
-	    mount -t ext3 -o rw,data=writeback /dev/hda2 /mnt
-	    mount -t ext3 -o rw,data=writeback /dev/hda1 /mnt/boot
-	    update=/mnt/update/$img
-	    ;;
-	*)
-	    echo "unknown architecture '$arch'"
-	    ;;
+        arm|armada)
+            mount -t ubifs -o rw ubi:RootFS /mnt
+            mount -t ubifs -o ro ubi0:Updates /update
+            update=/update/$img
+            ;;
+        geode)
+            mount -t ext3 -o rw,data=writeback /dev/hda2 /mnt
+            mount -t ext3 -o rw,data=writeback /dev/hda1 /mnt/boot
+            update=/mnt/update/$img
+            ;;
+        *)
+            echo "unknown architecture '$arch'"
+            ;;
     esac
-
-    if [ -n "$mcu" ]; then
-	gunzip -c $update | tar x ./tmp/$mcu
-	echo "Flashing the MCU firmware ..."
-	/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -e 62 -w ./tmp/$mcu /dev/ttyO5
-	if [ $? -ne 0 ]; then
-		echo "Failed to flash the MCU Firmware, resetting MCU."
-		/usr/sbin/stm32flash -b 115200 -R -i 52,-51,51:-52,-51,51 /dev/ttyO5
-		sleep 10
-		/usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -e 62 -w ./tmp/$mcu /dev/ttyO5
-	fi
-
-    fi
-
-    if [ -n "$dsp" ]; then
-	gunzip -c $update | tar x ./tmp/$dsp
-	echo "Flashing the DSP firmware ..."
-	rfpfwupdate /dev/ttyO5 2 ./tmp/$dsp 'Power State Switch'=1
-    fi
 
     echo "Extracting the Raumfeld firmware ..."
     cd /mnt
@@ -116,36 +97,55 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     sync
 
     case "$arch" in
-	arm)
-	    umount /update
-	    umount /mnt
-	    ;;
+        arm)
+            umount /update
+            umount /mnt
+            ;;
 
-	armada)
-	    umount /update
+        armada)
+            umount /update
 
-	    # 'move' the uImage from the rootfs to its own partition
-	    flash_erase /dev/mtd6 0 0
-	    nandwrite --pad /dev/mtd6 /mnt/boot/uImage
-	    rm /mnt/boot/uImage
+            # 'move' the uImage from the rootfs to its own partition
+            flash_erase /dev/mtd6 0 0
+            nandwrite --pad /dev/mtd6 /mnt/boot/uImage
+            rm /mnt/boot/uImage
 
             # copy the dts.cramfs to its own partition
             flash_erase /dev/mtd7 0 0
             nandwrite --pad /dev/mtd7 /mnt/tmp/dts.cramfs
 
-	    umount /mnt
-	    ;;
+            # flash the MCU (on Soundbar and Sounddeck)
+            if [ -n "$mcu" ] && [ -e /mnt/tmp/$mcu ]; then
+                echo "Flashing the MCU firmware ..."
+                /usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -e 62 -w /mnt/tmp/$mcu /dev/ttyO5
+                if [ $? -ne 0 ]; then
+                    echo "Failed to flash the MCU Firmware, resetting MCU."
+                    /usr/sbin/stm32flash -b 115200 -R -i 52,-51,51:-52,-51,51 /dev/ttyO5
+                    sleep 10
+                    echo "Flashing the MCU firmware ..."
+                    /usr/sbin/stm32flash -b 115200 -v -R -i 52,-51,51:-52,-51,51 -e 62 -w /mnt/tmp/$mcu /dev/ttyO5
+                fi
+            fi
 
-	geode)
-	    sleep 5
-	    umount /mnt/boot
-	    umount /mnt
-	    sleep 5
-	    ;;
+            # flash the DSP (on Soundbar and Sounddeck)
+            if [ -n "$dsp" ] && [ -e /mnt/tmp/$dsp ]; then
+                echo "Flashing the DSP firmware ..."
+                rfpfwupdate /dev/ttyO5 2 /mnt/tmp/$dsp 'Power State Switch'=1
+            fi
 
-	*)
-	    echo "unknown architecture '$arch'"
-	    ;;
+            umount /mnt
+            ;;
+
+        geode)
+            sleep 5
+            umount /mnt/boot
+            umount /mnt
+            sleep 5
+            ;;
+
+        *)
+            echo "unknown architecture '$arch'"
+            ;;
     esac
 
     echo "Rebooting ..."
@@ -156,9 +156,9 @@ else
     echo "Waiting for USB device to appear ..."
 
     while [ -z "$(grep sda /proc/partitions)" ]; do
-	sleep 1
+        sleep 1
     done
-    
+
     # It takes a while for partitions to be recognized after the disk
     # was found.  Sleep three more seconds...
     sleep 3
