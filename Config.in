@@ -124,7 +124,7 @@ config BR2_TAR_OPTIONS
 
 config BR2_ARTIFACTORY_CLI
 	string "Artifactory command-line interface command"
-	default "artifactory-cli"
+	default "jfrog"
 
 endmenu
 
@@ -180,7 +180,7 @@ config BR2_ARTIFACTORY_REPO
 	  Buildroot will use this artifactory repo for storing its
           source artifacts.
           NOTE: To upload source artifacts, you must have
-          /usr/bin/artifactory-cli installed.
+          JFrog CLI installed and in your PATH.
 
 config BR2_PRIMARY_SITE
 	string "Primary download site"

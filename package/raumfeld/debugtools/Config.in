@@ -1,0 +1,7 @@
+config BR2_PACKAGE_DEBUGTOOLS
+	bool "debugtools"
+	help
+	  Raumfeld debugging tools
+          
+	  http://www.raumfeld.com/
+
