@@ -1,0 +1,52 @@
+From 64ca47426ea954b069bac38bd98ec2bd0bb9aae0 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Wed, 22 Jun 2016 15:46:20 +0200
+Subject: [PATCH] ioplug: add new callback function to amend snd_pcm_status
+ output
+
+GC4A relies on proper timestamp and delay being set in snd_pcm_status_t, which
+is not the case when using alsa's ioplug.
+This patch adds a new function callback to the io plugin to fill in the
+missing information.
+
+Required to use GC4A with the fakealsa plugin.
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ include/pcm_ioplug.h | 4 ++++
+ src/pcm/pcm_ioplug.c | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/include/pcm_ioplug.h b/include/pcm_ioplug.h
+index e529e6a..685aca3 100644
+--- a/include/pcm_ioplug.h
++++ b/include/pcm_ioplug.h
+@@ -206,6 +206,10 @@ struct snd_pcm_ioplug_callback {
+ 	 * set the channel map; optional; since v1.0.2
+ 	 */
+ 	int (*set_chmap)(snd_pcm_ioplug_t *io, const snd_pcm_chmap_t *map);
++	/**
++	 * amend the status information; optional
++	 */
++	int (*amend_status)(snd_pcm_ioplug_t *io, struct timespec *tstamp, snd_pcm_sframes_t *delay);
+ };
+ 
+ 
+diff --git a/src/pcm/pcm_ioplug.c b/src/pcm/pcm_ioplug.c
+index fe9347c..921df7a 100644
+--- a/src/pcm/pcm_ioplug.c
++++ b/src/pcm/pcm_ioplug.c
+@@ -90,6 +90,10 @@ static int snd_pcm_ioplug_status(snd_pcm_t *pcm, snd_pcm_status_t * status)
+ 	ioplug_priv_t *io = pcm->private_data;
+ 
+ 	memset(status, 0, sizeof(*status));
++
++	if (io->data->callback->amend_status)
++		io->data->callback->amend_status(io->data, &status->tstamp, &status->delay);
++
+ 	snd_pcm_ioplug_hw_ptr_update(pcm);
+ 	status->state = io->data->state;
+ 	status->trigger_tstamp = io->trigger_tstamp;
+-- 
+1.9.1
+
