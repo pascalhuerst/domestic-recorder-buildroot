@@ -16,7 +16,7 @@ endif
 
 ifneq ($(RAUMFELD_UBOOT_TOOLS_ENV_SRC_FW_CONFIG),)
 define RAUMFELD_UBOOT_TOOLS_ENV_INSTALL_TARGET_CMDS
-	$(INSTALL) -m 0644 -D package/raumfeld/raumfeld-uboot-tools/$(RAUMFELD_UBOOT_TOOLS_ENV_SRC_FW_CONFIG) \
+	$(INSTALL) -m 0644 -D package/raumfeld/raumfeld-uboot-tools-env/$(RAUMFELD_UBOOT_TOOLS_ENV_SRC_FW_CONFIG) \
 		$(TARGET_DIR)/etc/$(RAUMFELD_UBOOT_TOOLS_ENV_FW_CONFIG)
 endef
 endif
