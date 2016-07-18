@@ -1,0 +1,5 @@
+config BR2_PACKAGE_RAUMFELD_UBOOT_TOOLS_ENV
+	bool "raumfeld-uboot-tools-env"
+	select BR2_PACKAGE_UBOOT_TOOLS
+	help
+	  This package installs fw_env.config file required for U-boot Tools package.
