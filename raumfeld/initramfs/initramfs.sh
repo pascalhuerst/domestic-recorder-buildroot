@@ -67,6 +67,11 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     param=$(cat /proc/cmdline | sed -e 's/^.*raumfeld-update=//' -e 's/ .*$//')
     # earlier versions used to pass the number of files after the image name separated by a comma
     img=$(echo $param | cut -d, -f1)
+    if [ "$(grep rf_silent_update /proc/cmdline)" ]; then
+	    silent="-s"
+    else
+	    silent=""
+    fi
 
     echo "Image name $img"
     echo "Performing software update ..."
@@ -92,7 +97,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
 
     echo "Extracting the Raumfeld firmware ..."
     cd /mnt
-    raumfeld-extract-update $update
+    raumfeld-extract-update $silent $update
     cd /
     sync
 
