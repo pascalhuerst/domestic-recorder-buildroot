@@ -1,1 +1,1 @@
-chrome 1000 chrome 1000 - /home/chrome /bin/sh audio GC4A-User
+chrome 368 chrome 368 - /home/chrome /bin/sh audio GC4A-User
