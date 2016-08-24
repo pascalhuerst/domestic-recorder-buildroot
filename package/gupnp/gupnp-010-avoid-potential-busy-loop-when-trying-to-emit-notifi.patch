@@ -1,0 +1,90 @@
+From c67ca2ab8fe484db22aba8a255ec05e5d158666e Mon Sep 17 00:00:00 2001
+From: Oliver Tappe <zooey@hirschkaefer.de>
+Date: Wed, 24 Aug 2016 09:32:23 +0200
+Subject: [PATCH] Avoid potential busy loop when trying to emit notifications.
+
+* In case the service proxy doesn't receive a response to a notification
+  attempt, emit_notifications used to return TRUE in order to retry.
+  If the notification never gets a response, this will go on for a long
+  time.
+  Fix this by returning FALSE in emit_notifications() and invoke
+  emit_notifications() again when the response to the notification
+  has arrived.
+
+Signed-off-by: Oliver Tappe <zooey@hirschkaefer.de>
+---
+ libgupnp/gupnp-service-proxy.c | 37 +++++++++++++++++++++++++------------
+ 1 file changed, 25 insertions(+), 12 deletions(-)
+
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index 8e7157c..3de2ad5 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -2030,8 +2030,11 @@ emit_notifications (gpointer user_data)
+         if (proxy->priv->sid == NULL)
+                 /* No SID */
+                 if (G_LIKELY (proxy->priv->subscribed))
+-                        /* subscription in progress, delay emision! */
+-                        return TRUE;
++                {
++                        /* subscription in progress, delay emission until we've received a response */
++                        proxy->priv->notify_idle_src = NULL;
++                        return FALSE;
++                }
+ 
+         for (pending_notify = proxy->priv->pending_notifies;
+              pending_notify != NULL;
+@@ -2081,6 +2084,21 @@ emit_notifications (gpointer user_data)
+         return FALSE;
+ }
+ 
++static void
++install_notify_idle_source(GUPnPServiceProxy *proxy)
++{
++        if (!proxy->priv->notify_idle_src) {
++                proxy->priv->notify_idle_src = g_idle_source_new();
++                g_source_set_callback (proxy->priv->notify_idle_src,
++                                       emit_notifications,
++                                       proxy, NULL);
++                g_source_attach (proxy->priv->notify_idle_src,
++                                 g_main_context_get_thread_default ());
++
++                g_source_unref (proxy->priv->notify_idle_src);
++        }
++}
++
+ /*
+  * HTTP server received a message. Handle, if this was a NOTIFY
+  * message with our SID.
+@@ -2189,16 +2207,7 @@ server_handler (G_GNUC_UNUSED SoupServer        *soup_server,
+ 
+         proxy->priv->pending_notifies =
+                 g_list_append (proxy->priv->pending_notifies, emit_notify_data);
+-        if (!proxy->priv->notify_idle_src) {
+-                proxy->priv->notify_idle_src = g_idle_source_new();
+-                g_source_set_callback (proxy->priv->notify_idle_src,
+-                                       emit_notifications,
+-                                       proxy, NULL);
+-                g_source_attach (proxy->priv->notify_idle_src,
+-                                 g_main_context_get_thread_default ());
+-
+-                g_source_unref (proxy->priv->notify_idle_src);
+-        }
++        install_notify_idle_source(proxy);
+ 
+         /* Everything went OK */
+         soup_message_set_status (msg, SOUP_STATUS_OK);
+@@ -2389,6 +2398,10 @@ hdr_err:
+ 
+                 g_error_free (error);
+         }
++
++        /* Install notify source in order to emit pending notifications, if there are any */
++        if (proxy->priv->pending_notifies)
++                install_notify_idle_source(proxy);
+ }
+ 
+ /*
+-- 
+2.5.5
+
