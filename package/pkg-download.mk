@@ -326,7 +326,7 @@ define DOWNLOAD_INNER
 				exit ; \
 			fi ; \
 			echo " - Uploading artifact" ; \
-			(cd $(DL_DIR) ; $(ARTIFACTORY_CLI) upload $(2) $(call qstrip,$(BR2_ARTIFACTORY_REPO))/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/) && exit ; \
+			(cd $(DL_DIR) ; $(ARTIFACTORY_CLI) rt upload $(2) $(call qstrip,$(BR2_ARTIFACTORY_REPO))/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/) && exit ; \
 		else \
 			exit ; \
 		fi ; \
