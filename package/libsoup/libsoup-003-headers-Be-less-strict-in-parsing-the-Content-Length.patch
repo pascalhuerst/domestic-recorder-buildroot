@@ -1,0 +1,32 @@
+From 35971894a9b60638e5f60e257505fe1ff9f5ab7f Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Wed, 21 Sep 2016 15:32:58 +0200
+Subject: [PATCH] headers: Be less strict in parsing the Content-Length header
+
+The spec only allows digits in the Content-Length header.
+Unfortunately not everyone has read the spec carefully and there
+are servers out here in the wild that append a semicolon.
+
+Change the code to deal with this more gracefully and just stop
+parsing at the first non-digit character. Only bail out with an
+error if no character has been converted.
+---
+ libsoup/soup-message-headers.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libsoup/soup-message-headers.c b/libsoup/soup-message-headers.c
+index 40f45a9..fffbc01 100644
+--- a/libsoup/soup-message-headers.c
++++ b/libsoup/soup-message-headers.c
+@@ -682,7 +682,7 @@ content_length_setter (SoupMessageHeaders *hdrs, const char *value)
+ 		char *end;
+ 
+ 		hdrs->content_length = g_ascii_strtoull (value, &end, 10);
+-		if (*end)
++		if (end == value)
+ 			hdrs->encoding = SOUP_ENCODING_UNRECOGNIZED;
+ 		else
+ 			hdrs->encoding = SOUP_ENCODING_CONTENT_LENGTH;
+-- 
+2.7.4
+
