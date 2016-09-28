@@ -1,0 +1,5 @@
+config BR2_PACKAGE_RAUMFELD_CERTIFICATES
+	bool "raumfeld-certificates"
+	select BR2_PACKAGE_CA_CERTIFICATES
+	help
+	  This package provides the Raumfeld certificates.
