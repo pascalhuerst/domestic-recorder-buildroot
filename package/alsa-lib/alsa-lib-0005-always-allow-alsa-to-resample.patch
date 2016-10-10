@@ -1,0 +1,16 @@
+--- A/src/pcm/pcm.c	2016-10-10 11:04:11.997750233 +0200
++++ B/src/pcm/pcm.c	2016-10-10 11:03:31.183797112 +0200
+@@ -4267,6 +4267,13 @@
+  */
+ int snd_pcm_hw_params_set_rate_resample(snd_pcm_t *pcm, snd_pcm_hw_params_t *params, unsigned int val)
+ {
++	// Begin of hack:
++	// GC4A calls this with val='0', preventing alsa resample code from being executed.
++	// Instead, gc4a likes to use its own less effecient resampler. 
++	// As raumfeld firmware does not call this function, no side effects are expected.
++	val = 1;
++	// End of hack
++	
+ 	assert(pcm && params);
+ 	if (!val)
+ 		params->flags |= SND_PCM_HW_PARAMS_NORESAMPLE;
