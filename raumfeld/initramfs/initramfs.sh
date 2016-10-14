@@ -13,6 +13,11 @@ fi
 offset="5128192"  # default value
 
 case "$hw" in
+    i.MX7)
+        img="imx7.img"
+        offset="12853248"
+        echo "i.MX7 hardware detected"
+	;;
     AM33XX)
         arch="armada"
         offset="8658944"
