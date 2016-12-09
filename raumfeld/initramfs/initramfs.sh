@@ -100,6 +100,11 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
             ;;
     esac
 
+    if [ -d /mnt/home/chrome ]; then
+        echo "Fixing ownership of /home/chrome ..."
+        find /mnt/home/chrome -user 368 -exec chown 1000:1000 {} \;
+    fi
+
     echo "Extracting the Raumfeld firmware ..."
     cd /mnt
     raumfeld-extract-update $silent $update
