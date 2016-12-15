@@ -7,7 +7,13 @@ if BR2_PACKAGE_RAUMFELD_FIRMWARE
 
 config BR2_PACKAGE_RAUMFELD_FIRMWARE_ADAU1701
 	bool "ADAU1701"
+	default n
 	help
 	  Firmware for ADAU1701 SigmaDSP processor
 
+config BR2_PACKAGE_RAUMFELD_FIRMWARE_PCIE8897
+	bool "PCIE8897"
+	default n
+	help
+	  Firmware for Marvell's PCIe based wifi chip
 endif
