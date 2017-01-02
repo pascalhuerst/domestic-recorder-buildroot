@@ -21,6 +21,7 @@ else ifeq ($(BR2_x86_64),y)
   SPOTIFY_EMBEDDED_LIB = spotify_embedded-vorbis-v$(SPOTIFY_EMBEDDED_VERSION)-Linux-64bit-Release
 endif
 
+SPOTIFY_EMBEDDED_SITE = https://repo.bag.software
 SPOTIFY_EMBEDDED_SOURCE = $(SPOTIFY_EMBEDDED_LIB).tar.gz
 SPOTIFY_EMBEDDED_SUBDIR = spotify_embedded/$(SPOTIFY_EMBEDDED_RELEASE)
 
