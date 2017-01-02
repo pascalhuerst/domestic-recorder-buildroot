@@ -4,13 +4,16 @@
 #
 ################################################################################
 
-XSERVER_XORG_SERVER_VERSION = 1.16.1
+XSERVER_XORG_SERVER_VERSION = $(call qstrip,$(BR2_PACKAGE_XSERVER_XORG_SERVER_VERSION))
 XSERVER_XORG_SERVER_SOURCE = xorg-server-$(XSERVER_XORG_SERVER_VERSION).tar.bz2
 XSERVER_XORG_SERVER_SITE = http://xorg.freedesktop.org/releases/individual/xserver
 XSERVER_XORG_SERVER_LICENSE = MIT
 XSERVER_XORG_SERVER_LICENSE_FILES = COPYING
 XSERVER_XORG_SERVER_INSTALL_STAGING = YES
+# xfont_font-util is needed only for autoreconf
+XSERVER_XORG_SERVER_AUTORECONF = YES
 XSERVER_XORG_SERVER_DEPENDENCIES = 	\
+	xfont_font-util			\
 	xutil_util-macros 		\
 	xlib_libXfont 			\
 	xlib_libX11 			\
@@ -38,7 +41,6 @@ XSERVER_XORG_SERVER_DEPENDENCIES = 	\
 	xproto_glproto 			\
 	xproto_inputproto 		\
 	xproto_kbproto 			\
-	xproto_presentproto 		\
 	xproto_randrproto 		\
 	xproto_renderproto 		\
 	xproto_resourceproto 		\
@@ -54,23 +56,66 @@ XSERVER_XORG_SERVER_DEPENDENCIES = 	\
 	mcookie 			\
 	host-pkgconf
 
-XSERVER_XORG_SERVER_CONF_OPTS = --disable-config-hal \
-		--disable-xnest --disable-xephyr --disable-dmx \
-		--with-builder-addr=buildroot@buildroot.org \
-		CFLAGS="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include/pixman-1" \
-		--with-fontrootdir=/usr/share/fonts/X11/ \
-		--$(if $(BR2_PACKAGE_XSERVER_XORG_SERVER_XVFB),en,dis)able-xvfb
+# We force -O2 regardless of the optimization level chosen by the
+# user, as the X.org server is known to trigger some compiler bugs at
+# -Os on several architectures.
+XSERVER_XORG_SERVER_CONF_OPTS = \
+	--disable-config-hal \
+	--disable-xnest \
+	--disable-xephyr \
+	--disable-dmx \
+	--with-builder-addr=buildroot@buildroot.org \
+	CFLAGS="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include/pixman-1 -O2" \
+	--with-fontrootdir=/usr/share/fonts/X11/ \
+	--$(if $(BR2_PACKAGE_XSERVER_XORG_SERVER_XVFB),en,dis)able-xvfb
+
+ifeq ($(BR2_PACKAGE_SYSTEMD),y)
+XSERVER_XORG_SERVER_CONF_OPTS += \
+	--with-systemd-daemon \
+	--enable-systemd-logind
+XSERVER_XORG_SERVER_DEPENDENCIES += \
+	systemd \
+	xproto_dri2proto
+else
+XSERVER_XORG_SERVER_CONF_OPTS += \
+	--without-systemd-daemon \
+	--disable-systemd-logind
+endif
+
+# Xwayland support needs libdrm, libepoxy, wayland and libxcomposite
+ifeq ($(BR2_PACKAGE_LIBDRM)$(BR2_PACKAGE_LIBEPOXY)$(BR2_PACKAGE_WAYLAND)$(BR2_PACKAGE_XLIB_LIBXCOMPOSITE),yyyy)
+XSERVER_XORG_SERVER_CONF_OPTS += --enable-xwayland
+XSERVER_XORG_SERVER_DEPENDENCIES += libdrm libepoxy wayland xlib_libXcomposite
+else
+XSERVER_XORG_SERVER_CONF_OPTS += --disable-xwayland
+endif
+
+# Present protocol only required for xserver 1.15+, but does not matter if
+# enabled for older versions as they don't use it (not even optionally).
+ifeq ($(BR2_PACKAGE_XPROTO_PRESENTPROTO),y)
+XSERVER_XORG_SERVER_DEPENDENCIES += xproto_presentproto
+endif
 
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_MODULAR),y)
 XSERVER_XORG_SERVER_CONF_OPTS += --enable-xorg
-XSERVER_XORG_SERVER_DEPENDENCIES += libpciaccess libdrm
+XSERVER_XORG_SERVER_DEPENDENCIES += libpciaccess
+ifeq ($(BR2_PACKAGE_LIBDRM),y)
+XSERVER_XORG_SERVER_DEPENDENCIES += libdrm
+XSERVER_XORG_SERVER_CONF_OPTS += --enable-libdrm
+else
+XSERVER_XORG_SERVER_CONF_OPTS += --disable-libdrm
+endif
 else
 XSERVER_XORG_SERVER_CONF_OPTS += --disable-xorg
 endif
 
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_KDRIVE),y)
-XSERVER_XORG_SERVER_CONF_OPTS += --enable-kdrive --enable-xfbdev \
-		--disable-glx --disable-dri --disable-xsdl
+XSERVER_XORG_SERVER_CONF_OPTS += \
+	--enable-kdrive \
+	--enable-xfbdev \
+	--disable-glx \
+	--disable-dri \
+	--disable-xsdl
 define XSERVER_CREATE_X_SYMLINK
 	ln -f -s Xfbdev $(TARGET_DIR)/usr/bin/X
 endef
@@ -105,12 +150,6 @@ else
 XSERVER_XORG_SERVER_CONF_OPTS += --disable-dri --disable-glx
 endif
 
-ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_NULL_CURSOR),y)
-XSERVER_XORG_SERVER_CONF_OPTS += --enable-null-root-cursor
-else
-XSERVER_XORG_SERVER_CONF_OPTS += --disable-null-root-cursor
-endif
-
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_AIGLX),y)
 XSERVER_XORG_SERVER_CONF_OPTS += --enable-aiglx
 else
@@ -126,9 +165,8 @@ endif
 ifeq ($(BR2_PACKAGE_HAS_UDEV),y)
 XSERVER_XORG_SERVER_DEPENDENCIES += udev
 XSERVER_XORG_SERVER_CONF_OPTS += --enable-config-udev
-# udev kms support depends on libdrm
-ifeq ($(BR2_PACKAGE_LIBDRM),y)
-XSERVER_XORG_SERVER_DEPENDENCIES += libdrm
+# udev kms support depends on libdrm and dri2
+ifeq ($(BR2_PACKAGE_LIBDRM)$(BR2_PACKAGE_XPROTO_DRI2PROTO),yy)
 XSERVER_XORG_SERVER_CONF_OPTS += --enable-config-udev-kms
 else
 XSERVER_XORG_SERVER_CONF_OPTS += --disable-config-udev-kms
@@ -144,10 +182,9 @@ ifeq ($(BR2_PACKAGE_FREETYPE),y)
 XSERVER_XORG_SERVER_DEPENDENCIES += freetype
 endif
 
-# libunwind support is broken on mips64
-# https://bugs.freedesktop.org/show_bug.cgi?id=79939
-ifeq ($(BR2_PACKAGE_LIBUNWIND)-$(BR2_mips64el),y-)
+ifeq ($(BR2_PACKAGE_LIBUNWIND),y)
 XSERVER_XORG_SERVER_DEPENDENCIES += libunwind
+XSERVER_XORG_SERVER_CONF_OPTS += --enable-libunwind
 else
 XSERVER_XORG_SERVER_CONF_OPTS += --disable-libunwind
 endif
@@ -173,13 +210,21 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER_MODULAR),y)
 ifeq ($(BR2_PACKAGE_XPROTO_DRI2PROTO),y)
 XSERVER_XORG_SERVER_DEPENDENCIES += xproto_dri2proto
 XSERVER_XORG_SERVER_CONF_OPTS += --enable-dri2
+else
+XSERVER_XORG_SERVER_CONF_OPTS += --disable-dri2
 endif
 ifeq ($(BR2_PACKAGE_XPROTO_DRI3PROTO),y)
 XSERVER_XORG_SERVER_DEPENDENCIES += xlib_libxshmfence xproto_dri3proto
 XSERVER_XORG_SERVER_CONF_OPTS += --enable-dri3
+ifeq ($(BR2_PACKAGE_HAS_LIBGL)$(BR2_PACKAGE_LIBEPOXY),yy)
+XSERVER_XORG_SERVER_DEPENDENCIES += libepoxy
+XSERVER_XORG_SERVER_CONF_OPTS += --enable-glamor
 endif
 else
-XSERVER_XORG_SERVER_CONF_OPTS += --disable-dri2 --disable-dri3
+XSERVER_XORG_SERVER_CONF_OPTS += --disable-dri3 --disable-glamor
+endif
+else
+XSERVER_XORG_SERVER_CONF_OPTS += --disable-dri2 --disable-dri3 --disable-glamor
 endif
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXSCRNSAVER),y)

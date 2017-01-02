@@ -4,38 +4,24 @@
 #
 ################################################################################
 
-IMX_VPU_VERSION = $(FREESCALE_IMX_VERSION)
+IMX_VPU_VERSION = 5.4.35
 IMX_VPU_SITE = $(FREESCALE_IMX_SITE)
-IMX_VPU_LICENSE = Freescale License
-IMX_VPU_LICENSE_FILES = EULA vpu/EULA.txt
 IMX_VPU_SOURCE = imx-vpu-$(IMX_VPU_VERSION).bin
 
 IMX_VPU_INSTALL_STAGING = YES
 
-# imx-vpu needs access to imx-specific kernel headers
-IMX_VPU_DEPENDENCIES += linux
 IMX_VPU_MAKE_ENV = \
 	$(TARGET_MAKE_ENV) \
 	$(TARGET_CONFIGURE_OPTS) \
-	CROSS_COMPILE="$(CCACHE) $(TARGET_CROSS)" \
-	PLATFORM=$(BR2_PACKAGE_FREESCALE_IMX_PLATFORM) \
-	INCLUDE="-idirafter $(LINUX_DIR)/include"
+	CROSS_COMPILE="$(TARGET_CROSS)" \
+	PLATFORM=$(BR2_PACKAGE_FREESCALE_IMX_PLATFORM)
 
-# The archive is a shell-self-extractor of a bzipped tar. It happens
-# to extract in the correct directory (imx-vpu-x.y.z)
-# The --force makes sure it doesn't fail if the source dir already exists.
-# The --auto-accept skips the license check - not needed for us
-# because we have legal-info
-# Since there's a EULA in the bin file, extract it to imx-vpu-x.y.z/EULA
-#
+IMX_VPU_LICENSE = NXP Semiconductor Software License Agreement
+IMX_VPU_LICENSE_FILES = EULA COPYING
+IMX_VPU_REDISTRIBUTE = NO
+
 define IMX_VPU_EXTRACT_CMDS
-	awk 'BEGIN      { start=0; } \
-	     /^EOEULA/  { start = 0; } \
-	                { if (start) print; } \
-	     /<<EOEULA/ { start=1; }'\
-	    $(DL_DIR)/$(IMX_VPU_SOURCE) > $(@D)/EULA
-	cd $(BUILD_DIR); \
-	sh $(DL_DIR)/$(IMX_VPU_SOURCE) --force --auto-accept
+	$(call FREESCALE_IMX_EXTRACT_HELPER,$(DL_DIR)/$(IMX_VPU_SOURCE))
 endef
 
 define IMX_VPU_BUILD_CMDS

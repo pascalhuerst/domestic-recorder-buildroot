@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GNUPG_VERSION = 1.4.18
+GNUPG_VERSION = 1.4.21
 GNUPG_SOURCE = gnupg-$(GNUPG_VERSION).tar.bz2
 GNUPG_SITE = ftp://ftp.gnupg.org/gcrypt/gnupg
 GNUPG_LICENSE = GPLv3+
@@ -12,6 +12,11 @@ GNUPG_LICENSE_FILES = COPYING
 GNUPG_DEPENDENCIES = zlib ncurses $(if $(BR2_PACKAGE_LIBICONV),libiconv)
 GNUPG_CONF_ENV = ac_cv_sys_symbol_underscore=no
 GNUPG_CONF_OPTS = --disable-rpath --enable-minimal --disable-regex
+
+# gnupg doesn't support assembly for coldfire
+ifeq ($(BR2_m68k_cf),y)
+GNUPG_CONF_OPTS += --disable-asm
+endif
 
 ifeq ($(BR2_PACKAGE_BZIP2),y)
 GNUPG_CONF_OPTS += --enable-bzip2
@@ -31,6 +36,12 @@ else
 GNUPG_CONF_OPTS += --without-readline
 endif
 
+ifeq ($(BR2_PACKAGE_GNUPG_AES),y)
+GNUPG_CONF_OPTS += --enable-aes
+else
+GNUPG_CONF_OPTS += --disable-aes
+endif
+
 ifeq ($(BR2_PACKAGE_GNUPG_RSA),y)
 GNUPG_CONF_OPTS += --enable-rsa
 else
@@ -39,8 +50,7 @@ endif
 
 ifneq ($(BR2_PACKAGE_GNUPG_GPGV),y)
 define GNUPG_REMOVE_GPGV
-	rm -f $(TARGET_DIR)/usr/bin/gpgv \
-		$(TARGET_DIR)/usr/share/man/man1/gpgv.1
+	rm -f $(TARGET_DIR)/usr/bin/gpgv
 endef
 GNUPG_POST_INSTALL_TARGET_HOOKS += GNUPG_REMOVE_GPGV
 endif

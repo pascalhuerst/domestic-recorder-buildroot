@@ -5,7 +5,7 @@
 ################################################################################
 
 LIGHTTPD_VERSION_MAJOR = 1.4
-LIGHTTPD_VERSION = $(LIGHTTPD_VERSION_MAJOR).35
+LIGHTTPD_VERSION = $(LIGHTTPD_VERSION_MAJOR).43
 LIGHTTPD_SOURCE = lighttpd-$(LIGHTTPD_VERSION).tar.xz
 LIGHTTPD_SITE = http://download.lighttpd.net/lighttpd/releases-$(LIGHTTPD_VERSION_MAJOR).x
 LIGHTTPD_LICENSE = BSD-3c
@@ -13,8 +13,7 @@ LIGHTTPD_LICENSE_FILES = COPYING
 LIGHTTPD_DEPENDENCIES = host-pkgconf
 LIGHTTPD_CONF_OPTS = \
 	--libdir=/usr/lib/lighttpd \
-	--libexecdir=/usr/lib \
-	$(if $(BR2_LARGEFILE),,--disable-lfs)
+	--libexecdir=/usr/lib
 
 ifeq ($(BR2_PACKAGE_LIGHTTPD_OPENSSL),y)
 LIGHTTPD_DEPENDENCIES += openssl
@@ -47,7 +46,13 @@ endif
 
 ifeq ($(BR2_PACKAGE_LIGHTTPD_WEBDAV),y)
 LIGHTTPD_DEPENDENCIES += libxml2 sqlite
-LIGHTTPD_CONF_OPTS += --with-webdav-props --with-webdav-locks
+LIGHTTPD_CONF_OPTS += --with-webdav-props
+ifeq ($(BR2_PACKAGE_UTIL_LINUX_LIBUUID),y)
+LIGHTTPD_CONF_OPTS += --with-webdav-locks
+LIGHTTPD_DEPENDENCIES += util-linux
+else
+LIGHTTPD_CONF_OPTS += --without-webdav-locks
+endif
 else
 LIGHTTPD_CONF_OPTS += --without-webdav-props --without-webdav-locks
 endif
@@ -62,48 +67,34 @@ endif
 define LIGHTTPD_INSTALL_CONFIG
 	$(INSTALL) -d -m 0755 $(TARGET_DIR)/etc/lighttpd/conf.d
 	$(INSTALL) -d -m 0755 $(TARGET_DIR)/var/www
-
-	[ -f $(TARGET_DIR)/etc/lighttpd/lighttpd.conf ] || \
-		$(INSTALL) -D -m 755 $(@D)/doc/config/lighttpd.conf \
-			$(TARGET_DIR)/etc/lighttpd/lighttpd.conf
-
-	[ -f $(TARGET_DIR)/etc/lighttpd/modules.conf ] || \
-		$(INSTALL) -D -m 755 $(@D)/doc/config/modules.conf \
-			$(TARGET_DIR)/etc/lighttpd/modules.conf
-
-	[ -f $(TARGET_DIR)/etc/lighttpd/conf.d/access_log.conf ] || \
-		$(INSTALL) -D -m 755 $(@D)/doc/config/conf.d/access_log.conf \
-			$(TARGET_DIR)/etc/lighttpd/conf.d/access_log.conf
-
-	[ -f $(TARGET_DIR)/etc/lighttpd/conf.d/debug.conf ] || \
-		$(INSTALL) -D -m 755 $(@D)/doc/config/conf.d/debug.conf \
-			$(TARGET_DIR)/etc/lighttpd/conf.d/debug.conf
-
-	[ -f $(TARGET_DIR)/etc/lighttpd/conf.d/dirlisting.conf ] || \
-		$(INSTALL) -D -m 755 $(@D)/doc/config/conf.d/dirlisting.conf \
-			$(TARGET_DIR)/etc/lighttpd/conf.d/dirlisting.conf
-
-	[ -f $(TARGET_DIR)/etc/lighttpd/conf.d/mime.conf ] || \
-		$(INSTALL) -D -m 755 $(@D)/doc/config/conf.d/mime.conf \
-			$(TARGET_DIR)/etc/lighttpd/conf.d/mime.conf
+	$(INSTALL) -D -m 0644 $(@D)/doc/config/lighttpd.conf \
+		$(TARGET_DIR)/etc/lighttpd/lighttpd.conf
+	$(INSTALL) -D -m 0644 $(@D)/doc/config/modules.conf \
+		$(TARGET_DIR)/etc/lighttpd/modules.conf
+	$(INSTALL) -D -m 0644 $(@D)/doc/config/conf.d/access_log.conf \
+		$(TARGET_DIR)/etc/lighttpd/conf.d/access_log.conf
+	$(INSTALL) -D -m 0644 $(@D)/doc/config/conf.d/debug.conf \
+		$(TARGET_DIR)/etc/lighttpd/conf.d/debug.conf
+	$(INSTALL) -D -m 0644 $(@D)/doc/config/conf.d/dirlisting.conf \
+		$(TARGET_DIR)/etc/lighttpd/conf.d/dirlisting.conf
+	$(INSTALL) -D -m 0644 $(@D)/doc/config/conf.d/mime.conf \
+		$(TARGET_DIR)/etc/lighttpd/conf.d/mime.conf
 endef
 
 LIGHTTPD_POST_INSTALL_TARGET_HOOKS += LIGHTTPD_INSTALL_CONFIG
 
 define LIGHTTPD_INSTALL_INIT_SYSV
-	[ -f $(TARGET_DIR)/etc/init.d/S50lighttpd ] || \
-		$(INSTALL) -D -m 755 package/lighttpd/S50lighttpd \
-			$(TARGET_DIR)/etc/init.d/S50lighttpd
+	$(INSTALL) -D -m 0755 package/lighttpd/S50lighttpd \
+		$(TARGET_DIR)/etc/init.d/S50lighttpd
 endef
 
 define LIGHTTPD_INSTALL_INIT_SYSTEMD
-	[ -f $(TARGET_DIR)/etc/systemd/system/lighttpd.service ] || \
-		$(INSTALL) -D -m 644 package/lighttpd/lighttpd.service \
-			$(TARGET_DIR)/etc/systemd/system/lighttpd.service
+	$(INSTALL) -D -m 0644 $(@D)/doc/systemd/lighttpd.service \
+		$(TARGET_DIR)/usr/lib/systemd/system/lighttpd.service
 
 	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
 
-	ln -fs ../lighttpd.service \
+	ln -fs ../../../../usr/lib/systemd/system/lighttpd.service \
 		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/lighttpd.service
 endef
 

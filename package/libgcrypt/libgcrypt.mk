@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBGCRYPT_VERSION = 1.6.2
+LIBGCRYPT_VERSION = 1.7.3
 LIBGCRYPT_SOURCE = libgcrypt-$(LIBGCRYPT_VERSION).tar.bz2
 LIBGCRYPT_LICENSE = LGPLv2.1+
 LIBGCRYPT_LICENSE_FILES = COPYING.LIB
@@ -16,12 +16,16 @@ LIBGCRYPT_CONFIG_SCRIPTS = libgcrypt-config
 LIBGCRYPT_CONF_ENV = \
 	ac_cv_sys_symbol_underscore=no
 LIBGCRYPT_CONF_OPTS = \
-	--disable-optimization \
 	--with-gpg-error-prefix=$(STAGING_DIR)/usr
+
+# Libgcrypt doesn't support assembly for coldfire
+ifeq ($(BR2_m68k_cf),y)
+LIBGCRYPT_CONF_OPTS += --disable-asm
+endif
 
 # Code doesn't build in thumb mode
 ifeq ($(BR2_arm),y)
-	LIBGCRYPT_CONF_ENV += CFLAGS="$(patsubst -mthumb,,$(TARGET_CFLAGS))"
+LIBGCRYPT_CONF_ENV += CFLAGS="$(patsubst -mthumb,,$(TARGET_CFLAGS))"
 endif
 
 # Tests use fork()

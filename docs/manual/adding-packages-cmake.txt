@@ -102,10 +102,14 @@ typical packages will therefore only use a few of them.
 
 ** +CMAKE_BUILD_TYPE+ is driven by +BR2_ENABLE_DEBUG+;
 ** +CMAKE_INSTALL_PREFIX+;
-** +BUILD_SHARED_LIBS+ is driven by +BR2_PREFER_STATIC_LIBS+;
+** +BUILD_SHARED_LIBS+ is driven by +BR2_STATIC_LIBS+;
 ** +BUILD_DOC+, +BUILD_DOCS+ are disabled;
 ** +BUILD_EXAMPLE+, +BUILD_EXAMPLES+ are disabled;
 ** +BUILD_TEST+, +BUILD_TESTS+, +BUILD_TESTING+ are disabled.
+
+* +LIBFOO_SUPPORTS_IN_SOURCE_BUILD = NO+ should be set when the package
+  cannot be built inside the source tree but needs a separate build
+  directory.
 
 * +LIBFOO_MAKE+, to specify an alternate +make+ command. This is
   typically useful when parallel make is enabled in the configuration

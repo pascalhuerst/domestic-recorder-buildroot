@@ -4,14 +4,15 @@
 #
 ################################################################################
 
-CONNMAN_VERSION = 95386f909d
-CONNMAN_SITE = $(call github,raumfeld,connman,$(CONNMAN_VERSION))
+CONNMAN_VERSION = 1.33
+CONNMAN_SOURCE = connman-$(CONNMAN_VERSION).tar.xz
+CONNMAN_SITE = $(BR2_KERNEL_MIRROR)/linux/network/connman
 CONNMAN_DEPENDENCIES = libglib2 dbus iptables
-CONNMAN_AUTORECONF = YES
 CONNMAN_INSTALL_STAGING = YES
 CONNMAN_LICENSE = GPLv2
 CONNMAN_LICENSE_FILES = COPYING
 CONNMAN_CONF_OPTS += \
+	--with-dbusconfdir=/etc \
 	$(if $(BR2_PACKAGE_CONNMAN_DEBUG),--enable-debug,--disable-debug)		\
 	$(if $(BR2_PACKAGE_CONNMAN_ETHERNET),--enable-ethernet,--disable-ethernet)	\
 	$(if $(BR2_PACKAGE_CONNMAN_WIFI),--enable-wifi,--disable-wifi)			\
@@ -31,6 +32,12 @@ define CONNMAN_INSTALL_INIT_SYSV
 	$(INSTALL) -m 0755 -D package/connman/S45connman $(TARGET_DIR)/etc/init.d/S45connman
 endef
 
+define CONNMAN_INSTALL_INIT_SYSTEMD
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
+	ln -fs ../../../../usr/lib/systemd/system/connman.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/connman.service
+endef
+
 ifeq ($(BR2_PACKAGE_CONNMAN_CLIENT),y)
 CONNMAN_CONF_OPTS += --enable-client
 CONNMAN_DEPENDENCIES += readline
@@ -43,13 +50,5 @@ CONNMAN_POST_INSTALL_TARGET_HOOKS += CONNMAN_INSTALL_CM
 else
 CONNMAN_CONF_OPTS += --disable-client
 endif
-
-define CONNMAN_INSTALL_TARGET_FIXUP
-        mkdir -p $(TARGET_DIR)/var/lib
-        rm -rf $(TARGET_DIR)/var/lib/conmman
-        ln -sf /tmp/connman $(TARGET_DIR)/var/lib/connman
-endef
-
-CONNMAN_POST_INSTALL_TARGET_HOOKS += CONNMAN_INSTALL_TARGET_FIXUP
 
 $(eval $(autotools-package))

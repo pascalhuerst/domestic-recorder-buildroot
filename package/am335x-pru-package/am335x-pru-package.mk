@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-AM335X_PRU_PACKAGE_VERSION = 506e074859891a2b350eb4f5fcb451c4961410ea
+AM335X_PRU_PACKAGE_VERSION = 5f374ad57cc195f28bf5e585c3d446aba6ee7096
 AM335X_PRU_PACKAGE_SITE = $(call github,beagleboard,am335x_pru_package,$(AM335X_PRU_PACKAGE_VERSION))
 AM335X_PRU_PACKAGE_LICENSE = BSD-3c
 AM335X_PRU_PACKAGE_LICENSE_FILES = pru_sw/utils/LICENCE.txt
@@ -13,25 +13,25 @@ AM335X_PRU_PACKAGE_INSTALL_STAGING = YES
 
 # The default 'all' rule builds everything, when we just need the library
 ifeq ($(BR2_ENABLE_DEBUG),y)
-AM335X_MAKE_TARGET = debug $(if $(BR2_PREFER_STATIC_LIB),,sodebug)
+AM335X_MAKE_TARGET = debug $(if $(BR2_STATIC_LIBS),,sodebug)
 else
-AM335X_MAKE_TARGET = release $(if $(BR2_PREFER_STATIC_LIB),,sorelease)
+AM335X_MAKE_TARGET = release $(if $(BR2_STATIC_LIBS),,sorelease)
 endif
 
 define AM335X_PRU_PACKAGE_BUILD_CMDS
-	$(MAKE) CROSS_COMPILE="$(TARGET_CROSS)" \
+	$(TARGET_MAKE_ENV) $(MAKE) CROSS_COMPILE="$(TARGET_CROSS)" \
 		-C $(@D)/pru_sw/app_loader/interface $(AM335X_MAKE_TARGET)
 endef
 
 # 'install' installs whatever was built, and our patch removes the dependency
 # on the release build, so we can use it to install whatever we built above.
 define AM335X_PRU_PACKAGE_INSTALL_STAGING_CMDS
-	$(MAKE1) DESTDIR="$(STAGING_DIR)" PREFIX="/usr" \
+	$(TARGET_MAKE_ENV) $(MAKE1) DESTDIR="$(STAGING_DIR)" PREFIX="/usr" \
 		-C $(@D)/pru_sw/app_loader/interface install
 endef
 
 define AM335X_PRU_PACKAGE_INSTALL_TARGET_CMDS
-	$(MAKE1) DESTDIR="$(TARGET_DIR)" PREFIX="/usr" \
+	$(TARGET_MAKE_ENV) $(MAKE1) DESTDIR="$(TARGET_DIR)" PREFIX="/usr" \
 		-C $(@D)/pru_sw/app_loader/interface install
 endef
 
@@ -44,7 +44,7 @@ define AM335X_PRU_PACKAGE_LN_DEBUG_STAGING_STATIC
 endef
 AM335X_PRU_PACKAGE_POST_INSTALL_STAGING_HOOKS += AM335X_PRU_PACKAGE_LN_DEBUG_STAGING_STATIC
 
-ifeq ($(BR2_PREFER_STATIC_LIB),)
+ifeq ($(BR2_STATIC_LIBS),)
 
 define AM335X_PRU_PACKAGE_LN_DEBUG_STAGING_SHARED
 	ln -sf libprussdrvd.so $(STAGING_DIR)/usr/lib/libprussdrv.so

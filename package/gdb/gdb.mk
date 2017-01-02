@@ -6,6 +6,7 @@
 
 GDB_VERSION = $(call qstrip,$(BR2_GDB_VERSION))
 GDB_SITE = $(BR2_GNU_MIRROR)/gdb
+GDB_SOURCE = gdb-$(GDB_VERSION).tar.xz
 
 ifeq ($(BR2_arc),y)
 GDB_SITE = $(call github,foss-for-synopsys-dwc-arc-processors,binutils-gdb,$(GDB_VERSION))
@@ -19,16 +20,7 @@ GDB_SOURCE = gdb-$(GDB_VERSION).tar.gz
 GDB_FROM_GIT = y
 endif
 
-ifeq ($(GDB_VERSION),6.7.1-avr32-2.1.5)
-GDB_SITE = ftp://www.at91.com/pub/buildroot
-endif
-
-ifeq ($(GDB_VERSION),7.8)
-GDB_SOURCE = gdb-$(GDB_VERSION).tar.xz
-endif
-
-GDB_SOURCE ?= gdb-$(GDB_VERSION).tar.bz2
-GDB_LICENSE = GPLv2+ LGPLv2+ GPLv3+ LGPLv3+
+GDB_LICENSE = GPLv2+, LGPLv2+, GPLv3+, LGPLv3+
 GDB_LICENSE_FILES = COPYING COPYING.LIB COPYING3 COPYING3.LIB
 
 # We only want gdbserver and not the entire debugger.
@@ -36,13 +28,20 @@ ifeq ($(BR2_PACKAGE_GDB_DEBUGGER),)
 GDB_SUBDIR = gdb/gdbserver
 HOST_GDB_SUBDIR = .
 else
-GDB_DEPENDENCIES = ncurses
+GDB_DEPENDENCIES = ncurses \
+	$(if $(BR2_PACKAGE_LIBICONV),libiconv)
 endif
 
 # For the host variant, we really want to build with XML support,
 # which is needed to read XML descriptions of target architectures. We
 # also need ncurses.
 HOST_GDB_DEPENDENCIES = host-expat host-ncurses
+
+# Disable building documentation
+GDB_MAKE_OPTS += MAKEINFO=true
+GDB_INSTALL_TARGET_OPTS += MAKEINFO=true DESTDIR=$(TARGET_DIR) install
+HOST_GDB_MAKE_OPTS += MAKEINFO=true
+HOST_GDB_INSTALL_OPTS += MAKEINFO=true install
 
 # Apply the Xtensa specific patches
 XTENSA_CORE_NAME = $(call qstrip, $(BR2_XTENSA_CORE_NAME))
@@ -55,6 +54,11 @@ GDB_PRE_PATCH_HOOKS += GDB_XTENSA_PRE_PATCH
 HOST_GDB_PRE_PATCH_HOOKS += GDB_XTENSA_PRE_PATCH
 endif
 
+ifeq ($(GDB_FROM_GIT),y)
+GDB_DEPENDENCIES += host-flex host-bison
+HOST_GDB_DEPENDENCIES += host-flex host-bison
+endif
+
 # When gdb sources are fetched from the binutils-gdb repository, they
 # also contain the binutils sources, but binutils shouldn't be built,
 # so we disable it.
@@ -63,6 +67,13 @@ GDB_DISABLE_BINUTILS_CONF_OPTS = \
 	--disable-ld \
 	--disable-gas
 
+# Starting with gdb 7.11, the bundled gnulib tries to use
+# rpl_gettimeofday (gettimeofday replacement) due to the code being
+# unable to determine if the replacement function should be used or
+# not when cross-compiling with uClibc or musl as C libraries. So use
+# gl_cv_func_gettimeofday_clobber=no to not use rpl_gettimeofday,
+# assuming musl and uClibc have a properly working gettimeofday
+# implementation.
 GDB_CONF_ENV = \
 	ac_cv_type_uintptr_t=yes \
 	gt_cv_func_gettext_libintl=yes \
@@ -72,8 +83,11 @@ GDB_CONF_ENV = \
 	bash_cv_must_reinstall_sighandlers=no \
 	bash_cv_func_sigsetjmp=present \
 	bash_cv_have_mbstate_t=yes \
-	gdb_cv_func_sigsetjmp=yes
+	gdb_cv_func_sigsetjmp=yes \
+	gl_cv_func_gettimeofday_clobber=no
 
+# The shared only build is not supported by gdb, so enable static build for
+# build-in libraries with --enable-static.
 GDB_CONF_OPTS = \
 	--without-uiout \
 	--disable-gdbtk \
@@ -83,19 +97,50 @@ GDB_CONF_OPTS = \
 	$(if $(BR2_PACKAGE_GDB_SERVER),--enable-gdbserver) \
 	--with-curses \
 	--without-included-gettext \
-	--disable-werror
+	--disable-werror \
+	--enable-static
+
+# When gdb is built as C++ application for ARC it segfaults at runtime
+# So we pass --disable-build-with-cxx config option to force gdb not to
+# be built as C++ app.
+ifeq ($(BR2_arc),y)
+GDB_CONF_OPTS += --disable-build-with-cxx
+endif
 
 ifeq ($(BR2_PACKAGE_GDB_TUI),y)
-	GDB_CONF_OPTS += --enable-tui
+GDB_CONF_OPTS += --enable-tui
 else
-	GDB_CONF_OPTS += --disable-tui
+GDB_CONF_OPTS += --disable-tui
 endif
 
 ifeq ($(BR2_PACKAGE_GDB_PYTHON),y)
-	GDB_CONF_OPTS += --with-python=$(TOPDIR)/package/gdb/gdb-python-config
-	GDB_DEPENDENCIES += python
+GDB_CONF_OPTS += --with-python=$(TOPDIR)/package/gdb/gdb-python-config
+GDB_DEPENDENCIES += python
 else
-	GDB_CONF_OPTS += --without-python
+GDB_CONF_OPTS += --without-python
+endif
+
+ifeq ($(BR2_PACKAGE_EXPAT),y)
+GDB_CONF_OPTS += --with-expat
+GDB_CONF_OPTS += --with-libexpat-prefix=$(STAGING_DIR)/usr
+GDB_DEPENDENCIES += expat
+else
+GDB_CONF_OPTS += --without-expat
+endif
+
+ifeq ($(BR2_PACKAGE_XZ),y)
+GDB_CONF_OPTS += --with-lzma
+GDB_CONF_OPTS += --with-liblzma-prefix=$(STAGING_DIR)/usr
+GDB_DEPENDENCIES += xz
+else
+GDB_CONF_OPTS += --without-lzma
+endif
+
+ifeq ($(BR2_PACKAGE_ZLIB),y)
+GDB_CONF_OPTS += --with-zlib
+GDB_DEPENDENCIES += zlib
+else
+GDB_CONF_OPTS += --without-zlib
 endif
 
 # This removes some unneeded Python scripts and XML target description
@@ -124,40 +169,42 @@ endif
 #  * --target, because we're doing a cross build rather than a real
 #    host build.
 #  * --enable-static because gdb really wants to use libbfd.a
-#  * --disable-shared, otherwise the old 6.7 version specific to AVR32
-#    doesn't build because it wants to link a shared libbfd.so against
-#    non-PIC liberty.a.
 HOST_GDB_CONF_OPTS = \
 	--target=$(GNU_TARGET_NAME) \
-	--enable-static --disable-shared \
+	--enable-static \
 	--without-uiout \
 	--disable-gdbtk \
 	--without-x \
 	--enable-threads \
 	--disable-werror \
 	--without-included-gettext \
-	$(GDB_DISABLE_BINUTILS_CONF_OPTS) \
-	--disable-sim
+	$(GDB_DISABLE_BINUTILS_CONF_OPTS)
 
 ifeq ($(BR2_PACKAGE_HOST_GDB_TUI),y)
-	HOST_GDB_CONF_OPTS += --enable-tui
+HOST_GDB_CONF_OPTS += --enable-tui
 else
-	HOST_GDB_CONF_OPTS += --disable-tui
+HOST_GDB_CONF_OPTS += --disable-tui
 endif
 
 ifeq ($(BR2_PACKAGE_HOST_GDB_PYTHON),y)
-	HOST_GDB_CONF_OPTS += --with-python=$(HOST_DIR)/usr/bin/python2
-	HOST_GDB_DEPENDENCIES += host-python
+HOST_GDB_CONF_OPTS += --with-python=$(HOST_DIR)/usr/bin/python2
+HOST_GDB_DEPENDENCIES += host-python
 else
-	HOST_GDB_CONF_OPTS += --without-python
+HOST_GDB_CONF_OPTS += --without-python
 endif
 
-ifeq ($(GDB_FROM_GIT),y)
-HOST_GDB_DEPENDENCIES += host-texinfo
+# workaround a bug if in-tree build is used for bfin sim
+define HOST_GDB_BFIN_SIM_WORKAROUND
+	$(RM) $(@D)/sim/common/tconfig.h
+endef
+
+ifeq ($(BR2_PACKAGE_HOST_GDB_SIM),y)
+HOST_GDB_CONF_OPTS += --enable-sim
+ifeq ($(BR2_bfin),y)
+HOST_GDB_PRE_CONFIGURE_HOOKS += HOST_GDB_BFIN_SIM_WORKAROUND
+endif
 else
-# don't generate documentation
-GDB_CONF_ENV += ac_cv_prog_MAKEINFO=missing
-HOST_GDB_CONF_ENV += ac_cv_prog_MAKEINFO=missing
+HOST_GDB_CONF_OPTS += --disable-sim
 endif
 
 # legacy $arch-linux-gdb symlink

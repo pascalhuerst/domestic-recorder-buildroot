@@ -4,28 +4,26 @@
 #
 ################################################################################
 
-DHCPCD_VERSION = 6.4.7
-DHCPCD_SOURCE = dhcpcd-$(DHCPCD_VERSION).tar.bz2
+DHCPCD_VERSION = 6.11.5
+DHCPCD_SOURCE = dhcpcd-$(DHCPCD_VERSION).tar.xz
 DHCPCD_SITE = http://roy.marples.name/downloads/dhcpcd
 DHCPCD_DEPENDENCIES = host-pkgconf
 DHCPCD_LICENSE = BSD-2c
+DHCPCD_LICENSE_FILES = dhcpcd.c
 
-ifeq ($(BR2_INET_IPV6),)
-	DHCPCD_CONFIG_OPTS += --disable-ipv6
-endif
-
-ifeq ($(BR2_PREFER_STATIC_LIB),y)
-	DHCPCD_CONFIG_OPTS += --enable-static
+ifeq ($(BR2_STATIC_LIBS),y)
+DHCPCD_CONFIG_OPTS += --enable-static
 endif
 
 ifeq ($(BR2_USE_MMU),)
-	DHCPCD_CONFIG_OPTS += --disable-fork
+DHCPCD_CONFIG_OPTS += --disable-fork
 endif
 
 define DHCPCD_CONFIGURE_CMDS
 	(cd $(@D); \
 	$(TARGET_CONFIGURE_OPTS) ./configure \
 		--os=linux \
+		--libexecdir=/lib/dhcpcd \
 		$(DHCPCD_CONFIG_OPTS) )
 endef
 
@@ -35,12 +33,7 @@ define DHCPCD_BUILD_CMDS
 endef
 
 define DHCPCD_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/dhcpcd \
-		$(TARGET_DIR)/usr/sbin/dhcpcd
-	$(INSTALL) -D -m 0644 $(@D)/dhcpcd.conf \
-		$(TARGET_DIR)/etc/dhcpcd.conf
-	$(INSTALL) -D -m 0755 $(@D)/dhcpcd-run-hooks \
-		$(TARGET_DIR)/libexec/dhcpcd-run-hooks
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) install DESTDIR=$(TARGET_DIR)
 endef
 
 # NOTE: Even though this package has a configure script, it is not generated

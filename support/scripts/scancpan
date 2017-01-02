@@ -471,7 +471,7 @@ unshift @INC, sub {
 } # END OF FATPACK CODE
 
 
-use 5.020;      # same major version as target perl
+use 5.010;
 use strict;
 use warnings;
 use Fatal qw(open close);
@@ -481,7 +481,21 @@ use Pod::Usage;
 use File::Basename;
 use Module::CoreList;
 use HTTP::Tiny;
+use Safe;
 use MetaCPAN::API::Tiny;
+
+# Below, 5.022 should be aligned with the version of perl actually
+# bundled in Buildroot:
+die <<"MSG" if $] < 5.022;
+This script needs a host perl with the same major version as Buildroot target perl.
+
+Your current host perl is:
+    $^X
+    version $]
+
+You may install a local one by running:
+    perlbrew install perl-5.22.2
+MSG
 
 my ($help, $man, $quiet, $force, $recommend, $test, $host);
 my $target = 1;
@@ -504,9 +518,23 @@ my %need_host;          # name -> 1 if host package is needed
 my %need_dlopen;        # name -> 1 if requires dynamic library
 my %deps_build;         # name -> list of host dependencies
 my %deps_runtime;       # name -> list of target dependencies
+my %deps_optional;      # name -> list of optional target dependencies
 my %license_files;      # name -> list of license files
+my %checksum;           # author -> list of checksum
 my $mcpan = MetaCPAN::API::Tiny->new();
 my $ua = HTTP::Tiny->new();
+
+sub get_checksum {
+    my ($url) = @_;
+    my($path) = $url =~ m|^[^:/?#]+://[^/?#]*([^?#]*)|;
+    my($basename, $dirname) = fileparse( $path );
+    unless ($checksum{$dirname}) {
+        my $response = $ua->get(qq{http://cpan.metacpan.org${dirname}CHECKSUMS});
+        $checksum{$dirname} = $response->{content};
+    }
+    my $chksum = Safe->new->reval($checksum{$dirname});
+    return $chksum->{$basename}, $basename;
+}
 
 sub get_manifest {
     my ($author, $distname, $version) = @_;
@@ -520,7 +548,7 @@ sub is_xs {
     # This heuristic determines if a module is a native extension, by searching
     # some file extension types in the MANIFEST of the distribution.
     # It was inspired by http://deps.cpantesters.org/static/purity.html
-    return $manifest =~ m/\.(swg|xs|c|h|i)\n/;
+    return $manifest =~ m/\.(swg|xs|c|h|i)[\n\s]/;
 }
 
 sub find_license_files {
@@ -530,55 +558,62 @@ sub find_license_files {
         next if m|/|;
         push @license_files, $_ if m/(ARTISTIC|COPYING|COPYRIGHT|LICENSE)/i;
     }
+    if (scalar @license_files == 0 && $manifest =~ m/(README)[\n\s]/i) {
+        @license_files = ($1);
+    }
     return \@license_files;
 }
 
 sub fetch {
-    my ($name, $need_target, $need_host) = @_;
+    my ($name, $need_target, $need_host, $top) = @_;
     $need_target{$name} = $need_target if $need_target;
     $need_host{$name} = $need_host if $need_host;
-    unless ($dist{$name}) {
+    unless ($dist{$name} && !$top) {
         say qq{fetch ${name}} unless $quiet;
         my $result = $mcpan->release( distribution => $name );
         $dist{$name} = $result;
         my $manifest = get_manifest( $result->{author}, $name, $result->{version} );
         $need_dlopen{$name} = is_xs( $manifest );
         $license_files{$name} = find_license_files( $manifest );
-        my @deps_build = ();
-        my @deps_runtime = ();
-        my $mb;
+        my %build = ();
+        my %runtime = ();
+        my %optional = ();
         foreach my $dep (@{$result->{dependency}}) {
             my $modname = ${$dep}{module};
-            $mb = 1 if $modname eq q{Module::Build};
-            # Module::Build has a special treatment, because it is a core module,
-            # but some module require a very recent version of it
             next if $modname eq q{perl};
             next if $modname =~ m|^Alien|;
             next if $modname =~ m|^Win32|;
-            next if !$test && $modname =~ m|^Test|; 
-            next if Module::CoreList::first_release( $modname );
+            next if !($test && $top) && $modname =~ m|^Test|;
+            next if Module::CoreList::is_core( $modname, undef, $] );
             # we could use the host Module::CoreList data, because host perl and
             # target perl have the same major version
             next if ${$dep}{phase} eq q{develop};
-            next if !$test && ${$dep}{phase} eq q{test};
-            next if !$recommend && ${$dep}{relationship} ne q{requires};
+            next if !($test && $top) && ${$dep}{phase} eq q{test};
             my $distname = $mcpan->module( $modname )->{distribution};
             if (${$dep}{phase} eq q{runtime}) {
-                push @deps_runtime, $distname;
+                if (${$dep}{relationship} eq q{requires}) {
+                    $runtime{$distname} = 1;
+                }
+                else {
+                    $optional{$distname} = 1 if $recommend && $top;
+                }
             }
             else { # configure, build
-                push @deps_build, $distname;
+                $build{$distname} = 1;
             }
         }
-        unshift @deps_build, q{Module-Build} if $mb;
-        $deps_build{$name} = \@deps_build;
-        $deps_runtime{$name} = \@deps_runtime;
-        foreach my $distname (@deps_build) {
+        $deps_build{$name} = [keys %build];
+        $deps_runtime{$name} = [keys %runtime];
+        $deps_optional{$name} = [keys %optional];
+        foreach my $distname (@{$deps_build{$name}}) {
             fetch( $distname, 0, 1 );
         }
-        foreach my $distname (@deps_runtime) {
+        foreach my $distname (@{$deps_runtime{$name}}) {
             fetch( $distname, $need_target, $need_host );
             $need_dlopen{$name} ||= $need_dlopen{$distname};
+        }
+        foreach my $distname (@{$deps_optional{$name}}) {
+            fetch( $distname, $need_target, $need_host );
         }
     }
     return;
@@ -586,13 +621,14 @@ sub fetch {
 
 foreach my $distname (@ARGV) {
     # Command-line's distributions
-    fetch( $distname, !!$target, !!$host );
+    fetch( $distname, !!$target, !!$host, 1 );
 }
 say scalar keys %dist, q{ packages fetched.} unless $quiet;
 
 # Buildroot package name: lowercase
 sub fsname {
     my $name = shift;
+    $name =~ s|_|-|g;
     return q{perl-} . lc $name;
 }
 
@@ -608,6 +644,7 @@ while (my ($distname, $dist) = each %dist) {
     my $dirname = q{package/} . $fsname;
     my $cfgname = $dirname . q{/Config.in};
     my $mkname = $dirname . q{/} . $fsname . q{.mk};
+    my $hashname = $dirname . q{/} . $fsname . q{.hash};
     my $brname = brname( $fsname );
     mkdir $dirname unless -d $dirname;
     if ($need_target{$distname} && ($force || !-f $cfgname)) {
@@ -617,7 +654,7 @@ while (my ($distname, $dist) = each %dist) {
         open my $fh, q{>}, $cfgname;
         say {$fh} qq{config BR2_PACKAGE_${brname}};
         say {$fh} qq{\tbool "${fsname}"};
-        say {$fh} qq{\tdepends on !BR2_PREFER_STATIC_LIB} if $need_dlopen{$distname};
+        say {$fh} qq{\tdepends on !BR2_STATIC_LIBS} if $need_dlopen{$distname};
         foreach my $dep (sort @{$deps_runtime{$distname}}) {
             my $brdep = brname( fsname( $dep ) );
             say {$fh} qq{\tselect BR2_PACKAGE_${brdep}};
@@ -627,7 +664,7 @@ while (my ($distname, $dist) = each %dist) {
         say {$fh} qq{\t  ${homepage}};
         if ($need_dlopen{$distname}) {
             say {$fh} qq{\ncomment "${fsname} needs a toolchain w/ dynamic library"};
-            say {$fh} qq{\tdepends on BR2_PREFER_STATIC_LIB};
+            say {$fh} qq{\tdepends on BR2_STATIC_LIBS};
         }
         close $fh;
     }
@@ -639,11 +676,9 @@ while (my ($distname, $dist) = each %dist) {
         # the auth part is not used, because we use $(BR2_CPAN_MIRROR)
         my($filename, $directories, $suffix) = fileparse( $path, q{tar.gz}, q{tgz} );
         $directories =~ s|/$||;
-        my $dependencies = join q{ }, qw( = perl ),
-                                      map( { q{host-} . fsname( $_ ); } sort @{$deps_build{$distname}} ),
+        my $dependencies = join q{ }, map( { q{host-} . fsname( $_ ); } sort @{$deps_build{$distname}} ),
                                       map( { fsname( $_ ); } sort @{$deps_runtime{$distname}} );
-        my $host_dependencies = join q{ }, qw( = ),
-                                           map { q{host-} . fsname( $_ ); } sort( @{$deps_build{$distname}},
+        my $host_dependencies = join q{ }, map { q{host-} . fsname( $_ ); } sort( @{$deps_build{$distname}},
                                                                                   @{$deps_runtime{$distname}} );
         my $license = ref $dist->{license} eq 'ARRAY'
                     ? join q{ or }, @{$dist->{license}}
@@ -666,13 +701,33 @@ while (my ($distname, $dist) = each %dist) {
         say {$fh} qq{${brname}_VERSION = ${version}};
         say {$fh} qq{${brname}_SOURCE = ${distname}-\$(${brname}_VERSION).${suffix}};
         say {$fh} qq{${brname}_SITE = \$(BR2_CPAN_MIRROR)${directories}};
-        say {$fh} qq{${brname}_DEPENDENCIES ${dependencies}} if $need_target{$distname};
-        say {$fh} qq{HOST_${brname}_DEPENDENCIES ${host_dependencies}} if $need_host{$distname};
+        say {$fh} qq{${brname}_DEPENDENCIES = ${dependencies}} if $need_target{$distname} && $dependencies;
+        say {$fh} qq{HOST_${brname}_DEPENDENCIES = ${host_dependencies}} if $need_host{$distname} && $host_dependencies;
         say {$fh} qq{${brname}_LICENSE = ${license}} if $license && $license ne q{unknown};
         say {$fh} qq{${brname}_LICENSE_FILES = ${license_files}} if $license_files;
         say {$fh} qq{};
+        foreach (sort @{$deps_optional{$distname}}) {
+            next if grep { $_ eq $distname; } @{$deps_runtime{$_}};     # avoid cyclic dependencies
+            my $opt_brname = brname( $_ );
+            my $opt_fsname = fsname( $_ );
+            say {$fh} qq{ifeq (\$(BR2_PACKAGE_PERL_${opt_brname}),y)};
+            say {$fh} qq{${brname}_DEPENDENCIES += ${opt_fsname}};
+            say {$fh} qq{endif};
+            say {$fh} qq{};
+        }
         say {$fh} qq{\$(eval \$(perl-package))} if $need_target{$distname};
         say {$fh} qq{\$(eval \$(host-perl-package))} if $need_host{$distname};
+        close $fh;
+    }
+    if ($force || !-f $hashname) {
+        my($checksum, $filename) = get_checksum($dist->{download_url});
+        my $md5 = $checksum->{md5};
+        my $sha256 = $checksum->{sha256};
+        say qq{write ${hashname}} unless $quiet;
+        open my $fh, q{>}, $hashname;
+        say {$fh} qq{# retrieved by scancpan from http://cpan.metacpan.org/};
+        say {$fh} qq{md5    ${md5} ${filename}};
+        say {$fh} qq{sha256 ${sha256} ${filename}};
         close $fh;
     }
 }
@@ -703,10 +758,6 @@ __END__
 support/scripts/scancpan Try-Tiny Moo
 
 =head1 SYNOPSIS
-
-curl -kL http://install.perlbrew.pl | bash
-
-perlbrew install perl-5.18.2
 
 supports/scripts/scancpan [options] [distname ...]
 
@@ -777,7 +828,7 @@ in order to work with the right CoreList data.
 
 =head1 LICENSE
 
-Copyright (C) 2013-2014 by Francois Perrad <francois.perrad@gadz.org>
+Copyright (C) 2013-2016 by Francois Perrad <francois.perrad@gadz.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
