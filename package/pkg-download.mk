@@ -227,7 +227,7 @@ endef
 
 define DOWNLOAD_INNER
 	$(Q)if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
-		$(call $(DL_MODE)_WGET,$(BR2_ARTIFACTORY_URL)$(BR2_ARTIFACTORY_REPO)/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/$(2),$(2)) ; \
+		$(call $(3)_WGET,$(BR2_ARTIFACTORY_URL)$(BR2_ARTIFACTORY_REPO)/$($(PKG)_RAWNAME)/$($(PKG)_VERSION)/$(2),$(2)) ; \
 		DOWNLOAD_FETCH_FAILED=$$? ; \
 		if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
 			echo " - Downloaded $(2) from artifactory" ; \
@@ -236,37 +236,29 @@ define DOWNLOAD_INNER
 			echo " - Failed to find $(2) on artifactory" ; \
 		fi ; \
 	fi ; \
-	$(Q)$(if $(filter bzr cvs git hg svn,$($(PKG)_SITE_METHOD)),export BR_NO_CHECK_HASH_FOR=$(2);) \
+	$(if $(filter bzr cvs git hg svn,$($(PKG)_SITE_METHOD)),export BR_NO_CHECK_HASH_FOR=$(2);) \
 	if test -n "$(call qstrip,$(BR2_PRIMARY_SITE))" ; then \
 		case "$(call geturischeme,$(BR2_PRIMARY_SITE))" in \
-			file) $(call $(3)_LOCALFILES,$(BR2_PRIMARY_SITE)/$(2),$(2)) && exit ;; \
-			scp) $(call $(3)_SCP,$(BR2_PRIMARY_SITE)/$(2),$(2)) && exit ;; \
-			*) $(call $(3)_WGET,$(BR2_PRIMARY_SITE)/$(subst ?,%3F,$(2)),$(2)) && exit ;; \
+			file) $(call $(3)_LOCALFILES,$(BR2_PRIMARY_SITE)/$(2),$(2)) ;; \
+			scp) $(call $(3)_SCP,$(BR2_PRIMARY_SITE)/$(2),$(2)) ;; \
+			*) $(call $(3)_WGET,$(BR2_PRIMARY_SITE)/$(subst ?,%3F,$(2)),$(2)) ;; \
 		esac ; \
 		DOWNLOAD_FETCH_FAILED=$$? ; \
-		if test "$(BR2_PRIMARY_SITE_ONLY)" = "y" ; then \
-			exit 1 ; \
-		fi ; \
 	fi ; \
 	if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
 		echo " - Downloaded from PRIMARY SITE ($(BR2_PRIMARY_SITE))" ; \
 	else \
 		echo " - Failed to find on PRIMARY SITE ($(BR2_PRIMARY_SITE))" ; \
 		if test -n "$(1)" ; then \
-			if test -z "$($(PKG)_SITE_METHOD)" ; then \
-				scheme="$(call geturischeme,$(1))" ; \
-			else \
-				scheme="$($(PKG)_SITE_METHOD)" ; \
-			fi ; \
-			case "$$scheme" in \
-				git) $($(DL_MODE)_GIT) ;; \
-				svn) $($(DL_MODE)_SVN) ;; \
-				cvs) $($(DL_MODE)_CVS) ;; \
-				bzr) $($(DL_MODE)_BZR) ;; \
-				file) $($(DL_MODE)_LOCALFILES) ;; \
-				scp) $($(DL_MODE)_SCP) ;; \
-				hg) $($(DL_MODE)_HG) ;; \
-				*) $(call $(DL_MODE)_WGET,$(1),$(2)) ;; \
+			case "$($(PKG)_SITE_METHOD)" in \
+				git) $($(3)_GIT) ;; \
+				svn) $($(3)_SVN) ;; \
+				cvs) $($(3)_CVS) ;; \
+				bzr) $($(3)_BZR) ;; \
+				file) $($(3)_LOCALFILES) ;; \
+				scp) $($(3)_SCP) ;; \
+				hg) $($(3)_HG) ;; \
+				*) $(call $(3)_WGET,$(1),$(2)) ;; \
 			esac ; \
 			DOWNLOAD_FETCH_FAILED=$$? ; \
 			if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
@@ -274,7 +266,7 @@ define DOWNLOAD_INNER
 			else \
 				echo " - Failed to find on PKG's SITE" ; \
 				if test -n "$(call qstrip,$(BR2_BACKUP_SITE))" ; then \
-					$(call $(DL_MODE)_WGET,$(BR2_BACKUP_SITE)/$(2),$(2)) ; \
+					$(call $(3)_WGET,$(BR2_BACKUP_SITE)/$(subst ?,%3F,$(2)),$(2)) ; \
 					DOWNLOAD_FETCH_FAILED=$$? ; \
 				fi ; \
 				if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
@@ -284,21 +276,6 @@ define DOWNLOAD_INNER
 				fi ; \
 			fi ; \
 		fi ; \
-	fi ; \
-	if test -n "$(1)" ; then \
-		case "$($(PKG)_SITE_METHOD)" in \
-			git) $($(3)_GIT) && exit ;; \
-			svn) $($(3)_SVN) && exit ;; \
-			cvs) $($(3)_CVS) && exit ;; \
-			bzr) $($(3)_BZR) && exit ;; \
-			file) $($(3)_LOCALFILES) && exit ;; \
-			scp) $($(3)_SCP) && exit ;; \
-			hg) $($(3)_HG) && exit ;; \
-			*) $(call $(3)_WGET,$(1),$(2)) && exit ;; \
-		esac ; \
-	fi ; \
-	if test -n "$(call qstrip,$(BR2_BACKUP_SITE))" ; then \
-		$(call $(3)_WGET,$(BR2_BACKUP_SITE)/$(subst ?,%3F,$(2)),$(2)) && exit ; \
 	fi ; \
 	if test $$DOWNLOAD_FETCH_FAILED -eq 0 ; then \
 		if test -n "$(call qstrip,$(BR2_ARTIFACTORY_URL))" ; then \
