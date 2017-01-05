@@ -11,15 +11,15 @@ diff --git a/libgupnp-av/gupnp-didl-lite-parser.c b/libgupnp-av/gupnp-didl-lite-
 index c11340e..4d3fc49 100644
 --- a/libgupnp-av/gupnp-didl-lite-parser.c
 +++ b/libgupnp-av/gupnp-didl-lite-parser.c
-@@ -352,15 +352,6 @@ parse_elements (GUPnPDIDLLiteParser *parser,
+@@ -356,15 +356,6 @@
                          }
                  } else if (GUPNP_IS_DIDL_LITE_ITEM (object)) {
                          node = gupnp_didl_lite_object_get_xml_node (object);
 -                        if (!verify_didl_attributes (node)) {
 -                                g_object_unref (object);
 -                                g_set_error (error,
--                                             GUPNP_XML_ERROR,
--                                             GUPNP_XML_ERROR_INVALID_ATTRIBUTE,
+-                                             G_MARKUP_ERROR,
+-                                             G_MARKUP_ERROR_PARSE,
 -                                             "Could not parse DIDL-Lite XML");
 -
 -                                return FALSE;
@@ -27,6 +27,3 @@ index c11340e..4d3fc49 100644
  
                          g_signal_emit (parser,
                                         signals[ITEM_AVAILABLE],
--- 
-1.9.1
-
