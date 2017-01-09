@@ -4,15 +4,15 @@
 #
 ################################################################################
 
-CONNMAN_VERSION = 1.33
-CONNMAN_SOURCE = connman-$(CONNMAN_VERSION).tar.xz
-CONNMAN_SITE = $(BR2_KERNEL_MIRROR)/linux/network/connman
+CONNMAN_VERSION = 098def9d68
+CONNMAN_SITE = $(call github,raumfeld,connman,$(CONNMAN_VERSION))
+CONNMAN_SITE_METHOD = git
 CONNMAN_DEPENDENCIES = libglib2 dbus iptables
+CONNMAN_AUTORECONF = YES
 CONNMAN_INSTALL_STAGING = YES
 CONNMAN_LICENSE = GPLv2
 CONNMAN_LICENSE_FILES = COPYING
 CONNMAN_CONF_OPTS += \
-	--with-dbusconfdir=/etc \
 	$(if $(BR2_PACKAGE_CONNMAN_DEBUG),--enable-debug,--disable-debug)		\
 	$(if $(BR2_PACKAGE_CONNMAN_ETHERNET),--enable-ethernet,--disable-ethernet)	\
 	$(if $(BR2_PACKAGE_CONNMAN_WIFI),--enable-wifi,--disable-wifi)			\
@@ -50,5 +50,13 @@ CONNMAN_POST_INSTALL_TARGET_HOOKS += CONNMAN_INSTALL_CM
 else
 CONNMAN_CONF_OPTS += --disable-client
 endif
+
+define CONNMAN_INSTALL_TARGET_FIXUP
+        mkdir -p $(TARGET_DIR)/var/lib
+        rm -rf $(TARGET_DIR)/var/lib/conmman
+        ln -sf /tmp/connman $(TARGET_DIR)/var/lib/connman
+endef
+
+CONNMAN_POST_INSTALL_TARGET_HOOKS += CONNMAN_INSTALL_TARGET_FIXUP
 
 $(eval $(autotools-package))
