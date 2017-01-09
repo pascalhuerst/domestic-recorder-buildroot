@@ -164,7 +164,7 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     esac
 
     echo "Rebooting ..."
-    reboot
+    reboot -f
 
 elif [ "$(grep ip= /proc/cmdline)" ]; then
     tftp_server=`cat /proc/cmdline | cut -d" " -f3 | cut -d"=" -f2`
