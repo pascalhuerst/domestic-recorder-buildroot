@@ -1,0 +1,36 @@
+From 57a5856d6c4e7d073440c535cc17f7e75ebe1505 Mon Sep 17 00:00:00 2001
+From: Oliver Tappe <zooey@hirschkaefer.de>
+Date: Tue, 10 Jan 2017 15:36:09 +0100
+Subject: [PATCH 1/3] Don't look for id3v1 tags if id3v2 tags have been found.
+
+---
+ taglib/mpeg/mpegfile.cpp | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/taglib/mpeg/mpegfile.cpp b/taglib/mpeg/mpegfile.cpp
+index af7253f..94e64b6 100644
+--- a/taglib/mpeg/mpegfile.cpp
++++ b/taglib/mpeg/mpegfile.cpp
+@@ -451,13 +451,14 @@ void MPEG::File::read(bool readProperties)
+     d->tag.set(ID3v2Index, new ID3v2::Tag(this, d->ID3v2Location, d->ID3v2FrameFactory));
+     d->ID3v2OriginalSize = ID3v2Tag()->header()->completeTagSize();
+   }
++  else {
++    // Look for an ID3v1 tag
+ 
+-  // Look for an ID3v1 tag
++    d->ID3v1Location = Utils::findID3v1(this);
+ 
+-  d->ID3v1Location = Utils::findID3v1(this);
+-
+-  if(d->ID3v1Location >= 0)
+-    d->tag.set(ID3v1Index, new ID3v1::Tag(this, d->ID3v1Location));
++    if(d->ID3v1Location >= 0)
++      d->tag.set(ID3v1Index, new ID3v1::Tag(this, d->ID3v1Location));
++  }
+ 
+   // Look for an APE tag
+ 
+-- 
+2.7.4
+

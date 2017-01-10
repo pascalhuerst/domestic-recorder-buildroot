@@ -1,0 +1,26 @@
+From 5d5ec7f4bd0e2cbf053a074791a2b1763c168c75 Mon Sep 17 00:00:00 2001
+From: Oliver Tappe <zooey@hirschkaefer.de>
+Date: Tue, 10 Jan 2017 15:50:14 +0100
+Subject: [PATCH 3/3] fixed-packet-in-pages-logic
+
+---
+ taglib/ogg/oggpage.cpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/taglib/ogg/oggpage.cpp b/taglib/ogg/oggpage.cpp
+index 75aea22..7158731 100644
+--- a/taglib/ogg/oggpage.cpp
++++ b/taglib/ogg/oggpage.cpp
+@@ -108,6 +108,9 @@ Ogg::Page::ContainsPacketFlags Ogg::Page::containsPacket(int index) const
+   if(index == lastPacketIndex)
+     flags = ContainsPacketFlags(flags | EndsWithPacket);
+ 
++  if(index < lastPacketIndex)
++    flags = ContainsPacketFlags(flags | CompletePacket);
++
+   // If there's only one page and it's complete:
+ 
+   if(packetCount() == 1 &&
+-- 
+2.7.4
+
