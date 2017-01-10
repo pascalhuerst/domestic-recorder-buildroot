@@ -1,8 +1,0 @@
-config BR2_ISO_CODES
-	bool "iso-codes"
-	select BR2_PACKAGE_GETTEXT if BR2_NEEDS_GETTEXT_IF_LOCALE
-	help
-	  The iso-codes package provides lists of various ISO standards
-	  (e.g. country, language, language scripts, and currency names).
-
-	  http://pkg-isocodes.alioth.debian.org/
