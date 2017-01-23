@@ -1,0 +1,30 @@
+From 421fada486b3f212e0ec30ff630740b5412d4c5a Mon Sep 17 00:00:00 2001
+From: Slobodan Vukanovic <slobodan.vukanovic@teufel.de>
+Date: Mon, 23 Jan 2017 17:45:03 +0100
+Subject: [PATCH] Skip check for bitrate when parsing mpeg headers
+
+* Indexing performance on broken (but playable) mp3s degrades if this
+  check is left in place
+---
+ taglib/mpeg/mpegheader.cpp | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/taglib/mpeg/mpegheader.cpp b/taglib/mpeg/mpegheader.cpp
+index e678f15..f3384cf 100644
+--- a/taglib/mpeg/mpegheader.cpp
++++ b/taglib/mpeg/mpegheader.cpp
+@@ -244,11 +244,6 @@ void MPEG::Header::parse(File *file, long offset, bool checkLength)
+ 
+   d->bitrate = bitrates[versionIndex][layerIndex][bitrateIndex];
+ 
+-  if(d->bitrate == 0) {
+-    debug("MPEG::Header::parse() -- Invalid bit rate.");
+-    return;
+-  }
+-
+   // Set the sample rate
+ 
+   static const int sampleRates[3][4] = {
+-- 
+2.9.3
+
