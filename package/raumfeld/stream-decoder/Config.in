@@ -2,9 +2,6 @@ config BR2_PACKAGE_STREAM_DECODER
 	bool "stream-decoder"
 	select BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_GSTREAMER1
-	select BR2_PACKAGE_GST1_PLUGINS_GOOD
-	select BR2_PACKAGE_GST1_PLUGINS_UGLY
-        select BR2_PACKAGE_GST1_LIBAV
 	select BR2_PACKAGE_LIBSOUP
 	help
 	  The stream decoder software
