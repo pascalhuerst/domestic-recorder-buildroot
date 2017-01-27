@@ -1,0 +1,52 @@
+From 35fd562312ac77b7c5229016d3cc6e1acfcf059a Mon Sep 17 00:00:00 2001
+From: Sven Neumann <neumann@teufel.de>
+Date: Thu, 19 Jan 2017 13:12:01 +0100
+Subject: [PATCH] service-proxy: unconditionally remove server handler in
+ dispose
+
+The handler installed on the SoupServer owned by the GUPnPContext
+needs to be removed when the GUPnPServiceProxy is disposed. This
+happens in the unsubscribe method, but this method is only called
+unconditionally. If a subscription request is in progress, then
+the proxy is not subscribed, but it has already installed a
+handler. So make sure that this handler is removed under all
+circumstances.
+
+Signed-off-by: Sven Neumann <neumann@teufel.de>
+---
+ libgupnp/gupnp-service-proxy.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/libgupnp/gupnp-service-proxy.c b/libgupnp/gupnp-service-proxy.c
+index 3c32588..fbd7133 100644
+--- a/libgupnp/gupnp-service-proxy.c
++++ b/libgupnp/gupnp-service-proxy.c
+@@ -289,6 +289,17 @@ gupnp_service_proxy_dispose (GObject *object)
+                 proxy->priv->subscribed = FALSE;
+         }
+ 
++	context = gupnp_service_info_get_context (GUPNP_SERVICE_INFO (proxy));
++
++	/* Remove server handler */
++	if (context)
++	{
++		SoupServer *server;
++
++		server = gupnp_context_get_server (context);
++		soup_server_remove_handler (server, proxy->priv->path);
++	}
++
+         /* Cancel pending actions */
+         while (proxy->priv->pending_actions) {
+                 GUPnPServiceProxyAction *action;
+@@ -302,7 +313,6 @@ gupnp_service_proxy_dispose (GObject *object)
+         }
+ 
+         /* Cancel pending messages */
+-        context = gupnp_service_info_get_context (GUPNP_SERVICE_INFO (proxy));
+         if (context)
+                 session = gupnp_context_get_session (context);
+         else
+-- 
+2.9.3
+
