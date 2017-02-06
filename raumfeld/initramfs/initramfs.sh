@@ -117,6 +117,20 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
             umount /mnt
             ;;
 
+        i.MX7)
+            umount /update
+
+            flash_erase /dev/mtd4 0 0
+            nandwrite --pad /dev/mtd4 /mnt/boot/uImage.FIT
+            rm /mnt/boot/uImage.FIT
+
+            # TODO: Add the code to flash MCU firmware
+            # MCU firmware will be different for each speaker device, so select appropriate firmware file from the update image
+            # MCU must be brought to "SOM UPGRADE" state before start downloading the firmware
+
+            umount /mnt
+            ;;
+
         armada)
             umount /update
 
