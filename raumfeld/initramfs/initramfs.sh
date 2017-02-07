@@ -15,7 +15,7 @@ offset="5128192"  # default value
 case "$hw" in
     i.MX7)
         img="imx7.img"
-        offset="12853248"
+        offset="12591104"
         echo "i.MX7 hardware detected"
 	;;
     AM33XX)
@@ -114,6 +114,20 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     case "$arch" in
         arm)
             umount /update
+            umount /mnt
+            ;;
+
+        i.MX7)
+            umount /update
+
+            flash_erase /dev/mtd4 0 0
+            nandwrite --pad /dev/mtd4 /mnt/boot/uImage.FIT
+            rm /mnt/boot/uImage.FIT
+
+            # TODO: Add the code to flash MCU firmware
+            # MCU firmware will be different for each speaker device, so select appropriate firmware file from the update image
+            # MCU must be brought to "SOM UPGRADE" state before start downloading the firmware
+
             umount /mnt
             ;;
 
