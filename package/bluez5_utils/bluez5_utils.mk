@@ -38,6 +38,13 @@ else
 BLUEZ5_UTILS_CONF_OPTS += --disable-experimental
 endif
 
+ifeq ($(BR2_PACKAGE_BLUEZ5_TOOLS_BDADDR),y)
+define BLUEZ5_UTILS_INSTALL_BDADDR
+	$(INSTALL) -D -m 0755 $(@D)/tools/bdaddr $(TARGET_DIR)/usr/bin/bdaddr
+endef
+BLUEZ5_UTILS_POST_INSTALL_TARGET_HOOKS += BLUEZ5_UTILS_INSTALL_BDADDR
+endif
+
 # enable sixaxis plugin
 ifeq ($(BR2_PACKAGE_BLUEZ5_PLUGINS_SIXAXIS),y)
 BLUEZ5_UTILS_CONF_OPTS += --enable-sixaxis
