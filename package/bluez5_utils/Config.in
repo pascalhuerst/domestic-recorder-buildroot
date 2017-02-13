@@ -61,6 +61,12 @@ config BR2_PACKAGE_BLUEZ5_UTILS_EXPERIMENTAL
 	help
 	  Build BlueZ 5.x experimental plugins (SAP, NFC, ...).
 
+config BR2_PACKAGE_BLUEZ5_TOOLS_BDADDR
+	bool "install bdaddr tool"
+	depends on BR2_PACKAGE_BLUEZ5_UTILS_EXPERIMENTAL
+	help
+	  The "bdaddr" tool is used for changing the Bluetooth device address.
+
 config BR2_PACKAGE_BLUEZ5_PLUGINS_SIXAXIS
 	bool "build sixaxis plugin"
 	depends on BR2_PACKAGE_HAS_UDEV
