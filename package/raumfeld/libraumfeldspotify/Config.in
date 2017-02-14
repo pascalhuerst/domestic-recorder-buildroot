@@ -1,0 +1,8 @@
+config BR2_PACKAGE_LIBRAUMFELDSPOTIFY
+	bool "libraumfeldspotify"
+	select BR2_PACKAGE_LIBRAUMFELDCPP
+        select BR2_PACKAGE_SPOTIFY_EMBEDDED
+	help
+	  libraumfeldspotify are the Raumfeld Spotify bindings
+
+	  http://www.raumfeld.com/
