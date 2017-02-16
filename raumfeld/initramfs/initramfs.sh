@@ -14,7 +14,7 @@ offset="5128192"  # default value
 
 case "$hw" in
     i.MX7)
-        img="imx7.img"
+        img="speaker3.img"
         offset="12591104"
         echo "i.MX7 hardware detected"
 	;;
