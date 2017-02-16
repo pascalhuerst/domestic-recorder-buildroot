@@ -1,0 +1,9 @@
+config BR2_PACKAGE_MCUD
+	bool "mcud"
+	select BR2_PACKAGE_LIBRAUMFELDCPP
+	select BR2_PACKAGE_SOCAT
+	help
+	  Raumfeld mcud next generation
+
+	  http://www.raumfeld.com/
+
