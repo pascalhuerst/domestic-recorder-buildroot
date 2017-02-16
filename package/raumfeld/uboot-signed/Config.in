@@ -1,0 +1,20 @@
+menuconfig BR2_PACKAGE_UBOOT_SIGNED
+	bool "uboot-signed"
+	depends on BR2_TARGET_UBOOT
+	help
+	  Pulls the certificates from our repository and sign the u-boot.imx
+          binary using them.
+
+	  http://www.raumfeld.com/
+
+if BR2_PACKAGE_UBOOT_SIGNED
+
+config BR2_PACKAGE_RAUMFELD_CST_REPOSITORY
+        string "git repository that holds the signing tools"
+        default "ssh://git@sources.teufelhome.com/rus/u-boot-signing.git"
+
+config BR2_PACKAGE_RAUMFELD_CST_VERSION
+        string "version or branch to check out from the git repository"
+        default "master"
+
+endif
