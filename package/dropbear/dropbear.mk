@@ -92,8 +92,11 @@ define DROPBEAR_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 755 $(@D)/dropbearmulti $(TARGET_DIR)/usr/sbin/dropbear
 	for f in $(DROPBEAR_TARGET_BINS); do \
 		ln -snf ../sbin/dropbear $(TARGET_DIR)/usr/bin/$$f ; \
-	done
-	ln -snf /var/run/dropbear $(TARGET_DIR)/etc/dropbear
+	done 
+	if [ -L $(TARGET_DIR)/etc/dropbear ]; then \
+		rm $(TARGET_DIR)/etc/dropbear; \
+	fi
+	mkdir -p $(TARGET_DIR)/etc/dropbear
 endef
 
 $(eval $(autotools-package))
