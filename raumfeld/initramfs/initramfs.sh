@@ -86,15 +86,9 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
     mkdir -p /update
 
     case "$arch" in
-        arm|armada)
+        arm|armada|i.MX7)
             mount -t ubifs -o rw ubi:RootFS /mnt
             mount -t ubifs -o ro ubi0:Updates /update
-            update=/update/$img
-            ;;
-        i.MX7)
-            mount -t ubifs -o rw ubi0:RootFS /mnt
-            /mnt/usr/sbin/ubiattach /dev/ubi_ctrl -d 1 -m 6
-            mount -t ubifs -o rw ubi1:Download /update
             update=/update/$img
             ;;
         geode)
