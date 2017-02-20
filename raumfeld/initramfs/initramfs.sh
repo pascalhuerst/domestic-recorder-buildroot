@@ -14,6 +14,7 @@ offset="5128192"  # default value
 
 case "$hw" in
     i.MX7)
+        arch="i.MX7"
         img="speaker3.img"
         offset="12591104"
         echo "i.MX7 hardware detected"
@@ -88,6 +89,12 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
         arm|armada)
             mount -t ubifs -o rw ubi:RootFS /mnt
             mount -t ubifs -o ro ubi0:Updates /update
+            update=/update/$img
+            ;;
+        i.MX7)
+            mount -t ubifs -o rw ubi0:RootFS /mnt
+            /mnt/usr/sbin/ubiattach /dev/ubi_ctrl -d 1 -m 6
+            mount -t ubifs -o rw ubi1:Download /update
             update=/update/$img
             ;;
         geode)
