@@ -91,6 +91,12 @@ if [ "$(grep raumfeld-update /proc/cmdline)" ]; then
             mount -t ubifs -o ro ubi0:Updates /update
             update=/update/$img
             ;;
+        i.MX7)
+            mount -t ubifs -o rw ubi0:RootFS /mnt
+            /mnt/usr/sbin/ubiattach /dev/ubi_ctrl -d 1 -m 6
+            mount -t ubifs -o rw ubi1:Download /update
+            update=/update/$img
+            ;;
         geode)
             mount -t ext3 -o rw,data=writeback /dev/hda2 /mnt
             mount -t ext3 -o rw,data=writeback /dev/hda1 /mnt/boot
