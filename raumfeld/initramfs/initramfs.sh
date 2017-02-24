@@ -203,7 +203,7 @@ elif [ "$(grep ip= /proc/cmdline)" ]; then
 	    exit 1
     fi
 
-    losetup /dev/loop0 /tmp/$rootfs_img
+    losetup -o 8192 /dev/loop0 /tmp/$rootfs_img
 
     mkdir /rootfs
     mount -t ext2 -o ro /dev/loop0 /rootfs
