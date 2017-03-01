@@ -14,14 +14,24 @@ config BR2_PACKAGE_HOSTAPD
 
 if BR2_PACKAGE_HOSTAPD
 
+config BR2_PACKAGE_HOSTAPD_ACS
+	bool "Enable ACS"
+	default y
+	help
+	  Enable support for standard ACS (Automatic Channel Selection).
+	  Some propietary drivers use a custom algorithm which requires
+	  channel to be set to '0' (which enables ACS in the config),
+	  causing hostapd to use the standard one which doesn't work
+	  for those cases.
+
 config BR2_PACKAGE_HOSTAPD_EAP
 	bool "Enable EAP"
-	depends on !BR2_PREFER_STATIC_LIB
+	depends on !BR2_STATIC_LIBS
 	help
 	  Enable support for EAP and RADIUS.
 
 comment "hostapd EAP needs a toolchain w/ dynamic library"
-	depends on BR2_PREFER_STATIC_LIB
+	depends on BR2_STATIC_LIBS
 
 config BR2_PACKAGE_HOSTAPD_WPS
 	bool "Enable WPS"

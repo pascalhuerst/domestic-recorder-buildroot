@@ -4,42 +4,39 @@
 #
 ################################################################################
 
-IMAGEMAGICK_VERSION = 6.8.9-9
+IMAGEMAGICK_VERSION = 7.0.3-8
 IMAGEMAGICK_SOURCE = ImageMagick-$(IMAGEMAGICK_VERSION).tar.xz
-# The official ImageMagick site only keeps the latest versions
-# available, which is annoying. Use an alternate site that keeps all
-# older versions.
-IMAGEMAGICK_SITE = ftp://ftp.nluug.nl/pub/ImageMagick
+IMAGEMAGICK_SITE = http://www.imagemagick.org/download/releases
 IMAGEMAGICK_LICENSE = Apache-2.0
 IMAGEMAGICK_LICENSE_FILES = LICENSE
 
 IMAGEMAGICK_INSTALL_STAGING = YES
 IMAGEMAGICK_CONFIG_SCRIPTS = \
-	$(addsuffix -config,Magick MagickCore MagickWand Wand)
+	$(addsuffix -config,MagickCore MagickWand)
 
 ifeq ($(BR2_INSTALL_LIBSTDCPP)$(BR2_USE_WCHAR),yy)
 IMAGEMAGICK_CONFIG_SCRIPTS += Magick++-config
 endif
 
-ifeq ($(BR2_LARGEFILE),y)
 IMAGEMAGICK_CONF_ENV = ac_cv_sys_file_offset_bits=64
-else
-IMAGEMAGICK_CONF_ENV = ac_cv_sys_file_offset_bits=32
-endif
 
-IMAGEMAGICK_CONF_OPTS = --program-transform-name='s,,,' \
-		--disable-openmp \
-		--without-perl \
-		--without-wmf \
-		--without-openexr \
-		--without-jp2 \
-		--without-jbig \
-		--without-gvc \
-		--without-djvu \
-		--without-dps \
-		--without-gslib \
-		--without-fpx \
-		--without-x
+IMAGEMAGICK_CONF_OPTS = \
+	--program-transform-name='s,,,' \
+	--disable-openmp \
+	--without-djvu \
+	--without-dps \
+	--without-flif \
+	--without-fpx \
+	--without-gslib \
+	--without-gvc \
+	--without-jbig \
+	--without-lqr \
+	--without-openexr \
+	--without-perl \
+	--without-raqm \
+	--without-wmf \
+	--without-x \
+	--with-gs-font-dir=/usr/share/fonts/gs
 
 IMAGEMAGICK_DEPENDENCIES = host-pkgconf
 
@@ -66,6 +63,13 @@ else
 IMAGEMAGICK_CONF_OPTS += --without-jpeg
 endif
 
+ifeq ($(BR2_PACKAGE_LCMS2),y)
+IMAGEMAGICK_CONF_OPTS += --with-lcms
+IMAGEMAGICK_DEPENDENCIES += lcms2
+else
+IMAGEMAGICK_CONF_OPTS += --without-lcms
+endif
+
 ifeq ($(BR2_PACKAGE_LIBPNG),y)
 IMAGEMAGICK_CONF_OPTS += --with-png
 IMAGEMAGICK_DEPENDENCIES += libpng
@@ -88,11 +92,25 @@ else
 IMAGEMAGICK_CONF_OPTS += --without-xml
 endif
 
+ifeq ($(BR2_PACKAGE_PANGO),y)
+IMAGEMAGICK_CONF_OPTS += --with-pango
+IMAGEMAGICK_DEPENDENCIES += pango
+else
+IMAGEMAGICK_CONF_OPTS += --without-pango
+endif
+
 ifeq ($(BR2_PACKAGE_TIFF),y)
 IMAGEMAGICK_CONF_OPTS += --with-tiff
 IMAGEMAGICK_DEPENDENCIES += tiff
 else
 IMAGEMAGICK_CONF_OPTS += --without-tiff
+endif
+
+ifeq ($(BR2_PACKAGE_XZ),y)
+IMAGEMAGICK_CONF_OPTS += --with-lzma
+IMAGEMAGICK_DEPENDENCIES += xz
+else
+IMAGEMAGICK_CONF_OPTS += --without-lzma
 endif
 
 ifeq ($(BR2_PACKAGE_FFTW),y)
@@ -102,6 +120,13 @@ IMAGEMAGICK_CONF_OPTS += --with-fftw
 IMAGEMAGICK_DEPENDENCIES += fftw
 else
 IMAGEMAGICK_CONF_OPTS += --without-fftw
+endif
+
+ifeq ($(BR2_PACKAGE_WEBP),y)
+IMAGEMAGICK_CONF_OPTS += --with-webp
+IMAGEMAGICK_DEPENDENCIES += webp
+else
+IMAGEMAGICK_CONF_OPTS += --without-webp
 endif
 
 ifeq ($(BR2_PACKAGE_ZLIB),y)

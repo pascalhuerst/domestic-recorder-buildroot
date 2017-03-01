@@ -11,14 +11,13 @@
       device_info->caps.flags    = 0;
 --- directfb-1.6.3/src/core/gfxcard.c.orig	2014-02-15 19:53:06.226708986 +0100
 +++ directfb-1.6.3/src/core/gfxcard.c	2014-02-15 19:58:10.118374114 +0100
-@@ -2675,7 +2675,9 @@
+@@ -2752,7 +2752,8 @@
            return;
       }
  
--     if (dfb_gfxcard_state_check_acquire( state, DFXL_BLIT ))
-+     if (rect->x < card->limits.src_max.w &&
-+	 rect->y < card->limits.src_max.h &&
-+	 dfb_gfxcard_state_check_acquire( state, DFXL_BLIT ))
+-     if (!dfb_config->task_manager &&
++     if (rect->x < card->limits.src_max.w && rect->y < card->limits.src_max.h &&
++         !dfb_config->task_manager &&
+          dfb_gfxcard_state_check_acquire( state, DFXL_BLIT ))
       {
            if (!D_FLAGS_IS_SET( card->caps.flags, CCF_CLIPPING ) &&
-               !D_FLAGS_IS_SET( card->caps.clip, DFXL_BLIT ))

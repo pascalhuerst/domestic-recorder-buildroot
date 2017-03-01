@@ -13,7 +13,7 @@ diff --git a/libgupnp/gupnp-control-point.c b/libgupnp/gupnp-control-point.c
 index 06a2dcb..63191d7 100644
 --- a/libgupnp/gupnp-control-point.c
 +++ b/libgupnp/gupnp-control-point.c
-@@ -463,7 +463,7 @@ description_loaded (GUPnPControlPoint *control_point,
+@@ -535,7 +535,7 @@
                                          "root",
                                          NULL);
          if (element == NULL) {
@@ -22,19 +22,25 @@ index 06a2dcb..63191d7 100644
                             " '%s'. Ignoring device '%s'\n",
                             description_url,
                             udn);
-@@ -554,9 +554,9 @@ got_description_url (SoupSession           *session,
+@@ -629,7 +629,7 @@
                          /* If no proxy was created, make sure doc is freed. */
                          g_object_unref (doc);
                  } else
 -                        g_warning ("Failed to parse %s", data->description_url);
 +                        g_message ("Failed to parse %s", data->description_url);
-         } else
--                g_warning ("Failed to GET %s: %s",
-+                g_message ("Failed to GET %s: %s",
-                            data->description_url,
-                            msg->reason_phrase);
  
-@@ -603,7 +603,7 @@ load_description (GUPnPControlPoint *control_point,
+                 get_description_url_data_free (data);
+         } else {
+@@ -641,7 +641,7 @@
+                 data->tries--;
+ 
+                 if (data->tries > 0) {
+-                        g_warning ("Failed to GET %s: %s, retrying in %d seconds",
++                        g_message ("Failed to GET %s: %s, retrying in %d seconds",
+                                    data->description_url,
+                                    msg->reason_phrase,
+                                    data->timeout);
+@@ -704,7 +704,7 @@
                  data->message = soup_message_new (SOUP_METHOD_GET,
                                                    description_url);
                  if (data->message == NULL) {
@@ -43,7 +49,7 @@ index 06a2dcb..63191d7 100644
                                     description_url);
  
                          g_slice_free (GetDescriptionURLData, data);
-@@ -646,7 +646,7 @@ parse_usn (const char *usn,
+@@ -768,7 +768,7 @@
  
          /* Verify we have a valid USN */
          if (strncmp (usn, "uuid:", strlen ("uuid:"))) {
@@ -52,7 +58,7 @@ index 06a2dcb..63191d7 100644
  
                  return FALSE;
          }
-@@ -700,7 +700,7 @@ parse_usn (const char *usn,
+@@ -822,7 +822,7 @@
          }
  
          if (*udn == NULL)
@@ -61,7 +67,7 @@ index 06a2dcb..63191d7 100644
  
          for (i = 0; i < count; i++) {
                  if ((bits[i] != *udn) &&
-@@ -725,7 +725,7 @@ gupnp_control_point_resource_available (GSSDPResourceBrowser *resource_browser,
+@@ -847,7 +847,7 @@
  
          /* Verify we have a location */
          if (!locations) {

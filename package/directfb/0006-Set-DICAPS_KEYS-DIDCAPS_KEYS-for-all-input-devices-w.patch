@@ -1,0 +1,49 @@
+From a5a61cc57f87cba09be09664720289374c9593f2 Mon Sep 17 00:00:00 2001
+From: Slobodan Vukanovic <slobodan.vukanovic@teufel.de>
+Date: Wed, 1 Feb 2017 13:25:00 +0100
+Subject: [PATCH] Set DICAPS_KEYS/DIDCAPS_KEYS for all input devices with
+ EV_KEY bit set
+
+* This reverts the patch with commit sha
+  c2a94d5c6eee5512b2c7e8d7ceb563e39943b1d5 (please refer to Changelog)
+
+* The change ensures that gpio-keys have been enumerated.
+---
+ inputdrivers/linux_input/linux_input.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
+
+diff --git a/inputdrivers/linux_input/linux_input.c b/inputdrivers/linux_input/linux_input.c
+index 7e9a6ad..e275762 100644
+--- a/inputdrivers/linux_input/linux_input.c
++++ b/inputdrivers/linux_input/linux_input.c
+@@ -1067,6 +1067,12 @@ get_device_info( int              fd,
+      if (test_bit( EV_KEY, evbit )) {
+           int i;
+ 
++#ifndef DIRECTFB_DISABLE_DEPRECATED
++          info->desc.caps |= DICAPS_KEYS;
++#else
++          info->desc.caps |= DIDCAPS_KEYS;
++#endif
++
+           /* get keyboard bits */
+           ioctl( fd, EVIOCGBIT(EV_KEY, sizeof(keybit)), keybit );
+ 
+@@ -1090,14 +1096,6 @@ get_device_info( int              fd,
+           for (i=BTN_MOUSE; i<BTN_JOYSTICK; i++)
+                if (test_bit( i, keybit ))
+                     num_buttons++;
+-
+-          if (num_keys || num_ext_keys)
+-#ifndef DIRECTFB_DISABLE_DEPRECATED
+-               info->desc.caps |= DICAPS_KEYS;
+-#else
+-               info->desc.caps |= DIDCAPS_KEYS;
+-#endif
+-
+      }
+ 
+      if (test_bit( EV_REL, evbit )) {
+-- 
+2.9.3
+

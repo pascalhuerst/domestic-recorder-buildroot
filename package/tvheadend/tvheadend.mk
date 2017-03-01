@@ -4,14 +4,25 @@
 #
 ################################################################################
 
-TVHEADEND_VERSION = c053acd84e5cc48a3e70047f228728bf039cfacd
+TVHEADEND_VERSION = 50a370707aedf5c127e92bb517c378aa8ac04657
 TVHEADEND_SITE = $(call github,tvheadend,tvheadend,$(TVHEADEND_VERSION))
 TVHEADEND_LICENSE = GPLv3+
 TVHEADEND_LICENSE_FILES = LICENSE.md
-TVHEADEND_DEPENDENCIES = host-pkgconf host-python openssl
+TVHEADEND_DEPENDENCIES = \
+	host-gettext \
+	host-pkgconf \
+	$(if $(BR2_PACKAGE_PYTHON3),host-python3,host-python) \
+	openssl
 
 ifeq ($(BR2_PACKAGE_AVAHI),y)
 TVHEADEND_DEPENDENCIES += avahi
+endif
+
+ifeq ($(BR2_PACKAGE_DBUS),y)
+TVHEADEND_DEPENDENCIES += dbus
+TVHEADEND_CONF_OPTS += --enable-dbus-1
+else
+TVHEADEND_CONF_OPTS += --disable-dbus-1
 endif
 
 ifeq ($(BR2_PACKAGE_FFMPEG),y)
@@ -28,34 +39,60 @@ else
 TVHEADEND_CONF_OPTS += --disable-dvbcsa
 endif
 
+ifeq ($(BR2_PACKAGE_LIBHDHOMERUN),y)
+TVHEADEND_DEPENDENCIES += libhdhomerun
+TVHEADEND_CONF_OPTS += --enable-hdhomerun_client
+else
+TVHEADEND_CONF_OPTS += --disable-hdhomerun_client
+endif
+
 ifeq ($(BR2_PACKAGE_LIBICONV),y)
 TVHEADEND_DEPENDENCIES += libiconv
 endif
 
+TVHEADEND_CFLAGS = $(TARGET_CFLAGS)
+ifeq ($(BR2_PACKAGE_LIBURIPARSER),y)
+TVHEADEND_DEPENDENCIES += liburiparser
+TVHEADEND_CFLAGS += $(if $(BR2_USE_WCHAR),,-DURI_NO_UNICODE)
+endif
+
 TVHEADEND_DEPENDENCIES += dtv-scan-tables
 
+# The tvheadend build system expects the transponder data to be present inside
+# its source tree. To prevent a download initiated by the build system just
+# copy the data files in the right place and add the corresponding stamp file.
+define TVHEADEND_INSTALL_DTV_SCAN_TABLES
+	$(INSTALL) -d $(@D)/data/dvb-scan
+	cp -r $(TARGET_DIR)/usr/share/dvb/* $(@D)/data/dvb-scan/
+	touch $(@D)/data/dvb-scan/.stamp
+endef
+TVHEADEND_PRE_CONFIGURE_HOOKS += TVHEADEND_INSTALL_DTV_SCAN_TABLES
+
 define TVHEADEND_CONFIGURE_CMDS
-	(cd $(@D);				\
-	 $(TARGET_CONFIGURE_OPTS)		\
-	 $(TARGET_CONFIGURE_ARGS)		\
-	 ./configure				\
-	 --prefix=/usr				\
-	 --arch="$(ARCH)"			\
-	 --cpu="$(BR2_GCC_TARGET_CPU)"		\
-	 --python="$(HOST_DIR)/usr/bin/python2"	\
-	 --disable-dvbscan			\
-	 --enable-bundle			\
-	 --disable-libffmpeg_static		\
-	 $(TVHEADEND_CONF_OPTS)			\
+	(cd $(@D);						\
+		$(TARGET_CONFIGURE_OPTS)			\
+		$(TARGET_CONFIGURE_ARGS)			\
+		CFLAGS="$(TVHEADEND_CFLAGS)"			\
+		./configure					\
+			--prefix=/usr				\
+			--arch="$(ARCH)"			\
+			--cpu="$(BR2_GCC_TARGET_CPU)"		\
+			--nowerror				\
+			--python="$(HOST_DIR)/usr/bin/python"	\
+			--enable-dvbscan			\
+			--enable-bundle				\
+			--disable-ffmpeg_static			\
+			--disable-hdhomerun_static		\
+			$(TVHEADEND_CONF_OPTS)			\
 	)
 endef
 
 define TVHEADEND_BUILD_CMDS
-	$(MAKE) -C $(@D)
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)
 endef
 
 define TVHEADEND_INSTALL_TARGET_CMDS
-	$(MAKE) -C $(@D) DESTDIR="$(TARGET_DIR)" install
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) DESTDIR="$(TARGET_DIR)" install
 endef
 
 # Remove documentation and source files that are not needed because we
@@ -70,14 +107,8 @@ TVHEADEND_POST_INSTALL_TARGET_HOOKS += TVHEADEND_CLEAN_SHARE
 #----------------------------------------------------------------------------
 # To run tvheadend, we need:
 #  - a startup script, and its config file
-#  - a default DB with a tvheadend admin
-#  - a non-root user to run as
-define TVHEADEND_INSTALL_DB
-	$(INSTALL) -D -m 0600 package/tvheadend/accesscontrol.1     \
-		$(TARGET_DIR)/home/tvheadend/.hts/tvheadend/accesscontrol/1
-	chmod -R go-rwx $(TARGET_DIR)/home/tvheadend
-endef
-TVHEADEND_POST_INSTALL_TARGET_HOOKS += TVHEADEND_INSTALL_DB
+#  - a non-root user to run as, and a home for it that is not accessible
+#    to the other users (because there will be crendentials in there)
 
 define TVHEADEND_INSTALL_INIT_SYSV
 	$(INSTALL) -D package/tvheadend/etc.default.tvheadend $(TARGET_DIR)/etc/default/tvheadend
@@ -86,6 +117,9 @@ endef
 
 define TVHEADEND_USERS
 	tvheadend -1 tvheadend -1 * /home/tvheadend - video TVHeadend daemon
+endef
+define TVHEADEND_PERMISSIONS
+	/home/tvheadend r 0700 tvheadend tvheadend - - - - -
 endef
 
 $(eval $(generic-package))

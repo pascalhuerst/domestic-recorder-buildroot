@@ -15,7 +15,7 @@ IRDA_UTILS_CFLAGS += -DNO_FORK=1
 endif
 
 define IRDA_UTILS_BUILD_CMDS
-	$(MAKE) \
+	$(TARGET_MAKE_ENV) $(MAKE) \
 		CC="$(TARGET_CC)" \
 		CFLAGS="$(IRDA_UTILS_CFLAGS)" \
 		SYS_INCLUDES= \
@@ -32,7 +32,7 @@ IRDA_UTILS_SBINS- += $(IRDA_UTILS_SBINS-y)
 
 define IRDA_UTILS_INSTALL_TARGET_CMDS
 	for i in $(IRDA_UTILS_SBINS-y); do \
-		$(INSTALL) -m 0755 -D $(@D)/$$i/$$i $(TARGET_DIR)/usr/sbin/$$i; \
+		$(INSTALL) -m 0755 -D $(@D)/$$i/$$i $(TARGET_DIR)/usr/sbin/$$i || exit 1; \
 	done
 endef
 

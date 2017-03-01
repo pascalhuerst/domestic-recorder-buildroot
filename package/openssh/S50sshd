@@ -3,11 +3,8 @@
 # sshd        Starts sshd.
 #
 
-# Bail out if daemon is not enabled
-[ -f /etc/raumfeld/sshd_enabled ] || exit 0
-
 # Make sure the ssh-keygen progam exists
-[ -x /usr/bin/ssh-keygen ] || exit 0
+[ -f /usr/bin/ssh-keygen ] || exit 0
 
 # Create any missing keys
 /usr/bin/ssh-keygen -A
@@ -15,13 +12,13 @@
 umask 077
 
 start() {
-	echo -n "Starting sshd: "
+	printf "Starting sshd: "
 	/usr/sbin/sshd
 	touch /var/lock/sshd
 	echo "OK"
 }
 stop() {
-	echo -n "Stopping sshd: "
+	printf "Stopping sshd: "
 	killall sshd
 	rm -f /var/lock/sshd
 	echo "OK"

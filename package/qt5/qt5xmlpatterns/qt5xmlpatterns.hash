@@ -1,4 +1,2 @@
-# Hashes from: http://download.qt-project.org/official_releases/qt/5.3/5.3.2/submodules/qtxmlpatterns-opensource-src-5.3.2.tar.xz.mirrorlist
-sha256 acab0307039e117475caf2c95e425ead09ab5ee08ce15205fb3c0af7d7ec1abb qtxmlpatterns-opensource-src-5.3.2.tar.xz
-sha1   d7c5f3dee97d68ec7274ba349d0a9e531aaf111f                         qtxmlpatterns-opensource-src-5.3.2.tar.xz
-md5    857e8040b2bf45c114a7d75ec6ef94ee                                 qtxmlpatterns-opensource-src-5.3.2.tar.xz
+# Hash from: http://download.qt.io/official_releases/qt/5.6/5.6.2/submodules/qtxmlpatterns-opensource-src-5.6.2.tar.xz.mirrorlist
+sha256 7c6df3eebf188d8ce6822a22cebbc63da5ac27047cf1bd7236d5b988244782cc qtxmlpatterns-opensource-src-5.6.2.tar.xz

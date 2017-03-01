@@ -5,6 +5,7 @@
 #############################################################
 
 SFDISK_SOURCE = sfdisk.tar.bz2
+SFDISK_SITE = https://fossies.org/linux/misc/old
 
 define SFDISK_BUILD_CMDS
 	$(MAKE) \

@@ -4,15 +4,17 @@
 #
 ################################################################################
 
-QT5ENGINIO_VERSION = $(QT5_VERSION)
+# Qt5Enginio does not follow Qt versionning
+# see https://bugreports.qt.io/browse/QTBUG-50111
+QT5ENGINIO_VERSION = 1.6.2
 QT5ENGINIO_SITE = $(QT5_SITE)
 QT5ENGINIO_SOURCE = qtenginio-opensource-src-$(QT5ENGINIO_VERSION).tar.xz
 QT5ENGINIO_DEPENDENCIES = openssl qt5base
 QT5ENGINIO_INSTALL_STAGING = YES
 
 ifeq ($(BR2_PACKAGE_QT5BASE_LICENSE_APPROVED),y)
-QT5ENGINIO_LICENSE = LGPLv2.1 or GPLv3.0
-QT5ENGINIO_LICENSE_FILES = LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt
+QT5ENGINIO_LICENSE = GPLv3 or LGPLv2.1 with exception or LGPLv3, GFDLv1.3 (docs)
+QT5ENGINIO_LICENSE_FILES = LICENSE.GPLv3 LICENSE.LGPLv21 LGPL_EXCEPTION.txt LICENSE.LGPLv3 LICENSE.FDL
 else
 QT5ENGINIO_LICENSE = Commercial license
 QT5ENGINIO_REDISTRIBUTE = NO
@@ -47,7 +49,7 @@ define QT5ENGINIO_INSTALL_TARGET_EXAMPLES
 endef
 endif
 
-ifneq ($(BR2_PREFER_STATIC_LIB),y)
+ifneq ($(BR2_STATIC_LIBS),y)
 define QT5ENGINIO_INSTALL_TARGET_LIBS
 	cp -dpf $(STAGING_DIR)/usr/lib/libEnginio.so.* $(TARGET_DIR)/usr/lib
 endef

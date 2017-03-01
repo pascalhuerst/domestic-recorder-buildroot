@@ -4,8 +4,9 @@
 #
 ################################################################################
 
-CONNMAN_VERSION = 95386f909d
+CONNMAN_VERSION = 098def9d68
 CONNMAN_SITE = $(call github,raumfeld,connman,$(CONNMAN_VERSION))
+CONNMAN_SITE_METHOD = git
 CONNMAN_DEPENDENCIES = libglib2 dbus iptables
 CONNMAN_AUTORECONF = YES
 CONNMAN_INSTALL_STAGING = YES
@@ -29,6 +30,12 @@ CONNMAN_DEPENDENCIES += \
 
 define CONNMAN_INSTALL_INIT_SYSV
 	$(INSTALL) -m 0755 -D package/connman/S45connman $(TARGET_DIR)/etc/init.d/S45connman
+endef
+
+define CONNMAN_INSTALL_INIT_SYSTEMD
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
+	ln -fs ../../../../usr/lib/systemd/system/connman.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/connman.service
 endef
 
 ifeq ($(BR2_PACKAGE_CONNMAN_CLIENT),y)

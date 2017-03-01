@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GST1_LIBAV_VERSION = 1.4.3
+GST1_LIBAV_VERSION = 1.8.3
 GST1_LIBAV_SOURCE = gst-libav-$(GST1_LIBAV_VERSION).tar.xz
 GST1_LIBAV_SITE = http://gstreamer.freedesktop.org/src/gst-libav
 
@@ -83,7 +83,9 @@ GST1_LIBAV_CONF_EXTRA_OPTS += --disable-bsfs \
                              --enable-decoder=alac \
                              --enable-decoder=wmav1 \
                              --enable-decoder=wmav2 \
-                             --enable-decoder=wmapro
+                             --enable-decoder=wmalossless \
+                             --enable-decoder=wmapro \
+                             --enable-decoder=wmavoice
 
 GST1_LIBAV_CONF_OPTS = \
 	--with-libav-extra-configure="$(GST1_LIBAV_CONF_EXTRA_OPTS)"
