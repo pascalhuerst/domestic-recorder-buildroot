@@ -29,6 +29,7 @@ source "package/raumfeld/spotify-embedded/Config.in"
 source "package/raumfeld/stream-decoder/Config.in"
 source "package/raumfeld/stream-relay/Config.in"
 source "package/raumfeld/timeserver/Config.in"
+source "package/raumfeld/uboot-signed/Config.in"
 source "package/raumfeld/web-service/Config.in"
 
 endmenu
