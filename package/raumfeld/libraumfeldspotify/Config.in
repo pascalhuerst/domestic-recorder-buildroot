@@ -1,7 +1,7 @@
 config BR2_PACKAGE_LIBRAUMFELDSPOTIFY
 	bool "libraumfeldspotify"
 	select BR2_PACKAGE_LIBRAUMFELDCPP
-        select BR2_PACKAGE_SPOTIFY_EMBEDDED
+        select BR2_PACKAGE_SPOTIFY_EMBEDDED if !BR2_cortex_a7
 	help
 	  libraumfeldspotify are the Raumfeld Spotify bindings
 
