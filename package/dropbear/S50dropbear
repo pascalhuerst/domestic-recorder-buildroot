@@ -3,14 +3,11 @@
 # Starts dropbear sshd.
 #
 
-# Bail out if daemon is not enabled
-[ -f /etc/raumfeld/sshd_enabled ] || exit 0
-
 # Allow a few customizations from a config file
 test -r /etc/default/dropbear && . /etc/default/dropbear
 
 start() {
-	DROPBEAR_ARGS="$DROPBEAR_ARGS -R -B -b /etc/issue"
+	DROPBEAR_ARGS="$DROPBEAR_ARGS -R"
 
 	# If /etc/dropbear is a symlink to /var/run/dropbear, and
 	#   - the filesystem is RO (i.e. we can not rm the symlink),
