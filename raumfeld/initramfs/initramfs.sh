@@ -10,18 +10,20 @@ if [ -z "$hw" ]; then
     hw=`cat /proc/cpuinfo | grep ^model\ name | cut -f 3 -d' '`
 fi
 
-offset="5128192"  # default value
+usb_image_offset="5128192"  # default value
+net_image_offset="0"        # default value
 
 case "$hw" in
     i.MX7)
         arch="i.MX7"
         img="speaker3.img"
-        offset="12591104"
+        net_image_offset="8192"
+        usb_image_offset="12591104"
         echo "i.MX7 hardware detected"
 	;;
     AM33XX)
         arch="armada"
-        offset="8658944"
+        usb_image_offset="8658944"
         model=$(cat /proc/device-tree/model | cut -f 2 -d' ')
         echo "Model: $model"
 
@@ -203,7 +205,7 @@ elif [ "$(grep ip= /proc/cmdline)" ]; then
 	    exit 1
     fi
 
-    losetup -o 8192 /dev/loop0 /tmp/$rootfs_img
+    losetup -o $net_image_offset /dev/loop0 /tmp/$rootfs_img
 
     mkdir /rootfs
     mount -t ext2 -o ro /dev/loop0 /rootfs
@@ -231,7 +233,7 @@ else
     mkdir /usb
 
     mount /dev/sda1 /usb || mount /dev/sda /usb
-    losetup -o $offset /dev/loop0 /usb/$img
+    losetup -o $usb_image_offset /dev/loop0 /usb/$img
 
     mkdir /rootfs
     mount -t ext2 -o ro /dev/loop0 /rootfs
