@@ -1,0 +1,3 @@
+uenvcmd=mmc rescan; load mmc 1:2 ${loadaddr} boot/uImage; load mmc 1:2 ${fdtaddr} boot/nonlinear-labs-2D.dtb; setenv mmcroot /dev/mmcblk0p2 ro; setenv mmcrootfstype ext4 rootwait; setenv bootargs console=${console} ${optargs} root=${mmcroot} rootfstype=${mmcrootfstype}; bootm ${loadaddr} - ${fdtaddr}
+uname_r=nonlinear
+uname_boot=mmc rescan; load mmc 1:2 ${loadaddr} boot/uImage; load mmc 1:2 ${fdtaddr} boot/nonlinear-labs-2D.dtb; setenv mmcroot /dev/mmcblk0p2 ro; setenv mmcrootfstype ext4 rootwait; setenv bootargs console=${console} ${optargs} root=${mmcroot} rootfstype=${mmcrootfstype}; bootm ${loadaddr} - ${fdtaddr}
