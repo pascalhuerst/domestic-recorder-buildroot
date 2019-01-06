@@ -1,0 +1,1 @@
+This file is just here, so the fs-overlay replaces the symlink for /var/log in order to get persistent logging
