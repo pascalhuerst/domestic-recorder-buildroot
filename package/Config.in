@@ -2180,7 +2180,7 @@ menu "Text editors and viewers"
 endmenu
 
 menu "Nonlinear Labs"
-source "package/nonlinear/nlimagemaker/Config.in"
+	source "package/nlimagemaker/Config.in"
 endmenu
 
 endmenu
