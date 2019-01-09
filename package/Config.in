@@ -2179,4 +2179,8 @@ menu "Text editors and viewers"
 	source "package/vim/Config.in"
 endmenu
 
+menu "Nonlinear Labs"
+source "package/nonlinear/nlimagemaker/Config.in"
+endmenu
+
 endmenu

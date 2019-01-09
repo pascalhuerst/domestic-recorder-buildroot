@@ -1,0 +1,7 @@
+config BR2_PACKAGE_NLIMAGEMAKER
+       bool "nlimagemaker"
+       help
+         the NonlinearLabs Image Maker
+
+	 http://www.nonlinear-labs.de
+
