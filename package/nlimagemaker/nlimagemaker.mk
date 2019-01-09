@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-NLIMAGEMAKER_VERSION = master
-NLIMAGEMAKER_SITE = git@nonlinear-labs.git.beanstalkapp.com:/nonlinear-labs/nlimagemaker.git
+NLIMAGEMAKER_VERSION = 70da97af6b5a7e3c51e3cbe49093b81212587429
+NLIMAGEMAKER_SITE = git@github.com:nonlinear-labs-dev/nlimagemaker.git
 NLIMAGEMAKER_SITE_METHOD = git
 NLIMAGEMAKER_LICENSE = GPLv3+
 NLIMAGEMAKER_LICENSE_FILES = COPYING
