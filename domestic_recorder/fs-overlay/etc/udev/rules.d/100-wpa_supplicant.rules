@@ -1,0 +1,2 @@
+SUBSYSTEM=="net",ACTION=="add",KERNEL=="wlan0",RUN+="/bin/systemctl start wpa_supplicant"
+SUBSYSTEM=="net",ACTION=="remove",KERNEL=="wpan0",RUN+="/bin/systemctl stop wpa_supplicant"
