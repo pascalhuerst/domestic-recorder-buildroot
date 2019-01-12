@@ -1,0 +1,7 @@
+config BR2_PACKAGE_CPIPED
+       bool "cpiped"
+       help
+         Captures an audio stream and outputs to a pipe with buffering and silence detection
+
+	 https://github.com/b-fitzpatrick/cpiped
+
