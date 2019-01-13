@@ -17,6 +17,6 @@ START_SNAPCLIENT=true
 #   -i, --instance arg (=1)         instance id
 #   --hostID arg                    unique host id
 
-USER_OPTS="--user root:root --sounrcard=1 --mstderr --host=server.lan --port=SNAPCLIENT_PORT --daemon --hostID=HOSTID-output"
+USER_OPTS="--user root:root --sounrcard=1 --mstderr --host=server.lan --port=1704 --port=SNAPCLIENT_PORT --daemon --hostID=HOSTID-output"
 
 SNAPCLIENT_OPTS=""
