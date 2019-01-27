@@ -1438,8 +1438,8 @@ menu "Logging"
 endmenu
 
 menu "Multimedia"
+	source "package/alsa_test_tool/Config.in"
 	source "package/bitstream/Config.in"
-	source "package/cpiped/Config.in"
 	source "package/kvazaar/Config.in"
 	source "package/libaacs/Config.in"
 	source "package/libamcodec/Config.in"
