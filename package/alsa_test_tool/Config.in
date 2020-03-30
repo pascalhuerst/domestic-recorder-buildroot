@@ -1,0 +1,7 @@
+config BR2_PACKAGE_ALSA_TEST_TOOL
+       bool "alsa_test_tool"
+       help
+         Very basic alsa test tool using snd_pcm_hw_params_test_rate and snd_pcm_hw_params_test_format
+
+	 http://www.domestic-affairs.de
+
