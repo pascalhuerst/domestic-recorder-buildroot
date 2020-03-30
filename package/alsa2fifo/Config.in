@@ -1,0 +1,7 @@
+config BR2_PACKAGE_ALSA2FIFO
+       bool "alsa2fifo"
+       help
+         the Domestic Affairs alsa2fifo
+
+	 http://www.domestic-affairs.de
+
