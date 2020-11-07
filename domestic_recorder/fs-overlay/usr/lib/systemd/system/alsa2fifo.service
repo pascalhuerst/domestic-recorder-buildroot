@@ -1,0 +1,12 @@
+[Unit]
+Description=alsa2fifo
+After=network-online.target
+
+[Service]
+Restart=always
+RestartSec=10
+ExecStartPre=/bin/mkdir -p /tmp/chunks
+ExecStart=/usr/bin/alsa2fifo --device=hw:0,0,0 --pcm-out-dir=/tmp/chunks --pcm-out-chunks-size=131072 --pcm-out-prefix=%H
+
+[Install]
+WantedBy=multi-user.target

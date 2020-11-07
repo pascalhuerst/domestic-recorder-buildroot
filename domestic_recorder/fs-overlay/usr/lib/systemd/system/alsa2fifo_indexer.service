@@ -1,0 +1,12 @@
+[Unit]
+Description=alsa2fifo_indexer
+After=network-online.target
+
+[Service]
+Restart=always
+RestartSec=10
+ExecStartPre=/bin/mkdir -p /tmp/chunks
+ExecStart=/usr/bin/alsa2fifo_indexer -dir /tmp/chunks
+
+[Install]
+WantedBy=multi-user.target
