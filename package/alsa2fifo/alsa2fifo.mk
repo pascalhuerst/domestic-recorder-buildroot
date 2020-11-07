@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ALSA2FIFO_VERSION = master
+ALSA2FIFO_VERSION = bd14d7f065833d751e4cedba7034e179a1862fce
 ALSA2FIFO_SITE = https://github.com/pascalhuerst/alsa2fifo.git
 ALSA2FIFO_SITE_METHOD = git
 ALSA2FIFO_LICENSE = GPLv3+
