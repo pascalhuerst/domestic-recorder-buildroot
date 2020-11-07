@@ -6,7 +6,7 @@ After=network-online.target
 Restart=always
 RestartSec=10
 ExecStartPre=/bin/mkdir -p /tmp/chunks
-ExecStart=/usr/bin/alsa2fifo --device=hw:0,0,0 --pcm-out-dir=/tmp/chunks --pcm-out-chunks-size=131072 --pcm-out-prefix=%H
+ExecStart=/usr/sbin/alsa2fifo --device=hw:0,0,0 --pcm-out-dir=/tmp/chunks --pcm-out-chunks-size=262144 --pcm-out-prefix=%H --led-detector="raumfeld:1" --led-indexer="raumfeld:2"
 
 [Install]
 WantedBy=multi-user.target
